@@ -1,0 +1,66 @@
+--- University Event Management System – Stakeholder Meeting Transcript ---
+Date: 2024-11-15
+Participants: Alex (Product Owner), Maria (Student Rep), Ben (IT Admin), Sarah (Faculty)
+
+Alex: Welcome everyone. We're here to discuss the new University Event Management System.
+Let me start by outlining the vision. We need a platform where students, faculty, and
+external organizers can create, manage, and register for campus events.
+
+Maria: From a student perspective, the most important thing is easy event discovery.
+We want to search events by category — like academic, social, sports — and also by date
+and location. Push notifications for events we've RSVP'd to would be great.
+
+Ben: On the IT side, we need this integrated with the university SSO system. All
+authentication should go through the existing LDAP directory. We also need role-based
+access control: students, faculty, event organizers, and administrators each have
+different permissions.
+
+Sarah: For faculty, we need the ability to create academic events — guest lectures,
+seminars, workshops — and link them to specific courses. Attendance tracking is
+critical for us since some events count toward participation grades.
+
+Alex: Great points. Let me add some functional requirements I've gathered:
+1. The system shall allow users to create events with title, description, date/time,
+   location, capacity, and category.
+2. The system shall support recurring events (weekly, monthly).
+3. The system shall send email confirmations upon successful registration.
+4. The system shall enforce capacity limits and maintain a waitlist.
+
+Maria: Can we also have a mobile-friendly interface? Most students will access this
+from their phones.
+
+Ben: The system must handle at least 5000 concurrent users during peak registration
+periods like orientation week. Response time should be under 2 seconds for all pages.
+
+Sarah: We need reporting capabilities too. I want to see attendance reports per event,
+per course, and per semester.
+
+Alex: What about event cancellation?
+
+Maria: If an event is cancelled, everyone registered should get an immediate notification.
+And if someone drops out, the first person on the waitlist should automatically get
+promoted and notified.
+
+Ben: Security-wise, we need audit logging for all administrative actions. And the
+system should comply with GDPR for handling personal data of EU students.
+
+Sarah: One more thing — the system should allow uploading event materials like
+presentation slides and handouts, and these should be accessible to registered
+attendees before and after the event.
+
+Alex: Let me summarize the key non-functional requirements:
+- The system must be available 99.5% of the time during academic semesters.
+- All data must be encrypted at rest and in transit.
+- The system must support English, German, and French interfaces.
+- Backup and recovery must ensure no more than 1 hour of data loss (RPO).
+
+Ben: We should also plan for integration with the campus calendar system (Google
+Calendar and Outlook) so events can be synced to personal calendars.
+
+Maria: Oh, and social features! Students should be able to share events on social
+media and see which of their friends are attending.
+
+Alex: Good input everyone. I'll compile these into a draft SRS for review next week.
+Let's aim for an MVP by the spring semester.
+
+--- END OF TRANSCRIPT ---

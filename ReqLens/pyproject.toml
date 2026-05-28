@@ -1,0 +1,93 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "reqlens"
+version = "2.0.0a1"
+description = "Evidence-grounded, graph-aware, multi-agent requirements engineering tool"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "ReqInOne Team" }]
+dependencies = [
+    # API
+    "fastapi",
+    "uvicorn[standard]",
+    # Data validation
+    "pydantic",
+    "pydantic-settings",
+    # Database
+    "sqlalchemy[asyncio]",
+    "alembic",
+    "psycopg[binary]",
+    "pgvector",
+    # LLM
+    "openai",
+    "tiktoken",
+    # Embeddings / vector
+    "numpy",
+    # Knowledge graph
+    "networkx",
+    # Document parsing
+    "pypdf",
+    "python-multipart",
+    # Background jobs
+    "celery[redis]",
+    # UI prototype
+    "streamlit",
+    # Utilities
+    "python-dotenv",
+    "httpx",
+    "tenacity",
+    "structlog",
+]
+
+[project.optional-dependencies]
+gnn = [
+    "torch>=2.3,<3",
+    "torch-geometric>=2.5,<3",
+]
+neo4j = [
+    "neo4j>=5.20,<6",
+]
+export = [
+    "python-docx",
+]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "respx",
+    "ruff",
+    "mypy",
+    "pre-commit",
+]
+all = ["reqlens[gnn,neo4j,export,dev]"]
+
+[project.scripts]
+reqlens = "reqlens.main:cli"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/reqlens"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+    "integration: integration tests requiring external services",
+    "llm: tests that call Azure OpenAI (slow, costly)",
+    "snapshot: snapshot-based tests",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 99
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "TCH"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+plugins = ["pydantic.mypy"]
