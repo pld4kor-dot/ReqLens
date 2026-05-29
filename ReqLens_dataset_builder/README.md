@@ -183,6 +183,6 @@ reqlens-benchmark-builder poison --track 1 --unit PROMISE_5 --hallucinations 5
 ## Full Run (recommended order)
 
 ```bash
-reqlens-benchmark-builder both                                        # generate silver units
-reqlens-benchmark-builder poison --track both                         # poison all units
+reqlens-benchmark-builder both                                        # generate benchmark units
+reqlens-benchmark-builder poison --track both                         # poison all units to generate final artifacts
 ```
