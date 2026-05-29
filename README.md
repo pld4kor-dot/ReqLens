@@ -1,0 +1,153 @@
+# ReqLens
+
+**An Evidence-Grounded Multi-Agent System for Graph-Based Requirements Engineering.**
+
+> *LLMs propose. Evidence gates. Graph validates. Humans approve.*
+
+ReqLens extracts candidate requirements from raw project documents, gates each one against source evidence, maps their dependencies in a knowledge graph, and guides a human reviewer through approvals — producing a fully traceable Software Requirements Specification (SRS).
+
+---
+
+## Repository Structure
+
+```
+ReqLens/                        ← Main application (FastAPI + Streamlit UI)
+ReqLens_dataset_builder/        ← Benchmark dataset generator (PROMISE + PURE)
+ReqLens_evaluation/             ← Evaluation pipeline (ReqInOne-style baseline vs ReqLens )
+```
+
+Each component has its own `README.md` with detailed setup and usage instructions.
+
+---
+
+## Components
+
+### [ReqLens](./ReqLens/)
+The core requirements engineering system. Upload source documents, run the 10-agent pipeline, review requirements in the UI, and export a traceable SRS.
+
+**Quick start:**
+```bash
+cd ReqLens
+conda create -p ./myenv python=3.11 -y
+conda activate ./myenv
+pip install -e ".[dev]"
+cp .env.example .env                     # fill in Azure OpenAI credentials and DB URL
+docker compose up -d                     # start PostgreSQL and Redis
+alembic upgrade head                     # run database migrations
+python -m uvicorn reqlens.main:app --reload --port 8081
+python -m streamlit run src/reqlens/ui/streamlit_app.py
+```
+
+---
+
+### [ReqLens Dataset Builder](./ReqLens_dataset_builder/)
+Generates structured benchmark artifacts units from the PROMISE and PURE datasets, then poisons them with hallucinated requirements (Track 1) and contradictions/duplicates (Track 2) for adversarial evaluation.
+
+**Quick start:**
+```bash
+cd ReqLens_dataset_builder
+conda create -p ./env python=3.11 -y
+conda activate ./env
+pip install -e .
+cp .env.example .env                     # fill in Azure OpenAI credentials
+reqlens-benchmark-builder both           # generate artifact units from PROMISE + PURE 
+reqlens-benchmark-builder poison         # poison all units, both tracks
+```
+
+---
+
+### [ReqLens Evaluation](./ReqLens_evaluation/)
+Runs systems : ReqInOne-style baseline and ReqLens against the poisoned benchmark units and produces a structured comparison report.
+
+**Quick start:**
+```bash
+cd ReqLens_evaluation
+conda create -p ./eval_env python=3.11 -y
+conda activate ./eval_env
+pip install -e .
+pip install -e ../ReqLens
+cp .env.example .env                     # fill in Azure OpenAI credentials and paths
+reqlens-eval run                         # full run
+reqlens-eval list                        # see a list of previous runs
+reqlens-eval report --run-id <run-id>    # see report for a particular run 
+```
+
+---
+
+## Recommended Run Order
+
+```
+1. ReqLens_dataset_builder  →  generate + poison benchmark units
+2. ReqLens                  →  run the main application (UI + API)
+3. ReqLens_evaluation       →  evaluate all systems against benchmarks
+```
+
+> **Note:** There is no strict dependency between the three components — each can be used independently. ReqLens can be run on its own as a standalone requirements engineering tool without any benchmarking or evaluation. The evaluation pipeline invokes the ReqLens agents internally via its adapter and does not require the UI or API server to be running. The dataset builder can also be run independently to generate or inspect benchmark artifacts without triggering any evaluation.
+
+Please refer to the `README.md` in each respective directory for detailed setup, configuration and usage instructions.
+
+---
+
+## Data and Artifacts
+
+The prototype, demo scripts and evaluation artifacts are available in this repository.
+
+Sample data is included for inspection:
+
+- **Original data** — raw PROMISE CSV and PURE documents are available under `ReqLens_dataset_builder/data/`
+- **Generated data** —  benchmark units produced from PROMISE and PURE are available under `ReqLens_dataset_builder/outputs/promise/` and `outputs/pure/`
+- **Poisoned data** — adversarial benchmark artifacts are available under `ReqLens_dataset_builder/outputs/poisoned/`
+
+These samples can be inspected directly without running the dataset builder.
+
+### Data and Output Directory Structure
+
+```
+ReqLens_dataset_builder/
+├── data/
+│   ├── promise/
+│   │   └── promise.csv                        ← raw PROMISE dataset
+│   └── pure/
+│       └── *.txt / *.pdf                      ← raw PURE documents
+└── outputs/
+    ├── promise/
+    │   └── PROMISE_<n>/
+    │       └── unit.json                      ← generated benchmark unit
+    ├── pure/
+    │   └── PURE_<n>/
+    │       └── unit.json
+    └── poisoned/
+        ├── track1/
+        │   └── PROMISE_<n>/
+        │       └── poisoned_track1_hallu_v<n>.json   ← hallucinated requirements injected
+        └── track2/
+            └── PROMISE_<n>/
+                └── poisoned_track2_v<n>.json         ← contradictions + duplicates injected
+
+ReqLens_evaluation/
+└── outputs/
+    └── runs/
+        └── <run-id>/
+            ├── report.md                      ← human-readable comparison report
+            └── results.json                   ← structured metrics per system per track
+```
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| API | FastAPI + Uvicorn |
+| UI | Streamlit |
+| LLM | Azure OpenAI (GPT-4 / GPT-5 family) |
+| Database | PostgreSQL + pgvector |
+| Graph | NetworkX (optional: Neo4j) |
+| Cache | Redis |
+| Migrations | Alembic |
+
+---
+
+## License
+
+MIT
