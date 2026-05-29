@@ -153,7 +153,7 @@ reqlens-benchmark-builder poison --track 2
 ### Poison a specific unit only
 
 ```bash
-reqlens-benchmark-builder poison --unit PROMISE_1
+reqlens-benchmark-builder poison --unit PROMISE_5
 ```
 
 ### Custom poison parameters
@@ -166,7 +166,7 @@ reqlens-benchmark-builder poison --track 1 --hallucinations 5
 reqlens-benchmark-builder poison --track 2 --contradictions 2 --duplicates 2
 
 # Combine: specific unit, specific track, custom counts
-reqlens-benchmark-builder poison --track 1 --unit PROMISE_1 --hallucinations 5
+reqlens-benchmark-builder poison --track 1 --unit PROMISE_5 --hallucinations 5
 ```
 
 ---
@@ -174,9 +174,9 @@ reqlens-benchmark-builder poison --track 1 --unit PROMISE_1 --hallucinations 5
 ## Tracks Explained
 
 | Track | Type | What is injected | Evaluates |
-|-------|------|-----------------|-----------|
-| Track 1 | Hallucination | Fake requirements with no source evidence | Whether the system rejects unsupported requirements |
-| Track 2 | Noise | Contradictory and duplicate requirements | Whether the system detects inconsistencies |
+|---------|--------------------|-------------------------------------------|--------------------------------------|
+| Track 1 | Evidence grounding | Fake requirements with no source evidence | Whether the system extracts context properly from source |
+| Track 2 | Defect detection   | Contradictory and duplicate requirements  | Whether the system detects inconsistencies |
 
 ---
 
