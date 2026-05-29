@@ -39,6 +39,14 @@ alembic upgrade head                     # run database migrations
 python -m uvicorn reqlens.main:app --reload --port 8081
 python -m streamlit run src/reqlens/ui/streamlit_app.py
 ```
+The Streamlit UI is available at `http://localhost:8501`.
+The FastAPI backend runs at `http://localhost:8081` (interactive docs at `http://localhost:8081/docs`).
+
+> **Remote server:** If running on a remote machine, open an SSH tunnel on your local machine to forward both ports:
+> ```bash
+> ssh -L 8501:localhost:8501 -L 8081:localhost:8081 <user>@<server-ip>
+> ```
+> Then browse to `http://localhost:8501` locally.
 
 ---
 
