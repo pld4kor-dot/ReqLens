@@ -1,6 +1,6 @@
 # ReqLens Evaluation
 
-**Evaluation pipeline for comparing Baseline, ReqInOne v1, and ReqLens v2 against poisoned benchmark datasets.**
+**Evaluation pipeline for comparing ReqInOne-style baseline and ReqLens against poisoned benchmark datasets.**
 
 Runs each system against Track 1 (hallucination detection) and Track 2 (noise detection) benchmark units, scores their outputs and produces a structured comparison report.
 
