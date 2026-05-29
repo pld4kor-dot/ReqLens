@@ -94,9 +94,9 @@ The prototype, demo scripts and evaluation artifacts are available in this repos
 
 Sample data is included for inspection:
 
-- **Original data** — raw PROMISE CSV and PURE documents are available under `ReqLens_dataset_builder/data/`
-- **Generated data** —  benchmark units produced from PROMISE and PURE are available under `ReqLens_dataset_builder/outputs/promise/` and `outputs/pure/`
-- **Poisoned data** — adversarial benchmark artifacts are available under `ReqLens_dataset_builder/outputs/poisoned/`
+- **Original data** — raw PROMISE csv file and PURE SRS documents are available under `ReqLens_dataset_builder/data/`
+- **Generated data** —  benchmark artifacts units produced from PROMISE and PURE are available under `ReqLens_dataset_builder/outputs/promise/` and `outputs/pure/`
+- **Poisoned data** — adversarial poisoned final benchmark artifacts are available under `ReqLens_dataset_builder/outputs/poisoned/`
 
 These samples can be inspected directly without running the dataset builder.
 
