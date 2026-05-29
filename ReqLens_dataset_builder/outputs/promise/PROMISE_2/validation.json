@@ -1,0 +1,349 @@
+{
+  "coverage_rate": 1.0,
+  "missing_req_ids": [],
+  "unsupported_count": 3,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PROMISE_2_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "Use native controls only on both platforms"
+      ],
+      "reason": "Sources mandate native device UI conventions."
+    },
+    {
+      "req_id": "PROMISE_2_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "standard menus & buttons"
+      ],
+      "reason": "Documents require standard menus and buttons for navigation."
+    },
+    {
+      "req_id": "PROMISE_2_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "professional look"
+      ],
+      "reason": "Stakeholders repeatedly request a professional appearance."
+    },
+    {
+      "req_id": "PROMISE_2_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "keep our blue, gray, font sizes consistent"
+      ],
+      "reason": "Sources call for consistent colors and font mapping."
+    },
+    {
+      "req_id": "PROMISE_2_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "Zero training philosophy"
+      ],
+      "reason": "Team states goal that agents require no training."
+    },
+    {
+      "req_id": "PROMISE_2_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "Self-explanatory flow"
+      ],
+      "reason": "Requirement for intuitive, self-explanatory flows is explicit."
+    },
+    {
+      "req_id": "PROMISE_2_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "New hire should pick up in minutes"
+      ],
+      "reason": "Notes specify minimal learning curve and quick pickup."
+    },
+    {
+      "req_id": "PROMISE_2_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "realtor-friendly terms"
+      ],
+      "reason": "Text requires realtor-understandable labels and terminology."
+    },
+    {
+      "req_id": "PROMISE_2_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "Search < 30 sec after submit"
+      ],
+      "reason": "Performance target for acceptable search timing is stated."
+    },
+    {
+      "req_id": "PROMISE_2_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "results appear in under ~30 seconds"
+      ],
+      "reason": "Explicit 30-second maximum search response commitment."
+    },
+    {
+      "req_id": "PROMISE_2_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "Generate CMA in field."
+      ],
+      "reason": "Sources require in-field CMA generation capability."
+    },
+    {
+      "req_id": "PROMISE_2_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "Timing: under ~60 (Dana said 60)."
+      ],
+      "reason": "Multiple notes specify CMA under ~60 seconds."
+    },
+    {
+      "req_id": "PROMISE_2_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "Sync covers client contacts + appointments."
+      ],
+      "reason": "Documents mandate syncing contacts and appointments."
+    },
+    {
+      "req_id": "PROMISE_2_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "Automatic sync cadence: every hour."
+      ],
+      "reason": "Hourly pulls from office system are explicitly required."
+    },
+    {
+      "req_id": "PROMISE_2_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "Availability target: treat as 24/7."
+      ],
+      "reason": "Stakeholders demand 24/7 availability for agents."
+    },
+    {
+      "req_id": "PROMISE_2_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "999/1000 availability expectation"
+      ],
+      "reason": "Specifies 99.9% (999/1000) availability target."
+    },
+    {
+      "req_id": "PROMISE_2_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "Offline mode: when connection drops"
+      ],
+      "reason": "Sources require usable offline mode with caching."
+    },
+    {
+      "req_id": "PROMISE_2_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "View cached searches, previous CMA reports"
+      ],
+      "reason": "Documents state cached searches, CMAs, appointments viewable."
+    },
+    {
+      "req_id": "PROMISE_2_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "Persist user settings frequently"
+      ],
+      "reason": "Sources require retaining prefs across crashes/outages."
+    },
+    {
+      "req_id": "PROMISE_2_R020",
+      "supported": true,
+      "evidence_snippets": [
+        "On restart, 100% of saved prefs restored exactly."
+      ],
+      "reason": "Meeting notes explicitly demand full preference restoration."
+    },
+    {
+      "req_id": "PROMISE_2_R021",
+      "supported": true,
+      "evidence_snippets": [
+        "Multi-remote-user support baseline."
+      ],
+      "reason": "Notes explicitly require multi-remote-user support."
+    },
+    {
+      "req_id": "PROMISE_2_R022",
+      "supported": true,
+      "evidence_snippets": [
+        "1000 simultaneous agents expected today."
+      ],
+      "reason": "Meeting and email specify 1000 concurrent users target."
+    },
+    {
+      "req_id": "PROMISE_2_R023",
+      "supported": true,
+      "evidence_snippets": [
+        "Plan for growth to 5x (~5000) within a year."
+      ],
+      "reason": "Documents state 5x growth to ~5000 within a year."
+    },
+    {
+      "req_id": "PROMISE_2_R024",
+      "supported": true,
+      "evidence_snippets": [
+        "Self-installable; no printed instruction sheet."
+      ],
+      "reason": "Multiple artifacts require self-install without printed materials."
+    },
+    {
+      "req_id": "PROMISE_2_R025",
+      "supported": true,
+      "evidence_snippets": [
+        "Goal: 90%+ of untrained agents succeed"
+      ],
+      "reason": "Goal explicitly sets 90%+ untrained success for install."
+    },
+    {
+      "req_id": "PROMISE_2_R026",
+      "supported": true,
+      "evidence_snippets": [
+        "Target platforms: Windows CE and Palm OS only"
+      ],
+      "reason": "Sources confirm v1 targets Windows CE and Palm OS."
+    },
+    {
+      "req_id": "PROMISE_2_R027",
+      "supported": true,
+      "evidence_snippets": [
+        "Access limited to registered, licensed agents only."
+      ],
+      "reason": "Security notes and emails restrict access to licensed agents."
+    },
+    {
+      "req_id": "PROMISE_2_R028",
+      "supported": true,
+      "evidence_snippets": [
+        "Every user authenticated AND authorized."
+      ],
+      "reason": "Documents call for authentication and authorization for users."
+    },
+    {
+      "req_id": "PROMISE_2_R029",
+      "supported": true,
+      "evidence_snippets": [
+        "Input validation everywhere to avoid bad data"
+      ],
+      "reason": "Requirements demand input validation to prevent bad data."
+    },
+    {
+      "req_id": "PROMISE_2_R030",
+      "supported": true,
+      "evidence_snippets": [
+        "MLS query from device — must support typical criteria."
+      ],
+      "reason": "Notes require MLS queries from device with realtor-friendly criteria."
+    },
+    {
+      "req_id": "PROMISE_2_R031",
+      "supported": true,
+      "evidence_snippets": [
+        "tap a listing → route shown"
+      ],
+      "reason": "Map tap provides directions."
+    },
+    {
+      "req_id": "PROMISE_2_R032",
+      "supported": true,
+      "evidence_snippets": [
+        "sync covers client contacts + appointments."
+      ],
+      "reason": "Hourly sync pulls contacts and appointments."
+    },
+    {
+      "req_id": "PROMISE_2_R033",
+      "supported": true,
+      "evidence_snippets": [
+        "Show clear property images in results"
+      ],
+      "reason": "Agents insist on clear photos in results."
+    },
+    {
+      "req_id": "PROMISE_2_R034",
+      "supported": true,
+      "evidence_snippets": [
+        "Listing update/create from device: Allowed"
+      ],
+      "reason": "Device listing create/update expressly requested."
+    },
+    {
+      "req_id": "PROMISE_2_R035",
+      "supported": true,
+      "evidence_snippets": [
+        "Generate CMA in field. Quick comps"
+      ],
+      "reason": "CMA generation in field with comp selection."
+    },
+    {
+      "req_id": "PROMISE_2_R036",
+      "supported": true,
+      "evidence_snippets": [
+        "In-app calling to buyers/sellers"
+      ],
+      "reason": "App will initiate calls to schedule appointments."
+    },
+    {
+      "req_id": "PROMISE_2_R037",
+      "supported": true,
+      "evidence_snippets": [
+        "notify user of new or changed appointments"
+      ],
+      "reason": "Device notifies realtor after sync completes."
+    },
+    {
+      "req_id": "PROMISE_2_R038",
+      "supported": true,
+      "evidence_snippets": [
+        "retrieve map showing property locations"
+      ],
+      "reason": "Map view with property pins is required."
+    },
+    {
+      "req_id": "PROMISE_2_R039",
+      "supported": true,
+      "evidence_snippets": [
+        "Notify agent when client responds"
+      ],
+      "reason": "Notifications for client responses are specified."
+    },
+    {
+      "req_id": "PROMISE_2_R040",
+      "supported": true,
+      "evidence_snippets": [
+        "Allow saving of search results"
+      ],
+      "reason": "Users explicitly request saving searches for later."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "The system shall detect network interruptions during listing create/update and implement retry and deduplication logic so that partially-submitted updates do not create duplicate listings when the network is restored.",
+      "source_snippet": "Edge cases: network drops during update → retry later; do not create duplicates. Owen to define.",
+      "source_type": "meeting_notes",
+      "reason": "The source explicitly requires behavior to handle interrupted listing submissions (retry and prevent duplicates). The gold set requires create/update listings and input validation but does not specify retry/deduplication semantics for network failures."
+    },
+    {
+      "text": "The system shall record and expose performance telemetry (e.g., time from search/CMA criteria submission to first result/render) and support monitoring of top-of-hour load/availability spikes.",
+      "source_snippet": "Owen: log the time from criteria entry to report. QA: We’ll run pass/fail around the search <= 30s metric and CMA <= 60s metric... Load test plan: 1000 simultaneous users around top of hour; measure page times + errors. Will add a high-water test at 5x to see bottlenecks.",
+      "source_type": "meeting_notes",
+      "reason": "Multiple artifacts call for logging and load/monitoring (timing logs, QA load tests, monitoring top-of-hour spikes). The gold requirements specify performance targets and concurrency numbers but do not require telemetry, logging, or monitoring capabilities."
+    },
+    {
+      "text": "The user interface shall display the last-synced timestamp and surface a concise summary of changes (for example, '2 new showings added since 11:00') after each hourly sync.",
+      "source_snippet": "We will show a last-synced time and surface a note for new appointments after each run. ... After sync completes, device should notify user of new or changed appointments. Show last synced time. Example: “2 new showings added since 11:00”.",
+      "source_type": "email_thread",
+      "reason": "The source explicitly requires showing last-synced time and a digest of changes post-sync. While the gold set requires notification of new appointments after synchronization, it does not require displaying the last-synced timestamp or a summarized list of what changed."
+    }
+  ],
+  "passed": false
+}

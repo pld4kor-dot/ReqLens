@@ -1,0 +1,851 @@
+{
+  "artifact_id": "T2A_84A7E3D8",
+  "unit_id": "PURE_1998 - themas",
+  "origin": "PURE",
+  "track_id": "track2",
+  "variant_id": "defect_v1",
+  "created_at": "2026-05-26T18:56:55.215162+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Discovery Interview — THEMAS Operations and Control Behavior (revised)",
+      "text": "Barry [Project Manager]: Okay, thanks everyone for making time. We’re trying to pull together all the messy bits before the formal write‑up. I want to focus on how you all see THEMAS behaving day to day, and, uh, some of the rough edges we keep circling around—so jump in, don’t wait for me.\n\nNina [HVAC Supervisor]: I’ll kick us off. For me it’s simple: I need to see all the thermostats by their quadrant ID—like the zone name—and what they’re set to right now. I don’t need a spaceship cockpit, just a clean list. Then if I pick one, I can bump the setpoint, but only to something that makes sense. Don’t let me type 200 degrees.\n\nPriya [Principal Software Architect]: Right, so you’re thinking a validated set of allowable temperatures for each thermostat, not freeform entry.\n\nNina [HVAC Supervisor]: Exactly. A dropdown or a list. I can pick 68 or 72, etc. No weird numbers.\n\nLeo [Design Requirements]: Noted: the console shows available thermostats and current temperature settings, and the supervisor can select a thermostat and choose a new setting from a list of valid values.\n\nCarla [QA/Verification Engineer]: When you change that setpoint, we need to make sure the system checks it against the valid range before applying it. Also, I want confirmation that the value was accepted into the system state. Not the unit turning on—that’s different—but that the new setpoint is now the value we use.\n\nBarry [Project Manager]: That part we can show in the UI and log—confirm the setting was within the valid range and the system applied it.\n\nOmar [Facilities Maintenance Technician]: Quick question. When you say “valid,” I’ve seen thermostats with limits like 60 to 80. But sometimes we enforce 65 to 75 building‑wide. Which wins?\n\nPriya [Principal Software Architect]: The initialized valid temperature range will be the authority. We’ll load that from the initialization parameters, so we can enforce the narrower building policy if needed.\n\nNina [HVAC Supervisor]: Good. If it’s out of bounds, just don’t let me choose it. Or if someone feeds us an invalid setpoint from some external config, flag it.\n\nCarla [QA/Verification Engineer]: And log it. We want a status on validity. Basically, if the input thermometer value or the setpoint is outside limits, we mark the condition.\n\nLeo [Design Requirements]: Capture: the software validates current temperature and temperature settings against the defined valid range, and indicates valid vs invalid status. That includes the operator change path.\n\nBarry [Project Manager]: Before we get too deep into runtime controls, can we tackle startup? We keep saying we want a known state.\n\nPriya [Principal Software Architect]: Yes. On initialization, the software reads an initialization file with the definitions of each unit—like which thermostat goes with which heating or cooling unit. We also load the thermostat identifiers themselves—unique IDs. And—this is important—we send requests to turn all units off at startup, so we begin in a known off baseline.\n\nOmar [Facilities Maintenance Technician]: That’s what I want to see. You can’t trust the field—they might be on already and we’d be blind. If we send OFF across the board first, then start reading data, we know what we’re dealing with.\n\nNina [HVAC Supervisor]: Right, kill everything then bring things on only as needed. Makes sense. But, do we wait to collect the temperatures until after that?\n\nPriya [Principal Software Architect]: We will issue OFF requests and then proceed to read current temperature and current setpoint from each thermostat. We don’t block on feedback from the equipment because we don’t expect any confirmation back from the unit.\n\nCarla [QA/Verification Engineer]: That’s the no‑ack rule, right? We send H/C ON/OFF requests without getting an execution confirmation.\n\nLeo [Design Requirements]: Correct. The plan is: read two data points from each thermostat—the near‑real‑time temperature and the target setpoint.\n\nNina [HVAC Supervisor]: While we’re on that: How do you decide when to heat or cool? I’ve heard you mention those bands… the lower and upper something.\n\nPriya [Principal Software Architect]: There are two concepts. First, we have overtemperature limits around the setpoint using OD, the overtemperature delta. So we compute LO = TSET minus OD and UO = TSET plus OD. If the current temperature T goes below LO or above UO, that’s a limit breach. We raise an indication.\n\nBarry [Project Manager]: That’s like an alarm boundary, yeah?\n\nPriya [Principal Software Architect]: Exactly—an exceedance. Separately, we have the trigger delta TD, which defines a narrower band for deciding whether to call for heating or cooling. So we compute LT = TSET minus TD and UT = TSET plus TD. If the current temperature falls outside LT/UT, then we consider turning something on, subject to utilization rules.\n\nOmar [Facilities Maintenance Technician]: So you’ll, ah, switch on heat if it’s below LT, and cooling if it’s above UT? That’s the gist?\n\nPriya [Principal Software Architect]: Yes, but there are constraints—like max concurrent units and the queue behavior. The raw decision is as you said.\n\nCarla [QA/Verification Engineer]: Just to be explicit: when the temperature is within the valid band and the setpoint is valid, the system accepts the setpoint and applies it. If either reading is out of the allowed range, we mark it invalid and don’t use it for control decisions, right?\n\nPriya [Principal Software Architect]: Correct. Invalid inputs are flagged and not acted on. We also generate status so the supervisor can see what’s going on.\n\nNina [HVAC Supervisor]: I still want a quick way to force a unit on if I need it. Like if we have a group in a conference room, I might want to override.\n\nBarry [Project Manager]: We’re not doing overrides in the sense of ignoring the rules, but you as the supervisor can send manual ON or OFF to a specific unit. The system will still treat it like a request and apply the same utilization rules.\n\nLeo [Design Requirements]: Manual controls from the console: ON/OFF request per unit, consistent with the same signal we send automatically.\n\nOmar [Facilities Maintenance Technician]: And those signals—we’re just emitting requests to the field interface, right? We’re not listening for an “I did it.”\n\nPriya [Principal Software Architect]: Exactly. We generate H/C ON/OFF requests to the interfaces. There’s no reliable feedback loop telling us execution status, so we treat it as fire‑and‑forget and maintain our own software record of the intended state.\n\nCarla [QA/Verification Engineer]: Since we can’t know if the hardware actually did it, we need to keep our internal ON/OFF status model up to date with our last request. Then we can time‑slice utilization tracking from that.\n\nNina [HVAC Supervisor]: Speaking of utilization, I need to not trip breakers by spinning everything up. What’s the rule again for total units?\n\nPriya [Principal Software Architect]: There’s a cap—the maximum number of concurrent units we’re allowed to have running. If a new request comes in and we’re at that limit, we don’t drop it; we put it into a waiting queue.\n\nLeo [Design Requirements]: And that queue is LIFO, last in, first out. So the most recent request gets considered first when capacity frees up.\n\nOmar [Facilities Maintenance Technician]: Why LIFO though? That seems unfair.\n\nBarry [Project Manager]: It was chosen to match responsiveness for the most recent conditions—this came out of a prior study. We can revisit after prototype.\n\nNina [HVAC Supervisor]: If we can’t turn something on because we’re full, I need to know. Maybe an alert like “No capacity” or something.\n\nCarla [QA/Verification Engineer]: We plan to emit a “Unit Unavailable” event when a request can’t be honored due to the cap. It should hit the event log so it shows up later.\n\nPriya [Principal Software Architect]: And when a unit turns off—either we sent OFF or the thermostat no longer needs it—we’ll check the LIFO queue. If any entry exists, we pop one, re‑check the associated thermostat’s need, and if it still wants service, we send an ON for that unit.\n\nOmar [Facilities Maintenance Technician]: So you re‑read the thermostat need before turning it on, not just blindly honoring the old request. Good.\n\nI just remembered, there's another point I should mention: Any time we get a command to shut a heater or A/C unit off, I want the controller to immediately look at the waiting list rather than just stopping. Treat that queue as last-in, first-out: if there's anything pending, pop the newest request, check the current state of the thermostat tied to that request, and if it's still calling, fire off a turn-on for that unit. That keeps the workflow moving and makes sure an active thermostat doesn't get ignored.\n\nLeo [Design Requirements]: That’s consistent with the idea that requests can get stale.\n\nNina [HVAC Supervisor]: What about when the room warms up in the meantime? Yeah, re‑checking is necessary.\n\nSorry, going back to something I mentioned earlier — From the facilities side, we need the system to capture the current temperature and thermostat settings first, while all heating and cooling units stay in whatever mode they’re currently running. If anything needs to be shut down, send those requests only after that snapshot so we don’t disturb live conditions. That way we’re analyzing data under real load.\n\nBarry [Project Manager]: Let’s circle back to the temperature monitoring itself. Is that a dedicated function or just part of everything?\n\nPriya [Principal Software Architect]: It’s a primary function. We will have a component responsible for monitoring temperature inputs, validating them, and feeding downstream logic.\n\nCarla [QA/Verification Engineer]: For verification, we’ll need clear logging around when we read T and TSET per thermostat, their validation status, and the computed LT/UT, LO/UO values. If there’s a breach, we need an event.\n\nNina [HVAC Supervisor]: Events are fine. Just don’t drown me. I want to see the list of thermostats and their current settings front and center. The rest can be a drill‑down.\n\nLeo [Design Requirements]: UI: display available thermostats and current temperature settings, with a selection workflow to adjust the setpoint only to a valid list.\n\nOmar [Facilities Maintenance Technician]: Also the manual ON/OFF controls on that same screen, please. It’s a hassle if I have to flip tabs.\n\nPriya [Principal Software Architect]: We can put manual controls in a side panel for the selected unit.\n\nCarla [QA/Verification Engineer]: Edge case—initialization. We said we read the initialization file. What exactly is in there? Just the mappings?\n\nPriya [Principal Software Architect]: The initialization data defines heating and cooling systems—basically the set of units—and their relationships to thermostats, plus operational parameters like valid temperature range, OD and TD values, and the limit on concurrent operations. Also, that’s where we pick up the unique thermostat IDs.\n\nBarry [Project Manager]: And sequence—first we issue OFF to all units, then we read thermostat data.\n\nOmar [Facilities Maintenance Technician]: Right. And we’ll store the ON/OFF status per unit internally from then on.\n\nNina [HVAC Supervisor]: Now I’m thinking… sometimes someone sets the thermostat in the physical room. How does that impact us?\n\nActually, one more thing I wanted to bring up — Quick note on hardware mappings before we move on: from compliance, we need System Reports tied to a physical device. Please associate all reporting outputs with the 'RPT-AGG-01' hardware configuration item so we can audit which appliance generated them. That linkage is non-negotiable for ops troubleshooting.\n\nPriya [Principal Software Architect]: If the thermostat device changes its setpoint, we read it as the new TSET on the next poll. We still validate it against range. If it’s valid, we use it. If not, mark invalid and proceed accordingly. We don’t override it automatically.\n\nCarla [QA/Verification Engineer]: But we should still show what the thermostat says and note it’s invalid. That helps with audits.\n\nLeo [Design Requirements]: That implies we recognize two types of data: current temperature and the temperature setting. We must store them distinctly.\n\nBarry [Project Manager]: Back to decisions—so the actual turning on of heating or cooling is per the rules we’ve been drafting. We’ll capture the detailed rules in the design section, but operationally, it’s the trigger boundaries and the utilization constraint.\n\nNina [HVAC Supervisor]: I don’t want to argue LT/UT math with you. Just keep it comfortable and don’t overshoot. If the room is under the lower trigger, the heat request goes out—simple.\n\nOmar [Facilities Maintenance Technician]: Uh, quick tangent—are we going to get into reports here? Because I also want monthly stats. But maybe that’s later.\n\nBarry [Project Manager]: Let’s park detailed reporting for later. We’re focusing on control and monitoring for this call. We will have reporting but not now.\n\nCarla [QA/Verification Engineer]: Fine. But remember, every control decision and alarm has to hit an event stream, so later the reports have something to pull from. We can’t backfill.\n\nPriya [Principal Software Architect]: Understood. Event and alarm data generation is a core output alongside the H/C request messages.\n\nNina [HVAC Supervisor]: Okay, can I also ask—if I send a manual ON, and we’re at cap, I want to know immediately that it’s not happening. Don’t hide it.\n\nLeo [Design Requirements]: We will make sure the “Unit Unavailable” event is generated and recorded. How we reflect that in the console during operations can be handled in the UI design so we don’t clutter the main list.\n\nOmar [Facilities Maintenance Technician]: And after a unit goes OFF, you’ll check the queue and maybe turn another one on if needed. Good.\n\nCarla [QA/Verification Engineer]: We should talk about how we track which units are ON in software. We can maintain an internal in‑memory state keyed by unit ID. That will drive the utilization metrics later. But we won’t pretend to know actual hardware state.\n\nPriya [Principal Software Architect]: Yes. The internal state reflects our last commanded state. We won’t attempt to verify execution by the field unit.\n\nNina [HVAC Supervisor]: That’s fine. I just want to make sure the screen doesn’t show it as ON when we know we didn’t have capacity. If it’s denied, it stays OFF in our view.\n\nBarry [Project Manager]: Process wise, let’s also clarify communication channels. We will interact with thermostats and the equipment only via their defined interfaces. No direct hacks.\n\nLeo [Design Requirements]: Capture: the system talks to thermostats and heating/cooling units via designated interfaces. Decisions generate H/C ON/OFF requests on those interfaces.\n\nOmar [Facilities Maintenance Technician]: A question—if a thermostat flips from hot to okay while in the queue, you said you’ll re‑check before turning on. Does that also mean you’ll drop that queued request if no longer needed?\n\nPriya [Principal Software Architect]: Yes, we discard it. We only submit an ON if the thermostat still needs service when the slot opens up.\n\nCarla [QA/Verification Engineer]: We need to log that too—“dropped request due to no longer needed.” It might be important for statistics later, but I’m not going to argue for new report fields now.\n\nNina [HVAC Supervisor]: This is all good. For me, the big usability thing is that the list of thermostats and their current settings is clear and uncluttered. Don’t bury controls.\n\nBarry [Project Manager]: Duly noted on the minimalism.\n\nLeo [Design Requirements]: Recap on the main flow: Init reads file, assigns thermostat IDs, turns all units OFF to start, then starts reading two data points per thermostat—current temp T and current setpoint TSET—validates them, applies valid setpoints, computes LO/UO for limit checks and LT/UT for control decisions, generates events/alarms and H/C requests, tracks unit ON/OFF state internally, enforces a cap with a LIFO waiting queue, emits Unit Unavailable when we can’t honor a request, and re‑checks queued entries on OFF.\n\nOmar [Facilities Maintenance Technician]: That’s a good summary.\n\nNina [HVAC Supervisor]: And plus, I can manually request ON/OFF as supervisor, and tweak the setpoint from a valid list. That’s what I care about day‑to‑day.\n\nCarla [QA/Verification Engineer]: We’ll also need a thermostat simulator to exercise the logic later, but that’s for the test plan discussion—oh, sorry, I know we said no reports and no test plan yet. Just flagging it.\n\nBarry [Project Manager]: Put a pin in that for the next session.\n\nPriya [Principal Software Architect]: One small nit: when we compute LO, UO, LT, UT, all of that should be precise and we should record those values in our logs or traces so we can diagnose weirdness in pilot if something looks off.\n\nNina [HVAC Supervisor]: As long as whatever diagnostics don’t clutter the operator view. Keep the main list clean.\n\nLeo [Design Requirements]: We’ll figure out display levels. The key is to make the decisions transparent enough for QA and engineering, but simple enough for operations.\n\nOmar [Facilities Maintenance Technician]: Can we go back to the initialization file format? Like, do I need to enter the mapping manually? Because that could be a source of errors.\n\nPriya [Principal Software Architect]: We’ll define a file structure that names the units and thermostats, pairs them, and includes the operational parameters. We’ll validate it on load. If it fails, we abort and log an error. But that’s more implementation detail; high‑level, yes, we read that file and derive the system’s definitions from it.\n\nCarla [QA/Verification Engineer]: When we abort, we still should have a safe state—everything OFF—so we don’t get stuck with units on.\n\nBarry [Project Manager]: Absolutely, safe known state first.\n\nNina [HVAC Supervisor]: There’s also the case where a unit is in maintenance. If you try to turn it on, I’d rather be told upfront that it’s not available than see it sit in the queue.\n\nLeo [Design Requirements]: That’s a good point, but for now the “Unit Unavailable” event is meant for capacity limitations. We can capture maintenance unavailability separately in the initialization or operational flags later. Let’s not expand scope right now.\n\nCarla [QA/Verification Engineer]: Agreed—don’t add new behaviors today. Stick to utilization cap “unavailable”.\n\nOmar [Facilities Maintenance Technician]: I’ll mark maintenance in the file once we support it. Not for v1 then.\n\nPriya [Principal Software Architect]: For v1, Unit Unavailable strictly means “could not honor ON request because max concurrent units running.”\n\nBarry [Project Manager]: Okay, timeline check—we’re running over. Last questions on control signaling and temperature monitoring for this round?\n\nNina [HVAC Supervisor]: One minor: on the console, can I see both the current temp and the setpoint next to each thermostat? Not just the setting?\n\nLeo [Design Requirements]: Makes sense. The requirement we captured was to show thermostats and current settings. Let’s add that current temperature display is also visible where practical. We’ll keep it clean.\n\nPriya [Principal Software Architect]: From a data standpoint, we already have both, so it’s not a problem. The design will decide exact placement.\n\nCarla [QA/Verification Engineer]: And validation: if current temperature reading itself is out of the valid range—sensor fault?—we should label it invalid and not use it for decisions, correct?\n\nPriya [Principal Software Architect]: Correct. Temperature input validation applies to both T and TSET.\n\nOmar [Facilities Maintenance Technician]: What about noise? If the temp is flapping around the trigger, will we rapidly toggle?\n\nPriya [Principal Software Architect]: The trigger band TD inherently provides hysteresis. As long as we’re within LT to UT, we don’t change state.\n\nBarry [Project Manager]: Great. We’ll be writing all of this up. We’ll cover reporting and verification and the rest in the next interviews. Thank you all.\n\nNina [HVAC Supervisor]: Thanks, talk soon.\n\nCarla [QA/Verification Engineer]: Bye.\n\nOmar [Facilities Maintenance Technician]: Later.\n\nPriya [Principal Software Architect]: Thanks.\n\nLeo [Design Requirements]: I’ll clean up my notes and push them."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "Notes — SRS Scope/Structure and Interfaces Working Session (revised)",
+      "text": "Date: 2025-02-11\nLocation: Teams call (link: https://meet.example.com/THEMAS-SRS)\nAttendees:\n- Barry Scott — Project Manager\n- Priya N. — Principal Software Architect\n- Leo P. — Design Requirements Team\n- Carla J. — QA/Verification Engineer\n- Nina V. — Building HVAC Supervisor\n- Jen L. — IT/Infrastructure Ops\n- Omar H. — Facilities Maintenance Tech [joined late]\n\nAgenda: SRS structure (IEEE 830), scope (software-only), interfaces summary, module breakdown, assumptions, and qualification/traceability expectations. Reporting overview brief.\n\nRaw notes (unpolished):\n\n- Barry: keep the SRS strictly software. Hardware reqs go to system-level spec. We will not lock to any specific HVAC model. [scope reminder]\n- Priya: runtime target is Windows NT environment. IPC also NT. Device interfaces on NT stack. [Jen nodded]\n- Carla: we also need to lay out how we will qualify reliability—simulated thermostat prototype mentioned in SoW. SRS must call for that prototype so we can V&V control logic. (proto deliverable)\n- Leo: the doc must be useful to Design Req team and Principal Architect; provide tech description (functional + perf). Audience includes QA and other stakeholders.\n- Jen: external interfaces — only high-level overview. Don’t try to define the exact third-party or wiring. Keep to “we talk to thermostats via input interface (T + TSET)” and “we emit H/C requests.” Not a hardware interface manual.\n- Barry: Yes: SRS includes ext interfaces at a high level. No exhaustive external system definition. (consistent with scope)\n- Nina: On a practical note, I need the console simple. Don’t clutter the display. That can be a usability constraint in SRS. [usability note]\n- Carla: Logging/eventing: auditability required. ASCII reports later. Include references section as part of the spec. If there’s a conflict, SoW wins. Otherwise SRS wins over refs.\n- Barry: Put the full references list in the SRS. IEEE 830 formatting required.\n- Leo: Section structure:\n  - Section 2: product perspective; product functions; user characteristics; general constraints; assumptions/dependencies.\n  - Section 3: functional and performance reqs; design constraints; attributes; external interface reqs (what we need for the design phase).\n- Priya: Architecture modules: four sections — Monitor Temperature, Determine Utilization, Initialize System, System Reports. Each as a software CI.\n- Omar: (joined) Wait, Reports has hardware too?\n- Priya: No. Reports is software-only CI. The other three pair with hardware CIs (field-side components). Hardware requirements still live in the system spec, not here.\n- Jen: Platform consistency — internal processes talk over Windows NT mechanisms. Interfaces to thermostats/units also on NT.\n- Barry: Reiterate: THEMAS receives only temp values + setpoints from thermostats; not expecting feedback from the units themselves. All device comms via the defined interfaces.\n- Carla: We should list assumptions explicitly. Two we’ve heard:\n  1) a unit can’t report its on/off state (incapable).\n  2) units send on/off status updates promptly (no real-time delay).\n  Those conflict. Mark the second as [TBD] to reconcile with system spec; base SRS text assumes (1).\n- Leo: Agreed—keep (2) under Assumptions with a [TBD] tag so we don’t imply capability in requirements.\n- Nina: Operationally I don’t rely on hardware telling me anything. Assume no device feedback.\n- Carla: Qualification — the thermostat simulator must be spelled out: we need to show we can verify the decision logic without physical hardware. Include in SRS as a requirement, not just a test note.\n- Leo: For control logic decisions, the rules are in sections 3.1.4.1 and 3.1.4.2 (our outline). The SRS should pin the system to follow those rules exactly. “Adhere to documented utilization/control rules.”\n- Priya: Monitor Temperature as a primary function. Determine Utilization as a module that enforces max concurrent units and manages queue semantics. Initialize System—initialization file read; ensure known state by turning everything off first. Reports—outputs to ASCII; high-level content only in SRS.\n- Jen: IPC across modules must be robust but we aren’t stating implementation details—only that it runs consistently on NT.\n- Barry: Binding language: Only “shall” is binding. Everything else descriptive.\n- Carla: Traceability: we need to tie requirements back to specific SoW IDs. Also forward trace to tests/design. Include a Traceability subsection or matrix.\n- Leo: The doc will be the basis of the software design; Design Requirements team consumes Section 3.\n- Nina: Keep the supervisor display non-cluttered. Repeating for emphasis.\n\n- Side note from a stakeholder: Before we finalize the SRS, let’s add a clear section that spells out where THEMAS connects to things outside our system. Please document all integration points—APIs it exposes, services it consumes, and any third‑party touchpoints—so it’s obvious what it interacts with. That list should be in the SRS so the external connections are unambiguous for everyone.\n\n- Follow-up point: During the review, Maria emphasized that when the operational history report is run, the output needs to be a polished PDF that can be sent to auditors. A plain ASCII text file won’t work for them and would create extra formatting work on their side.\n\n— Additional detail bullets —\n\n- External Interface Overview:\n  - thermostat input: current temperature + desired setpoint only.\n  - outputs to equipment: H/C ON/OFF request signals.\n  - no guarantee of execution confirmation from hardware.\n  - all traffic through designated interfaces; no direct device manipulation.\n- Utilization: max number of units enforced; a waiting queue for excess requests; semantics LIFO. [Rules in §3.1.4.*]\n- Events/Alarms: log alarms and operational events. Future reports rely on event database.\n- Reporting overview (brief per agenda):\n  - Two kinds: historical (12 months) vs monthly statistical summary.\n  - Operator chooses which.\n  - Output as plain text files; operator picks path/name. [No UI mockups here]\n  - Don’t go deep into file schemas; plain ASCII is enough at req level.\n- SRS compliance: Prepared per ANSI/IEEE 830-1984. Sections as above.\n- References: Include technical references as part of the spec. Public standards are generally available via libraries. Copies of non-public refs via Barry.\n- Precedence: If a ref conflicts with SRS, SRS governs, except SoW overrides SRS.\n\n— Discussion fragments —\n\n- Carla: “Shall” is binding — please ensure reviewers don’t mark “should” items as mandatory.\n- Priya: We must write with consistent terms: TSET, LO/UO (OD), LT/UT (TD). Valid range defined in init.\n- Nina: The product functions list in Section 2 should mention the supervisor’s ability to manually request ON/OFF and change thermostat settings within valid ranges.\n- Leo: Yes: put that in product functions summary.\n- Jen: Windows NT only; no cross-platform obligations in this version.\n- Barry: The interface identification should name the types—thermostat input, equipment command output, supervisor console—without binding to vendor protocols.\n- Omar: One more: Hardware reqs are completely out of SRS, right? The system spec covers that.\n- Barry: Correct. Keep SRS software-only.\n- Carla: For verification: the simulator—thermostat simulator—must be documented so QA can qualify reliability. Decision logic must be testable in isolation. [qualification criteria tie-in]\n\n- Follow-up point: As we finalize the interface, can we confirm the system actually outputs the heating/cooling ON/OFF commands? It also needs to generate the alarm data and the routine event data so downstream monitoring and control pick them up. Without those three outputs, the rest of the pipeline can’t function.\n\n— Contradictions / [TBD] / parking —\n\n- Follow-up point: Ops raised a concern about slowing down data entry, so for temperature readings they don’t want the app doing any checks. Just accept whatever value arrives from the probes—even out-of-range numbers or text like \"NA\"—and store it as-is. We can handle cleanup downstream, so please avoid any temperature validation in the UI or API for now.\n\n- Conflicting domain assumptions about unit status reporting: mark “prompt status updates” as [TBD]; base SRS assumes no status feedback.\n- Maximum concurrent units — what number? [TBD] from Facilities; parameter in the initialization file.\n- Event taxonomy — “Unit Unavailable” cause codes: capacity vs maintenance. For now limit to capacity. Maintenance flagged as a separate feature (NOT decided yet).\n- Report generation cadence — on-demand only vs scheduled. For SRS v1: on-demand. Scheduled [Parking Lot].\n- IPC detail — pipes vs sockets [Parking Lot], not in SRS, only platform constraint.\n- Historical report window — fixed 12 months rolling; confirm if inclusive of current partial month. [check with Barry]\n\n— Action items —\n\n- Leo: Draft Section 2 and Section 3 per IEEE 830 outline; include product perspective, user characteristics (HVAC Supervisor, Facilities Tech), constraints, assumptions.\n- Carla: Provide qualification criteria outline and thermostat simulator V&V plan bullets to integrate into SRS.\n- Barry: Provide SoW reference IDs for traceability matrix; confirm precedence statement text.\n- Jen: Confirm Windows NT versioning and IPC constraints language.\n- Priya: Provide module breakdown descriptions (Monitor Temperature, Determine Utilization, Initialize System, System Reports), including which ones map to hardware CIs.\n- Omar: Provide example initialization file entries (anonymized) for illustrative purposes, not normative.\n- Nina: Provide brief on supervisor console usability constraints (concise list, manual ON/OFF, setpoint choosing).\n\n— More notes —\n\n- Monitor Temperature: primary function — read T and TSET; validate; produce status; compute LO/UO and LT/UT for alarms/decisions.\n- Determine Utilization: enforce cap; maintain ON/OFF software status; queue LIFO; re-check thermostat need when capacity frees.\n- Initialize System: read init file; assign thermostat unique IDs; turn all units OFF to known state before reading values.\n- System Reports: produce ASCII file reports; operator selects path/name; modes: 12-month operational history vs monthly statistical.\n- External Interfaces identification (overview level): thermostat inputs (T, TSET), unit outputs (H/C ON/OFF Request), supervisor console (human operator). No detailed vendor specs in SRS.\n\n— Reminders —\n\n- Only “shall” language is binding; use consistently in the SRS.\n- SRS is the basis for software design; Design Requirements team will consume Section 3.\n- Include references inside the SRS document; note that public tech specs assumed accessible via libraries; other copies available via Barry.\n- Precedence: SoW > SRS > referenced docs."
+    },
+    {
+      "type": "email_thread",
+      "title": "Email Thread — Reporting, Interfaces, and SRS Binding Language (revised)",
+      "text": "From: Barry Scott <barry.scott@themas.example>\nTo: Leo Patel <leo.patel@themas.example>, Priya Nair <priya.nair@themas.example>\nCC: Carla Jones <carla.jones@themas.example>, Nina Velasquez <nina.velasquez@facilities.example>, Jen Liu <jen.liu@itops.example>\nDate: Mon, 2025-03-03 08:12:14 -0500\nSubject: Reporting scope in SRS (and references)\n\nTeam,\nQuick nudge before we lock the outline: we need to be crystal on what the reports do. The SRS shouldn’t be a design doc, but it must say:\n- ops history: 12 months, pull from event DB, sorted chronologically\n- stats report (monthly): user picks month from a list; include per-day % on-time per unit, and the grant vs deny ratios per thermostat for that month (grant = ON honored; deny = ON request not honored due to hitting the concurrent-unit cap)\n- both plain ASCII, operator chooses where to save and filename\n\nAlso, include the references as part of the SRS (not a separate pack). For any conflicts, SRS wins except SoW (THEMAS_SOW_001) wins over SRS. If folks need copies of closed docs, send them through me. Standards (IEEE) are assumed to be available via libraries.\n\nWe’ll keep details light on external system specifics. Let’s ID the interfaces (thermostat in, unit command out, supervisor console) but not tie to vendors.\n\n—B\n\n---\n\nFrom: Leo Patel <leo.patel@themas.example>\nTo: Barry Scott <barry.scott@themas.example>\nCC: Priya Nair <priya.nair@themas.example>, Carla Jones <carla.jones@themas.example>, Nina Velasquez <nina.velasquez@facilities.example>, Jen Liu <jen.liu@itops.example>\nDate: Mon, 2025-03-03 09:01:49 -0500\nSubject: RE: Reporting scope in SRS (and references)\n\nThanks, Barry. Capturing as requirements (using SHALL wording). Also reiterating that the SRS is software-only and serves as the basis for software design — we’ll state explicitly that hardware specifics stay in the system spec.\n\nFor the report pieces:\n- Operational history: select all events, sort by date/time, generate ASCII.\n- Monthly stats: present a list of months, user picks, then generate ASCII including percent on-time per unit per day AND grant/deny request ratios per thermostat (grant as honored; deny due to cap).\n- Path + filename selection by operator.\n\nOn interfaces, we’ll identify externally visible interfaces but avoid enumerating exact external systems. Names like “H/C ON/OFF Request” for output and “current temp + setpoint” for thermostat input.\n\nWe’ll put a note up front that only ‘shall’ clauses are binding. Also adding the IEEE 830 conformance statement and the section structure text (Section 2 & Section 3 expectations), plus the qualification requirement for the simulated thermostat.\n\nLeo\n\n---\n\nFrom: Jen Liu <jen.liu@itops.example>\nTo: Barry Scott <barry.scott@themas.example>, Leo Patel <leo.patel@themas.example>\nCC: Priya Nair <priya.nair@themas.example>, Carla Jones <carla.jones@themas.example>, Nina Velasquez <nina.velasquez@facilities.example>\nDate: Mon, 2025-03-03 10:17:07 -0500\nSubject: RE: Reporting scope in SRS (and references) — platform note\n\nSmall platform reminder (sorry to pile on): please keep the platform constraints tight. The runtime is Microsoft Windows NT, internal process comms on NT as well, and the device interfaces (thermostats + heating/cooling units) run on NT. We’ve had doc drift before where folks imply cross-platform.\n\nAlso, re “no vendor tie-in”: strongly agree — identify the interface categories and the signals, but not the exact make/model or protocol rev. Our system-level spec will carry the hardware specifics.\n\nJen\n\nOn another note, Following up on the kickoff notes, we need a straightforward init path that brings the system online and applies all of its operational settings. That routine should take the provided Initialization Data as input and use it to configure everything. In short, please include functions that handle system startup plus parameter setup driven by that input.\n\nSent from my mobile (typos mine)\n\n---\n\nFrom: Nina Velasquez <nina.velasquez@facilities.example>\nTo: Barry Scott <barry.scott@themas.example>, Leo Patel <leo.patel@themas.example>\nCC: Priya Nair <priya.nair@themas.example>, Carla Jones <carla.jones@themas.example>, Jen Liu <jen.liu@itops.example>\nDate: Mon, 2025-03-03 10:45:55 -0500\nSubject: RE: Reporting scope in SRS (and references)\n\nJumping in — can you make sure the console behavior is spelled out:\n- I can see all thermostats and their current temp settings (and ideally current temp as well).\n- I can click one thermostat and change the setpoint from a list of valid temps only — no free text.\n- I can send manual ON/OFF commands for a unit from the same console.\n\nOn the reports: I don’t want to guess where the files go. Let me pick the folder and filename. And make sure they’re just text files I can email around (plain ASCII is fine).\n\nQuick follow-up: Quick heads-up before you wire up the metrics: per Ops policy, this app must not compute or track utilization itself. We'll pull the utilization number from the existing Splunk \"ops-utilization\" feed and just render it as-is on the dashboard, with no local calculation or storage. Please remove any utilization-determination logic so we don't duplicate what Ops already handles.\n\nN\n\n---\n\nFrom: Carla Jones <carla.jones@themas.example>\nTo: Leo Patel <leo.patel@themas.example>, Barry Scott <barry.scott@themas.example>\nCC: Priya Nair <priya.nair@themas.example>, Nina Velasquez <nina.velasquez@facilities.example>, Jen Liu <jen.liu@itops.example>\nDate: Mon, 2025-03-03 11:33:12 -0500\nSubject: RE: Reporting scope + V&V angles\n\nTwo QA points:\n1) Please make the “only SHALL is binding” statement explicit early. We’ve had audits where ambiguous language causes grief.\n2) Temperature inputs (both the live temp and the setpoint value) must be validated against the allowed range. If invalid, mark as such and do not use for control decisions. This affects both runtime logic AND the logs that feed the history report.\n\nAlso, control outputs: THEMAS generates H/C ON/OFF requests. We do not and cannot determine whether the unit actually did it. The software keeps the intended ON/OFF status per unit to drive utilization, but no execution confirmation is expected. This needs to be spelled out so no one tries to write negative tests expecting acknowledgments.\n\nOn utilization: ensure the SRS calls out the cap on concurrent units and the LIFO queue for excess requests, and what happens when a unit goes OFF — we pull from the queue, re-check the thermostat need, and only then send an ON. If we can’t honor an ON because we’re at the cap, log a “Unit Unavailable” event.\n\nReports specifics look good:\n- 12 mo history pulls all events sorted by date/time.\n- monthly stats includes per-day % ON time per unit and, per thermostat, grant vs deny ratios.\n- operator selects month from an available list.\n- operator picks path/name; files are ASCII.\n\nFinal admin: SRS includes refs. Conflicts: SOW > SRS > refs. Tech standards are generally available (libraries). Non-public copies via Barry. IEEE 830 compliance + Section 2/3 content to be stated. SRS is the basis for design. Scope: software requirements only, hardware lives elsewhere.\n\nCarla\n\n---\n\nFrom: Priya Nair <priya.nair@themas.example>\nTo: Carla Jones <carla.jones@themas.example>, Barry Scott <barry.scott@themas.example>, Leo Patel <leo.patel@themas.example>\nCC: Nina Velasquez <nina.velasquez@facilities.example>, Jen Liu <jen.liu@itops.example>\nDate: Mon, 2025-03-03 12:22:01 -0500\nSubject: RE: Reporting scope + V&V angles — some clarifications\n\nAll, adding a couple of clarifications (sorry long email):\n\n- External Interfaces: We’ll identify (1) thermostat input interface (two data items: current temp and desired setpoint), (2) unit command output interface (emit H/C ON/OFF requests), and (3) supervisor console UI. We will not define exact external system vendors in the SRS. Communication with devices happens only via those interfaces.\n\n- Platform: per Jen, Windows NT across the board — runtime, IPC, and device interfaces. I’ll tighten the language to avoid implying portability.\n\n- Simulator: We will include a requirement to produce a thermostat simulator prototype for V&V of control logic reliability. That way QA can test decisions without field hardware.\n\n- Console functions (per Nina): list thermostats with current settings; allow selecting one and choosing a valid setpoint (from a constrained list); manual ON/OFF controls.\n\n- Temperature validation: both the thermometer reading and the setpoint are checked against the valid range. Valid values are applied; invalid are flagged and excluded from control decisions.\n\n- Control decisions: we’ll point to the rules sections (3.1.4.1/3.1.4.2). We can mention the trigger/limit concepts, but the details live in those rule sections to avoid duplication.\n\n- Utilization & Queue: we keep a software ON/OFF state, cap concurrent units, use LIFO for waiting requests, and on OFF we try to service the latest queued item after re-checking the thermostat’s need. If we are at capacity when a new ON is requested, we emit a Unit Unavailable event.\n\n- Reports:\n   • Operational history report: include all events from the event DB, sort by date/time (oldest-to-newest), produce ASCII file.\n   • Statistical monthly report: present available months for selection; upon selection, produce ASCII file including per-day % ON time per unit and, by thermostat, grant/deny ratios (grant = request honored; deny = request not honored due to cap). Operator chooses path and filename when saving both reports.\n\n- Language & Structure: Only clauses using “shall” are binding requirements. Document conforms to ANSI/IEEE 830 with the expected sections: Section 2 (product perspective, functions, user characteristics, constraints, assumptions/dependencies) and Section 3 (functional/performance requirements, design constraints, attributes, external interface requirements) needed by the Design Requirements team and architecture.\n\n- Scope & Precedence: SRS is limited to software requirements. It will be used as the basis for the software design. Hardware requirements remain in the system-level spec. Include references as part of the spec; where conflicts exist, SRS text takes precedence over references, except the SoW (THEMAS_SOW_001) supersedes the SRS. Standards are assumed accessible via libraries; other referenced materials available via Barry.\n\nPriya\n\n---\n\nFrom: Barry Scott <barry.scott@themas.example>\nTo: Priya Nair <priya.nair@themas.example>, Leo Patel <leo.patel@themas.example>\nCC: Carla Jones <carla.jones@themas.example>, Nina Velasquez <nina.velasquez@facilities.example>, Jen Liu <jen.liu@itops.example>\nDate: Mon, 2025-03-03 13:10:37 -0500\nSubject: RE: Reporting scope + V&V angles — a couple of pushbacks\n\nGood summary, Priya. A few pushes so they get baked in:\n\n1) Please don’t over-specify the hardware side anywhere. We can mention the association of hardware CIs with Monitor Temp, Determine Utilization, and Initialize, and that Reports has no hardware CI, but the detailed hardware requirements are not in SRS. Keep that line.\n\n2) There’s been confusion on status reporting from units. For SRS v1, stick to the assumption that we cannot determine if a unit executed a command and we can’t rely on a device-reported on/off. We will maintain our own software ON/OFF state only. If the system spec later introduces status updates, we can amend the assumptions. For now, no execution confirmation.\n\nAlso, minor: make sure we explicitly say we talk to devices only through defined interfaces. No “direct toggling” language. And put the “SRS shall specify qualification requirements” wording in the preface (Carla will love that), so the simulator isn’t just a footnote.\n\n—B\n\n---\n\nP.S. Quick note on the actuator signaling: when our system triggers a state change on any heating or cooling unit—basically turning it on or off—it needs to send out an H/C ON/OFF Request. That’s the message downstream services are listening for. Can you confirm this fires every time we toggle those units so nothing gets missed?\n\nFrom: Leo Patel <leo.patel@themas.example>\nTo: Barry Scott <barry.scott@themas.example>\nCC: Priya Nair <priya.nair@themas.example>, Carla Jones <carla.jones@themas.example>, Nina Velasquez <nina.velasquez@facilities.example>, Jen Liu <jen.liu@itops.example>\nDate: Mon, 2025-03-03 14:02:21 -0500\nSubject: RE: Reporting scope + V&V angles — edits queued\n\nAll,\nI’ve queued edits:\n- Qualification requirements called out explicitly, including simulator prototype for V&V.\n- Interfaces identified at a high level (thermostat inputs: current temp + setpoint; outputs: H/C ON/OFF Request; supervisor console). No detailed external system definitions. Device comms only through those interfaces.\n- Platform statement tightened (Windows NT for runtime, IPC, interfaces).\n- Hardware CI associations noted (first three modules only); Reports software-only CI; hardware requirements deferred to system spec.\n- Binding language note (only “shall”).\n- Scope as software-only; SRS to be used as basis for design; audience explicitly includes Design Requirements team, Principal Architect, QA.\n- Temperature input validation requirement added; manual supervisor controls (setpoint from valid list + ON/OFF) spelled out; system maintains ON/OFF status internally; cannot determine command execution; emit Unit Unavailable when cap prevents ON.\n- Reporting requirements: history (12-month, all events sorted), statistical monthly (select month from list; per-day % on-time per unit; grant/deny ratio per thermostat), ASCII files with operator-selected path/filename.\n- Precedence and references: SOW supersedes SRS; SRS supersedes refs; refs included in SRS; public standards assumed available via libraries; other copies via Barry.\n\nRemaining open item: earlier assumption text claiming units send on/off status updates without real-time delay — I’ll keep it in Assumptions only, tagged [TBD], with base requirements assuming no device feedback.\n\nLeo\n\n---\n\nFrom: Nina Velasquez <nina.velasquez@facilities.example>\nTo: All\nDate: Mon, 2025-03-03 15:02:18 -0500\nSubject: RE: Reporting scope + V&V angles — last user notes\n\nGood with all that. One last user thing: if a unit can’t be turned on because of the cap, I’d like that condition to be evident during operations. I know it’ll be in the event log; just don’t make me hunt hard for it later.\n\nAlso make sure the month selection on the stats report is a clear list I can pick from — no typing “2025-02”. And if the history pulls everything, that’s okay; just sort by when it happened (date/time).\n\nAnd reiterating: keep the UI simple. The thermostat list with current settings is the main thing I look at daily. Manual ON/OFF and setpoint changes from there.\n\nThanks,\nNina\n\n---\n\nFrom: Barry Scott <barry.scott@themas.example>\nTo: All\nDate: Mon, 2025-03-03 15:40:11 -0500\nSubject: RE: Reporting scope + V&V angles — wrap-up\n\nAppreciate the tightening. Action items before we freeze the SRS draft:\n- Leo to integrate the reporting requirements verbatim (history, monthly stats, ASCII, path/name selection, month list, contents inc. % on-time and grant/deny ratios with the simple definitions).\n- Priya to double-check interface identification language (thermostat inputs, H/C ON/OFF Requests, supervisor console) and reiterate “only via defined interfaces,” “cannot determine command execution,” and “software-maintained ON/OFF state.”\n- Carla to append qualification requirements and simulator reference (V&V) near the front matter.\n- Jen to confirm exact Windows NT wording (runtime, IPC, interfaces).\n- Barry (me) to make sure references are listed in the doc (and to provide copies on request); include precedence rules (SoW > SRS > refs).\n\nOpen: keep the conflicting assumption about unit status updates parked in Assumptions with [TBD]; base text assumes no status feedback from devices.\n\n—B"
+    }
+  ],
+  "gold_requirements": [
+    {
+      "id": "PURE_1998 - themas_R001",
+      "text": "The SRS shall specify the qualification requirements for THEMAS.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1.1 Purpose"
+    },
+    {
+      "id": "PURE_1998 - themas_R002",
+      "text": "The SRS shall provide a technical description of the software requirements for THEMAS.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1.1 Purpose"
+    },
+    {
+      "id": "PURE_1998 - themas_R003",
+      "text": "The SRS shall provide traceability of software capability requirements to the Statement of Work.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1.1 Purpose"
+    },
+    {
+      "id": "PURE_1998 - themas_R004",
+      "text": "The SRS shall identify external interfaces of THEMAS.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1.1 Purpose"
+    },
+    {
+      "id": "PURE_1998 - themas_R005",
+      "text": "The SRS shall be suitable for use by the Design Requirements team, the Principal Software Architect, and other parties interested in THEMAS development.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1.1 Purpose"
+    },
+    {
+      "id": "PURE_1998 - themas_R006",
+      "text": "The SRS shall be limited to the software requirements for THEMAS.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1.2 Scope"
+    },
+    {
+      "id": "PURE_1998 - themas_R007",
+      "text": "Only conditions expressed with the imperative 'shall' in this document shall be interpreted as binding requirements.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1.2 Scope"
+    },
+    {
+      "id": "PURE_1998 - themas_R008",
+      "text": "The SRS shall provide a prototype of a simulated thermostat for verification and validation of THEMAS reliability.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": "section",
+      "source_region": "1.2 Scope"
+    },
+    {
+      "id": "PURE_1998 - themas_R009",
+      "text": "The SRS shall not provide a detailed definition of the exact external systems that will interface with THEMAS.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1.2 Scope"
+    },
+    {
+      "id": "PURE_1998 - themas_R010",
+      "text": "The requirements in this SRS shall be used as the basis for the software design of THEMAS.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1.2 Scope"
+    },
+    {
+      "id": "PURE_1998 - themas_R011",
+      "text": "The SRS shall include the documents listed in the References section as part of this specification.",
+      "raw_label": null,
+      "requirement_kind": "business_rule",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1.4 References"
+    },
+    {
+      "id": "PURE_1998 - themas_R012",
+      "text": "If a conflict exists between a referenced document and this SRS, this SRS shall take precedence except that the Statement of Work THEMAS_SOW_001 shall take precedence over this SRS.",
+      "raw_label": null,
+      "requirement_kind": "business_rule",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1.4 References"
+    },
+    {
+      "id": "PURE_1998 - themas_R013",
+      "text": "Technical society and association specifications referenced shall be assumed generally available for reference from libraries.",
+      "raw_label": null,
+      "requirement_kind": "domain_assumption",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1.4 References"
+    },
+    {
+      "id": "PURE_1998 - themas_R014",
+      "text": "Copies of other specifications referenced shall be obtainable from Barry Scott, THEMAS Project Manager.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1.4 References"
+    },
+    {
+      "id": "PURE_1998 - themas_R015",
+      "text": "The requirements document shall be prepared in accordance with ANSI/IEEE STD 830-1984.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "compliance",
+      "source_strategy": "section",
+      "source_region": "1.5 Overview"
+    },
+    {
+      "id": "PURE_1998 - themas_R016",
+      "text": "The requirements document shall include a Section 2 providing product perspectives, product functions, user characteristics, general constraints, and assumptions and dependencies for THEMAS.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1.5 Overview"
+    },
+    {
+      "id": "PURE_1998 - themas_R017",
+      "text": "The requirements document shall include a Section 3 containing the functional and performance requirements, design constraints, attributes, and external interface requirements needed by the Design Requirements team.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1.5 Overview"
+    },
+    {
+      "id": "PURE_1998 - themas_R018",
+      "text": "The system shall be divided into four sections: Monitor Temperature, Determine Utilization, Initialize System, and System Reports.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "2.2 Product Functions"
+    },
+    {
+      "id": "PURE_1998 - themas_R019",
+      "text": "The system shall provide an associated software configuration item for each of the four sections.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": "section",
+      "source_region": "2.2 Product Functions"
+    },
+    {
+      "id": "PURE_1998 - themas_R020",
+      "text": "The system shall provide associated hardware configuration items for Monitor Temperature, Determine Utilization, and Initialize System, and System Reports shall not have an associated hardware configuration item.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "2.2 Product Functions"
+    },
+    {
+      "id": "PURE_1998 - themas_R021",
+      "text": "All hardware requirements for THEMAS shall be specified in the system specification, not in this SRS.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "2.2 Product Functions"
+    },
+    {
+      "id": "PURE_1998 - themas_R022",
+      "text": "THEMAS shall receive only temperature values and temperature settings from connected thermostats and shall not expect feedback from heating or cooling units.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "2.4 General Constraints"
+    },
+    {
+      "id": "PURE_1998 - themas_R023",
+      "text": "THEMAS shall not be able to determine whether a command sent to a heating or cooling unit was executed by that unit.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "2.4 General Constraints"
+    },
+    {
+      "id": "PURE_1998 - themas_R024",
+      "text": "The system shall be designed to run on the Microsoft Windows NT operating system, and all internal process communications shall operate on Microsoft Windows NT.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "portability",
+      "source_strategy": "section",
+      "source_region": "2.5.1 Operating System Assumptions"
+    },
+    {
+      "id": "PURE_1998 - themas_R025",
+      "text": "Interfaces to thermostats and heating/cooling units shall run on Microsoft Windows NT.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "portability",
+      "source_strategy": "section",
+      "source_region": "2.5.1 Operating System Assumptions"
+    },
+    {
+      "id": "PURE_1998 - themas_R026",
+      "text": "The system shall perform communication with thermostats and heating/cooling units only through interfaces to those units.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "2.5.1 Operating System Assumptions"
+    },
+    {
+      "id": "PURE_1998 - themas_R027",
+      "text": "It is assumed that a heating/cooling unit is incapable of reporting its current on/off status to THEMAS.",
+      "raw_label": null,
+      "requirement_kind": "domain_assumption",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "2.5.3 Heating/Cooling Hardware Assumptions"
+    },
+    {
+      "id": "PURE_1998 - themas_R028",
+      "text": "It is assumed that heating/cooling units send on/off status updates to THEMAS without real-time delay.",
+      "raw_label": null,
+      "requirement_kind": "domain_assumption",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "2.5.3 Heating/Cooling Hardware Assumptions"
+    },
+    {
+      "id": "PURE_1998 - themas_R029",
+      "text": "The THEMAS system supervisor shall be able to turn heating and cooling units on and off.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "section",
+      "source_region": "2.5.3 Heating/Cooling Hardware Assumptions"
+    },
+    {
+      "id": "PURE_1998 - themas_R030",
+      "text": "The system shall provide functions to initialize the system and its operational parameters and shall accept Initialization Data as input.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.1 Functional Requirements / 3.1.1.2.1 Introduction"
+    },
+    {
+      "id": "PURE_1998 - themas_R031",
+      "text": "The system shall read an initialization file that defines individual heating and cooling systems and shall derive system definitions from that initialization data.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.1.1.1.1 Introduction"
+    },
+    {
+      "id": "PURE_1998 - themas_R032",
+      "text": "The system shall assign and load a unique identifier for each thermostat into THEMAS software.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.1.1.2.1 Introduction"
+    },
+    {
+      "id": "PURE_1998 - themas_R033",
+      "text": "Before reading current temperature values and thermostat settings, the system shall issue requests to turn off all heating and cooling units to establish a known state.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": "section",
+      "source_region": "3.1.2.3 Processing"
+    },
+    {
+      "id": "PURE_1998 - themas_R034",
+      "text": "The system shall read the current temperature values and the current temperature settings of each thermostat.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.1.2.3 Processing"
+    },
+    {
+      "id": "PURE_1998 - themas_R035",
+      "text": "The system shall recognize and process two types of temperature data from thermostats: current temperature and temperature setting.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "section",
+      "source_region": "3.1.3.3 Processing"
+    },
+    {
+      "id": "PURE_1998 - themas_R036",
+      "text": "The system shall validate current temperature values and thermostat temperature settings against the valid temperature range and shall output a valid or invalid temperature status accordingly.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "section",
+      "source_region": "3.1.3.3 Processing"
+    },
+    {
+      "id": "PURE_1998 - themas_R037",
+      "text": "When a thermostat's temperature setting is within the valid range, the system shall apply that thermostat's temperature setting.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.1.3.3 Processing"
+    },
+    {
+      "id": "PURE_1998 - themas_R038",
+      "text": "The system shall compute the lower overtemperature LO as LO = TSET - OD and the upper overtemperature UO as UO = TSET + OD, compare reported temperature T to LO and UO, and when T < LO or T > UO output an indication that the temperature limit has been exceeded; otherwise output the temperature status.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "section",
+      "source_region": "3.1.4.1.3 Processing"
+    },
+    {
+      "id": "PURE_1998 - themas_R039",
+      "text": "For each thermostat the system shall compute the Lower Trigger LT = TSET - TD and the Upper Trigger UT = TSET + TD and test whether the thermostat's settings are satisfied or whether heating/cooling is required.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.1.4.2.3 Processing"
+    },
+    {
+      "id": "PURE_1998 - themas_R040",
+      "text": "The system shall make determinations to turn on heating or cooling units in accordance with the rules in sections 3.1.4.1 and 3.1.4.2.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.1.2.3 Processing"
+    },
+    {
+      "id": "PURE_1998 - themas_R041",
+      "text": "The system shall maintain the ON/OFF status of each heating and cooling unit.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": "section",
+      "source_region": "3.1.5.1.3 Processing"
+    },
+    {
+      "id": "PURE_1998 - themas_R042",
+      "text": "Upon receiving a request to turn on a heating or cooling unit, the system shall determine whether that request can be honored and, if the maximum number of units are already running, shall add the request to a LIFO waiting queue; otherwise the system shall generate a request to turn on the requested unit.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "section",
+      "source_region": "3.1.5.1.3 Processing"
+    },
+    {
+      "id": "PURE_1998 - themas_R043",
+      "text": "When the system receives a request to turn off a heating or cooling unit, it shall check the LIFO waiting queue and, if the queue is not empty, remove one request, check the current state of the associated thermostat, and if that thermostat still requires service submit a request to turn that unit on.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": "section",
+      "source_region": "3.1.5.1.3 Processing"
+    },
+    {
+      "id": "PURE_1998 - themas_R044",
+      "text": "When the system generates a request to change the state of a heating or cooling unit, it shall output an H/C ON/OFF Request.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.1.5.1.3 Processing"
+    },
+    {
+      "id": "PURE_1998 - themas_R045",
+      "text": "The system shall output a 'Unit Unavailable' event when appropriate.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": "section",
+      "source_region": "3.1.5.1.3 Processing"
+    },
+    {
+      "id": "PURE_1998 - themas_R046",
+      "text": "The system shall validate temperature inputs.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "section",
+      "source_region": "3.1 Functional Requirements"
+    },
+    {
+      "id": "PURE_1998 - themas_R047",
+      "text": "The system shall monitor temperature as a primary function.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.1 Functional Requirements"
+    },
+    {
+      "id": "PURE_1998 - themas_R048",
+      "text": "The system shall determine system utilization.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "section",
+      "source_region": "3.1 Functional Requirements"
+    },
+    {
+      "id": "PURE_1998 - themas_R049",
+      "text": "The system shall generate heating/cooling control signals (H/C ON/OFF Requests), alarm data, and event data.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": "section",
+      "source_region": "3.1 Functional Requirements"
+    },
+    {
+      "id": "PURE_1998 - themas_R050",
+      "text": "The system shall allow changing a thermostat's setting and shall permit the supervisor to select a thermostat and choose a temperature value from a list of valid temperatures.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "both",
+      "source_region": "3.1 Functional Requirements / raw_chunk_0004"
+    },
+    {
+      "id": "PURE_1998 - themas_R051",
+      "text": "The supervisor's interface shall display the available thermostats and their current temperature settings.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0004"
+    },
+    {
+      "id": "PURE_1998 - themas_R052",
+      "text": "The system shall generate reports and shall provide the supervisor the ability to select between an operational history report covering the past twelve months and a statistical summary report for a selected month.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "both",
+      "source_region": "3.1 Functional Requirements / raw_chunk_0004"
+    },
+    {
+      "id": "PURE_1998 - themas_R053",
+      "text": "Reports produced by the system shall be ASCII files whose location and filename are selectable by the operator.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "portability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0004"
+    },
+    {
+      "id": "PURE_1998 - themas_R054",
+      "text": "If the operational history report is selected, the system shall select all events from the event database, sort them by date and time, and create the ASCII report file.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0004"
+    },
+    {
+      "id": "PURE_1998 - themas_R055",
+      "text": "If the statistical report is selected, the system shall present the operator with a list of available months to select and shall generate the ASCII statistical report file after a month is selected.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0004"
+    },
+    {
+      "id": "PURE_1998 - themas_R056",
+      "text": "The statistical report shall include, for each day of the selected month, the percentage of time each heating and cooling unit was on.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0004"
+    },
+    {
+      "id": "PURE_1998 - themas_R057",
+      "text": "The statistical report shall include, for each thermostat, the ratio of granted heating/cooling requests to denied requests for the selected month.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0004"
+    }
+  ],
+  "seed_registry": [
+    {
+      "seed_item_id": "T2S_F14F3DE2",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "semantic_conflict",
+      "original_req_ids": [
+        "PURE_1998 - themas_R033"
+      ],
+      "original_req_texts": [
+        "Before reading current temperature values and thermostat settings, the system shall issue requests to turn off all heating and cooling units to establish a known state."
+      ],
+      "injected_text": "From the facilities side, we need the system to capture the current temperature and thermostat settings first, while all heating and cooling units stay in whatever mode they’re currently running. If anything needs to be shut down, send those requests only after that snapshot so we don’t disturb live conditions. That way we’re analyzing data under real load.",
+      "injected_into_artifact_type": "interview_transcript",
+      "defect_description": "The gold requirement mandates issuing turn-off requests to all heating and cooling units before reading values, whereas this text requires reading while units remain running and only sending any shutoff requests after the snapshot.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_C4C3B6D7",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "semantic_conflict",
+      "original_req_ids": [
+        "PURE_1998 - themas_R046"
+      ],
+      "original_req_texts": [
+        "The system shall validate temperature inputs."
+      ],
+      "injected_text": "Ops raised a concern about slowing down data entry, so for temperature readings they don’t want the app doing any checks. Just accept whatever value arrives from the probes—even out-of-range numbers or text like \"NA\"—and store it as-is. We can handle cleanup downstream, so please avoid any temperature validation in the UI or API for now.",
+      "injected_into_artifact_type": "meeting_notes",
+      "defect_description": "The meeting notes specify accepting temperature values as-is with no checks, which conflicts with the gold requirement that the system validate temperature inputs.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_9846530E",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "semantic_conflict",
+      "original_req_ids": [
+        "PURE_1998 - themas_R048"
+      ],
+      "original_req_texts": [
+        "The system shall determine system utilization."
+      ],
+      "injected_text": "Quick heads-up before you wire up the metrics: per Ops policy, this app must not compute or track utilization itself. We'll pull the utilization number from the existing Splunk \"ops-utilization\" feed and just render it as-is on the dashboard, with no local calculation or storage. Please remove any utilization-determination logic so we don't duplicate what Ops already handles.",
+      "injected_into_artifact_type": "email_thread",
+      "defect_description": "The email states the app must not determine utilization and should only display an external feed, which conflicts with the requirement that the system determine system utilization.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_8F1F2763",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "semantic_conflict",
+      "original_req_ids": [
+        "PURE_1998 - themas_R020"
+      ],
+      "original_req_texts": [
+        "The system shall provide associated hardware configuration items for Monitor Temperature, Determine Utilization, and Initialize System, and System Reports shall not have an associated hardware configuration item."
+      ],
+      "injected_text": "Quick note on hardware mappings before we move on: from compliance, we need System Reports tied to a physical device. Please associate all reporting outputs with the 'RPT-AGG-01' hardware configuration item so we can audit which appliance generated them. That linkage is non-negotiable for ops troubleshooting.",
+      "injected_into_artifact_type": "interview_transcript",
+      "defect_description": "This text requires System Reports to be associated with a hardware configuration item, contradicting the gold requirement that System Reports shall not have an associated hardware configuration item.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_5FBB1C7B",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "value_conflict",
+      "original_req_ids": [
+        "PURE_1998 - themas_R054"
+      ],
+      "original_req_texts": [
+        "If the operational history report is selected, the system shall select all events from the event database, sort them by date and time, and create the ASCII report file."
+      ],
+      "injected_text": "During the review, Maria emphasized that when the operational history report is run, the output needs to be a polished PDF that can be sent to auditors. A plain ASCII text file won’t work for them and would create extra formatting work on their side.",
+      "injected_into_artifact_type": "meeting_notes",
+      "defect_description": "Meeting notes require the operational history report to generate a PDF file, which conflicts with the gold requirement specifying an ASCII report file.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_8B621CDB",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PURE_1998 - themas_R004"
+      ],
+      "original_req_texts": [
+        "The SRS shall identify external interfaces of THEMAS."
+      ],
+      "injected_text": "Before we finalize the SRS, let’s add a clear section that spells out where THEMAS connects to things outside our system. Please document all integration points—APIs it exposes, services it consumes, and any third‑party touchpoints—so it’s obvious what it interacts with. That list should be in the SRS so the external connections are unambiguous for everyone.",
+      "injected_into_artifact_type": "meeting_notes",
+      "defect_description": "This restates the need for the SRS to enumerate THEMAS's external interfaces, duplicating requirement PURE_1998 - themas_R004.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_A6D181DE",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PURE_1998 - themas_R030"
+      ],
+      "original_req_texts": [
+        "The system shall provide functions to initialize the system and its operational parameters and shall accept Initialization Data as input."
+      ],
+      "injected_text": "Following up on the kickoff notes, we need a straightforward init path that brings the system online and applies all of its operational settings. That routine should take the provided Initialization Data as input and use it to configure everything. In short, please include functions that handle system startup plus parameter setup driven by that input.",
+      "injected_into_artifact_type": "email_thread",
+      "defect_description": "This restates the need for functions to initialize the system and its operational parameters using Initialization Data input, duplicating requirement PURE_1998 - themas_R030.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_CCD1992A",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PURE_1998 - themas_R043"
+      ],
+      "original_req_texts": [
+        "When the system receives a request to turn off a heating or cooling unit, it shall check the LIFO waiting queue and, if the queue is not empty, remove one request, check the current state of the associated thermostat, and if that thermostat still requires service submit a request to turn that unit on."
+      ],
+      "injected_text": "Any time we get a command to shut a heater or A/C unit off, I want the controller to immediately look at the waiting list rather than just stopping. Treat that queue as last-in, first-out: if there's anything pending, pop the newest request, check the current state of the thermostat tied to that request, and if it's still calling, fire off a turn-on for that unit. That keeps the workflow moving and makes sure an active thermostat doesn't get ignored.",
+      "injected_into_artifact_type": "interview_transcript",
+      "defect_description": "This restates the behavior defined in PURE_1998 - themas_R043 using different wording.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_9D5719A0",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PURE_1998 - themas_R049"
+      ],
+      "original_req_texts": [
+        "The system shall generate heating/cooling control signals (H/C ON/OFF Requests), alarm data, and event data."
+      ],
+      "injected_text": "As we finalize the interface, can we confirm the system actually outputs the heating/cooling ON/OFF commands? It also needs to generate the alarm data and the routine event data so downstream monitoring and control pick them up. Without those three outputs, the rest of the pipeline can’t function.",
+      "injected_into_artifact_type": "meeting_notes",
+      "defect_description": "This is a paraphrase duplicate of requirement PURE_1998 - themas_R049.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_EA3C5CDB",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PURE_1998 - themas_R044"
+      ],
+      "original_req_texts": [
+        "When the system generates a request to change the state of a heating or cooling unit, it shall output an H/C ON/OFF Request."
+      ],
+      "injected_text": "Quick note on the actuator signaling: when our system triggers a state change on any heating or cooling unit—basically turning it on or off—it needs to send out an H/C ON/OFF Request. That’s the message downstream services are listening for. Can you confirm this fires every time we toggle those units so nothing gets missed?",
+      "injected_into_artifact_type": "email_thread",
+      "defect_description": "This restates the requirement PURE_1998 - themas_R044 using different wording, duplicating its intent.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    }
+  ],
+  "brief": {
+    "project_name": "THEMAS: Building Climate Manager",
+    "domain": "Building energy management (HVAC)",
+    "users": [
+      "Building HVAC Supervisor",
+      "Facilities Maintenance Technician",
+      "Design Requirements Team",
+      "Principal Software Architect",
+      "QA/Verification Engineer"
+    ],
+    "stakeholders": [
+      "Barry Scott — THEMAS Project Manager",
+      "Facilities Management Department",
+      "Building Owner/Operations",
+      "Software Engineering Team",
+      "Compliance/Quality Assurance",
+      "IT/Infrastructure Operations"
+    ],
+    "business_goals": [
+      "Reduce energy use while maintaining occupant comfort",
+      "Deliver a software-only SRS with qualification criteria and external interface overview fit for design/architecture",
+      "Maintain end-to-end traceability back to the Statement of Work",
+      "Provide actionable reports (history and monthly statistics) to optimize utilization",
+      "Validate control logic reliability via a simulated thermostat prototype",
+      "Keep the solution independent of specific HVAC hardware models"
+    ],
+    "core_features": [
+      "Four-module architecture: Monitor Temperature, Determine Utilization, Initialize System, and System Reports (each a software CI; only the first three pair with hardware, reporting is software-only)",
+      "Initialization from file: load unit/thermostat definitions and parameters; establish a known state by turning all units off",
+      "Thermostat I/O and thresholding: read current temperature and setpoint, validate within the allowed range, compute LO/UO and LT/UT around TSET to detect limit breaches and decide heating/cooling",
+      "Utilization control: enforce a max number of concurrent units, track on/off status, use a LIFO queue for excess requests and re-check thermostat need when dispatching; emit Unit Unavailable when applicable",
+      "Control signaling: generate H/C ON/OFF requests to field interfaces (no execution confirmation expected)",
+      "Supervisor console: list thermostats with current settings; allow changing a selected thermostat to a valid value and provide manual unit ON/OFF controls",
+      "Eventing and reporting: log alarms/events; create plain-text reports at an operator-chosen path/name—either 12‑month history (all events sorted) or a monthly statistical report (operator picks month; includes daily % on-time per unit and grant/deny ratios per thermostat)"
+    ],
+    "quality_concerns": [
+      "Reliable decisions despite lack of device feedback; robust validation and known-state startup",
+      "Testability via a thermostat simulator for verification and validation",
+      "Traceability from requirements to SOW and downstream design artifacts",
+      "Usability: concise, non-cluttered supervisor displays",
+      "Auditability: comprehensive event logging and reproducible ASCII reports",
+      "Platform consistency: stable interprocess comms and device interfaces on Windows NT",
+      "Timely processing based on near-real-time thermostat data assumptions"
+    ],
+    "constraints": [
+      "Scope limited to software; hardware specifics reside in the system-level spec",
+      "Binding language uses 'shall'; SRS structured per IEEE 830 with required sections",
+      "Targets Microsoft Windows NT for runtime and device interfaces",
+      "Interact with thermostats and units only through defined interfaces; external systems described at a high level; thermostat inputs are current temperature and setpoint; unit command execution cannot be verified",
+      "Control decisions adhere to the documented utilization/control rules",
+      "Referenced materials/standards included and assumed accessible (copies obtainable via the Project Manager; public standards available through libraries); SOW takes precedence over conflicts",
+      "Reports are produced as plain-text files with operator-selected filenames and locations"
+    ],
+    "terminology": [
+      "TSET (desired temperature) and Valid Temperature Range",
+      "OD/TD (overtemperature and trigger deltas); LO/UO and LT/UT thresholds",
+      "H/C ON/OFF Request (control signal to units)",
+      "LIFO Waiting Queue (backlog when max units are running)",
+      "Event Database (system alarms and operational log)",
+      "Operational History Report; Statistical Monthly Report",
+      "Quadrant thermostat ID (unique zone identifier)"
+    ]
+  },
+  "metadata": {
+    "file_path": "data/pure/1998 - themas.pdf",
+    "file_type": ".pdf",
+    "char_count": 47356,
+    "profile": {
+      "char_count": 47356,
+      "heading_density": 233,
+      "shall_count": 106,
+      "must_count": 0,
+      "will_count": 11,
+      "use_case_count": 0,
+      "stakeholder_count": 0,
+      "requirement_keyword_count": 31,
+      "structure_strength": "strong"
+    },
+    "section_count": 101,
+    "dense_sections": 25,
+    "gold_count": 57,
+    "section_candidates": 112,
+    "raw_candidates": 58,
+    "llm_usage": {
+      "total_calls": 50,
+      "total_input_tokens": 154532,
+      "total_output_tokens": 131378
+    }
+  }
+}

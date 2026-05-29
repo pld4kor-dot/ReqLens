@@ -1,0 +1,1410 @@
+{
+  "id": "PROMISE_6",
+  "origin": "PROMISE",
+  "created_at": "2026-05-23T14:43:18.433120+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "RoomWise stakeholder discovery — cross-functional interview (revised)",
+      "text": "Dana [Executive Sponsor/Product Owner]: Thanks everyone for making time. Working title is RoomWise. We’re aiming to cover room booking, equipment, and the operational glue. Let’s talk through what you actually need day to day.\n\nMiguel [Facilities Manager]: From my shop, people need to see what rooms are free, pick one, and when they grab it the system should mark it as taken so nobody else can stack a meeting on top. No double-booking.\n\nPriya [CIO/IT Operations Lead]: So live availability and quick updates. And speed matters—folks won’t wait around.\n\nJordan [Support/Helpdesk Lead]: If a search or a booking spins beyond a few seconds, I hear about it. I’m pushing for most actions to complete in under five seconds, and even at rush hour still under eight, or I get roasted.\n\nAlex [DBA/Systems Architect]: That lines up with what I’ve been modeling—typical interactions sub-five seconds, with a worst case tail still under eight. And mornings are intense. We should be comfortable around a thousand simultaneous requests for launch and plan to scale up from there.\n\nSerena [Security & Compliance Officer]: Before we get too far—access control. Only our employees and any vetted external guests should be able to log in. No open sign-ups. Every login must tie back to our directory or a pre-approved guest ID.\n\nDana [Executive Sponsor/Product Owner]: Absolutely. Also, I don’t want just a booking tool. We need it to reach out—send invitations and reminders, plus confirmations.\n\nMiguel [Facilities Manager]: Email at least. Some managers like text for last-minute changes—\n\nPriya [CIO/IT Operations Lead]: Let’s commit to email out of the gate and leave other channels as a preference we can expand on later. Users should be able to pick their preferred way to get notified where possible.\n\nJordan [Support/Helpdesk Lead]: Right: invites, reminders, and the organizer gets a confirmation when the booking completes. That’s table stakes.\n\nAlex [DBA/Systems Architect]: And we should store meeting details: agenda, meeting type, organizer contact info, plus whether invitees accepted or declined. Otherwise we have no history.\n\nSerena [Security & Compliance Officer]: Recording acknowledgements helps for audits too. On the reporting side, I want to be crystal clear: if anyone tries to pull reservations by user, that’s a manager-only capability. Don’t expose individual schedules to the whole company.\n\nDana [Executive Sponsor/Product Owner]: Noted. On look and feel: keep it clean and professional, brand-aligned. No cartoonish UI. Can we skin it with our logo and colors?\n\nPriya [CIO/IT Operations Lead]: Brandable is fine. Also give people a way to choose their start page. Managers may want reporting first; others might want their calendar or room search.\n\nJordan [Support/Helpdesk Lead]: If I can set my home screen to room search or a personal calendar, that will cut down confusion. Keep navigation familiar—standard web conventions.\n\nMiguel [Facilities Manager]: Searching should be dead simple: “I need a room for eight with a projector Tuesday at 10.” Filters for time, capacity, and equipment. Show if the equipment is available too.\n\nAlex [DBA/Systems Architect]: So, filter by parameters and clearly show the current availability state. And when someone reserves, the schedule should reflect it right away and prevent conflicts. Let’s also surface a clear “Available” badge for free rooms.\n\nSerena [Security & Compliance Officer]: Data integrity matters. What users type in should be what lands in the database—no silent truncation or auto-corrections that change meaning. And we’ll harden inputs so malicious content is blocked without crashing anything or corrupting data.\n\nPriya [CIO/IT Operations Lead]: Yes to defenses and stability. We also want automatic updates for emerging security issues—so customers don’t have to hunt for patches.\n\nDana [Executive Sponsor/Product Owner]: Platform-wise: we’re a mixed environment. If the machine runs Java, we’re fine. We have Linux and Windows, plus a few macOS servers in labs. We’re comfortable with Tomcat or JBoss as the app container.\n\nAlex [DBA/Systems Architect]: Java SE/EE stack, deploy to Tomcat by default, JBoss is fine. Browser-based UI—standard HTML that renders properly on the mainstream browsers we test.\n\nJordan [Support/Helpdesk Lead]: Please include a broad browser test matrix—Edge, Chrome, Firefox, Safari, a few versions. If the bulk of those render cleanly, support can document the outliers.\n\nMiguel [Facilities Manager]: The building map is a big deal. People get lost in E wing. A floorplan view with rooms and the gear they contain would help a lot.\n\nDana [Executive Sponsor/Product Owner]: Yes—show floorplans with room locations and equipment details. And make it easy for facilities to add new maps when we renovate. I’d rather not need code changes for that.\n\nPriya [CIO/IT Operations Lead]: Config-driven maps sound right. Ideally you can drop a file in or use an admin setup—aim for minimal IT involvement.\n\nSerena [Security & Compliance Officer]: User onboarding shouldn’t be a slog. Can we target that a new employee added to the system can log in within ten minutes? That’s been a pain in past tools.\n\nJordan [Support/Helpdesk Lead]: If 90% of new users can log in within ten minutes of being added, I’ll count that a win. Directory sync or SSO would help, but the key is making the flow easy.\n\nAlex [DBA/Systems Architect]: Database standards—we need to be agnostic.\n\nPriya [CIO/IT Operations Lead]: We use Oracle, SQL Server, DB2, MySQL, HSQL for tests, and even some Access in legacy corners. The app should run with any of those, either local to the app server or over the network.\n\nAlex [DBA/Systems Architect]: Then we’ll abstract the DB layer and make it configurable—point it to the engine via config, no code changes. And ensure reliable connectivity so writes don’t get lost.\n\nDana [Executive Sponsor/Product Owner]: Don’t forget reminders. No-shows drop when people get nudged. Also, I want adoption without heavy training: in the first two weeks, I’d like the vast majority to choose it for booking on their own.\n\nJordan [Support/Helpdesk Lead]: If the first-run experience is good, that’s realistic. After 15 minutes of exploring, even a new employee should be able to create a meeting and book a room.\n\nMiguel [Facilities Manager]: Equipment logistics: if someone books a room and requests a mobile projector, we need to track that move. And building staff should get alerted when there’s a transport request.\n\nSerena [Security & Compliance Officer]: Fine—make sure those alerts go only to authorized facilities contacts.\n\nAlex [DBA/Systems Architect]: We’ll record which equipment is reserved and track a status timeline like “requested,” “in transit,” “delivered,” “returned.” Also, when organizers update agendas, we should keep a record of the changes.\n\nDana [Executive Sponsor/Product Owner]: And categorize the meeting type—staff meeting, client meeting, workshop—so managers can report on it.\n\nPriya [CIO/IT Operations Lead]: Managers also want different ways to view schedules—by building, team, floor, maybe time slices. Those views should be limited to privileged roles.\n\nJordan [Support/Helpdesk Lead]: Search should help when people only type part of a term. Filters for time, capacity, equipment, and an “available now” toggle.\n\nMiguel [Facilities Manager]: And make the status unambiguous. If it’s free, say “Available.”\n\nSerena [Security & Compliance Officer]: Accessibility—keyboard navigation, screen reader labels, color contrast. We need to align with disability access standards.\n\nDana [Executive Sponsor/Product Owner]: International offices: language selection per user would be ideal. We’ll start with our main markets, and we’ll need correct date/time formats so no one argues about 03/04.\n\nPriya [CIO/IT Operations Lead]: Language packs and locale-aware formatting. Also, keep right-to-left in mind in the design even if not day one.\n\nAlex [DBA/Systems Architect]: On code structure: let’s build with recognized design patterns and best practices. I want future changes to be straightforward—set a bar that roughly nine out of ten maintenance devs can add a modest feature in about two working days.\n\nJordan [Support/Helpdesk Lead]: Maintenance releases: we’re thinking annual. Upgrades should be quick—ideally just a few minutes for most customers. And please, keep the install process simple.\n\nPriya [CIO/IT Operations Lead]: Deployment needs to be doable in a normal office setting—install within two days, including DB and email setup. And licensing will be per server, with tiers for single, a few, and many.\n\nDana [Executive Sponsor/Product Owner]: Distribution—yes, a downloadable ZIP or installer, and we’ll also provide a packaged disc for clients who still want it.\n\nSerena [Security & Compliance Officer]: Don’t forget exception logging. If something goes wrong, we need a record we can send to support for diagnosis. And for availability—aside from hardware issues, we expect near-constant uptime.\n\nAlex [DBA/Systems Architect]: Throughput-wise, I’m projecting around ten thousand transactions an hour in the near term, and we should plan to grow beyond that later.\n\nJordan [Support/Helpdesk Lead]: Keep it snappy or people will go back to email chains to book rooms.\n\nMiguel [Facilities Manager]: One more map note—when we expand, facilities shouldn’t need IT to wire in a new floorplan.\n\nPriya [CIO/IT Operations Lead]: Right—config-driven so you can integrate new maps during the product’s lifecycle with minimal help.\n\nSerena [Security & Compliance Officer]: And again, those reservation lookups by user stay manager-only.\n\nJordan [Support/Helpdesk Lead]: We’ll enforce that via roles.\n\nDana [Executive Sponsor/Product Owner]: Just confirming—we’re browser-based; it should work in typical office browsers.\n\nPriya [CIO/IT Operations Lead]: Covered. We’ll test a representative set and aim for good rendering across the majority. Also ensure client-server requests don’t mysteriously drop.\n\nAlex [DBA/Systems Architect]: On DB communication, we’ll use reliable patterns and retries as needed so the app doesn’t end up in partial states.\n\nMiguel [Facilities Manager]: When equipment needs moving, facilities should get an email when that transport is requested.\n\nSerena [Security & Compliance Officer]: Send it to our designated lists and track that the alert went out.\n\nJordan [Support/Helpdesk Lead]: And after an organizer sets up a meeting, send them a confirmation. If they don’t see that, they’ll assume it failed and try again.\n\nDana [Executive Sponsor/Product Owner]: Also, for global teams, show date and time in the user’s locale format.\n\nPriya [CIO/IT Operations Lead]: And installation—let’s keep it squarely within a two-day window for a typical office setup.\n\nAlex [DBA/Systems Architect]: Tech stack recap: Java SE/EE on Tomcat or similar; DB backend pluggable—Oracle, SQL Server, DB2, MySQL, HSQL, and yes, MS Access if needed.\n\nJordan [Support/Helpdesk Lead]: If Access keeps a small office happy, fine—just make sure the product talks to the DB reliably.\n\nSerena [Security & Compliance Officer]: For uptime, let’s target the app to be available essentially all the time when the servers are healthy.\n\nDana [Executive Sponsor/Product Owner]: Summing up: make it pleasant to use, give clear confirmations, managers get oversight, facilities get transport alerts, and IT can roll it out broadly without re-architecting.\n\nMiguel [Facilities Manager]: Please make that “available now” view easy to find. And don’t forget the map.\n\nJordan [Support/Helpdesk Lead]: And make it intuitive from the first click. If most people can book in a few minutes on first use, we’re in good shape.\n\nPriya [CIO/IT Operations Lead]: We’ll also keep the security update path in place so sites aren’t babysitting patches.\n\nAlex [DBA/Systems Architect]: And exception logs—yes, with a way to share them for troubleshooting when needed.\n\nSerena [Security & Compliance Officer]: Lastly, ensure it’s deployed on a web/app server—this is not a desktop tool.\n\nAlex [DBA/Systems Architect]: It’ll run in Tomcat or similar, with browsers connecting to it.\n\nDana [Executive Sponsor/Product Owner]: Great. Let’s document and move forward.\n\nMiguel [Facilities Manager]: Thanks.\n\nJordan [Support/Helpdesk Lead]: Thanks all.\n\nSerena [Security & Compliance Officer]: Cheers.\n\nPriya [CIO/IT Operations Lead]: Good session.\n\nAlex [DBA/Systems Architect]: I’ll write up the architecture notes."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "RoomWise — Architecture/Operations working session notes (revised)",
+      "text": "Date: 2025-02-11\nLocation: Conf Rm L2 + Teams link (https://meet.example.com/roomwise-arch)\nAttendees: Priya (CIO/IT Ops), Alex (DBA/Systems Arch), Serena (Sec/Compliance), Jordan (Support), Miguel (Facilities), Dana (Product)\n\n— Notes are rough; re-check numbers with Alex —\n\nAgenda\n- Platform + deployment envs\n- DBMS targets + connectivity\n- Browser/email integration\n- Performance goals (latency, concurrency, throughput)\n- Security, access, audits, logging\n- Usability, I18N/L10N, accessibility\n- Facilities features: maps, equipment transport\n- Distribution/licensing/installation/maintenance\n\nPlatform\n- Java-based (J2SE/J2EE libs), runs where a JVM exists. OS agnostic: Windows, Linux, macOS server.\n- Must deploy on a web/app server. Default Tomcat; JBoss supported. Packaging (.war vs .ear) [TBD].\n- Install target for a typical office: complete within 2 days (includes DB + email config).\n- Co-exists with other services on the same machine.\n\nDBMS\n- Multi-DB support: Oracle, SQL Server, DB2, MySQL, HSQL, MS Access (legacy acceptable).\n- DB can be local to app or remote on network; must interoperate reliably either way.\n- Transactions must communicate successfully with DB; retry on transient issues; no silent failures.\n- Highly configurable DB layer so admins can swap DB without code changes. Wizard + config files. Target: majority of customers can integrate a different DBMS via configuration.\n\nBrowser/Email\n- Interface via standard HTML browsers. Test matrix: at least 8 browsers/versions. Goal: the majority render properly. Document known issues for older ones.\n- Data exchange reliability: client/server round-trips must be clean—forms submit, responses return without unexplained drops.\n- Email servers: integrate with corporate SMTP for outbound (notifications, invites, reminders, confirmations).\n\nPerformance\n- Latency: proposed 90% of standard tasks < 5s; 98% < 8s (Support flagged this for SLAs).\n- Concurrency: ~1,000 concurrent requests at launch; plan for ~2,000 in a subsequent release.\n- Throughput: around 10,000 transactions/hour near-term; higher in later releases (validate hardware assumptions).\n- Availability: app-level uptime target ~99.99% excluding infra failures. Longevity: stable operation ≥ 5 years per install.\n\nSecurity/Access/Audit\n- Access limited to employees + pre-approved external IDs (partners/guests). No public registration.\n- Manager-only ability to search reservations by user. Enforce via role permissions.\n- Input validation: prevent malicious data from causing corruption or crashes. Reject bad input gracefully.\n- Threat management: provide automatic updates for emerging security issues so customers can receive fixes without manual hunting. Delivery details [TBD].\n- Data integrity: reservation records should match user-entered data (avoid stealth truncation/transformations).\n- Exception logging: capture exceptions with enough context for diagnosis; provide a way to transmit logs securely to vendor support. Privacy approach [TBD].\n\nUsability/Adoption/UI\n- Look & Feel: customizable branding (logo/colors). Default theme conservative/professional.\n- Adoption metric: target that a large majority of surveyed users report regular usage after two weeks (product will support measuring this; collection method [TBD—survey]).\n- Ease of use: target that most users can reserve a room within ~5 minutes on first use.\n- Onboarding: new user can be added quickly; aim for 90% to log in within 10 minutes of being added.\n- Clear feedback: show confirmations after actions; later survey whether confirmations are perceived as accurate by most users.\n- Navigation: familiar web-style menus and flows.\n- Search: intuitive discovery of rooms; filters for time, capacity, equipment; show “Available” for unreserved rooms.\n- Accessibility: align with disability access standards (keyboard navigation, ARIA/labels, contrast).\n- Languages: user-selectable languages for target markets; acceptable wording across markets. Plan to add new markets without long lead time.\n- Locale: date/time formatting per user locale.\n- Preferences: per-user start page and view preferences (e.g., Calendar, Room Search, Manager Reports).\n\nCore Features (Facilities + Scheduling)\n- Meeting records: create/update; include agenda with updates recorded, meeting type classification, and organizer contact info.\n- Invitations: organizers invite participants; send notifications (email at minimum) and reminders per user preference where available.\n- Acknowledgements: record attendee responses (accept/decline).\n- Rooms: add/update/delete conference rooms.\n- Equipment: add/update/delete equipment; display per room; reflect in search results based on filters.\n- Availability: search/filter rooms and equipment; show real-time availability; explicitly show an “Available” indicator for free rooms.\n- Scheduling update: when a room is reserved, update the schedule immediately to prevent conflicts.\n- Transport requests: record transport requests for reserved mobile equipment; notify building personnel (authorized list) and track statuses (requested/in transit/delivered/returned).\n- Building maps: display floorplans with room locations and equipment details; allow easy integration of new maps over time with minimal vendor assistance.\n- Manager views: privileged users can view schedules via multiple reporting views (e.g., by team/building/floor/time slice).\n- Organizer confirmation: system sends a confirmation to the organizer when a meeting is created/reserved successfully.\n\nOperability/Maintenance\n- Design approach: employ design patterns and coding best practices. Goal: about 90% of maintenance developers can integrate a modest new feature in roughly 2 working days.\n- Maintenance releases: annual cadence. Target: most customers complete the update in about 5 minutes. Provide a simple updater.\n- Support: self-service support site; goal that a majority of registered users find solutions quickly (within ~5 minutes) via articles/search.\n- Logging/telemetry: exception logs and operational telemetry; ensure compliance with privacy policies (masking/redaction approach [TBD]).\n- Security updates: automatic update path for security/threat fixes (details with Ops/Sec [TBD]).\n\nDistribution/Licensing\n- Distribution channels: Internet download (binary/ZIP) and packaged CD for customers who request physical media. Include checksums.\n- Licensing tiers: per-server—single server; 2–5 servers; 5+ servers. License enforcement approach [TBD].\n\nOpen Issues / Parking Lot\n- Whether SMS/text is in initial scope. [TBD]\n- Packaging (.war vs .ear). [TBD]\n- Automatic update delivery approach. [TBD]\n- RSVP processing (inbound email vs link-based). [TBD]\n- Map integration method (file drop vs admin UI). [TBD]\n- Role mapping to “manager” for user-by-user reservation search. [TBD]\n- Accessibility test plan owner. [TBD]\n- Data handling guidelines for exception logs (privacy). [TBD]\n- License metering/enforcement details. [TBD]\n- Browser list/version matrix for QA. [TBD]\n\nNumbers scribbled\n- 5s / 8s latency (90% / 98%).\n- ~1,000 concurrent (launch). ~2,000 (later release).\n- ~10,000 transactions/hour near-term; higher later.\n- Uptime target ~99.99% app-level (excluding infra).\n- 5-year expected lifecycle per install.\n- 10-minute new user add-to-login for most users.\n- Broad adoption within 2 weeks (survey).\n- Majority of tested browsers render OK (min 8 tested).\n- Most maintenance updates complete in ~5 minutes.\n- Most users can book in ~5 minutes on first use.\n- Language acceptability per market (survey).\n- Locale date/time correctness (survey).\n\nDecisions (tentative)\n- Deploy on Tomcat primarily; JBoss acceptable. Packaging TBD.\n- Email notifications day one; other channels as preferences when feasible later.\n- Browser test plan: test at least 8; document known issues; aim for good coverage across the majority.\n- Security: role-based access; manager-only for reservation searches by user.\n- Install time: ≤ 2 days in typical office conditions.\n- Licensing: per-server tiers (1, 2–5, 5+)."
+    },
+    {
+      "type": "email_thread",
+      "title": "Thread: RoomWise rollout, licensing, and a few last-mile questions (revised)",
+      "text": "Email 1\nFrom: Dana <dana.product@example.com>\nTo: Priya <priya.itops@example.com>, Serena <serena.sec@example.com>, Alex <alex.arch@example.com>\nCC: Jordan <jordan.support@example.com>, Miguel <miguel.facilities@example.com>\nSubject: RoomWise rollout assumptions + licensing\n\nHi all —\n\nQuick recap so we’re not talking past each other:\n\n- Licensing: server-based tiers—single server; 2–5; 5 or more. We’ll need the licensing service to count instances appropriately.\n- Distribution: Internet download (binary/ZIP) plus a packaged CD for the few clients who still require it.\n- Install target: in a typical office, up and running within two days (including DB and email server setup). No custom coding.\n- Platform: Java SE/EE; deploy on Tomcat or JBoss; OS-agnostic (any machine with a JVM).\n- DB: support Oracle, SQL Server, DB2, MySQL, HSQL, MS Access; allow the DB to be local or remote on a LAN.\n- Browser/email: work in common HTML browsers (we’ll test at least eight) and integrate with corporate email servers for outbound mail.\n\nShout if I misrepresented anything.\n\n— Dana\n\n---\n\nEmail 2\nFrom: Priya <priya.itops@example.com>\nTo: Dana <dana.product@example.com>\nCC: Serena <serena.sec@example.com>, Alex <alex.arch@example.com>, Jordan <jordan.support@example.com>, Miguel <miguel.facilities@example.com>\nSubject: RE: RoomWise rollout assumptions + licensing\n\nHey Dana,\n\nAligned, with a few specifics to nail down expectations:\n\n- Performance: let’s commit to 90% of standard tasks finishing in under 5s; 98% in under 8s.\n- Capacity: plan for ~1,000 concurrent requests at launch and ~2,000 in a later release. Throughput: about 10k transactions/hour in the near term, scaling up afterward.\n- Uptime: we can target very high app uptime (four nines) if we keep the stack straightforward.\n- Longevity: installations should run for around five years without forcing a replatform.\n\nOn licensing metering in clusters—I’ll verify.\n\nZIP distribution is straightforward; CD is extra work but doable. We’ll attach checksums.\n\nThanks,\n\nPriya\n\n---\n\nEmail 3\nFrom: Serena <serena.sec@example.com>\nTo: Dana <dana.product@example.com>, Priya <priya.itops@example.com>, Alex <alex.arch@example.com>\nCC: Jordan <jordan.support@example.com>\nSubject: RE: RoomWise rollout assumptions + licensing + security asks\n\nAll,\n\nSecurity points we need to hold the line on:\n\n1) Access control: Only employees or pre-approved external users can log in. No public sign-ups.\n2) Manager-only search: Queries that pull reservations by user must be limited to manager roles.\n3) Data integrity: Reservation data in the DB should reflect exactly what the user entered (no silent truncation/alteration).\n4) Malicious inputs: Validate and sanitize. If someone sends garbage, do not crash and do not corrupt data.\n5) Threat updates: Provide a way to deliver automatic updates as new threats emerge (process details can come later with Ops).\n6) Logging: Capture exceptions and provide a way to transmit logs securely to vendor support for diagnosis.\n7) Accessibility: Conform to disability access standards.\n\nAlso, please ensure the UI gives users clear confirmations when actions succeed. Silence creates tickets.\n\n— Serena\n\n---\n\nEmail 4\nFrom: Jordan <jordan.support@example.com>\nTo: Serena <serena.sec@example.com>, Dana <dana.product@example.com>, Priya <priya.itops@example.com>\nCC: Alex <alex.arch@example.com>, Miguel <miguel.facilities@example.com>\nSubject: RE: RoomWise rollout assumptions + licensing + security asks (support POV)\n\nTeam,\n\nFrom support’s angle, a few items will make a huge difference:\n\n- Onboarding: If 90% of newly added users can log in within 10 minutes, tickets drop immediately.\n- Usability: First-time success matters. Let’s aim that most users can book a room within ~5 minutes on the first try.\n- Confirmations: When users book, invite, or update, show a clear confirmation (e.g., “Meeting confirmed”). We can survey later to ensure users feel confirmations are accurate.\n- Browsers: Render well on mainstream browsers. We’ll test at least eight combinations and document any known limitations.\n- Support site: Don’t forget the self-help portal. Our standard is that a majority of registered users find a solution within ~5 minutes.\n- Maintenance releases: Yearly is fine. The upgrade should be simple and take just a few minutes for most customers.\n\nAlso: default theme should be professional. Brandable is fine; just avoid the toy-like look.\n\nRegards,\n\nJordan\n\n---\n\nEmail 5\nFrom: Miguel <miguel.facilities@example.com>\nTo: Dana <dana.product@example.com>, Priya <priya.itops@example.com>\nCC: Serena <serena.sec@example.com>, Jordan <jordan.support@example.com>, Alex <alex.arch@example.com>\nSubject: RE: RoomWise features (facilities specifics) — and a small gripe\n\nHi,\n\nFacilities items we don’t want to miss:\n\n- Floorplans: Show a building map in the app with where the conference rooms are, plus basic equipment details on click.\n- Easy map updates: We’re renovating. I don’t want to open a ticket to add new maps—let us drop in new ones or configure them with minimal help.\n- Equipment transport: When mobile equipment is reserved, create a transport request and notify building personnel to move it. Track statuses (requested, in transit, delivered, returned).\n- Availability: People ask “Is anything open now?”—show an “Available” status for rooms and let them filter for what’s free.\n- Rooms/equipment mgmt: We add/update/delete rooms and gear constantly. Make it straightforward. And when equipment is reserved, associate it with the meeting.\n\nGripe: Our old tool updated the room calendar hours later. Here, as soon as someone books, the schedule needs to reflect it so we avoid conflicts.\n\nThanks,\n\nMiguel\n\n---\n\nEmail 6\nFrom: Alex <alex.arch@example.com>\nTo: Miguel <miguel.facilities@example.com>, Dana <dana.product@example.com>\nCC: Priya <priya.itops@example.com>, Serena <serena.sec@example.com>, Jordan <jordan.support@example.com>\nSubject: RE: RoomWise features (facilities specifics) — DB + tech implications\n\nMiguel et al.,\n\nGreat list. Here’s how the design aligns with that and our broader plan:\n\n- Meeting model: We’ll store entries with an agenda (and keep updates), a meeting type (for reporting), and attach organizer contact info.\n- Invitations: Organizers can invite other employees. Notifications go out via email at minimum; the framework lets users indicate channel preferences as we expand.\n- Acknowledgements: We’ll record attendee responses.\n- Schedule consistency: When a room is reserved, the schedule will reflect the reservation immediately and avoid conflicts.\n- Search results: Filter rooms and equipment by parameters, and display matches—including a clear “Available” indicator for rooms that are free.\n- Transport: We’ll record equipment transport requests, notify the facilities distribution list, and track status so you can see progress.\n- Maps: We’ll display the building floorplan with room locations. Plan is a configuration-driven approach so you can bring new maps online during the product lifecycle with minimal assistance.\n\nOn tech stack:\n\n- DBMS: The product supports Oracle, SQL Server, DB2, MySQL, HSQL, and MS Access. The DB can live on the same machine as the app or on a separate host. The DB layer is configurable—no code changes to swap engines.\n- App server: We’ll deploy on Tomcat primarily; JBoss also works. Java SE/EE for the implementation.\n- Browser/Email: HTML UI tested across a broad set of browsers; we’ll aim for solid rendering across the majority. The app will use corporate email servers to send messages.\n\nWe’re also building in exception logging with a way to transmit logs when needed, delivering automatic security updates, and meeting accessibility standards. Performance/uptime targets are being tracked with Ops.\n\nRegards,\n\nAlex\n\n---\n\nEmail 7\nFrom: Serena <serena.sec@example.com>\nTo: Alex <alex.arch@example.com>, Dana <dana.product@example.com>\nCC: Priya <priya.itops@example.com>, Jordan <jordan.support@example.com>, Miguel <miguel.facilities@example.com>\nSubject: RE: RoomWise features — privacy and “user search by user” reminder\n\nTwo reminders from compliance:\n\n- The “manager reports” are fine, but any functionality that pulls reservations by user stays restricted to manager roles. Please don’t add debug endpoints that bypass this.\n- Exception logs: be careful with PII. If we’re going to transmit logs to the vendor, let’s define redaction/anonymization guidelines before we enable it.\n- Security fixes: we’ll need a safe path to deliver automatic updates for emerging threats; Ops and Sec can settle on the delivery approach.\n- Language and locale: user-selectable languages for our target markets and correct date/time formatting per locale. We’ll do acceptance checks with regional teams.\n- Accessibility: keyboard navigation and proper labeling—no last-minute scramble this time.\n\n— Serena\n\n---\n\nEmail 8\nFrom: Priya <priya.itops@example.com>\nTo: Dana <dana.product@example.com>, Alex <alex.arch@example.com>\nCC: Serena <serena.sec@example.com>, Jordan <jordan.support@example.com>, Miguel <miguel.facilities@example.com>\nSubject: RE: RoomWise rollout — install and maintenance reality check\n\nTeam,\n\nTwo practical points for rollout:\n\n1) Installation: In a typical office, a local admin should be able to install on a standard web server, point it to the DB (local or networked), configure email, and be done within two days—no custom code, no pro services.\n\n2) Maintenance: Annual maintenance release is fine, but the update needs to be quick—about five minutes for most customers. For critical security issues, use the automatic update path we’re planning with Sec.\n\nBonus: We’ll continue to offer both ZIP download and packaged CD. Also, the product should run for at least five years per site without major upheaval.\n\nThanks,\n\nPriya\n\n---\n\nEmail 9\nFrom: Dana <dana.product@example.com>\nTo: All\nSubject: RE: RoomWise rollout — action items & open items\n\nThanks all—capturing the current state and what’s left:\n\n- Licensing: server tiers (1, 2–5, 5+). Alex to confirm metering in clusters. [Open]\n- Distribution: Internet download (ZIP) + packaged CD (with checksums). Browser list (min 8) for QA [Open].\n- Install: ≤ 2 days in typical office (Java runtime, Tomcat/JBoss). No code changes required.\n- Platform/DB: Java SE/EE; runs alongside other services; DB local or networked; supports Oracle/SQL Server/DB2/MySQL/HSQL/Access; configurable without code change.\n- Email: Outbound to corporate servers for invites, reminders, confirmations.\n- Features: meeting records (agenda updates, meeting types, organizer contact), invitations, acknowledgements, add/update/delete rooms & equipment, search/filter rooms/equipment, live availability with “Available” indicator, immediate schedule update on reservation, record equipment reserved and transport status, notify building personnel, floorplans with room locations & equipment details, user-preferred notification channels (email now), organizer confirmation, manager reporting views with role limits (including user-by-user searches).\n- Usability/UI: brandable and conservative by default; user-selectable language; preferences for start page/view; familiar navigation; intuitive search; ADA compliance; clear confirmations; adoption and first-time success goals; locale-aware date/time formatting.\n- Performance/Resilience: 90% tasks <5s, 98% <8s; ~1,000 concurrent at launch; ~10k tx/hr near-term; high app uptime; stable multi-year operation; block malicious input without data loss/crashes; DB data matches user input; automatic security/threat updates; exception logging with secure transmit option.\n- Support/Ops: annual maintenance release; quick updater (~5 minutes for most); self-service support site with fast time-to-answer for the majority.\n\nOpen items: SMS scope (initial vs later), packaging type (.war vs .ear), automatic update delivery details, manager role mapping, map integration method, and privacy approach for logs.\n\n— Dana"
+    }
+  ],
+  "gold_requirements": [
+    {
+      "id": "PROMISE_6_R001",
+      "text": "The product must work with most database management systems (DBMS) on the market whether the DBMS is colocated with the product on the same machine or is located on a different machine on the computer network.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R002",
+      "text": "The product will function alongside server software on any operating system where the Java runtime can be installed.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R003",
+      "text": "The product will require collaboration with a database management system (DBMS). The DBMS may be located on the same machine as the product or on a separate machine residing on the same computer network.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R004",
+      "text": "The product must make use of web/application server technology. Open source examples include Apache web server Tomcat and the JBoss application server.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R005",
+      "text": "A database management system such as Oracle DB2 MySql or HSQL will need to be integrated with the product.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R006",
+      "text": "The product s Look and Feel shall be able to incorporate aspects of the customer s organization such as logo branding and identity",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R007",
+      "text": "The product shall have a conservative and professional appearance.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R008",
+      "text": "The product shall make the users want to use it. 80% of the users surveyed report they are regularly using the product after the first 2 weeks post-launch.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R009",
+      "text": "The product shall be easy to use. 90% of users will be able to successfully reserve a conference room within 5 minutes of product use.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R010",
+      "text": "The product shall give users feedback when necessary. 80% of the users surveyed report that the product accurately confirms their actions.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R011",
+      "text": "The product shall allow the user to select a chosen language from one of the target market countries.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R012",
+      "text": "The product shall allow for customization of start page and views preferences.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R013",
+      "text": "An employee will be able to successfully use the product within a few minutes. After informally navigating the product for less than 15 minutes users shall be able to successfully setup meetings and reserve conference rooms.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R014",
+      "text": "The product shall use a standard navigation menu familiar to most web users.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R015",
+      "text": "The product shall allow for intuitive searching of available conference rooms.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R016",
+      "text": "The product shall conform to the Americans with Disabilities Act.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R017",
+      "text": "The response shall be fast enough to avoid interrupting the user s flow of thought. 90% of tasks shall complete within 5 seconds. 98% of tasks shall complete within 8 seconds.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R018",
+      "text": "Aside from server failure the software product shall achieve 99.99% up time.",
+      "raw_label": "A",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R019",
+      "text": "The product shall create an exception log of problems encountered within the product for transmission to our company for analysis and resolution.",
+      "raw_label": "FT",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R020",
+      "text": "The product shall be capable of handling up to 1 000 concurrent requests. This number will increase to 2 000 by Release 2. The concurrency capacity must be able to handle peak scheduling times such as early morning and late afternoon hours.",
+      "raw_label": "SC",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R021",
+      "text": "The product shall be able to process 10 000 transactions per hour within two years of its launch. This number will increase to 20 000 by Release 2.",
+      "raw_label": "SC",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R022",
+      "text": "The product shall be expected to operate for at least 5 years for each customer installation.",
+      "raw_label": "SC",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R023",
+      "text": "The product shall be used in office environments.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R024",
+      "text": "The product must be able to interface with any HTML browser. The product shall transmit data between the user and the product without problems. The product shall display HTML properly in 80% of all HTML browsers tested (minimum is to test 8 browsers).",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R025",
+      "text": "The product must be able to interface with various database management systems. The product shall communicate successfully with the database management system on 100% of all transactions.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R026",
+      "text": "The product must be able to interface with various email servers. The product shall be able to send email.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R027",
+      "text": "The product shall be available for distribution via the Internet as a binary or ZIP file.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R028",
+      "text": "The product shall be available for distribution as a packaged CD.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R029",
+      "text": "The product will be available for licensing as a one-server two-five servers or five-or-more servers license.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R030",
+      "text": "A new user must be able to be added to the system within 10 minutes. 90% of new users are able to log into the system within 10 minutes.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R031",
+      "text": "The product must be designed using Design Patterns and coding best practices. 90% of maintenance software developers are able to integrate new functionality into the product with 2 working days.",
+      "raw_label": "MN",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R032",
+      "text": "The product must be highly configurable for use with various database management systems for the end users. 80% of end users are able to integrate new database management systems with the product without changing the product s software code.",
+      "raw_label": "MN",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R033",
+      "text": "Maintenance releases will be offered to customers once a year. The releases shall take no longer than 5 minutes for 80% of the customer base to install.",
+      "raw_label": "MN",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R034",
+      "text": "Every registered user will have access to the product s support site via the Internet. 70% of registered users shall find a solution to their problem within 5 minutes of using the support site.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R035",
+      "text": "The customer shall be able to easily integrate new building maps with the product throughout the product s lifecycle. Integration of new maps with the product shall be possible with little to no support from product support staff.",
+      "raw_label": "MN",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R036",
+      "text": "The product shall be translated into foreign languages other than the target market countries languages in future releases. For each emerging target market it shall take no more than 5 days to configure the product for that market s language.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R037",
+      "text": "The product is expected to integrate with multiple database management systems. The product will operate with Oracle SQL Server DB2 MySQL HSQL and MS Access.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R038",
+      "text": "The product shall be able to be installed in any operating environment within 2 days.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R039",
+      "text": "The product shall ensure that only company employees or external users with company-approved user IDs may have product access. 100% of all logons shall be by either company employees or external users with company-approved user IDs.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R040",
+      "text": "Only managers are able to perform search queries for reservations by user. 100% of all search queries for reservations by user shall be from logons of only management logons.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R041",
+      "text": "The product shall ensure that the database s data corresponds to the data entered by the user. Each conference room reservation in the system will contain the same information as was entered by the user.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R042",
+      "text": "The product shall prevent the input of malicious data. The product and/or adjacent hardware/software systems data shall remain 100% uncorrupted each time malicious data is input into the product.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R043",
+      "text": "The product and/or dependent databases/filesystems shall remain operational as a result of the input of malicious data. The product and/or dependent databases/filesystems shall not crash 100% of the time that malicious data is input into the product.",
+      "raw_label": "FT",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R044",
+      "text": "The product shall have the ability to receive automatic software updates as new threats emerge. 100% of customers will be able to receive automatic software updates transmitted to the installed product.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R045",
+      "text": "The language of the product shall accommodate all of the target market countries. 90% of survey respondents from each target market country will find that the language of the product is acceptable.",
+      "raw_label": "SC",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R046",
+      "text": "The product shall be able to display calendar dates and times according to the user s locale. 90% of survey respondents from each target market country will find that the date and time formatting of the product is correct.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R047",
+      "text": "The product must be developed with the J2SE/J2EE programming language libraries",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R048",
+      "text": "The product shall record meeting entries.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R049",
+      "text": "The product will notify employees of meeting invitations.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R050",
+      "text": "The product shall have the ability to send meeting reminders to employees.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R051",
+      "text": "The product shall assign the organizers contact information to each meeting they create.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R052",
+      "text": "The product will record meeting acknowledgements.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R053",
+      "text": "The product shall store new conference rooms.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R054",
+      "text": "The product shall update existing conference rooms.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R055",
+      "text": "The product will be able to delete conference rooms.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R056",
+      "text": "The product shall be able to store new room equipment.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R057",
+      "text": "The product will update existing room equipment.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R058",
+      "text": "The product shall be able to delete room equipment.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R059",
+      "text": "The product shall allow an organizer to invite other employees to meetings.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R060",
+      "text": "Each time a conference room is reserved the conference room schedule shall be updated to reflect the time and date of the reservation.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R061",
+      "text": "The product shall record the transportation status of equipment reserved.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R062",
+      "text": "The product shall display a map of the company building showing conference room locations.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R063",
+      "text": "The product shall record updated meeting agendas.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R064",
+      "text": "The product shall send a meeting confirmation to the meeting organizer.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R065",
+      "text": "The product shall display room equipment according to search parameters.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R066",
+      "text": "The product shall display conference rooms according to search parameters.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R067",
+      "text": "The product shall record different meeting types.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R068",
+      "text": "The product shall record all the equipment that has been reserved.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R069",
+      "text": "The product shall notify building personnel of equipment transport requests.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R070",
+      "text": "The product will allow priviledged users to view meeting schedules in multiple reporting views.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R071",
+      "text": "The product shall be able to send meeting notifications via different kinds of end-user specified methods.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R072",
+      "text": "The product shall have a customizable Look and Feel.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R073",
+      "text": "The product shall have an intuitive user interface.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_6_R074",
+      "text": "The product will display an available status for unreserved conference rooms.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    }
+  ],
+  "validation": {
+    "coverage_rate": 0.8514,
+    "missing_req_ids": [
+      "PROMISE_6_R008",
+      "PROMISE_6_R009",
+      "PROMISE_6_R010",
+      "PROMISE_6_R021",
+      "PROMISE_6_R024",
+      "PROMISE_6_R032",
+      "PROMISE_6_R033",
+      "PROMISE_6_R034",
+      "PROMISE_6_R036",
+      "PROMISE_6_R045",
+      "PROMISE_6_R046"
+    ],
+    "unsupported_count": 3,
+    "repair_rounds_used": 1,
+    "coverage_entries": [
+      {
+        "req_id": "PROMISE_6_R001",
+        "supported": true,
+        "evidence_snippets": [
+          "DB can be local to app or remote"
+        ],
+        "reason": "Multi-DB support and local/remote DB interoperability stated."
+      },
+      {
+        "req_id": "PROMISE_6_R002",
+        "supported": true,
+        "evidence_snippets": [
+          "runs where a JVM exists. OS agnostic"
+        ],
+        "reason": "Java/JVM support across Windows, Linux, macOS explicitly stated."
+      },
+      {
+        "req_id": "PROMISE_6_R003",
+        "supported": true,
+        "evidence_snippets": [
+          "DB can be local to app or remote"
+        ],
+        "reason": "Requires DB collaboration; same-machine or networked deployment noted."
+      },
+      {
+        "req_id": "PROMISE_6_R004",
+        "supported": true,
+        "evidence_snippets": [
+          "Default Tomcat; JBoss supported."
+        ],
+        "reason": "Specifies deployment on Tomcat or JBoss web/app servers."
+      },
+      {
+        "req_id": "PROMISE_6_R005",
+        "supported": true,
+        "evidence_snippets": [
+          "Oracle, SQL Server, DB2, MySQL, HSQL"
+        ],
+        "reason": "These specific database engines are listed for integration."
+      },
+      {
+        "req_id": "PROMISE_6_R006",
+        "supported": true,
+        "evidence_snippets": [
+          "customizable branding (logo/colors)"
+        ],
+        "reason": "Allows skinning with customer logo and colors."
+      },
+      {
+        "req_id": "PROMISE_6_R007",
+        "supported": true,
+        "evidence_snippets": [
+          "Default theme conservative/professional."
+        ],
+        "reason": "Requires a conservative, professional default appearance."
+      },
+      {
+        "req_id": "PROMISE_6_R008",
+        "supported": false,
+        "evidence_snippets": [
+          "large majority of surveyed users"
+        ],
+        "reason": "Mentions 'large majority' but does not specify 80% metric."
+      },
+      {
+        "req_id": "PROMISE_6_R009",
+        "supported": false,
+        "evidence_snippets": [
+          "reserve a room within ~5 minutes"
+        ],
+        "reason": "'Most users' target given, no 90% success-rate specified."
+      },
+      {
+        "req_id": "PROMISE_6_R010",
+        "supported": false,
+        "evidence_snippets": [
+          "show confirmations after actions"
+        ],
+        "reason": "Confirms need for confirmations but no 80% accuracy survey metric."
+      },
+      {
+        "req_id": "PROMISE_6_R011",
+        "supported": true,
+        "evidence_snippets": [
+          "user-selectable languages for target markets"
+        ],
+        "reason": "Meeting notes specify selectable languages for target markets."
+      },
+      {
+        "req_id": "PROMISE_6_R012",
+        "supported": true,
+        "evidence_snippets": [
+          "per-user start page and view preferences"
+        ],
+        "reason": "Sources state per-user start page and view preference customization."
+      },
+      {
+        "req_id": "PROMISE_6_R013",
+        "supported": true,
+        "evidence_snippets": [
+          "reserve a room within ~5 minutes on first use"
+        ],
+        "reason": "Goal: most users can reserve a room within about five minutes."
+      },
+      {
+        "req_id": "PROMISE_6_R014",
+        "supported": true,
+        "evidence_snippets": [
+          "standard web conventions",
+          "familiar web-style menus and flows"
+        ],
+        "reason": "Documents require familiar, standard web navigation and menus."
+      },
+      {
+        "req_id": "PROMISE_6_R015",
+        "supported": true,
+        "evidence_snippets": [
+          "filters for time, capacity, and equipment"
+        ],
+        "reason": "Search described as simple with time/capacity/equipment filters."
+      },
+      {
+        "req_id": "PROMISE_6_R016",
+        "supported": true,
+        "evidence_snippets": [
+          "align with disability access standards"
+        ],
+        "reason": "Accessibility requirements call for disability-access standards compliance."
+      },
+      {
+        "req_id": "PROMISE_6_R017",
+        "supported": true,
+        "evidence_snippets": [
+          "90% of standard tasks < 5s; 98% < 8s"
+        ],
+        "reason": "Performance targets explicitly state 90% <5s and 98% <8s."
+      },
+      {
+        "req_id": "PROMISE_6_R018",
+        "supported": true,
+        "evidence_snippets": [
+          "app-level uptime target ~99.99%"
+        ],
+        "reason": "Meeting notes specify a 99.99% app-level uptime target."
+      },
+      {
+        "req_id": "PROMISE_6_R019",
+        "supported": true,
+        "evidence_snippets": [
+          "capture exceptions and transmit logs securely"
+        ],
+        "reason": "Sources require exception logging and secure transmission to vendor."
+      },
+      {
+        "req_id": "PROMISE_6_R020",
+        "supported": true,
+        "evidence_snippets": [
+          "plan for ~1,000 concurrent requests at launch"
+        ],
+        "reason": "Concurrency targets state ~1,000 at launch, ~2,000 planned later."
+      },
+      {
+        "req_id": "PROMISE_6_R021",
+        "supported": false,
+        "evidence_snippets": [
+          "Throughput: around 10,000 transactions/hour"
+        ],
+        "reason": "Source lists 10k near-term but not 20k or two-year deadline."
+      },
+      {
+        "req_id": "PROMISE_6_R022",
+        "supported": true,
+        "evidence_snippets": [
+          "Longevity: stable operation ≥ 5 years"
+        ],
+        "reason": "Source explicitly requires five-year operation per install."
+      },
+      {
+        "req_id": "PROMISE_6_R023",
+        "supported": true,
+        "evidence_snippets": [
+          "typical office"
+        ],
+        "reason": "Multiple artifacts reference typical office deployment."
+      },
+      {
+        "req_id": "PROMISE_6_R024",
+        "supported": false,
+        "evidence_snippets": [
+          "Test matrix: at least 8 browsers"
+        ],
+        "reason": "Source requires mainstream browsers and eight tests, not 'any' or 80%."
+      },
+      {
+        "req_id": "PROMISE_6_R025",
+        "supported": true,
+        "evidence_snippets": [
+          "Multi-DB support: Oracle, SQL Server..."
+        ],
+        "reason": "Source mandates multi-DB support and reliable DB transactions."
+      },
+      {
+        "req_id": "PROMISE_6_R026",
+        "supported": true,
+        "evidence_snippets": [
+          "integrate with corporate SMTP for outbound"
+        ],
+        "reason": "Source requires email integration and sending notifications."
+      },
+      {
+        "req_id": "PROMISE_6_R027",
+        "supported": true,
+        "evidence_snippets": [
+          "Internet download (binary/ZIP)"
+        ],
+        "reason": "Source states distribution via Internet as binary/ZIP."
+      },
+      {
+        "req_id": "PROMISE_6_R028",
+        "supported": true,
+        "evidence_snippets": [
+          "packaged CD for the few clients"
+        ],
+        "reason": "Source mentions providing a packaged CD distribution option."
+      },
+      {
+        "req_id": "PROMISE_6_R029",
+        "supported": true,
+        "evidence_snippets": [
+          "Licensing: server-based tiers—single server; 2–5; 5 or more"
+        ],
+        "reason": "Source defines the one/2–5/5+ server licensing tiers."
+      },
+      {
+        "req_id": "PROMISE_6_R030",
+        "supported": true,
+        "evidence_snippets": [
+          "90% to log in within 10 minutes"
+        ],
+        "reason": "Source sets 90% target for login within ten minutes."
+      },
+      {
+        "req_id": "PROMISE_6_R031",
+        "supported": true,
+        "evidence_snippets": [
+          "employ design patterns and coding best practices"
+        ],
+        "reason": "Matches explicit design patterns and 90%/2-day maintenance goal."
+      },
+      {
+        "req_id": "PROMISE_6_R032",
+        "supported": false,
+        "evidence_snippets": [
+          "swap DB without code changes"
+        ],
+        "reason": "Configurable DB layer present, but no 80% end-user metric."
+      },
+      {
+        "req_id": "PROMISE_6_R033",
+        "supported": false,
+        "evidence_snippets": [
+          "Maintenance releases: annual cadence"
+        ],
+        "reason": "Annual releases and ~5min update claimed, but no 80% figure."
+      },
+      {
+        "req_id": "PROMISE_6_R034",
+        "supported": false,
+        "evidence_snippets": [
+          "majority find solutions within ~5 minutes"
+        ],
+        "reason": "Support site and ~5min goal exist, but 70% figure not stated."
+      },
+      {
+        "req_id": "PROMISE_6_R035",
+        "supported": true,
+        "evidence_snippets": [
+          "drop a file in or use an admin setup"
+        ],
+        "reason": "Explicitly requires easy map updates with minimal vendor help."
+      },
+      {
+        "req_id": "PROMISE_6_R036",
+        "supported": false,
+        "evidence_snippets": [
+          "add new markets without long lead time"
+        ],
+        "reason": "Languages and market plan noted, but no 5-day configuration claim."
+      },
+      {
+        "req_id": "PROMISE_6_R037",
+        "supported": true,
+        "evidence_snippets": [
+          "Oracle, SQL Server, DB2, MySQL, HSQL, MS Access"
+        ],
+        "reason": "Exact list of supported DBMS appears in multiple artifacts."
+      },
+      {
+        "req_id": "PROMISE_6_R038",
+        "supported": true,
+        "evidence_snippets": [
+          "up and running within two days"
+        ],
+        "reason": "Install target of two days is stated for typical deployments."
+      },
+      {
+        "req_id": "PROMISE_6_R039",
+        "supported": true,
+        "evidence_snippets": [
+          "Access limited to employees + pre-approved IDs"
+        ],
+        "reason": "Source explicitly forbids public sign-ups; logins must be approved."
+      },
+      {
+        "req_id": "PROMISE_6_R040",
+        "supported": true,
+        "evidence_snippets": [
+          "Manager-only ability to search reservations by user"
+        ],
+        "reason": "Manager-only reservation-by-user search and role enforcement specified."
+      },
+      {
+        "req_id": "PROMISE_6_R041",
+        "supported": true,
+        "evidence_snippets": [
+          "no silent truncation or auto-corrections"
+        ],
+        "reason": "Specifies stored data must equal user input."
+      },
+      {
+        "req_id": "PROMISE_6_R042",
+        "supported": true,
+        "evidence_snippets": [
+          "Malicious inputs: Validate and sanitize."
+        ],
+        "reason": "Requires input validation to prevent data corruption."
+      },
+      {
+        "req_id": "PROMISE_6_R043",
+        "supported": true,
+        "evidence_snippets": [
+          "do not crash and do not corrupt data"
+        ],
+        "reason": "Specifies system must not crash from malicious input."
+      },
+      {
+        "req_id": "PROMISE_6_R044",
+        "supported": true,
+        "evidence_snippets": [
+          "automatic updates for emerging security issues"
+        ],
+        "reason": "Calls for automatic delivery of security updates."
+      },
+      {
+        "req_id": "PROMISE_6_R045",
+        "supported": false,
+        "evidence_snippets": [
+          "user-selectable languages for target markets"
+        ],
+        "reason": "Languages supported, but no 90% per-country acceptance metric."
+      },
+      {
+        "req_id": "PROMISE_6_R046",
+        "supported": false,
+        "evidence_snippets": [
+          "date/time formatting per user locale"
+        ],
+        "reason": "Locale formatting specified, but no 90% survey metric."
+      },
+      {
+        "req_id": "PROMISE_6_R047",
+        "supported": true,
+        "evidence_snippets": [
+          "Java-based (J2SE/J2EE libs)"
+        ],
+        "reason": "Sources explicitly require J2SE/J2EE Java stack."
+      },
+      {
+        "req_id": "PROMISE_6_R048",
+        "supported": true,
+        "evidence_snippets": [
+          "Meeting records: create/update"
+        ],
+        "reason": "Meeting entries and records are explicitly required."
+      },
+      {
+        "req_id": "PROMISE_6_R049",
+        "supported": true,
+        "evidence_snippets": [
+          "send notifications (email at minimum)"
+        ],
+        "reason": "Invitations/notifications via email are required."
+      },
+      {
+        "req_id": "PROMISE_6_R050",
+        "supported": true,
+        "evidence_snippets": [
+          "send invitations and reminders"
+        ],
+        "reason": "Reminders are explicitly called out to be sent."
+      },
+      {
+        "req_id": "PROMISE_6_R051",
+        "supported": true,
+        "evidence_snippets": [
+          "organizer contact info"
+        ],
+        "reason": "Sources state meeting records include organizer contact."
+      },
+      {
+        "req_id": "PROMISE_6_R052",
+        "supported": true,
+        "evidence_snippets": [
+          "record attendee responses (accept/decline)"
+        ],
+        "reason": "Materials require recording attendee acknowledgements/responses."
+      },
+      {
+        "req_id": "PROMISE_6_R053",
+        "supported": true,
+        "evidence_snippets": [
+          "add/update/delete conference rooms"
+        ],
+        "reason": "Facility features explicitly allow adding rooms."
+      },
+      {
+        "req_id": "PROMISE_6_R054",
+        "supported": true,
+        "evidence_snippets": [
+          "add/update/delete conference rooms"
+        ],
+        "reason": "Sources explicitly require updating conference rooms."
+      },
+      {
+        "req_id": "PROMISE_6_R055",
+        "supported": true,
+        "evidence_snippets": [
+          "add/update/delete conference rooms"
+        ],
+        "reason": "Deletion of rooms is explicitly mentioned."
+      },
+      {
+        "req_id": "PROMISE_6_R056",
+        "supported": true,
+        "evidence_snippets": [
+          "Equipment: add/update/delete equipment"
+        ],
+        "reason": "Sources state ability to add/store room equipment."
+      },
+      {
+        "req_id": "PROMISE_6_R057",
+        "supported": true,
+        "evidence_snippets": [
+          "Equipment: add/update/delete equipment"
+        ],
+        "reason": "Updating existing equipment is explicitly required."
+      },
+      {
+        "req_id": "PROMISE_6_R058",
+        "supported": true,
+        "evidence_snippets": [
+          "Equipment: add/update/delete equipment"
+        ],
+        "reason": "Deletion of equipment is explicitly required."
+      },
+      {
+        "req_id": "PROMISE_6_R059",
+        "supported": true,
+        "evidence_snippets": [
+          "organizers invite participants"
+        ],
+        "reason": "Invitations by organizers are described (email notifications)."
+      },
+      {
+        "req_id": "PROMISE_6_R060",
+        "supported": true,
+        "evidence_snippets": [
+          "update the schedule immediately"
+        ],
+        "reason": "Immediate schedule updates on reservation prevent conflicts."
+      },
+      {
+        "req_id": "PROMISE_6_R061",
+        "supported": true,
+        "evidence_snippets": [
+          "track statuses (requested/in transit/delivered/returned)"
+        ],
+        "reason": "Transport requests include tracked statuses."
+      },
+      {
+        "req_id": "PROMISE_6_R062",
+        "supported": true,
+        "evidence_snippets": [
+          "display floorplans with room locations"
+        ],
+        "reason": "Floorplans with room locations are required."
+      },
+      {
+        "req_id": "PROMISE_6_R063",
+        "supported": true,
+        "evidence_snippets": [
+          "include agenda with updates recorded"
+        ],
+        "reason": "Agendas and their updates are explicitly recorded."
+      },
+      {
+        "req_id": "PROMISE_6_R064",
+        "supported": true,
+        "evidence_snippets": [
+          "system sends a confirmation to the organizer"
+        ],
+        "reason": "Organizer confirmation on booking is specified."
+      },
+      {
+        "req_id": "PROMISE_6_R065",
+        "supported": true,
+        "evidence_snippets": [
+          "reflect in search results based on filters"
+        ],
+        "reason": "Equipment appears in search results per filters."
+      },
+      {
+        "req_id": "PROMISE_6_R066",
+        "supported": true,
+        "evidence_snippets": [
+          "filters for time, capacity, equipment"
+        ],
+        "reason": "Room search supports filtering by parameters."
+      },
+      {
+        "req_id": "PROMISE_6_R067",
+        "supported": true,
+        "evidence_snippets": [
+          "meeting type classification"
+        ],
+        "reason": "Meeting type classification is part of records."
+      },
+      {
+        "req_id": "PROMISE_6_R068",
+        "supported": true,
+        "evidence_snippets": [
+          "associate it with the meeting"
+        ],
+        "reason": "Reserved equipment is associated with the meeting record."
+      },
+      {
+        "req_id": "PROMISE_6_R069",
+        "supported": true,
+        "evidence_snippets": [
+          "notify building personnel"
+        ],
+        "reason": "Transport requests must notify building personnel."
+      },
+      {
+        "req_id": "PROMISE_6_R070",
+        "supported": true,
+        "evidence_snippets": [
+          "privileged users can view schedules via multiple reporting views"
+        ],
+        "reason": "Manager/privileged multi-view schedule reporting is specified."
+      },
+      {
+        "req_id": "PROMISE_6_R071",
+        "supported": true,
+        "evidence_snippets": [
+          "Users should be able to pick their preferred way"
+        ],
+        "reason": "Users can choose notification channels; email is minimum."
+      },
+      {
+        "req_id": "PROMISE_6_R072",
+        "supported": true,
+        "evidence_snippets": [
+          "customizable branding (logo/colors)"
+        ],
+        "reason": "Explicit request to skin UI with logo and colors."
+      },
+      {
+        "req_id": "PROMISE_6_R073",
+        "supported": true,
+        "evidence_snippets": [
+          "Navigation: familiar web-style menus and flows"
+        ],
+        "reason": "Spec calls for familiar, intuitive navigation and search."
+      },
+      {
+        "req_id": "PROMISE_6_R074",
+        "supported": true,
+        "evidence_snippets": [
+          "show \"Available\" for unreserved rooms"
+        ],
+        "reason": "Sources require an explicit Available indicator for free rooms."
+      }
+    ],
+    "unsupported_implied": [
+      {
+        "text": "The product must integrate with the corporate directory or support SSO/directory-sync so that every login ties back to the company directory or a pre‑approved guest ID.",
+        "source_snippet": "\"Every login must tie back to our directory or a pre-approved guest ID.\"",
+        "source_type": "interview_transcript",
+        "reason": "The source explicitly requires logins to be tied to the corporate directory or pre‑approved guest IDs and mentions directory sync/SSO as a desired mechanism. The gold set requires that only employees or approved external users may log in but does not require directory integration or SSO/directory‑sync as the authentication mechanism."
+      },
+      {
+        "text": "Exception log transmission must include secure transmission and built‑in PII redaction/anonymization before logs are sent to vendor support.",
+        "source_snippet": "\"Exception logging: capture exceptions with enough context for diagnosis; provide a way to transmit logs securely to vendor support. Privacy approach [TBD].\"",
+        "source_type": "meeting_notes",
+        "reason": "While the gold set requires creation/transmission of exception logs, the source adds a requirement for secure transmission and explicit redaction/anonymization of PII in logs. The gold requirements do not specify secure transport or PII redaction guidelines for transmitted logs."
+      },
+      {
+        "text": "Notifications to building/facilities personnel must include delivery tracking (confirming that the alert was sent to the designated distribution lists).",
+        "source_snippet": "\"Send it to our designated lists and track that the alert went out.\"",
+        "source_type": "email_thread",
+        "reason": "The gold set requires notifying building personnel of equipment transport requests but does not require tracking or confirming that those notification messages were actually delivered to designated lists. The source explicitly demands delivery tracking as part of the notification behavior."
+      }
+    ],
+    "passed": false
+  },
+  "brief": {
+    "project_name": "RoomWise",
+    "domain": "Workplace scheduling and facilities management",
+    "users": [
+      "Employees scheduling meetings",
+      "Meeting organizers",
+      "Facilities/building staff",
+      "Managers with oversight privileges",
+      "IT administrators",
+      "Approved external guests"
+    ],
+    "stakeholders": [
+      "Facilities manager",
+      "CIO / IT operations lead",
+      "Security and compliance officer",
+      "DBA / systems architect",
+      "Support/helpdesk lead",
+      "Executive sponsor / product owner"
+    ],
+    "business_goals": [
+      "Streamline booking of rooms and equipment to reduce conflicts and no-shows",
+      "Keep staff informed with timely invitations, confirmations, and reminders",
+      "Provide managers visibility into schedules via reporting views",
+      "Support rapid enterprise rollout across diverse IT environments",
+      "Scale for peak office usage while maintaining fast response times",
+      "Enable global teams with multilingual and locale-aware experiences"
+    ],
+    "core_features": [
+      "Create, update, and track meetings with agendas, types, organizer contact, and acknowledgements",
+      "Invite participants and deliver notifications/reminders via user-preferred channels",
+      "Manage conference rooms and equipment inventories (add, edit, delete)",
+      "Search and filter rooms/equipment; show real-time availability and update schedules on reservation",
+      "Display building floorplans with room locations and equipment details",
+      "Record equipment transport requests and alert building personnel",
+      "Brandable UI and user preferences for start page and views; multiple reporting views for privileged users"
+    ],
+    "quality_concerns": [
+      "Usability and adoption: intuitive navigation, clear confirmations, quick onboarding for new users",
+      "Performance and scalability: sub‑second to few‑seconds responses, high concurrency, and high hourly throughput at peak times",
+      "Reliability and longevity: near‑continuous availability and multi‑year stable operation per installation",
+      "Security and data integrity: employee/approved‑ID access only, manager‑only sensitive queries, robust input validation with no corruption or crashes, automatic threat updates",
+      "Accessibility: interface compliant with disability access standards",
+      "Internationalization: selectable languages per market and correct locale date/time formatting",
+      "Operability and maintainability: design‑pattern‑based code, easy DBMS/map configuration without code changes, fast maintenance updates, exception logging and effective self‑service support"
+    ],
+    "constraints": [
+      "Implemented on Java SE/EE and deployable on standard web/app servers (e.g., Tomcat/JBoss) on any OS with a JVM",
+      "DBMS‑agnostic integration (e.g., Oracle, SQL Server, DB2, MySQL, HSQL, MS Access) whether local or networked",
+      "Compatible with common HTML browsers for correct rendering and data exchange",
+      "Interoperates with corporate email servers for outbound messages",
+      "Distributed as Internet downloads (binary/ZIP) and as packaged media",
+      "Server‑based licensing tiers (single, 2–5, and 5+ servers)",
+      "Installable in typical office environments within two days"
+    ],
+    "terminology": [
+      "Organizer",
+      "Conference room",
+      "Equipment (e.g., A/V devices)",
+      "Transport request",
+      "Building map/floorplan",
+      "Availability status",
+      "Privileged user",
+      "DBMS"
+    ]
+  },
+  "metadata": {
+    "project_id": "6",
+    "req_count": 74,
+    "label_dist": {
+      "O": 15,
+      "LF": 2,
+      "US": 13,
+      "PE": 1,
+      "A": 1,
+      "FT": 2,
+      "SC": 4,
+      "MN": 4,
+      "SE": 5,
+      "F": 27
+    },
+    "llm_usage": {
+      "total_calls": 104,
+      "total_input_tokens": 567707,
+      "total_output_tokens": 342303
+    }
+  }
+}

@@ -1,0 +1,124 @@
+TYPE  : interview_transcript
+TITLE : Stakeholder Interview on the PROMISE Exercise Wallboard (revised)
+UNIT  : PROMISE_1
+============================================================
+
+Karen [Exercise Director]: Thanks for making time. The wallboard has to give us a live shared picture of what's happening and what's supposed to be happening, and it needs to be readable when we project it. People in the back of the room should immediately see what is happening now, even if they can’t read every line of text from that distance.
+
+Luis [Operations Planner]: Agreed. The goal is to stop flipping through the MSEL and the sync matrix printouts. We keep saying one pane of glass—really a split view: graph and list side by side. I want the left two-thirds to be the visual timeline and the right third a vertical table sorted by time.
+
+Mia [Observer/Controller]: And please, when we say timeline, it has to show both Events and Activities. I track things like Comm Check 3 and inject deliveries along with milestone moments. I don’t want just the headline events.
+
+Devon [Data Manager]: I can bring in the MSEL Summary from the planning tools. Just to level set, the board will display the summary fields: title, planned start, planned duration, venue, and the key event flag. That keeps the wallboard consistent with what we already maintain.
+
+Priya [IT Administrator]: Branding reminder: we must stick to the DHS color palette—no neon because it looks good on a projector. The UI and fonts have to meet our brand guidance.
+
+Karen [Exercise Director]: I’m fine staying within the palette, but color needs to carry meaning. I want to know at a glance what’s late, on time, or early. If something drifts fifteen minutes behind, it should catch my eye—within the approved colors.
+
+Luis [Operations Planner]: Layout-wise, left two-thirds is the timeline; right one-third is the time-ordered list. The right list should be split: top slice reserved for sequence-driven items we must do in order, and the lower portion focused on the items right around now.
+
+Devon [Data Manager]: Exactly. Think of the top quarter as the sequence queue. The bottom three quarters shows items near the current time—things that just happened and what’s coming up next.
+
+Mia [Observer/Controller]: In the heat of an exercise I want to glance and see the next few items in the next half hour and the last few that finished, plus a small, fixed area for the sequence tasks we follow regardless of exact timestamp.
+
+Karen [Exercise Director]: And we need a strong indicator for now. When this is projected, people 30 feet back should be able to read the items, and from the very back of an auditorium you should still understand where we are on the schedule because the now indicator is unmistakable.
+
+Priya [IT Administrator]: Let’s schedule a projector test for legibility—font sizes, contrast, and the now marker visibility. Also, the color contrast needs to meet accessibility guidance while staying inside the DHS palette.
+
+Devon [Data Manager]: On the visuals, let’s put a clear now line on the timeline and maybe shade past vs future in the list. That should help people orient quickly.
+
+Mia [Observer/Controller]: The timeline needs to lay things out by time in a way that makes longer activities and quick checkpoints clear enough. As long as it communicates timing cleanly, I’m happy.
+
+Luis [Operations Planner]: And the list stays in ascending time order. The graph and the list should always reflect the same items so there’s no confusion.
+
+Karen [Exercise Director]: We’ll also need filtering. Venue-based views are important—airport vs hospital, etc.—and sometimes I want only key events. Other times I want an all-events view, especially for hotwash to scan the whole day.
+
+Mia [Observer/Controller]: It would also help to pick the time window or granularity—like 5, 15, or 30 minute grid—so density makes sense for what we’re doing.
+
+Devon [Data Manager]: We can expose user-defined time segments and grid granularity. Users could define morning, lunch, afternoon, and choose the grid they want.
+
+Priya [IT Administrator]: Mind performance while you do that. We’re targeting roughly a one-minute auto update. It should pull fresh data and repaint smoothly without feeling heavy.
+
+Karen [Exercise Director]: And during briefings we sometimes want to freeze the screen. We need a Pause and a Resume so the board doesn’t shuffle while someone is talking, and it should be obvious when it’s paused.
+
+Luis [Operations Planner]: Also, show both clocks: local time and exercise time. We almost always run an exercise clock that’s different than real time.
+
+Mia [Observer/Controller]: Yes—people arrive late to injects if they follow their phone instead of the exercise clock.
+
+Devon [Data Manager]: Data source-wise, we’ll pull from the current Sync Matrix 1.0 and the Exercise Management Tool 1.0. No double entry—no standalone spreadsheet.
+
+Karen [Exercise Director]: If someone clicks an item on the wallboard, they should be able to jump to the source record to make edits in the original app. Deep links are fine; we’re not editing in the wallboard.
+
+Priya [IT Administrator]: Deep links are okay, and the wallboard itself should be behind our normal sign-in. It should not show data to anyone who isn’t authorized internally. The source apps will enforce their own access when people follow links.
+
+Mia [Observer/Controller]: That’s fine—as long as clicking opens the exact record in the source app, and those who have access there can make the change.
+
+Luis [Operations Planner]: We’d like to tweak the display a bit on the fly—pick which columns show on the right list, hide a column if the screen is crowded. Nothing heavy; just session-level display adjustments.
+
+Priya [IT Administrator]: Light customization is acceptable. Stay within brand and keep it simple for end users.
+
+Karen [Exercise Director]: Reliability is important. During normal business hours when we’re running training, I want it up and not flaky. Let’s plan maintenance for off-hours. Early on, I’d like availability somewhere around 99 percent during those hours.
+
+Devon [Data Manager]: On analytics, if we capture actual times, we can compare planned vs actual. A simple chart of actual vs planned will help in the after-action review.
+
+Mia [Observer/Controller]: And a change history would help—seeing what changed and when during the day so we can explain any schedule drift.
+
+Luis [Operations Planner]: Let’s keep export out of scope for now. Just an in-app history view is enough.
+
+Priya [IT Administrator]: Agreed—no export in the first go. Also, to reiterate on security, the wallboard should only display to signed-in, authorized staff.
+
+Karen [Exercise Director]: Training-wise, we don’t have time for long courses. New users should be able to launch the board and find what they need well under two hours the first time they touch it.
+
+Mia [Observer/Controller]: Make it obvious—big play/pause for auto-refresh, clear venue and key-event filters. The rest is straightforward.
+
+Devon [Data Manager]: Default refresh at 60 seconds sounds good. Pause should suspend updates and Resume should snap everything back to current exercise time.
+
+Luis [Operations Planner]: On views, can we make All Events the default, then let people pick a venue and toggle key events?
+
+Karen [Exercise Director]: Yes, and keep the timeline and list synchronized. If the exercise clock says 11:15, both panels should reflect that.
+
+Priya [IT Administrator]: Label the two clocks clearly—local time and exercise time.
+
+Mia [Observer/Controller]: One more thing: the ahead/behind indicator needs to use the exercise clock as the reference for planned vs actual, not local time.
+
+Devon [Data Manager]: Right—the variance calculation should key off the exercise time.
+
+Luis [Operations Planner]: About time segments, let us name them—morning, lunch, afternoon—and switch the view accordingly.
+
+Karen [Exercise Director]: Works for me. And for readability, plan a projector test so we confirm most people can read it from about 30 feet, and that the now indicator is unmistakable even farther back.
+
+Priya [IT Administrator]: I’ll book that test. Also, let’s integrate only with Sync Matrix 1.0 and EMT 1.0 for the first release. We’ll verify the deep-link routes for those.
+
+Mia [Observer/Controller]: That’s the set we use now, right? Good.
+
+Karen [Exercise Director]: On uptime, if we’re running nine to five, the board should keep itself current on about a one-minute cadence—no one should have to babysit the refresh.
+
+Priya [IT Administrator]: The app should handle that cadence smoothly.
+
+Luis [Operations Planner]: On colors, strong signals help. If the approved tones aren’t super bright, we can combine color with a small icon or label so late items stand out within the palette.
+
+Devon [Data Manager]: I’ll draft the concept: left-right split, top quarter on the right for sequence items, bottom area near-now items. All driven by MSEL Summary, with references back to source IDs.
+
+Karen [Exercise Director]: Don’t forget the key events toggle. Leadership likes a clean view.
+
+Luis [Operations Planner]: All-events by default, venue views available, key events as a toggle—got it.
+
+Mia [Observer/Controller]: And please include the simple actual-vs-planned chart for after action. In-app is fine.
+
+Priya [IT Administrator]: That can be a separate tab or panel, read-only.
+
+Devon [Data Manager]: For traceability, we’ll present a changes report listing what shifted in the event/activity data the board consumes—timestamps and who made the change when that information is provided by the sources.
+
+Karen [Exercise Director]: Perfect—that will help explain schedule drift.
+
+Luis [Operations Planner]: I’ll sketch the prototype with the dual-pane layout and the two clocks. We’ll try the Pause control in the briefing room.
+
+Mia [Observer/Controller]: One more on terminology: people kept saying MDI, but we just mean a split view in one window. As long as it’s left-right, I’m good.
+
+Priya [IT Administrator]: Yes—single window, split into panes. No pop-ups.
+
+Devon [Data Manager]: I’ll document the field mapping from Sync Matrix 1.0 and EMT 1.0 and confirm the deep links. And note that links will only work once you’re signed in to the source apps.
+
+Karen [Exercise Director]: Let’s lock the refresh at roughly every 60 seconds with a clear paused state when paused. That should prevent confusion.
+
+Luis [Operations Planner]: Sounds good. Let’s regroup after the projector test.

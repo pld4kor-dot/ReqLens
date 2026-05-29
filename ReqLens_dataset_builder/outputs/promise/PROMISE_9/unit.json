@@ -1,0 +1,553 @@
+{
+  "id": "PROMISE_9",
+  "origin": "PROMISE",
+  "created_at": "2026-05-23T15:05:48.355209+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Discovery Interview: LeadWash Relay triage and vendor returns",
+      "text": "Priya [Technical operations engineer]: Thanks everyone for joining on short notice. I just want to make sure we’re all aligned on what “LeadWash Relay” is supposed to do end-to-end. We’ve heard the goals: we pull in leads through our web service, we validate them, score them, route them—high, medium, low—and then we either hand them to the Enterprise CRM or return them to the source vendor. That’s the gist, right?\n\nMaria [Enrollment Coordinator]: Yeah, that’s the flow. And for the medium ones—like, not obviously great but not junk—I need those to land in eLeads so I can review. I don’t want to have to dig. They should just show up in my queue with a quick note about what tripped it up so I can make the call.\n\nJason [Admissions Representative]: Sorry, can I jump in? For the good ones, I’m expecting they get assigned to a rep before they show up in the CRM. Because our ARA thing needs a name attached. Otherwise they ping-pong around and we lose time.\n\nAsha [Corporate/School parameter administrator]: Right, and those routing decisions have to follow the parameters Corporate sets, and in some cases the individual school tweaks. Contactability criteria vs academic fit—those are separate components that roll up into the total score. We need both considered, not just one or the other.\n\nSam [Vendor partner operations contact]: On our side, we just need to know when something’s rejected, why. Like, don’t just say “no good.” If you kick it back, include the reason and the actual payload we sent so I can match it to our system. Otherwise credit disputes get ugly.\n\nPriya [Technical operations engineer]: Got it. Before we go too far, a couple of constraints. We have to run this inside our existing web services infrastructure. No new platform, no shiny external queue. Also, intake format has to be neutral—like XML. Please, no vendor-specific schemas locked to a particular SaaS. We’ll publish an XSD.\n\nSam [Vendor partner operations contact]: Yeah, XML is fine. Just don’t change the schema every other week. Oh, and if we send JSON… I mean, can we send JSON instead? It’s what our newer partners prefer.\n\nPriya [Technical operations engineer]: For now, no. We’re constrained by what ops supports. It’s the neutral XML that’s already deployed. We can revisit later, but not in this phase.\n\nJason [Admissions Representative]: When you say “assigned to a rep,” do you mean as soon as it’s scored high? Because ARA needs to make the decision within, like, a few minutes.\n\nPriya [Technical operations engineer]: Exactly. Our total cycle is tightly timed. During the day—8 to 8 Central—we have a looser target, but still fast. Off-hours are actually stricter because there’s less human involvement. We also have a micro target: the washing step should usually complete in, give or take, under half a minute for almost everything. If it runs longer, we’re going to log that as an exception.\n\nMaria [Enrollment Coordinator]: What’s “washing” again? Is that just the validation part?\n\nAsha [Corporate/School parameter administrator]: Washing is both validation and scoring. First we check if the fields are filled in—email, phone, program interest—then we compute the score from contact info and academic signals. Then we apply thresholds: high goes across, medium to EC queue, low back to vendor.\n\nSam [Vendor partner operations contact]: Okay, so if it’s low, you send it back to us. I want the reason. Ideally, exact reason codes: “invalid phone,” “degree mismatch,” whatever.\n\nPriya [Technical operations engineer]: We’ll include a clear reason when we push it back. And we’ll echo the original lead payload so you can reconcile.\n\nJason [Admissions Representative]: Sorry, I’m just stuck on timing. If the whole journey takes too long, ARA won’t assign someone in time and we’ll miss our SLA. I remember something like, the rep should be on it within three minutes, start to finish. Is that still true?\n\nPriya [Technical operations engineer]: Yes, we need to keep the total lifecycle within that boundary so ARA can make its choice and stamp the lead with a rep. That’s why we’re keeping the per-lead evaluation tight. Also, the nightly or periodic feed that gives us which reps are available for new inquiries—that needs to be in place so we’re not picking from stale data.\n\nAsha [Corporate/School parameter administrator]: That list—availability—where do we get it? The Enterprise CRM pushes us a file? Or are we polling an API?\n\nPriya [Technical operations engineer]: The CRM team provides a periodic list—an export on a schedule. We ingest that, store who’s available. Then when a lead comes in, before we hand it over, we stamp the rep.\n\nJason [Admissions Representative]: Good. Because nothing frustrates me more than a lead that comes in “unassigned” and then sits.\n\nMaria [Enrollment Coordinator]: And for my queue—medium ones—can we make sure they don’t get lost if the CRM thinks it’s a duplicate? Like, I’ve had instances where the system just flags potential duplicates and then… poof.\n\nPriya [Technical operations engineer]: On the duplicate point, when the Enterprise system returns “hey, this might be a dupe,” we’ll store that flag on our side. We don’t overwrite; we keep the potential duplicate details so you can still act.\n\nSam [Vendor partner operations contact]: If you say it’s a duplicate and you reject it for that, are you giving us that reason too? We need to challenge duplicates sometimes.\n\nAsha [Corporate/School parameter administrator]: Not every potential duplicate leads to rejection. But if it does get rejected, yes, the vendor should get the rationale.\n\nMaria [Enrollment Coordinator]: And parameters—you keep saying “thresholds.” When do you change those? Because if Corporate decides to prioritize a new program, I don’t want a surprise mid-day.\n\nAsha [Corporate/School parameter administrator]: We update washing parameters during designated maintenance windows. That’s been the governance from Corporate. No mid-day random changes. Also, I don’t let just anyone do it. There’s authentication and role checks in the admin tool. School admins can tweak only their parts.\n\nPriya [Technical operations engineer]: Right, we’ll build an admin UI for maintaining those settings, and we’ll enforce roles. Changes are restricted to maintenance windows—we’ll coordinate them so folks know ahead of time.\n\nJason [Admissions Representative]: On the scoring: Are we just guessing, or is it formal? Like, what contributes? GPA? Degree interest?\n\nAsha [Corporate/School parameter administrator]: It’s formal. Two main components: contactability (valid email, phone, time zone alignment, etc.) and academic fit (prior education, program, start date). They combine into a total score. Corporate sets base weights, schools adjust within ranges.\n\nSam [Vendor partner operations contact]: If our lead fails your “contactability” because of typo in email, is that an automatic low? Or do you just mark it medium and let Maria decide?\n\nAsha [Corporate/School parameter administrator]: Depends on thresholds. If both contact and academic score are low, it’s a return. If one is solid and the other borderline, that’s the medium bucket for manual review.\n\nMaria [Enrollment Coordinator]: I’m okay with that. Just show me in eLeads what was weak—like “email failed validation”—so I can see quickly.\n\nPriya [Technical operations engineer]: For validation, basic structure: check required fields, verify email and phone formats, ensure the program code exists. If it fails basic checks, that’s an immediate return. We still persist it, but route back.\n\nSam [Vendor partner operations contact]: You said you persist it even if you reject? That’s fine. I mean, do not lose the record. We’ll ask for an audit trail when we request a credit.\n\nPriya [Technical operations engineer]: Yes, everything that hits the web service gets stored. Even the lows we send back, we’ll keep a copy.\n\nJason [Admissions Representative]: And the highs—those should go to the CRM with the score. Don’t strip the score out. It helps my manager to see why I got it.\n\nPriya [Technical operations engineer]: We can include the score when we send to the Enterprise system for the high tier, no problem.\n\nSam [Vendor partner operations contact]: On credits, quick question. When you reject as invalid, do you expect us to review and confirm? Or is this just unilateral?\n\nAsha [Corporate/School parameter administrator]: The vendor needs to confirm invalids on their side. It’s not unilateral. Then you submit a record for a credit that Finance applies in the billing system. That’s the process.\n\nSam [Vendor partner operations contact]: Okay, so we’ll have a workflow. We’ll mark it accepted as invalid. Then we generate a credit file. Where does that go? To the Enterprise billing system, right?\n\nPriya [Technical operations engineer]: Correct. There’s an interface you already use. We just need to ensure the reason codes line up.\n\nMaria [Enrollment Coordinator]: I have a dumb question. Off-hours—who’s watching? If it’s strict timing then, do we have alerts if things slow down?\n\nPriya [Technical operations engineer]: We’ll have logs and defect reports that ops can see at any hour. If washing takes longer than expected—say, over that 25-second benchmark—we’ll record the occurrence and duration. Overnight, support will watch the dashboards.\n\nJason [Admissions Representative]: Can I see those reports? Or is it just IT?\n\nPriya [Technical operations engineer]: Primarily technical teams, but we can share summaries. The detailed defect reporting is for ops 24/7 though.\n\nSam [Vendor partner operations contact]: Actually, wait—if you’re logging all this, can you also push us a daily list of rejected leads with reasons? So we don’t have to hit an API each time?\n\nPriya [Technical operations engineer]: For launch we’re sticking to real-time returns only. You’ll get the rejection immediately with the reason and your payload echoed back. We can revisit any kind of summary later.\n\nAsha [Corporate/School parameter administrator]: Speaking of immediate: do not let the washing step get bogged down by duplicate checks with the CRM. If the CRM is slow to respond, we should still keep within our deadline for assignment. Maybe mark it and proceed when possible.\n\nPriya [Technical operations engineer]: We will call out-of-band if necessary, but yes, 97 percent of the time or better, washing must finish within that sub-30-second window. Slow ones get flagged. For duplicates, the Enterprise system will sometimes respond later with a potential match; we store it then.\n\nMaria [Enrollment Coordinator]: Sometimes the Enterprise system says, “Potential duplicate found,” and then nothing else happens. Please make sure I can see that flag in eLeads.\n\nPriya [Technical operations engineer]: Noted. We’ll store potential dupes and make sure that flag is visible so your team isn’t blind to it.\n\nJason [Admissions Representative]: Another thing, the daily window. I heard someone say five minutes during the day for most leads from first touch to fully handed off? And at night it’s tighter because we don’t have manual steps? That seems backward.\n\nAsha [Corporate/School parameter administrator]: It sounds counterintuitive, but yes. Off-hours we lean on automation, so the expectation is most leads go through faster. Daytime tolerates a little more variance because humans intervene for the middle bucket.\n\nSam [Vendor partner operations contact]: Can I go back to format? You’ll take XML. Will you reject if an optional field is missing? Because some vendors don’t collect, say, middle name.\n\nPriya [Technical operations engineer]: Optional fields won’t cause rejection. Only required fields and validations. We can publish a list.\n\nMaria [Enrollment Coordinator]: For the medium bucket in eLeads, can we add a “verify and push” button? So when I clear something, it goes on its way without me filing a ticket.\n\nPriya [Technical operations engineer]: That’s the plan: a manual verification step triggers the rest of the flow.\n\nJason [Admissions Representative]: And those “verified” still get a rep assigned before we push to the CRM, right?\n\nPriya [Technical operations engineer]: Yes. Before submitting to the Enterprise system, we assign a rep using the latest available list, then hand it off.\n\nSam [Vendor partner operations contact]: If we dispute a rejection, do we submit a new lead or a correction?\n\nAsha [Corporate/School parameter administrator]: That’s outside this scope. But for credits, the expectation is you verify invalids and then submit a credit record for billing. Disputes would be a separate process through partner ops.\n\nMaria [Enrollment Coordinator]: I’m curious, who can change the thresholds? Last time we had an issue where someone bumped the minimum for academic fit and we didn’t know until leads dried up.\n\nAsha [Corporate/School parameter administrator]: Only designated admins. The tool will require authentication and check that the user has rights. And we’ll limit changes to the maintenance window.\n\nPriya [Technical operations engineer]: On that note, we’re not going to have ad hoc Saturday tweaks unless scheduled. We’ve had too many incidents from surprise changes.\n\nJason [Admissions Representative]: Are we sure we can handle the volume? If we promise that almost all leads finish washing in under half a minute, at lunchtime spikes, can we keep up?\n\nPriya [Technical operations engineer]: We’ll scale within the current web service cluster. We can tune thread pools. But we’re not adding new infrastructure. The target is achievable. And when we miss, we’ll log it precisely—how long, what step.\n\nSam [Vendor partner operations contact]: And we get an immediate response for low scores? Or do we wait for some batch to tell us?\n\nPriya [Technical operations engineer]: Immediate. The web service will reply with acceptance or rejection, and if rejected, the reason and the lead data you sent.\n\nMaria [Enrollment Coordinator]: I’m good as long as my eLeads view is clean and timely. Mediums should be there quickly, not 10 minutes later.\n\nPriya [Technical operations engineer]: They’ll land within the total workflow time. The gating factor is your review, of course.\n\nAsha [Corporate/School parameter administrator]: Keep the scoring components distinct in the engine so we can adjust weights, but we don’t need to over-complicate the displays.\n\nJason [Admissions Representative]: Yeah, managers just want the overall score included when it gets to CRM. That’s enough context for us.\n\nSam [Vendor partner operations contact]: One more thing, and I’ll be quiet: when we accept an invalid and send a credit record, can we get confirmation that it’s been applied? Our finance reconciles monthly.\n\nPriya [Technical operations engineer]: From our side, we push the credit validation into the Enterprise billing interface. Confirmation comes from Finance’s system per their schedule.\n\nMaria [Enrollment Coordinator]: Last thing from me: can someone remind me what “ARA” stands for? I know what it does, I just always forget the acronym.\n\nAsha [Corporate/School parameter administrator]: Auto Rep Assignment. It’s the bit in the Enterprise CRM that chooses who gets the lead.\n\nJason [Admissions Representative]: And we want ARA to kick in only on the high ones. The mediums wait for Maria; the lows don’t get to us.\n\nPriya [Technical operations engineer]: Correct. High score triggers the CRM path. Medium goes to eLeads for EC review. Low returns to vendor with reason. We’ll make sure that is deterministic based on the thresholds you provide, Asha.\n\nAsha [Corporate/School parameter administrator]: I’ll document the initial thresholds by school and corporate standard weights.\n\nSam [Vendor partner operations contact]: And you’ll keep the schema stable, right? Last time you updated a namespace and broke our integration on a Friday night.\n\nPriya [Technical operations engineer]: We’ll communicate changes and only deploy within scheduled windows. Also, defect and issue reports will be accessible to our technical on-call around the clock, so if something breaks after hours, we’ll see it.\n\nJason [Admissions Representative]: Okay, seems like we’re aligned. Make it fast, make it clear, get it to the right people, and don’t lose anything in between.\n\nPriya [Technical operations engineer]: That’s the plan. I’ll write up what we discussed and map it to the timelines and constraints we have, especially the daytime vs off-hours expectations and the 3-minute ARA alignment.\n\nMaria [Enrollment Coordinator]: Great. And if you can add a note about duplicates visibility, I’ll sleep better.\n\nPriya [Technical operations engineer]: Will do. Thanks, everyone."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "Ops/Design Working Session — LeadWash Relay Routing & SLAs",
+      "text": "Date: 2025-03-19\nLocation: Teams Call (https://meet.company.com/leadwash-relay)\nAttendees: Priya (Tech Ops Eng), Asha (Corp/School Param Admin), Maria (EC), Jason (Admissions Rep), Owen (IT Ops/SRE), Carla (Marketing Acq) [joined late], Nadine (Enterprise CRM liaison) [left early]\n\n— Notes are rough, live-typed. Some items are TBD. Some numbers missing context. Check with Finance and CRM after. —\n\nAgenda\n- Intake + validation checks\n- Scoring components & thresholds by school\n- Routing (high/medium/low)\n- ARA alignment + rep assignment timing\n- Vendor returns, credits, billing\n- Performance, logging, and reporting (day vs off-hours)\n- Admin tool permissions + maintenance\n\nIntake & Validation\n- Must accept leads via existing web service infra (no new gateway). Ops wants same load balancer + certs. [?]\n- Inbound format: neutral, non-binding (XML/XSD). JSON? —> not this phase. Sam’s vendors to adapt.\n- Validate: required fields present (email, phone, program code, campus/online flag?), formats. Program code must be known (see CRM list).\n- If validation fails: reject immediately. BUT still persist record (for audit, credit tracking). “Insert all leads captured” phrasing used.\n- Carla asked if we can do auto-correction (e.g., strip spaces in phone). Priya: Keep validation strict; do not alter lead content materially. We will not perform automatic corrections in v1. [TBD doc of required/optional fields]\n\nScoring Engine\n- Two parts: contact score + academic score = total. Weighting by Corporate baseline; schools allowed to tweak within bounds.\n- Asha to provide ranges for high/medium/low cutoffs per school (e.g., total >= X —> high). Numbers in draft: H 80+, M 50–79, L < 50 [NOT decided yet].\n- Corporate vs school params: different weight for certain programs (e.g., Nursing gets higher academic weight?). Keep param-driven.\n- Transparency ask: ensure the engine keeps contact vs academic components distinct for tuning. ECs just need clear notes on why something isn’t high.\n\nRouting Logic\n- High tier: send to Enterprise CRM immediately, include total score in payload (so CRM sees score). Confirm field mapping with Nadine.\n- Medium: EC manual verify in eLeads. Maria wants “verify/push” button. No ARA until verified. Might need state “Pending EC.”\n- Low: return to vendor right away. Include rejection rationale + original data (or normalized echo). Sam requested reason codes list.\n- Duplicates: CRM may flag potential duplicates. We must store potential dupes responses in our DB for reference (even if we proceed). Display a duplicate flag in eLeads so ECs are aware. Note: Do NOT reject on potential alone unless threshold says so. [TBD]\n\nARA and Rep Assignment\n- Lead should have a rep set before submit to CRM (pre-assignment) based on CRM-provided availability list. Nadine to confirm interplay with ARA in CRM.\n- ARA deadline: CRM expects lead within ~3 min of intake. Our pipeline must keep within that.\n- Periodic list of available reps delivered from CRM (file? API?). Current plan: scheduled export (hourly? 15 min?). [check with CRM]. Store list in LeadWash.\n\nPerformance Targets (SLAs)\n- Daytime (8AM–8PM CST): 90% of leads complete end-to-end within 5 minutes. Owen: This is total cycle, not just wash.\n- Off-hours: aim tighter — 99% done within 3 minutes (automation). Carla: seems aggressive. Priya: previously agreed. Keep for now.\n- Per-lead washing step: 97% finish < 25 sec. Outliers: must log event + actual duration to diagnostics. Owen wants correlation IDs.\n- If CRM lookup or dupe-check slow, do not blow SLA. Proceed where possible and mark for later reconciliation. [TBD exact behavior]\n\nLogging & Defects\n- Ops requires defect/issues dashboard accessible 24x7. Who gets access? IT ops + on-call engineers. Business summary weekly.\n- For slow leads > 25 sec, record how long + which step was bottleneck (validation, scoring, CRM call, EC queue handoff). Owen to define log taxonomy.\n- Add alert thresholds during off-hours if backlog > N (N=50?). [TBD N]\n\nVendor Returns & Credits\n- Low-tier leads: return immediately to vendor with rejection reason. Provide reason code + human text, plus include vendor’s original lead content for reconciliation.\n- Vendor side must confirm invalid before credit issuance (no unilateral credits). Partners verify and mark as invalid accepted.\n- After vendor confirms, they send a credit validation record to billing. Interface is existing Enterprise billing endpoint. Finance applies credit (timeline?). [check with Finance]\n- Maria asked: can EC override “low” if clear error? Decision: No manual rescue of low category; route back to vendor only.\n\nData Persistence & Compliance\n- Must insert/persist all leads that hit web service, regardless of outcome (accept/reject). Keep for audit, credit disputes, and volume analytics.\n- Track parameter governance and access rights. Asha to document who can change what and when. [No ad hoc changes outside windows]\n\nAdmin Tool & Security\n- Admin interface to maintain scoring/washing parameters (cutoffs, weights, reason texts). Role-based: Corporate admins (global), school admins (scoped). ECs have view-only. Vendors have no access.\n- Authentication: SSO; authorization: roles and school scoping. Changes only in planned maintenance windows.\n- Some debate: emergency hotfix allowed? If yes, require Director approval + change ticket. [TBD policy]\n\nInterfaces & Constraints\n- Must remain within in-house web service stack (existing LB, app servers). No third-party iPaaS. IT will not approve new infra this quarter.\n- Inbound: XML per published XSD. Outbound to CRM: existing APIs/interfaces only (Nadine to confirm field for score).\n- Vendor transports: current approach uses HTTPS posts. Some vendors want SFTP —> not supported for the real-time path.\n\neLeads Behavior\n- Mediums appear in EC queue promptly (seconds to minute). Show: notes indicating validation outcomes or missing info that affected routing.\n- EC action: Verify -> system assigns rep using latest availability -> submit to CRM.\n- Duplicates: show potential duplicate flag from CRM; EC can choose to proceed (if allowed) or mark as duplicate [policy TBD]. Regardless, store the potential duplicate details.\n\nOpen Issues / Parking Lot\n- Clarify ARA vs pre-assignment: if we pre-assign, does CRM still run ARA? Nadine to confirm. We need to “assign before submit” per business ask, but CRM may re-evaluate. Could be config.\n- Off-hours stricter SLA: Carla concerned marketing campaigns may spike volume; capacity plan? Owen to project concurrency. [TBD]\n- Reason codes standardization: map to vendor reason code dictionary and billing credit categories. Finance to review.\n- Maintenance windows: exact schedule (weekly? bi-weekly?). Emergency changes policy undecided.\n- Frequency of rep availability feed: options 15 min vs hourly. Impact on stale assignment. [TBD]\n\nNumbers jotted\n- > 25 sec wash time = slow event (97% should be faster). Log duration.\n- Day: 90% done < 5 min total. Night: 99% < 3 min total. ARA deadline 3 min from intake.\n- Rep availability feed cadence: 15? 30? 60? [TBD]\n\nEnd of notes. These are not final decisions; confirm with CRM/Finance. Some items [TBD] and will be revisited next sync."
+    },
+    {
+      "type": "email_thread",
+      "title": "Thread: Vendor invalid lead credits, XML intake, and timing windows",
+      "text": "Email 1\nFrom: Sam Patel <sam.patel@partnerco.com>\nTo: Priya Rao <prao@university.edu>\nCC: Asha Gupta <agupta@university.edu>, Maria Flores <mflores@university.edu>\nDate: Mon, Apr 7, 2025 at 8:12 AM CST\nSubject: New flow for returns + credits (a few Qs)\n\nHi Priya,\n\nWe’ve been testing against your sandbox. A couple of things we need to nail down:\n- When you bounce a lead back (low score or validation fail), can you include (a) the reason and (b) the payload we sent? Makes it much easier for us to reconcile. Right now I only see a generic “rejected” in the stub.\n- For invalids that we accept as on us (bad phone, duplicate, etc.), what’s the expected path to get the credit posted? We have an existing interface to your finance/billing. Do we send a “credit validation” record there or is there a new endpoint?\n- Separate topic: one of our newer subs only speaks JSON. Any chance your intake can take JSON as well as XML? If not, we’ll translate, but just asking.\n- Lastly, our ops are nervous about the timing. Do you expect leads at night to fly through faster than daytime? Someone mentioned a tighter off-hours target.\n\nThanks!\nSam\n\n—\n\nEmail 2\nFrom: Priya Rao <prao@university.edu>\nTo: Sam Patel <sam.patel@partnerco.com>\nCC: Asha Gupta <agupta@university.edu>, Maria Flores <mflores@university.edu>, Owen Lee <olee@university.edu>\nDate: Mon, Apr 7, 2025 at 9:03 AM CST\nSubject: RE: New flow for returns + credits (a few Qs)\n\nHi Sam,\n\nQuick answers inline:\n\n- Return package: yes, our real-time response on a rejection will include a specific reason (e.g., invalid email format, out-of-range program code, etc.) and an echo of the lead data you submitted for match-back. We’re aligning reason text with Finance codes.\n\n- Invalid leads and credits: you (the vendor) should first verify on your side that it was indeed invalid. Once you mark it as accepted invalid, you’ll submit a credit validation record via the same enterprise billing interface you already use. No new endpoint planned. Finance applies after their checks.\n\n- Intake format: we are XML-only on the public intake. I know JSON is popular, but our current web services and security stack are set that way. We’ll share the XSD shortly.\n\n- Timing: Yes, the expectation is that during off-hours leads complete end-to-end very fast (automation), with a stricter target than daytime. Daytime has a generous but still bounded window because humans can intervene on mediums.\n\nAlso FYI, we’ll be monitoring wash time per lead; most should complete well under ~25s. Any outliers past that will be recorded.\n\nPriya\n\nSent from my phone, pls excuse typos.\n\n—\n\nEmail 3\nFrom: Maria Flores <mflores@university.edu>\nTo: Priya Rao <prao@university.edu>\nCC: Sam Patel <sam.patel@partnerco.com>, Asha Gupta <agupta@university.edu>, Jason Cole <jcole@university.edu>\nDate: Mon, Apr 7, 2025 at 10:02 AM CST\nSubject: RE: New flow for returns + credits (a few Qs)\n\nJumping in—when Sam’s team gets a rejection because of duplicate, can we make sure it says “potential dup flagged by CRM” vs “hard dup”? In the middle cases I still need to see it in eLeads for review, not lose it. We’ve had “poof” issues before. If CRM sends us a maybe-duplicate later, I still want that stored on our side so I can see the flag and notes.\n\nAlso, for the medium bucket, once I click verify in eLeads, the system is going to assign a rep (using the current list from CRM) and then push it along without me having to email anyone, right? Timing matters—we’re aiming to be within whatever that 3 min window is so ARA doesn’t choke.\n\nMaria\n\n—\n\nEmail 4\nFrom: Asha Gupta <agupta@university.edu>\nTo: Maria Flores <mflores@university.edu>\nCC: Priya Rao <prao@university.edu>, Sam Patel <sam.patel@partnerco.com>\nDate: Mon, Apr 7, 2025 at 11:17 AM CST\nSubject: RE: New flow for returns + credits (a few Qs)\n\nMaria, yes: potential duplicates must be stored and visible. We’ll ensure the label differentiates between “potential” and “confirmed duplicate.” The thresholds around when to return to vendor for duplicate vs when to allow EC review will be in the parameters I maintain (corporate + school variants). Those parameters are only adjusted during scheduled maintenance windows; no ad hoc day-of changes.\n\nRe: verify button: when you approve a medium, the flow will (a) assign to an admissions rep based on the list of reps currently marked available from CRM (we’re syncing that on a schedule) and (b) submit to the enterprise system. The score will be included in the handoff. For highs, that assignment happens automatically before it’s sent. Lows never get into eLeads; those go right back to Sam’s side with the reason.\n\nAsha\n\n—\n\nEmail 5\nFrom: Owen Lee <olee@university.edu>\nTo: Priya Rao <prao@university.edu>\nCC: Asha Gupta <agupta@university.edu>, Sam Patel <sam.patel@partnerco.com>, Maria Flores <mflores@university.edu>\nDate: Mon, Apr 7, 2025 at 12:41 PM CST\nSubject: RE: New flow for returns + credits (a few Qs) — logging + support\n\nAdding ops perspective:\n\n- We will log any lead that takes longer than 25s in the wash step. Need event + duration, plus step where time was spent. This is for troubleshooting and SLA reporting.\n- Defect/issue reports: available 24x7 for tech teams. I don’t have cycles for bespoke vendor dashboards, but we can share weekly summaries.\n- Please do not ask for JSON in v1; platform constraints are real. XML per XSD only.\n- Everything that hits the intake gets stored (even the rejects). We’ve had too many cases where later we need the record for credits. Persist first, decide next.\n- Reminder: we must stay inside existing web svc infra. No new queues, no surprise brokers. Change windows apply.\n\nOwen\n\n—\n\nEmail 6\nFrom: Priya Rao <prao@university.edu>\nTo: Sam Patel <sam.patel@partnerco.com>\nCC: Asha Gupta <agupta@university.edu>, Maria Flores <mflores@university.edu>, Owen Lee <olee@university.edu>, Finance Billing <billing@university.edu>\nDate: Mon, Apr 7, 2025 at 3:09 PM CST\nSubject: RE: New flow for returns + credits (a few Qs) — billing + hours\n\nSam,\n\nLooping in Billing for the credit application piece. To recap the flow (sorry for the long note):\n\n1) You POST a lead to our intake (XML). We validate the required fields and formats, compute a combined score (contact + academic) using parameters that Corporate and the schools maintain. Those parameters won’t change mid-day; updates happen in maintenance windows with access control.\n\n2) Based on the total score: high -> we assign to a rep (using the latest available list we pull from CRM on a schedule) and immediately send to the Enterprise CRM, including the score. medium -> it lands in eLeads for Enrollment Coordinator review. When Maria clicks verify, we assign a rep then submit to CRM. low -> we return it to you right away with a specific reason, plus the data you sent for reconciliation.\n\n3) If the CRM flags a potential duplicate either synchronously or later, we store that ‘potential duplicate’ marker with the lead on our side. That’s visible internally; for returns to you, if duplicate is the rejection reason, we label it accordingly. Not every potential duplicate causes a rejection, just noting.\n\n4) Regarding timing: during 8 AM–8 PM Central, our overall end-to-end target allows up to about 5 minutes for the majority of traffic. Outside those hours, we’re aiming for almost all leads to complete in around 3 minutes. Within that, the washing step itself should usually finish in under ~25 seconds. If it doesn’t, we log it as a slow event.\n\n5) When you agree a lead is invalid on your side, you submit a credit record to the enterprise billing interface you already have. Finance (cc’d) will make sure it gets applied properly. We don’t have a new API for that.\n\nThere’s still an open action on our side to confirm whether CRM’s ARA will honor our pre-assigned rep or re-evaluate; either way, the lead will have a rep before we hand it over.\n\nLet us know if any of that conflicts with your expectations. Also, we’ve had a couple of partners ask for JSON—just to reiterate, we can’t accept that in v1 due to platform constraints.\n\nThanks,\nPriya\n\n—\n\nEmail 7\nFrom: Finance Billing <billing@university.edu>\nTo: Priya Rao <prao@university.edu>\nCC: Sam Patel <sam.patel@partnerco.com>, Asha Gupta <agupta@university.edu>, Maria Flores <mflores@university.edu>\nDate: Tue, Apr 8, 2025 at 8:18 AM CST\nSubject: RE: New flow for returns + credits (a few Qs) — billing + hours\n\nHi all,\n\nConfirming from Finance side: the vendor credit validation records should come through the existing enterprise billing interface (same as today). Please ensure the rejection reason maps to our credit categories. We’ll post credits after review on our schedule. We won’t be available to troubleshoot after-hours submissions, so if you push overnight, make sure tech has 24/7 access to defect logs—sounds like Owen has that covered.\n\nOpen items:\n- We need the final list of reasons + mapping (Asha). Our team can’t apply credits if the reason is unclear.\n- If a lead was returned for “duplicate” but later EC processed it as medium, make sure we’re not double-counting. Might require a state flag.\n\nThanks,\nLydia\nFinance/Accounts\n\n—\n\nEmail 8\nFrom: Sam Patel <sam.patel@partnerco.com>\nTo: Finance Billing <billing@university.edu>\nCC: Priya Rao <prao@university.edu>, Asha Gupta <agupta@university.edu>, Maria Flores <mflores@university.edu>\nDate: Tue, Apr 8, 2025 at 9:01 AM CST\nSubject: RE: New flow for returns + credits (a few Qs) — billing + hours\n\nThanks Lydia + team.\n\nThis aligns with what we expected. Two small things from our side:\n- Please don’t change reason codes mid-week. We batch reconcile nightly and then post credit files next morning. If the codes shift, our automation breaks.\n- If your maintenance window is when you update parameters or reason text, just notify us ahead. We’ll hold off pushing bursts during that time.\n\nWe’ll stick to XML. If you can send that XSD ASAP, we can finish mapping this week. And yes, on our end, ops will explicitly verify each invalid before we submit the credit record, so Finance isn’t flooded with disputes.\n\nSam\n\n—\n\nEmail 9\nFrom: Priya Rao <prao@university.edu>\nTo: Sam Patel <sam.patel@partnerco.com>\nCC: Finance Billing <billing@university.edu>, Asha Gupta <agupta@university.edu>, Maria Flores <mflores@university.edu>, Owen Lee <olee@university.edu>\nDate: Tue, Apr 8, 2025 at 9:37 AM CST\nSubject: RE: New flow for returns + credits (a few Qs) — billing + hours\n\nAll sounds good. We’ll send the XSD by EOD. Parameter changes are only during scheduled windows—no surprise code changes midstream. For the day vs night timing, we’ll monitor closely and log any slow wash events with duration and step, accessible to ops 24/7.\n\nRemaining open item: CRM team to confirm if our pre-assigned rep stands or if ARA re-evaluates. In any case, our process will assign a rep before submitting. Also still deciding how frequently we pull the available reps list (likely every 15–60 min). We’ll confirm.\n\nPriya\n\n— End of thread —"
+    }
+  ],
+  "gold_requirements": [
+    {
+      "id": "PROMISE_9_R001",
+      "text": "Total lead cycle time must be completed in 5 minutes for 90% of lead volume between the business hours of 8AM CST to 8PM CST; then 3 minutes for 99% of lead volume during off business hours.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R002",
+      "text": "No lead evaluation will complete in a time period longer than 25 seconds for 97% of all leads processed.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R003",
+      "text": "For leads that process longer than 25 seconds the system will record the event and duration",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R004",
+      "text": "The process must fit within the processing time conditions set forth by the Auto Rep Assignment process in which a lead is assigned within 3 minutes of the total life cycle.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R005",
+      "text": "The lead washing process will operate within the established physical web service structure.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R006",
+      "text": "The washing process must use a non binding neutral data format such as xml when receiving and processing lead data.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R007",
+      "text": "Defect reports will be available to technical units on a 24x7 basis.",
+      "raw_label": "A",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R008",
+      "text": "Washing parameters will be updated during scheduled maintenance hours.",
+      "raw_label": "MN",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R009",
+      "text": "The vendor will verify the invalid lead.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R010",
+      "text": "Vendor will submit a credit validation record to be applied to the enterprise billing system.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R011",
+      "text": "If a lead is scored to the high range the system will supply the lead data and score to the enterprise system.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R012",
+      "text": "The leads washing functionality will validate all leads received by the web service for valid data",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R013",
+      "text": "The leads washing functionality will insert all leads captured by the web service.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R014",
+      "text": "If the leads score falls within the high average score then it will be process by the ARA functionality.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R015",
+      "text": "If the leads score falls within the medium average then it will be set for manual verification by an Enrollment Coordinator through the eleads system.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R016",
+      "text": "If the leads score falls within the low average then it will be returned to the supplying vendor",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R017",
+      "text": "The leads washing functionality will compile both contact and academic scoring information for a total score.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R018",
+      "text": "The leads washing functionality will use the parameters supplied by corporate and schools to score part of the lead.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R019",
+      "text": "The leads washing functionality will return the lead data supplied to the vendor along with the reason of rejection.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R020",
+      "text": "The leads washing functionality will have an interface in which lead data parameters can be maintained.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R021",
+      "text": "The leads washing functionality will verify the users authentication and rights to make parameter updates.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R022",
+      "text": "The leads washing functionality will store any potential lead duplicates returned by the enterprise system.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R023",
+      "text": "Prior to submitting the lead to the enterprise system the leads washing functionality will assign the lead to an admissions rep.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_9_R024",
+      "text": "The leads washing functionality shall receive a period list of available reps from the enterprise system.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    }
+  ],
+  "validation": {
+    "coverage_rate": 1.0,
+    "missing_req_ids": [],
+    "unsupported_count": 4,
+    "repair_rounds_used": 1,
+    "coverage_entries": [
+      {
+        "req_id": "PROMISE_9_R001",
+        "supported": true,
+        "evidence_snippets": [
+          "Daytime 8AM–8PM CST: 90% within 5min",
+          "Off-hours: 99% done within 3 minutes"
+        ],
+        "reason": "Meeting notes include these daytime/off-hours SLA targets."
+      },
+      {
+        "req_id": "PROMISE_9_R002",
+        "supported": true,
+        "evidence_snippets": [
+          "Per-lead washing: 97% finish <25s"
+        ],
+        "reason": "Meeting notes specify 97% under 25 seconds."
+      },
+      {
+        "req_id": "PROMISE_9_R003",
+        "supported": true,
+        "evidence_snippets": [
+          "log any lead that takes longer than 25s"
+        ],
+        "reason": "Docs and ops email require logging event and duration."
+      },
+      {
+        "req_id": "PROMISE_9_R004",
+        "supported": true,
+        "evidence_snippets": [
+          "ARA deadline: CRM expects lead within ~3 min"
+        ],
+        "reason": "Sources state ARA needs assignment within about three minutes."
+      },
+      {
+        "req_id": "PROMISE_9_R005",
+        "supported": true,
+        "evidence_snippets": [
+          "Must accept leads via existing web service infra"
+        ],
+        "reason": "Multiple notes mandate using existing web service infrastructure."
+      },
+      {
+        "req_id": "PROMISE_9_R006",
+        "supported": true,
+        "evidence_snippets": [
+          "Inbound format: neutral non-binding (XML/XSD)"
+        ],
+        "reason": "Sources mandate XML/XSD neutral inbound format in v1."
+      },
+      {
+        "req_id": "PROMISE_9_R007",
+        "supported": true,
+        "evidence_snippets": [
+          "Defect/issue reports: available 24x7 for tech teams"
+        ],
+        "reason": "Notes require 24x7 defect reports accessible to technical teams."
+      },
+      {
+        "req_id": "PROMISE_9_R008",
+        "supported": true,
+        "evidence_snippets": [
+          "parameters adjusted during scheduled maintenance windows"
+        ],
+        "reason": "Asha and notes say parameter changes only in maintenance windows."
+      },
+      {
+        "req_id": "PROMISE_9_R009",
+        "supported": true,
+        "evidence_snippets": [
+          "Vendor side must confirm invalid before credit issuance"
+        ],
+        "reason": "Emails/notes require vendor verification before issuing credits."
+      },
+      {
+        "req_id": "PROMISE_9_R010",
+        "supported": true,
+        "evidence_snippets": [
+          "submit a credit validation record via enterprise billing"
+        ],
+        "reason": "Priya and notes instruct vendors to submit credit validation to billing."
+      },
+      {
+        "req_id": "PROMISE_9_R011",
+        "supported": true,
+        "evidence_snippets": [
+          "include total score in payload"
+        ],
+        "reason": "High leads sent to CRM with score"
+      },
+      {
+        "req_id": "PROMISE_9_R012",
+        "supported": true,
+        "evidence_snippets": [
+          "Validate: required fields present"
+        ],
+        "reason": "Washing includes validation of inbound leads"
+      },
+      {
+        "req_id": "PROMISE_9_R013",
+        "supported": true,
+        "evidence_snippets": [
+          "Insert all leads captured",
+          "Everything that hits the intake gets stored"
+        ],
+        "reason": "All incoming leads are persisted for audit"
+      },
+      {
+        "req_id": "PROMISE_9_R014",
+        "supported": true,
+        "evidence_snippets": [
+          "assign to a rep before submit to CRM",
+          "ARA deadline: CRM expects lead within ~3 min"
+        ],
+        "reason": "High leads get pre-assigned for ARA processing"
+      },
+      {
+        "req_id": "PROMISE_9_R015",
+        "supported": true,
+        "evidence_snippets": [
+          "Medium: EC manual verify in eLeads",
+          "Mediums appear in EC queue promptly"
+        ],
+        "reason": "Medium-scored leads routed to ECs for manual verify"
+      },
+      {
+        "req_id": "PROMISE_9_R016",
+        "supported": true,
+        "evidence_snippets": [
+          "Low: return to vendor right away",
+          "lows never get into eLeads"
+        ],
+        "reason": "Low-scored leads are returned to the vendor"
+      },
+      {
+        "req_id": "PROMISE_9_R017",
+        "supported": true,
+        "evidence_snippets": [
+          "contact score + academic score = total",
+          "keep contact vs academic components distinct"
+        ],
+        "reason": "Total score composed of contact and academic parts"
+      },
+      {
+        "req_id": "PROMISE_9_R018",
+        "supported": true,
+        "evidence_snippets": [
+          "Weighting by Corporate baseline; schools allowed to tweak",
+          "parameters Corporate sets"
+        ],
+        "reason": "Scoring uses corporate and school-supplied parameters"
+      },
+      {
+        "req_id": "PROMISE_9_R019",
+        "supported": true,
+        "evidence_snippets": [
+          "include rejection rationale + original data",
+          "real-time response on a rejection will include a specific reason"
+        ],
+        "reason": "Rejected leads returned with reason and original payload"
+      },
+      {
+        "req_id": "PROMISE_9_R020",
+        "supported": true,
+        "evidence_snippets": [
+          "Admin interface to maintain scoring/washing parameters",
+          "Role-based: Corporate admins (global), school admins (scoped)"
+        ],
+        "reason": "There will be an admin UI to maintain parameters"
+      },
+      {
+        "req_id": "PROMISE_9_R021",
+        "supported": true,
+        "evidence_snippets": [
+          "Authentication: SSO; authorization: roles"
+        ],
+        "reason": "Admin tool enforces role-based auth and scoped permissions."
+      },
+      {
+        "req_id": "PROMISE_9_R022",
+        "supported": true,
+        "evidence_snippets": [
+          "store potential dupes responses in our DB"
+        ],
+        "reason": "Explicit plan to persist potential duplicate flags/details."
+      },
+      {
+        "req_id": "PROMISE_9_R023",
+        "supported": true,
+        "evidence_snippets": [
+          "rep set before submit to CRM"
+        ],
+        "reason": "Pre-assignment to rep required before CRM handoff."
+      },
+      {
+        "req_id": "PROMISE_9_R024",
+        "supported": true,
+        "evidence_snippets": [
+          "periodic list of available reps delivered from CRM"
+        ],
+        "reason": "System ingests scheduled export of available reps."
+      }
+    ],
+    "unsupported_implied": [
+      {
+        "text": "Potential duplicate flags must be visible to Enrollment Coordinators in the eLeads UI (i.e., the washing system must display the CRM 'potential duplicate' marker in the EC queue).",
+        "source_snippet": "\"Please make sure I can see that flag in eLeads\"",
+        "source_type": "interview_transcript",
+        "reason": "The source explicitly requires that potential-duplicate responses from the Enterprise CRM be surfaced in the EC user interface so coordinators can act on them. The gold set only requires storing potential duplicates, not that they be displayed in eLeads to ECs."
+      },
+      {
+        "text": "The washing system must not perform automatic corrections to lead content in v1 (validation should be strict and must not materially alter submitted lead data).",
+        "source_snippet": "\"Keep validation strict; do not alter lead content materially. We will not perform automatic corrections in v1.\"",
+        "source_type": "meeting_notes",
+        "reason": "The source imposes a behavioral constraint forbidding automatic correction of incoming lead data. The gold requirements mandate validation and persistence but do not prohibit automatic normalization or correction, so this is an additional system behavior not present in the gold set."
+      },
+      {
+        "text": "At launch the system must give real-time, synchronous acceptance/rejection responses to vendors (immediate reply including a specific rejection reason and an echo of the submitted payload); batch or delayed returns are not supported for the real-time path.",
+        "source_snippet": "\"our real-time response on a rejection will include a specific reason ... and an echo of the lead data you submitted\"",
+        "source_type": "email_thread",
+        "reason": "The source requires immediate real-time replies with detailed rejection information and the echoed payload. The gold set requires returning lead data and reasons, but does not explicitly require synchronous real-time responses or forbid deferred/batch returns; this timing/real-time constraint is an extra requirement."
+      },
+      {
+        "text": "Schema/reason-code changes and other interface changes must be coordinated with partners and only applied in scheduled maintenance windows (notify vendors ahead; avoid mid-week or ad-hoc changes).",
+        "source_snippet": "\"Just don’t change the schema every other week.\" / \"We’ll communicate changes and only deploy within scheduled windows.\"",
+        "source_type": "interview_transcript",
+        "reason": "The source repeatedly mandates stability and advance communication for schema and reason-code changes (and avoidance of ad-hoc changes). The gold requirements include scheduled maintenance windows for parameter updates but do not require partner notification or explicit stability guarantees for schema/reason-code changes; this operational coordination requirement is additional."
+      }
+    ],
+    "passed": false
+  },
+  "brief": {
+    "project_name": "LeadWash Relay",
+    "domain": "education lead management",
+    "users": [
+      "Enrollment Coordinator",
+      "Admissions Representative",
+      "Vendor partner operations contact",
+      "Corporate/School parameter administrator",
+      "Technical operations engineer",
+      "Billing analyst"
+    ],
+    "stakeholders": [
+      "Admissions leadership",
+      "Marketing acquisition team",
+      "Enterprise CRM owner",
+      "IT operations/support",
+      "Vendor partners",
+      "Finance/Accounts team"
+    ],
+    "business_goals": [
+      "Quickly triage and route qualified inquiries to reps within minutes",
+      "Reduce bad or duplicate leads and provide clear rejection reasons to sources",
+      "Ensure accurate vendor credits for invalid leads in billing",
+      "Apply consistent scoring rules from corporate and schools",
+      "Streamline handoff to the enterprise system to minimize manual work"
+    ],
+    "core_features": [
+      "Web-service intake of leads in a neutral format with validation and persistence",
+      "Scoring engine that combines contact and academic factors using configurable parameters",
+      "Threshold-based routing: high goes to enterprise/ARA, medium to EC review in eLeads, low returned to vendor with rationale",
+      "Assign an admissions rep before submission and sync available reps from the enterprise system on a schedule",
+      "Capture and store potential duplicates flagged by the enterprise system",
+      "Admin interface for maintaining scoring and washing parameters with role-based access",
+      "Workflow for vendor invalid-lead verification and submission of credit records into enterprise billing"
+    ],
+    "quality_concerns": [
+      "End-to-end lead handling meets strict time targets that vary by business vs off-hours",
+      "Per-lead evaluation latency stays under a tight threshold for most traffic, with slow cases logged",
+      "Reliability and compatibility within the existing web services stack",
+      "24x7 access to defect and issue reports for technical teams",
+      "Parameter changes happen in controlled maintenance windows",
+      "Secure authentication and authorization for configuration updates"
+    ],
+    "constraints": [
+      "Operate within the current in-house web service infrastructure",
+      "Lead payloads must use a neutral, non-binding format such as XML",
+      "Must align with Auto Rep Assignment timing; reps assigned within minutes of intake",
+      "Parameter updates are limited to planned maintenance periods",
+      "Service SLAs and behaviors observe CST business hours",
+      "Integrate only with existing enterprise CRM interfaces"
+    ],
+    "terminology": [
+      "Lead Washing",
+      "Auto Rep Assignment (ARA)",
+      "eLeads",
+      "Enterprise CRM",
+      "Enrollment Coordinator (EC)",
+      "Admissions Rep",
+      "Vendor Credit (Invalid Lead)"
+    ]
+  },
+  "metadata": {
+    "project_id": "9",
+    "req_count": 24,
+    "label_dist": {
+      "PE": 4,
+      "O": 2,
+      "A": 1,
+      "MN": 1,
+      "F": 16
+    },
+    "llm_usage": {
+      "total_calls": 151,
+      "total_input_tokens": 841522,
+      "total_output_tokens": 495180
+    }
+  }
+}

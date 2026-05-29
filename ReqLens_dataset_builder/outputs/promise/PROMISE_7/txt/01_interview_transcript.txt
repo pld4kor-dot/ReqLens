@@ -1,0 +1,104 @@
+TYPE  : interview_transcript
+TITLE : Discovery Interview: Sales-to-Inventory, Formulas, Menus, and Desktop Constraints
+UNIT  : PROMISE_7
+============================================================
+
+Nina [Business Analyst]: Thanks for sitting down with me. I want to make sure I understand three big areas: turning daily POS sales into inventory adjustments, how your formulas/recipes are maintained, and how you manage the POS menu. We’ll also touch on the desktop environment, backups, and permissions.
+
+Olivia [Operations Manager]: Those are the hot spots. Stock accuracy and the menu getting out of sync have been our headaches.
+
+Carlos [Inventory Clerk]: When the sales file lands each morning, I end up doing manual math to deduct ingredients. It eats a lot of time.
+
+Nina [Business Analyst]: Walk me through what happens today when the POS export arrives.
+
+Carlos [Inventory Clerk]: It’s a CSV. I used to apply a worksheet formula per item—if we sold 100 Classic Burgers, I’d take buns, patties, sauces, the whole list, and then create an adjustment in accounting. If we ran out of an ingredient, we’d switch to an alternate, and that throws off the worksheet.
+
+Olivia [Operations Manager]: We need the system to do that step for us—create the inventory adjustment document automatically when the sales come in.
+
+Nina [Business Analyst]: So auto-generate the Inventory Quantity Adjustment once sales are available. And do you also want a way to run it on demand?
+
+Carlos [Inventory Clerk]: Definitely. A “run for a specific day” button would save me when a file is late or a formula was wrong. And sometimes we discover an issue halfway through the month and need to regenerate starting from a date forward.
+
+Nina [Business Analyst]: Understood: automatic when the data arrives, plus a manual run for a chosen day and a bulk regenerate from a selected start date forward.
+
+Priya [Menu Manager]: If you’re regenerating a large window, how long are we talking? The last vendor tried to push those into overnight jobs.
+
+Dan [IT Support Lead]: Overnight is tough on our store PCs. They’re older Windows desktops; nothing fancy. We’re not buying new gear or software licenses.
+
+Nina [Business Analyst]: What’s an acceptable runtime to rebuild recent history?
+
+Olivia [Operations Manager]: Regenerating roughly the last month should finish in about half an hour. That’s our tolerance.
+
+Carlos [Inventory Clerk]: Half an hour works. I can grab a coffee and be back to post.
+
+Nina [Business Analyst]: Let’s talk formulas. You have finished items and semi-finished prep, right?
+
+Olivia [Operations Manager]: Yes. We call them semi-products in the system—things like a batch of onions or a sauce that go into multiple menu items.
+
+Carlos [Inventory Clerk]: Those semi items have their own formulas, and the final items reference them. If we update the semi, the usage should be reflected when adjustments run.
+
+Nina [Business Analyst]: On substitutions—how do you want to manage alternates?
+
+Carlos [Inventory Clerk]: Each ingredient line needs a list of allowed substitutes, and the order matters. If the primary item is out, the system should move to the next one in the order. Don’t guess; follow what we set.
+
+Olivia [Operations Manager]: And it should look at what’s actually in stock that day. If there’s none of the first choice, use the next, and so on.
+
+Nina [Business Analyst]: Do you want help pre-filling those lists?
+
+Dan [IT Support Lead]: Suggestions would help—show common alternates automatically so we’re not building every list from scratch—but we need to be able to change the order and contents.
+
+Priya [Menu Manager]: As long as we can override, that’s fine. Keep the sequence we set; don’t shuffle it.
+
+Carlos [Inventory Clerk]: And don’t deduct from something we don’t have. If the standard patty runs out, use the alternates in the order I saved. No negative stock because the system ignored subs.
+
+Nina [Business Analyst]: Got it: substitution lists with a saved priority sequence, auto-suggested options we can tweak, and the deduction logic checks on-hand stock and cascades accordingly.
+
+Priya [Menu Manager]: On the menu side, the customer-facing names shouldn’t flip just because we used a substitute. The POS still shows Classic Burger. The inventory swaps are back-of-house.
+
+Nina [Business Analyst]: Let’s switch to menus. Where do you source products from now?
+
+Priya [Menu Manager]: From accounting’s product list. But then I end up retyping into the POS tool. I want the menu editor to pull directly from the accounting catalog so we aren’t duplicating items.
+
+Dan [IT Support Lead]: Exactly—one product master. No side database of items in your app.
+
+Olivia [Operations Manager]: Layout is important. We have menus and submenus—like Burgers, then Classics—and I want to control the order within each. Not alphabetical. And that order needs to stick after updates.
+
+Priya [Menu Manager]: Also, the same product might appear under more than one submenu. That’s common for us.
+
+Nina [Business Analyst]: So the menu editor should use the accounting catalog as its source, support menus with submenus, allow products to appear in multiple submenus, and preserve the order you set.
+
+Priya [Menu Manager]: Yes, and don’t reshuffle when we publish.
+
+Nina [Business Analyst]: On security, how do you want access set up?
+
+Carlos [Inventory Clerk]: If I change my password, I don’t want to do it separately in different screens. And some roles shouldn’t even see certain areas.
+
+Nina [Business Analyst]: Central account management with role-based permissions per area—inventory adjustments, formula editor, menu editor, admin—and password/permission changes consistent across the whole app.
+
+Olivia [Operations Manager]: Inventory can run adjustments but not edit formulas; Priya’s team does menus; admin manages users.
+
+Dan [IT Support Lead]: And if we disable someone, it should apply everywhere in the app. We’ve had urgent situations and need lockouts to be reliable.
+
+Nina [Business Analyst]: Backups—what do you need from us vs your nightly jobs?
+
+Dan [IT Support Lead]: We want the application to handle scheduled backups and also let us restore on demand inside the app. If someone nukes a menu by accident, I need to pick a backup and get us back without special scripts.
+
+Victor [Finance Controller]: Our auditors also care. Adjustment outputs need to be acceptable per accounting practices, and we must be able to restore and show the same results. No hand-editing.
+
+Nina [Business Analyst]: Noted: scheduled automated backups with an in-app restore option. And the IQA outputs should align with accounting expectations and be ready for external review.
+
+Olivia [Operations Manager]: One more thing—how many people can be in at once without it falling over?
+
+Nina [Business Analyst]: What’s typical?
+
+Olivia [Operations Manager]: Six users is common—mix of inventory, menu work, and admin. It shouldn’t choke.
+
+Dan [IT Support Lead]: And keep the user interface a classic Windows desktop. Our staff are used to menus, toolbars, Save/Undo. No extra per-user licenses for components either.
+
+Nina [Business Analyst]: Understood: run on the existing Windows PCs, familiar Windows-style UI, and avoid anything that triggers royalty or per-seat fees. For sales, we’ll ingest the daily file you already get. I’ll draft this up and set a follow-up on details like formula versioning for historical runs.
+
+Priya [Menu Manager]: Sounds good. Please make sure the ordering doesn’t change on me.
+
+Carlos [Inventory Clerk]: And that the rebuild for a month is done in around 30 minutes.
+
+Nina [Business Analyst]: Those are on my list. Thanks, everyone.

@@ -1,0 +1,228 @@
+{
+  "coverage_rate": 1.0,
+  "missing_req_ids": [],
+  "unsupported_count": 3,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PROMISE_12_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "central, uh, console—like a web thing",
+        "single pane for message flow"
+      ],
+      "reason": "Admins requested a GUI console to monitor message exchanges."
+    },
+    {
+      "req_id": "PROMISE_12_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "Must use City of Chicago Application Dev Guide",
+        "UI code must fit within the AppDev Framework"
+      ],
+      "reason": "Stakeholders mandated the City AppDev Guide and framework usage."
+    },
+    {
+      "req_id": "PROMISE_12_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "Admins should be comfortable after a couple weeks usage",
+        "comfortable in, like, a couple of weeks of normal use"
+      ],
+      "reason": "Users specified two weeks training/usability target for admins/DBAs."
+    },
+    {
+      "req_id": "PROMISE_12_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "If we can solve, say, 99% of errors without a developer",
+        "Error views must show failure cause, remediation steps"
+      ],
+      "reason": "Requirement to show errors and aim to resolve ~99% without devs."
+    },
+    {
+      "req_id": "PROMISE_12_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "ad-hoc reports: filter by service type, ward",
+        "KPIs: queue latency, time-to-ack, error rate %"
+      ],
+      "reason": "Notes call for portals with ad-hoc reporting and KPI dashboards."
+    },
+    {
+      "req_id": "PROMISE_12_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "system queues the request and returns quickly",
+        "Asynchronous meaning… the pieces don’t wait on each other"
+      ],
+      "reason": "Team described queueing and asynchronous processing for parallelism."
+    },
+    {
+      "req_id": "PROMISE_12_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "Multi-threading. Multiple workers chewing through the queue",
+        "some kind of load balancer so if one worker is overloaded"
+      ],
+      "reason": "Discussions explicitly require multithreading and load balancing for spikes."
+    },
+    {
+      "req_id": "PROMISE_12_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "about two seconds end-to-end",
+        "End-to-end handling should be around 2 seconds typical"
+      ],
+      "reason": "Stakeholders set a two-second end-to-end processing target."
+    },
+    {
+      "req_id": "PROMISE_12_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "polled around every second (max)",
+        "one second polling is aggressive, but doable"
+      ],
+      "reason": "Polling at roughly one-second intervals was discussed and tolerated."
+    },
+    {
+      "req_id": "PROMISE_12_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "add workers live. No service restart.",
+        "Avoid service interruptions > 1 day — hmm"
+      ],
+      "reason": "Requirements call for hot-add scaling and avoiding extended downtime."
+    },
+    {
+      "req_id": "PROMISE_12_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "four nines",
+        "99% overall"
+      ],
+      "reason": "Availability targets (99% and 99.99%) discussed in notes."
+    },
+    {
+      "req_id": "PROMISE_12_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "fault avoidance via standards",
+        "Adopt standards for message formats"
+      ],
+      "reason": "Standards adoption cited to avoid faults."
+    },
+    {
+      "req_id": "PROMISE_12_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "compensating actions",
+        "route around failing internal endpoints"
+      ],
+      "reason": "Compensating transactions and routing around failures specified."
+    },
+    {
+      "req_id": "PROMISE_12_R014",
+      "supported": true,
+      "evidence_snippets": [
+        ">= 1,000,000 tx/yr",
+        "Target volume: >= 1,000,000 tx/yr"
+      ],
+      "reason": "Explicit target of one million transactions per year."
+    },
+    {
+      "req_id": "PROMISE_12_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "Platform-agnostic design",
+        "deploy ... Windows or Linux VMs"
+      ],
+      "reason": "Platform neutrality and dev-environment access requirements present."
+    },
+    {
+      "req_id": "PROMISE_12_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "all traffic ... must traverse the hub",
+        "no direct links"
+      ],
+      "reason": "Requirement that CSR↔Datastream traffic traverse hub is explicit."
+    },
+    {
+      "req_id": "PROMISE_12_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "add workers live. No service restart",
+        "Hot-adding workers is fine"
+      ],
+      "reason": "Hot-add/scale without interruption required and discussed."
+    },
+    {
+      "req_id": "PROMISE_12_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "major features approx every 6 months",
+        "maintenance updates quarterly"
+      ],
+      "reason": "Cadence: major features biannual; maintenance quarterly specified."
+    },
+    {
+      "req_id": "PROMISE_12_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "accommodate new tech later",
+        "plug-in adapters ok"
+      ],
+      "reason": "Architecture should accept new technologies without rework."
+    },
+    {
+      "req_id": "PROMISE_12_R020",
+      "supported": true,
+      "evidence_snippets": [
+        "AuthN/AuthZ required for all portal users",
+        "Authentication + authorization required on portal + APIs"
+      ],
+      "reason": "Authentication and authorization requirements explicitly stated."
+    },
+    {
+      "req_id": "PROMISE_12_R021",
+      "supported": true,
+      "evidence_snippets": [
+        "message-level privacy + integrity",
+        "encrypt and sign at the message level",
+        "WS-Security"
+      ],
+      "reason": "Sources mandate message-level encryption, signing, WS-Security style"
+    },
+    {
+      "req_id": "PROMISE_12_R022",
+      "supported": true,
+      "evidence_snippets": [
+        "Audit trail retained minimum 12 months",
+        "store messages for at least 1 yr"
+      ],
+      "reason": "Sources require audit capabilities and one-year message retention"
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "The product shall preserve and propagate correlation identifiers and logging metadata so operators can trace a transaction end-to-end across CSR and EAM (e.g., show matching correlation IDs between CSR SR and EAM work order).",
+      "source_snippet": "Priya: logging with enough detail to correlate across systems. When CSR sends “SR-98765,” I need to see its counterpart in EAM with a matching correlation ID.",
+      "source_type": "meeting_notes",
+      "reason": "The artifacts explicitly require preserved correlation IDs and cross-system traceability as an operational capability; the gold set requires one-year message retention and audit storage but does not explicitly require propagation or preservation of correlation identifiers or the logging/metadata needed to correlate messages across systems."
+    },
+    {
+      "text": "The product shall expose health checks/readiness probes so newly added workers can register with the load balancer only after healthy initialization.",
+      "source_snippet": "Carlos: hub must advertise health of new workers so LB (load balancer) routes correctly. Health probes.",
+      "source_type": "meeting_notes",
+      "reason": "The sources call out a need for explicit health-check behavior to coordinate hot-add of workers and correct LB routing. While the gold requirements demand multi-threading, load balancing, and transparent resource addition, they do not require health checks/readiness probes to ensure safe registration of new nodes."
+    },
+    {
+      "text": "The product shall provide an operational 'fix-and-replay' capability in the UI (allow operators to apply fixes to failed transactions and replay them without developer intervention).",
+      "source_snippet": "Priya: Error views must show failure cause, remediation steps; aim for “fix + replay” in tool (resolve most issues w/o devs) — 99% is the target mentioned earlier (check w/ ops)",
+      "source_type": "meeting_notes",
+      "reason": "Stakeholders explicitly ask for an interactive remediation workflow (fix + replay) as an operational feature so DBAs/ops can resolve failures without developer help. The gold set includes a 99% error-resolution target but does not mandate a specific UI capability such as fix-and-replay to achieve that target."
+    }
+  ],
+  "passed": false
+}

@@ -1,0 +1,157 @@
+{
+  "coverage_rate": 1.0,
+  "missing_req_ids": [],
+  "unsupported_count": 3,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PROMISE_14_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "username + password before owner dashboard"
+      ],
+      "reason": "Explicitly required in transcript, notes, and emails."
+    },
+    {
+      "req_id": "PROMISE_14_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "Only the commissioner can change league settings"
+      ],
+      "reason": "Commissioner-only edits stated across artifacts."
+    },
+    {
+      "req_id": "PROMISE_14_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "breadcrumb on every page"
+      ],
+      "reason": "Breadcrumb trail required on every page."
+    },
+    {
+      "req_id": "PROMISE_14_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "action items grouped separate from nav"
+      ],
+      "reason": "Action vs navigation separation mandated in notes."
+    },
+    {
+      "req_id": "PROMISE_14_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "latest five posts with a short preview ~150"
+      ],
+      "reason": "Five-post limit and ~150-char teaser explicitly specified."
+    },
+    {
+      "req_id": "PROMISE_14_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "within about 30 seconds a first-time user"
+      ],
+      "reason": "30-second onboarding navigation target stated."
+    },
+    {
+      "req_id": "PROMISE_14_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "add, drop, and trade actions one click from owner"
+      ],
+      "reason": "One-click access to add/drop/trade repeatedly required."
+    },
+    {
+      "req_id": "PROMISE_14_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "show at least twenty-five data points for each player"
+      ],
+      "reason": "25+ stats plus points requirement clearly specified."
+    },
+    {
+      "req_id": "PROMISE_14_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "show a confirmation prompt before drop or trade"
+      ],
+      "reason": "Confirmation required for drop and trade actions."
+    },
+    {
+      "req_id": "PROMISE_14_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "250 ms on the server side is the SLO"
+      ],
+      "reason": "Quarter-second (250ms) transaction completion target stated."
+    },
+    {
+      "req_id": "PROMISE_14_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "10 minutes/year upper bound"
+      ],
+      "reason": "Explicit 10 minutes/year downtime budget stated."
+    },
+    {
+      "req_id": "PROMISE_14_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "web application server deployment"
+      ],
+      "reason": "Sources explicitly state web application server hosting."
+    },
+    {
+      "req_id": "PROMISE_14_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "primary DB acts as cached store for hot data"
+      ],
+      "reason": "Primary DB described as cached store for active users."
+    },
+    {
+      "req_id": "PROMISE_14_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "secondary DB holds historical stats"
+      ],
+      "reason": "Secondary DB described for long-term historical data."
+    },
+    {
+      "req_id": "PROMISE_14_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "in-season updates Wed 3–6 AM CST"
+      ],
+      "reason": "In-season updates scheduled Wednesdays 3–6 AM CST."
+    },
+    {
+      "req_id": "PROMISE_14_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "major version rollouts aligned with beginning of each NFL season"
+      ],
+      "reason": "Major releases are to occur at NFL season start."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "No deployments or maintenance actions shall be performed on Sundays (i.e., avoid any updates or maintenance on Sunday game days).",
+      "source_snippet": "\"Early Wednesday updates are fine. Just not Sunday. Ever.\"",
+      "source_type": "email_thread",
+      "reason": "The team repeatedly states an operational prohibition on Sunday deploys/maintenance (multiple attendees emphasize 'not Sunday'). This is an explicit scheduling constraint on when maintenance or deployments may occur that is not captured by the gold requirement which only specifies the Wednesday 3–6 AM in-season window."
+    },
+    {
+      "text": "Database schema changes (and similar disruptive DB migrations) shall only be performed during the in-season Wednesday 3–6 AM CST maintenance window.",
+      "source_snippet": "\"Schema changes only in that window during the season, please.\"",
+      "source_type": "interview_transcript",
+      "reason": "The discussion explicitly restricts schema changes to the agreed midweek maintenance window to avoid in-season disruption. The gold set mandates the maintenance window timing but does not state that schema changes themselves are constrained to that window; this is a separate, significant operational requirement."
+    },
+    {
+      "text": "Transactional operations (adds/drops/trades) must be staged and committed atomically only after explicit user confirmation so that no partial/half-updates (e.g., half trades) can occur.",
+      "source_snippet": "\"Just make sure the APIs don’t perform the mutation until the confirm comes through, so we avoid partial updates.\"",
+      "source_type": "interview_transcript",
+      "reason": "While the gold set requires confirmation before drop/trade, the source also requires backend behavior guaranteeing atomic staging/commit semantics (no partial updates or half-completed trades). That atomicity/back-end staging requirement is a distinct system capability not expressed in the gold text."
+    }
+  ],
+  "passed": false
+}

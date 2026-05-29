@@ -1,0 +1,234 @@
+TYPE  : email_thread
+TITLE : RE: Field Kit install + sync expectations (and a few gotchas)
+UNIT  : PROMISE_2
+============================================================
+
+From: Dana <dana@pocketmls.com>
+To: Brooke <brooke@centurynorthside.com>, Priya <priyaa@centurynorthside.com>
+CC: Alex <alex@pocketmls.com>, Miguel <mfigueroa@mlsboard.org>, Owen <qa@pocketmls.com>, Kira <kira@pocketmls.com>, Leo <leo@centurynorthside.com>
+Date: 2025-04-02 08:12
+Subject: Field Kit install + sync expectations
+
+Hey all,
+
+Quick follow-up from yesterday’s run-through in the bullpen. A few threads to close:
+
+1) Install/onboarding: Our goal remains that agents can self-install without needing a printed handout. I’d like to test whether 9/10 new users can do this unassisted. Brooke, ok to pull a few new hires for a dry run next week?
+
+2) Sync cadence: We’ve aligned on hourly pulls from the office system for contacts and appointments. We’ll show a last-synced time and surface a note for new appointments after each run.
+
+3) Performance commitments: For searches, our line in the sand is that results appear in under ~30 seconds from tapping “Search.” For CMAs, under a minute after selection.
+
+4) Devices: Confirming v1 is Windows CE and Palm OS only. No iOS/Android yet.
+
+5) Security: Licensed/registered agents only. We’re going to require login and enforce role permissions (e.g., who can update a listing).
+
+6) In-app calling: We’ll initiate calls from the app so we can notify the agent when the buyer/seller responds.
+
+Please reply with any red flags or constraints we haven’t captured.
+
+—Dana
+
+Sent from my mobile
+
+---
+
+From: Brooke <brooke@centurynorthside.com>
+To: Dana <dana@pocketmls.com>
+CC: Priya <priyaa@centurynorthside.com>, Alex <alex@pocketmls.com>, Miguel <mfigueroa@mlsboard.org>, Owen <qa@pocketmls.com>, Kira <kira@pocketmls.com>, Leo <leo@centurynorthside.com>
+Date: 2025-04-02 08:37
+Subject: RE: Field Kit install + sync expectations
+
+Morning folks —
+
+All sounds right. On install, yes, grab two of the new buyer’s agents who start Monday. I want to avoid any printed materials. If we can’t make it obvious enough to do without paper, we need to simplify the flow.
+
+Two other asks:
+- Visual polish. Please keep the color/fonts consistent so it feels professional. I know these devices are dated, but our clients shouldn’t feel that.
+- Photos in search results must be clear. We literally lost a listing because a seller saw their home photo in a different app that looked like mud.
+
+Re: sync: hourly is ok as long as it’s reliable and the app lets them know when a new showing lands.
+
+B
+
+---
+
+From: Priya <priyaa@centurynorthside.com>
+To: Dana <dana@pocketmls.com>
+CC: Brooke <brooke@centurynorthside.com>, Alex <alex@pocketmls.com>, Owen <qa@pocketmls.com>, Kira <kira@pocketmls.com>, Miguel <mfigueroa@mlsboard.org>, Leo <leo@centurynorthside.com>
+Date: 2025-04-02 09:04
+Subject: RE: Field Kit install + sync expectations (also uptime + load)
+
+Hi,
+
++1 to all. Two ops caveats:
+
+- Uptime: We’re targeting “always available” in practical terms. Please budget infra for ~99.9% availability. If we’re down, it better be a rare blip (think 999 successes out of 1000 checks). Agents will be using this 24/7, literally.
+
+- Load: Plan to handle 1000 concurrent users at launch (tops of hour will spike). Expect 5x growth within a year if recruitment goes as planned. QA should simulate this — Owen, can you plan a load test with bursts around the sync window?
+
+- Preferences: We’ve had too many support tickets where after a crash, an app forgets settings. Can we guarantee that user preferences are retained even if the device restarts, and restored completely when the app comes back up?
+
+- Security: Only licensed/registered agents get in. No assistants piggybacking on someone else’s login. Require authentication and then check authorization for sensitive actions (e.g., listing edits).
+
+- Data hygiene: Please validate inputs thoroughly. We’ve seen negative sale prices, dates in the wrong century, etc. Don’t let trash through to MLS or our office system.
+
+Thx,
+Priya
+
+---
+
+From: Miguel <mfigueroa@mlsboard.org>
+To: Dana <dana@pocketmls.com>
+CC: Brooke <brooke@centurynorthside.com>, Priya <priyaa@centurynorthside.com>, Alex <alex@pocketmls.com>, Owen <qa@pocketmls.com>, Kira <kira@pocketmls.com>, Leo <leo@centurynorthside.com>
+Date: 2025-04-02 10:11
+Subject: RE: Field Kit install + sync expectations (MLS notes)
+
+Hi all,
+
+A few MLS-specific notes:
+
+- Listing update/create from device: Allowed with proper permissions. Use our picklists; certain fields are required, and we do not accept blank statuses. If the device enforces this before sending, we will all be happier.
+
+- Search terminology: Agree with “CMA,” “comps,” “showing,” etc. Label buttons with realtor-friendly terms, not internal jargon.
+
+- Maps/directions: When retrieving maps showing property locations for a specified area and offering directions, please keep implementation in line with board guidelines.
+
+- Access control: To reiterate the legal bit — only licensed users. We will be coordinating on the authentication side, but check authorization too.
+
+Thanks,
+Miguel
+
+---
+
+From: Alex <alex@pocketmls.com>
+To: Priya <priyaa@centurynorthside.com>, Dana <dana@pocketmls.com>
+CC: Brooke <brooke@centurynorthside.com>, Miguel <mfigueroa@mlsboard.org>, Owen <qa@pocketmls.com>, Kira <kira@pocketmls.com>, Leo <leo@centurynorthside.com>
+Date: 2025-04-02 11:02
+Subject: RE: Field Kit install + sync expectations — device + perf details
+
+Quick tech notes (typed on the bus, sorry for typos):
+
+- Platforms: Confirming v1 on Windows CE and Palm OS. We’re following native UI conventions: standard menus, hardware/soft buttons, no custom widgets. The look will be professional and we’ll stick to your color scheme + fonts within what the OS supports.
+
+- Performance: With current prototype against the staging MLS feed, search is returning results in ~12–18s in good network, ~24–28s in weak spots, so still under the 30s ceiling. CMA generation is hovering around 45–55s after comp selection, which meets the under 60s target. We’ll keep optimizing.
+
+- Offline: We cache saved searches (criteria + last results snapshot), generated CMAs, and appointment lists. So if the device goes offline, users can view those.
+
+- Notifications: After the hourly sync with the office system completes, we surface “New appointments” if found. Also, when calls are placed from the app to buyer/seller, we can recognize the callback/response and notify the agent.
+
+- Images: We’re tuning thumbnail size to preserve clarity in results while keeping memory usage reasonable. The detail view shows a clearer image.
+
+- Input validation: We’re blocking negative numbers, enforcing date formats, and required fields on listing updates/creation before any submission. This prevents bad data hitting MLS/office endpoints.
+
+- Install: Installer is a single tap package; after install, first run prompts for credentials. No printed guide expected. We’ll do a small in-app nudge. We’d like QA to measure what % of untrained folks complete it on their own (target is 90%+).
+
+- Concurrency/load: We’ll coordinate with QA for a 1000 simultaneous user test and will profile to ensure headroom for the 5x growth. Also watching top-of-hour spikes.
+
+- One caveat: Hourly is fixed because of the office system. A few folks asked for “instant” pulls; not possible in v1.
+
+-Alex
+
+Sent from mobile
+
+---
+
+From: Leo <leo@centurynorthside.com>
+To: Dana <dana@pocketmls.com>, Alex <alex@pocketmls.com>
+CC: Brooke <brooke@centurynorthside.com>, Priya <priyaa@centurynorthside.com>, Miguel <mfigueroa@mlsboard.org>, Owen <qa@pocketmls.com>, Kira <kira@pocketmls.com>
+Date: 2025-04-02 12:15
+Subject: RE: install + sync — two street-level items
+
+Hey team,
+
+Street-level stuff:
+
+- Directions: Please make sure from the map I can tap a property and get directions without retyping the address. Some of the CE devices have crummy keyboards.
+
+- Saved searches: Agents are big on this. If I’m with buyers Sunday and lose signal, I want to pull up the saved results from earlier. Sounds like you’re caching — good. Just don’t bury the Saved tab.
+
+- New appt alert: After the hourly sync, we need a clear notification. Busy days mean I won’t open the calendar unless it nudges me.
+
+- Easy to learn: I onboard new folks monthly. If this thing uses the OS’s normal back/menu and Realtor terms, they’ll be fine without training. Don’t make me run a class.
+
+- Minor but: keep it looking professional. I showed a seller an app once that had goofy icons and lime green text. Never again.
+
+Thx,
+Leo
+
+Sent from my CE brick ;)
+
+---
+
+From: Owen <qa@pocketmls.com>
+To: Dana <dana@pocketmls.com>, Alex <alex@pocketmls.com>
+CC: Brooke <brooke@centurynorthside.com>, Priya <priyaa@centurynorthside.com>, Miguel <mfigueroa@mlsboard.org>, Kira <kira@pocketmls.com>, Leo <leo@centurynorthside.com>
+Date: 2025-04-02 13:02
+Subject: RE: install + sync — QA scenarios + some pushback
+
+All,
+
+QA notes:
+
+- We’ll run pass/fail around the search <= 30s metric and CMA <= 60s metric across varying network conditions. We’ll log worst-case from criteria submit to first result/render.
+
+- Will simulate crash during preference change and verify 100% restoration on relaunch. Also simulate outage and confirm saved searches, CMAs, and appointments are viewable offline.
+
+- Load test plan: 1000 simultaneous users around top of hour; measure page times + errors. Will add a high-water test at 5x to see bottlenecks.
+
+- Security tests include: only licensed accounts can log in, role-based permissions (e.g., not everyone can create a listing), and input validation (negative prices, out-of-range bedrooms, empty required fields).
+
+- Install usability test: 10 untrained agents attempt self-install. Goal is at least 9 succeed without printed help. We’ll record stumbling points.
+
+Pushback / constraints we found:
+
+- Hourly sync is non-negotiable (ops). Some agents asked for more frequent. We’ll document expectations in-app.
+
+- Windows CE certificate store is picky — we must ensure auth works cleanly there. Alex, I’ll coordinate.
+
+- Availability: we’ll flag any downtime. Ops target is 24/7, 99.9%. We’ll monitor.
+
+- Photos: clarity vs memory — we’ll tune. Kira, UI needs to avoid loading 20 thumbnails at once on old Palms.
+
+-Owen
+
+---
+
+From: Priya <priyaa@centurynorthside.com>
+To: All
+CC: 
+Date: 2025-04-02 14:28
+Subject: RE: install + sync — one last thing on auth/assistants
+
+Quick add — please make sure assistants can’t sneak in under their agent’s login. Our policy is licensed users only. That means strict authentication and proper authorization checks throughout. We’ve had mishaps where assistants “updated” a listing incorrectly. The app should prevent that.
+
+—P
+
+Sent from mobile
+
+---
+
+From: Dana <dana@pocketmls.com>
+To: All
+CC: 
+Date: 2025-04-02 15:10
+Subject: RE: install + sync — wrapping up (mostly)
+
+Thanks, everyone. Rolling up decisions and open items:
+
+Decisions:
+- Keep install self-service; no printed instructions. We’ll measure and aim for 90% success among untrained agents.
+- Follow native UI standards on CE/Palm; standard menus/buttons; professional, consistent color/fonts; Realtor-friendly wording.
+- Searches return within ~30s; CMAs within ~60s. Clear photos in search results and on detail.
+- Hourly sync with office for contacts + appointments. After each run, notify agents about new client appointments. Offline mode: saved searches, CMAs, appts viewable when network drops.
+- Only licensed users can access; enforce login and role permissions. Validate inputs to prevent bad data.
+- Devices: Windows CE + Palm OS only for v1.
+- Scale/availability: design for 24/7 use, ~99.9% availability. Support 1000 simultaneous users now; plan for 5x growth.
+
+Open items:
+- QA to confirm 100% preference restoration after crash/restart.
+- Owen/Alex to validate CE certificate handling for auth.
+
+Let’s keep an eye on top-of-hour spikes. I’ll set up the install usability test for next week.
+
+—Dana

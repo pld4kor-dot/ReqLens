@@ -1,0 +1,114 @@
+TYPE  : interview_transcript
+TITLE : Exploratory interview on TeleShift Portal expectations and constraints
+UNIT  : PROMISE_11
+============================================================
+
+Maria [Supervisor]: Okay, so big picture, we need this TeleShift thing to not slow us down. I’ve got to enter and adjust caller schedules, and if a slot is empty, I need to put it out there for the team. I can’t be... I don’t want to be stuck in a screen for five minutes just to post an opening.
+
+Priya [IT Ops]: Right, speed is the headline. Can I clarify—when you say not five minutes, what feels acceptable to you? We have some internal targets in mind, but I want your gut reaction first.
+
+Maria [Supervisor]: Honestly, most of the time I’m juggling a call or two, instant messages, whatever. If I can click in, update a caller’s shift, and get out in under, I don’t know, two minutes? That’s, that’s the vibe. If anything takes longer, I’ll probably defer it.
+
+Ken [Caller]: Yeah, and for us, like, I don’t want to hunt through some spaghetti of pages. If I can’t figure it out in like ten minutes tops the first day, I’m going to be asking Jen next to me to do it for me. And she’s new too. So... minimal training.
+
+Leo [UX]: So, we’re aiming for a ten-minute onboarding? That’s actually a great constraint for the design. We can do a quick walkthrough the first time someone logs in. Wait—sorry—actually, given the audience, maybe we do inline tips, not a walkthrough pop-up. Uh, anyway, I’m taking that as: quick learnability.
+
+Priya [IT Ops]: And, just to set expectations, at the DePaul TeleServices Center we’ve got to meet a pretty strict response profile. For the supervisor view where you look up a caller’s schedule—Maria, that’s the grid you like—we need that to come up very, very fast. Internally we’ve put—
+
+Maria [Supervisor]: Like, click and it shows. Not spinny-spinny.
+
+Priya [IT Ops]: Exactly. Our metric is that nine out of ten times, that page needs to land in around two seconds on the center’s network. The outliers should still be under five. We’ll monitor it.
+
+Ken [Caller]: Two seconds sounds good, but half the time I’m at home on some junky connection. Like, is dial-up even a thing? My apartment Wi‑Fi drops down to something that feels like dial-up.
+
+Priya [IT Ops]: We still have folks on very slow lines. We’re planning for a baseline that’s like, let’s say, old-school modem speeds. On those, we’re budgeting—well, our target is that most interactions finish in about six seconds or less. If you’re on something twice as fast—a 112k-ish or higher line—then the same actions should usually finish closer to three seconds. Those are 90th percentile targets, not averages.
+
+Ken [Caller]: Wait, 90th percentile… that’s like out of ten tries, nine are under those times? I always mix that up.
+
+Priya [IT Ops]: Yes, exactly: 9 out of 10 are at or under that mark. The remaining one isn’t allowed to be ridiculous; we have a separate ceiling in some cases, like for the supervisor schedule view, we said those rare ones still need to be under five seconds.
+
+Leo [UX]: We’ll design for that. Fewer heavy graphics, no giant tables loading all at once. Also means we need to keep the interface really, really clean. Fewer elements reduce download time and cognitive load. I’d like to validate simplicity with a beta round—if 9 out of 10 testers say “yeah, it’s simple enough,” then we know we didn’t overshoot. Appealing too—if most people find it visually pleasant, that helps adoption.
+
+Maria [Supervisor]: Appealing matters, sure, but don’t get cute. Just keep it obvious. Honestly, if 8 out of 10 of the team say it looks nice, that’s already a miracle.
+
+Leo [UX]: That’s a good bar. So, okay, we’ll aim for strong scores there—simplicity especially.
+
+Ken [Caller]: Can I ask something dumb? Who gets to put up open slots? Because in the old portal, sometimes we, uh, callers would try to “claim” time by, like, creating a fake opening. It was a mess.
+
+Maria [Supervisor]: No way. Only supervisors should be pushing out those openings. And only we should be doing schedule edits for callers. That’s for compliance and fairness. I don’t need everybody peeking at everyone else’s time either. I need to see all schedules, but they shouldn’t.
+
+Priya [IT Ops]: Right, so role-based access. We’ll enforce that: supervisors can advertise empty slots, supervisors can create or change caller schedules, and supervisors can see the whole roster. Callers won’t have those abilities. We can lock it down.
+
+Ken [Caller]: As long as I can… well, I don’t need to see everybody else. Just, y’know, see my own. And please don’t make me click eight times for one thing.
+
+Leo [UX]: The flows should be short. Let’s keep common tasks within a couple minutes end-to-end. That includes any loading time. We’ll time it.
+
+Maria [Supervisor]: Also, we need this thing up all the time. Like, we run campaigns overnight, weekends, holidays. When we say 24/7, we really mean all year.
+
+Priya [IT Ops]: Yes, the service is intended to be available every day. There’s some wording around hours that’s confusing—internally we’ve documented availability from just after midnight through late evening, and another block covering early morning through late night. The point is: it’s effectively always on. There might be a tiny maintenance wedge around 6 to 7 am—
+
+Leo [UX]: Wait, so is it truly always on or do we tell users “don’t use it at 6:30 am”?
+
+Priya [IT Ops]: The intent is continuous access throughout the day, every day. The two time spans we quoted overlap so heavily that it’s basically round-the-clock. We can refine messaging, but we’re committing to daily availability across the board.
+
+Maria [Supervisor]: Okay, but no surprise outages in the afternoon. That’s when I’m massaging schedules.
+
+Ken [Caller]: Also, what are we building this on? Because the last time we tried, my roommate’s ancient laptop only had Internet Explorer. Like, the dinosaur version.
+
+Priya [IT Ops]: Legacy browser support is a hard requirement. We have to run on Internet Explorer and Netscape Navigator. I know, I know. We’ll avoid modern features that break them. We’ll also keep it browser-independent as much as we can.
+
+Leo [UX]: That will constrain our visual layer, but we can still make it clean and decent-looking. We’ll keep to simple CSS, lightweight layouts, and test with both. For appeal, I’ll still shoot for that “8 out of 10 say it’s attractive” threshold. Simplicity, I want a “9 out of 10 say it’s easy” score in a beta survey. If we don’t hit it, we iterate.
+
+Maria [Supervisor]: Good. And the learning thing—please, please—make it so a fresh hire can sit down and learn in, like, ten minutes. I don’t have time for hour-long trainings. Two screens, top to bottom, and you’re done.
+
+Ken [Caller]: In the old system I got lost. Tabs within tabs. If this one keeps it to, like, one or two screens per task and keeps me under two minutes, I’m happy.
+
+Priya [IT Ops]: Performance on slow links is my biggest worry, so we’ll measure load times at 56k and at something like 112k and above. Our 90th percentile marks are what we’ll enforce. For the supervisor schedule view specifically, we’ll instrument it at the DePaul center. If we see it drifting over two seconds regularly, we’ll optimize. And no rare case should exceed about five seconds there.
+
+Leo [UX]: That means fewer big images, deferred loading, and reducing the number of clicks. Also, error messages need to be understandable, because we don’t want people stuck for ten minutes—uh, sorry, this is UX ranting.
+
+Maria [Supervisor]: It’s fine. Just don’t make me scroll horizontally.
+
+Ken [Caller]: Can I, uh, can I bring up a complaint? The other vendor’s portal—we won’t name names—looked like it was made in the 90s, which is fine if it loads fast, but it also, like, lagged on every click. If you can beat that, we’ll love you. Also, the font was tiny.
+
+Leo [UX]: We can do simple without ugly. Clean typography works even on IE and Netscape. We just have to test. We’ll validate with a user survey. If nine in ten say it’s simple enough, and around eight in ten say it looks good, we’ve hit the mark.
+
+Priya [IT Ops]: Agree. And I’ll add monitor probes during the hours we run heavy campaigns. Even though the policy is “available every day,” we’ll make sure those windows—midnight through evening and early morning through midnight—are covered in our SLAs and alerts.
+
+Maria [Supervisor]: I’m going to push one more time on roles. There’s been confusion with “team leads” versus “supervisors.” I need it so that only actual supervisors, like me, can push out empty calling slots. Not team leads, not callers with tenure.
+
+Priya [IT Ops]: Noted. We’ll key off the supervisor role. Only that role can post the open slots and edit schedules. And the all-callers schedule view? Also supervisor-only.
+
+Ken [Caller]: That’s fine. I don’t want to see everyone’s anyway. I just don’t want a lock that stops me from seeing my own changes. But—
+
+Maria [Supervisor]: You won’t be changing them. You’ll request changes through me. That’s the process.
+
+Ken [Caller]: Right, right. Got it.
+
+Leo [UX]: We can make it clear in the UI. Buttons that only supervisors see. For callers, simpler menu, fewer options. Clarity helps the ten-minute learnability and the two-minute task completion.
+
+Priya [IT Ops]: One last technical question. The supervisor schedule view—we’ve got to be clear that when we measure “fast” at DePaul, it’s not just median. We’re reporting the 90th percentile at or under two seconds. And for the remaining tail, under five seconds. For the general operations across the portal, on a 56k link we’ll keep most under six seconds, and on 112k and above, most under three.
+
+Maria [Supervisor]: Sounds like you’ve got numbers posted on a wall. I just need it to feel snappy.
+
+Ken [Caller]: Also—and this is my last thing—don’t make it so we need a manual. A quick sheet is fine. If in ten minutes I can’t figure it out, I’m going to pester someone.
+
+Leo [UX]: That’s our north star. We’ll test with new hires in beta. We’re going to collect feedback. If the scores for simplicity aren’t high—like nine out of ten—we keep tweaking. And for “do you like it?” we want at least eight out of ten yeses.
+
+Priya [IT Ops]: And we’ll keep the site up every day, round-the-clock coverage. If we need a maintenance sliver, we’ll plan it and communicate. Also, we’re stuck with IE and Netscape support, so no fancy frameworks. But the result can still be clean.
+
+Maria [Supervisor]: Great. Just keep me involved in testing the dashboard for updates, the open-slot advertise thing, and my all-schedule view. Those are my three.
+
+Ken [Caller]: And I’ll volunteer to be a slow-connection guinea pig. My apartment is like a time machine.
+
+Leo [UX]: Perfect. I’ll book some sessions. And Priya, I’ll sync with you on performance instrumentation and the beta survey questions.
+
+Priya [IT Ops]: Works for me. Thanks everyone—this is helpful. We’ll translate this into a backlog and test plan.
+
+Maria [Supervisor]: Cool. I’ve got to hop—shift handoffs. Thanks.
+
+Ken [Caller]: Later.
+
+Leo [UX]: Thanks all.
+
+Priya [IT Ops]: Bye.

@@ -1,0 +1,119 @@
+TYPE  : email_thread
+TITLE : Thread: Availability hours, legacy browsers, and role permissions for TeleShift
+UNIT  : PROMISE_11
+============================================================
+
+Email 1
+From: Priya Shah <priya.shah@depaults.org>
+To: Maria Alvarez <maria.alvarez@depaults.org>, Leo Park <leo.park@depaults.org>, Sam Patel <sam.patel@depaults.org>
+CC: Ops Team <ops@depaults.org>
+Subject: TeleShift: availability windows + legacy browsers + perf targets
+Body:
+Hi all,
+
+Quick recap to lock a few things:
+- Availability: ops policy says the portal is available daily, with documented windows that together cover the full day. The wording in the internal SOP mentions midnight to late afternoon and early morning to midnight. We’ll rephrase plainly (see below).
+- Browsers: we must run on Internet Explorer and Netscape Navigator (legacy friendly). Assume no modern-only features. Browser independent as much as possible.
+- Performance: For the supervisor schedule view at the DePaul TeleServices Center, we intend p90 ~2s, with the remaining tail still under 5s. For general ops, on ~56k links p90 ~6s; on ~112k+ p90 ~3s.
+- Roles: Our understanding is that only supervisors are allowed to (a) advertise open time slots, (b) enter or update caller schedules, and (c) view the entire roster/schedule across callers.
+
+Please confirm or correct. I’d like to publish this to the project wiki by tomorrow.
+
+Thanks,
+Priya
+
+—
+
+Email 2
+From: Maria Alvarez <maria.alvarez@depaults.org>
+To: Priya Shah <priya.shah@depaults.org>
+CC: Leo Park <leo.park@depaults.org>, Sam Patel <sam.patel@depaults.org>, Ops Team <ops@depaults.org>
+Subject: RE: TeleShift: availability windows + legacy browsers + perf targets
+Body:
+Hi Priya,
+
+Looks right to me on roles — please make it crystal clear: only supervisors touch schedules and blast out open slots. We’ve had issues before with people thinking “lead” == “supervisor.” It’s not.
+
+On availability, I’m a bit confused by the windows. Do we have a dead hour at 6am? We do have staff checking shifts around that time. If there’s any maintenance, I need it super short and predictable.
+
+Also, can we emphasize in the wiki that tasks are meant to be quick? I’m pushing my team to finish things in under 2 minutes when possible, and new folks should be able to figure the portal out in ~10 minutes on day one. If the design can’t support that, we’ll need to rethink.
+
+Thx,
+Maria
+
+—
+
+Email 3
+From: Sam Patel <sam.patel@depaults.org>
+To: Priya Shah <priya.shah@depaults.org>, Maria Alvarez <maria.alvarez@depaults.org>
+CC: Leo Park <leo.park@depaults.org>, Ops Team <ops@depaults.org>
+Subject: RE: TeleShift: availability windows + legacy browsers + perf targets (QA concerns)
+Body:
+Jumping in (sorry if late here).
+
+Two QA points:
+1) For the supervisor schedule view timing: we need explicit wording that the 2s target is at the 90th percentile measured at the DePaul center, not a global median. And a tail cap under 5s for the remainder. I’ll set up synthetic probes + real-user monitoring.
+2) For “all operations” performance: I propose we state “on a 56k reference link, 90% of operations complete within ~6 seconds; on a 112k or faster link, 90% of operations complete within ~3 seconds.” If we deviate from those numbers we need sign-off. Also we should anchor the 56k/112k definitions so folks know what we’re simulating.
+
+Browsers: I’ll spin a test matrix for IE and Netscape. Please don’t assume modern CSS. We’ll test with images off, too, for slow cases.
+
+Cheers,
+Sam
+
+—
+
+Email 4
+From: Leo Park <leo.park@depaults.org>
+To: Priya Shah <priya.shah@depaults.org>, Maria Alvarez <maria.alvarez@depaults.org>, Sam Patel <sam.patel@depaults.org>
+CC: Ops Team <ops@depaults.org>
+Subject: RE: TeleShift scope: UX trial + learnability
+Body:
+Hey team,
+
+Adding UX color:
+- Learnability: I’m designing so that both callers and supervisors can get the gist within ~10 minutes. Plan to do a quick beta with new users and measure time-to-first-success.
+- Task time: Anchoring on “finish common tasks within a couple minutes,” including page loads. We’ll do dry runs entering a schedule, posting an open slot (supervisor only), and loading the full roster (supervisor only). If these exceed the 2-min mental budget, we’ll simplify.
+- UI tests: In the beta survey I want two checkpoints — simplicity and appeal. Targets: 90%+ say it’s simple enough, and 80%+ say it looks good. If we come in lower, we’ll adjust layout/visuals. Keep in mind IE/Netscape constraints, but we can still make it clean.
+- Minimal chrome (no pun intended) — but yes, to be explicit, we’re NOT designing for Chrome-first; we’re obligated to support IE and Netscape.
+
+tl;dr: clean, fast, low cognitive load.
+
+-L
+
+—
+
+Email 5
+From: Jordan Miles <jordan.miles@depaults.org>
+To: Priya Shah <priya.shah@depaults.org>
+CC: Maria Alvarez <maria.alvarez@depaults.org>, Leo Park <leo.park@depaults.org>, Sam Patel <sam.patel@depaults.org>, Ops Team <ops@depaults.org>
+Subject: RE: Availability windows language + ops SLA
+Body:
+Priya,
+
+Mgmt hat on: I’m uneasy with ambiguous availability. Our outbound campaigns don’t sleep. If there’s a 6–7 am gap, we’ll get heat. The directive I’ve given in other projects is “system is available every day, round the clock.” If we MUST do maintenance, it should be invisible or exceedingly short.
+
+I’m okay with two overlapping windows if that’s how the SLA is written on paper, but let’s not accidentally allow a real blackout. Can we assert availability from 12:00 AM through 6:00 PM and also from 7:00 AM through 11:59 PM daily (as your doc suggests) and verify that in practice this equals full-day access? If not, we need to shore it up.
+
+Also, role restriction is non-negotiable: only supervisors (not leads, not senior callers) can advertise empty time slots, make schedule entries, and view all schedules. Please ensure the portal enforces this both in UI and in back-end authorization.
+
+JM
+
+—
+
+Email 6
+From: Priya Shah <priya.shah@depaults.org>
+To: Jordan Miles <jordan.miles@depaults.org>
+CC: Maria Alvarez <maria.alvarez@depaults.org>, Leo Park <leo.park@depaults.org>, Sam Patel <sam.patel@depaults.org>, Ops Team <ops@depaults.org>
+Subject: RE: Availability windows language + ops SLA (next steps)
+Body:
+Thanks Jordan — fair call.
+
+We’ll publish a clear availability statement: “Accessible daily between 12:00 AM–6:00 PM and 7:00 AM–11:59 PM.” I realize that looks odd; the intent (as discussed) is continuous availability across the day. I’ll validate with Network Ops that there is no enforced blackout between 6–7 am and, if there is a maintenance slice, we’ll keep it extremely brief and communicated (ideally near-zero impact). I’ll update the SOP accordingly.
+
+On roles: agreed and already captured in the requirements. Only the supervisor role will be able to (1) post empty slots to staff, (2) enter or update caller schedules, and (3) view the all-callers schedule. We’ll hide those controls for everyone else and also enforce authorization server-side.
+
+Performance: confirming the benchmark language Sam suggested: p90 2s for supervisor schedule view at DePaul (with remaining requests under 5s); general ops p90 6s on ~56k and 3s on ~112k+. We’ll instrument for those. For learnability/task time, I’ll let Leo drive the beta; Maria, please confirm your team can spare a few folks. We’re aiming for the “under 10 minutes to learn” mark and “finish typical tasks in about 2 minutes.”
+
+Open item: I’ll send a follow-up once I get definitive word on the early-morning window from Ops. If we can make it effectively 24/7 in practice, we will. If there’s a tiny maintenance wedge, we’ll state it plainly and schedule outside busy periods.
+
+– Priya (sent from mobile)

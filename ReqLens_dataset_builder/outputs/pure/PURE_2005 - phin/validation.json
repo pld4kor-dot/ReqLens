@@ -1,0 +1,385 @@
+{
+  "coverage_rate": 0.9048,
+  "missing_req_ids": [
+    "PURE_2005 - phin_R029",
+    "PURE_2005 - phin_R036",
+    "PURE_2005 - phin_R038",
+    "PURE_2005 - phin_R041"
+  ],
+  "unsupported_count": 1,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PURE_2005 - phin_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "not just COVID style, like all-hazards, even bioterror",
+        "run an investigation end to end, and monitor it"
+      ],
+      "reason": "Stakeholders require end-to-end outbreak management including bioterrorism."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "cases, contacts, exposures, that triangle",
+        "follow-up and progress for exposed/potentially exposed individuals"
+      ],
+      "reason": "Discussion repeatedly cites capturing cases, contacts, investigations, exposures."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "Every exposure record should say exposed to who or what and when"
+      ],
+      "reason": "Explicit requirement that exposures be tied to who/what and when."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "system should keep those traceable links",
+        "seeing connections among cases, exposures and the other stuff"
+      ],
+      "reason": "Participants want traceable links to support source and transmission tracing."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "Subject ID on every person",
+        "Race and ethnicity too, and country of citizenship"
+      ],
+      "reason": "Transcript lists Subject ID and all named demographic and occupational fields."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "capture investigator name, how to contact you",
+        "Name, email, phone, maybe team assignment"
+      ],
+      "reason": "Team explicitly discusses storing investigator name, address and contact details."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "Name, location, contact details for those",
+        "The hospital or clinic that reported the case, the lab that tested"
+      ],
+      "reason": "Organizations (hospital, lab, employer) require name, location, contacts."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "log a building, a floor, maybe a room, a store number",
+        "GPS coordinates help"
+      ],
+      "reason": "Sources require granular location fields including building, room and GPS."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "Required: species/type, age, gender",
+        "record tag identifiers"
+      ],
+      "reason": "Meeting notes explicitly list animal fields, Subject ID, and tag IDs."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "object name, type, physical descriptors",
+        "identification numbers like serial numbers, invoice numbers"
+      ],
+      "reason": "Object data section lists names, types, descriptors, addresses, IDs and timestamps."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "conveyance type (flight, train, bus, ship",
+        "If flight, store flight number and date."
+      ],
+      "reason": "Meeting notes explicitly require conveyance type and flight number."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "capture at minimum time, location, nature"
+      ],
+      "reason": "Notes state gatherings must record time, location, and nature."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "Need a general entity for other living things",
+        "custom data collection questions for such entities"
+      ],
+      "reason": "Sources require other-living-thing entity and customizable questions."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "Capture an entity's travel relevant to investigation",
+        "Travel history as an activity linked to person"
+      ],
+      "reason": "Travel history capture and linking to persons is specified."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "Track suspected agent (pathogen/toxin)",
+        "suspected agent. Pathogen or toxin, or unknown"
+      ],
+      "reason": "Agent (pathogen/toxin) tracking is explicitly required."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "capture data for isolation and quarantine monitoring",
+        "Store start date, end date, instructions, check-in cadence"
+      ],
+      "reason": "Meeting notes specify quarantine/isolation monitoring data elements."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "follow-up and progress for exposed/potentially exposed",
+        "Periodic checks: logs of phone calls, in-person visits"
+      ],
+      "reason": "Follow-up and monitoring of exposed subjects is described."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "Questionnaire designer reuse",
+        "Accept digital signatures on electronic questionnaires"
+      ],
+      "reason": "Sources require questionnaire design, custom fields, and digital signatures."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "object type should be configurable list",
+        "Structured input and validation for common fields"
+      ],
+      "reason": "Notes specify configurability and structured validation for data fields."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R020",
+      "supported": true,
+      "evidence_snippets": [
+        "Name, email, phone, maybe team assignment.",
+        "mapping, data dictionaries, grouping observations by type"
+      ],
+      "reason": "Sources call for personnel capture, roles, and entity classification."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R021",
+      "supported": true,
+      "evidence_snippets": [
+        "assign a barcode at collection time"
+      ],
+      "reason": "Meeting notes require specimen collection and barcoding support."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R022",
+      "supported": true,
+      "evidence_snippets": [
+        "specimen and lab result capture (metadata, granularity)",
+        "use established vocab standards (LOINC, SNOMED)"
+      ],
+      "reason": "Notes and emails call for lab result metadata, granularity and vocabularies."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R023",
+      "supported": true,
+      "evidence_snippets": [
+        "fallback link to subject by Subject ID"
+      ],
+      "reason": "Meeting notes explicitly define linkage rule for specimen vs subject."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R024",
+      "supported": true,
+      "evidence_snippets": [
+        "inbound lab messaging and linkage to requests"
+      ],
+      "reason": "Sources discuss receiving/parsing inbound lab messages and linking requests."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R025",
+      "supported": true,
+      "evidence_snippets": [
+        "capture who ordered it, product name, date given, type, duration, dosage",
+        "capture adverse events post administration"
+      ],
+      "reason": "Emails specify detailed countermeasure fields and AE capture for follow-up."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R026",
+      "supported": true,
+      "evidence_snippets": [
+        "receive and process messages about administrations",
+        "Outbound: generating and sending a request message"
+      ],
+      "reason": "Team explicitly requires inbound admin messages and outbound administration requests."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R027",
+      "supported": true,
+      "evidence_snippets": [
+        "share counts like number of vaccinations",
+        "we owe DPH a plan for exchanging aggregate numbers"
+      ],
+      "reason": "Emails and notes require aggregate counts exchange and bi-directional sharing."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R028",
+      "supported": true,
+      "evidence_snippets": [
+        "mapping, data dictionaries, grouping observations by type",
+        "support HL7 v2 or FHIR for structured messages and CSV"
+      ],
+      "reason": "Sources call for data dictionaries, mapping, grouped observations, and formats."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R029",
+      "supported": false,
+      "evidence_snippets": [
+        "mobile app or handheld scanners (Luis notes bluetooth scanners in use)"
+      ],
+      "reason": "Devices mentioned, but no explicit disconnected-sync or multi-mode deployment details."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R030",
+      "supported": true,
+      "evidence_snippets": [
+        "share appropriately with emergency partners and the public, with approvals"
+      ],
+      "reason": "Transcript requires packaging and sharing information with emergency partners and public."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R031",
+      "supported": true,
+      "evidence_snippets": [
+        "all exchanged data must use secure mechanisms",
+        "secure transport rules"
+      ],
+      "reason": "Sources repeatedly require secure transport for exchanged data."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R032",
+      "supported": true,
+      "evidence_snippets": [
+        "stick to PHIN Cross-Functional specs",
+        "message construction and parsing"
+      ],
+      "reason": "Email instructs implementers to follow PHIN message/transport specs."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R033",
+      "supported": true,
+      "evidence_snippets": [
+        "Implementers must review those reqs",
+        "PHIN Cross-Functional specs"
+      ],
+      "reason": "Texts explicitly say implementers should review PHIN cross-functional requirements."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R034",
+      "supported": true,
+      "evidence_snippets": [
+        "use established vocab standards (LOINC, SNOMED)",
+        "configurable domain vocabularies"
+      ],
+      "reason": "Sources require standard vocabularies and configurable domain vocabularies."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R035",
+      "supported": true,
+      "evidence_snippets": [
+        "CRA functional requirements ... not optional",
+        "don’t invent our own AE fields"
+      ],
+      "reason": "Email mandates conforming to PHIN Countermeasure/Response Administration requirements."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R036",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "No references to system backup policies or backup procedures."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R037",
+      "supported": true,
+      "evidence_snippets": [
+        "operational monitoring/alerts",
+        "filter who missed last check"
+      ],
+      "reason": "Notes discuss operational monitoring, alerts, and detecting missed checks."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R038",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "No continuity of operations or COOP/availability-after-catastrophe statements."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R039",
+      "supported": true,
+      "evidence_snippets": [
+        "privacy/security considerations",
+        "No emailing PHI"
+      ],
+      "reason": "Sources emphasize security, privacy, and protecting exchanged PHI from misuse."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R040",
+      "supported": true,
+      "evidence_snippets": [
+        "No emailing PHI",
+        "protect exchanged data must use secure mechanisms"
+      ],
+      "reason": "Texts require protecting sensitive information and applying privacy safeguards."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R041",
+      "supported": false,
+      "evidence_snippets": [
+        "Implementers must review those reqs"
+      ],
+      "reason": "No mention of providing employee training."
+    },
+    {
+      "req_id": "PURE_2005 - phin_R042",
+      "supported": true,
+      "evidence_snippets": [
+        "conform to the Countermeasure/Response"
+      ],
+      "reason": "Emails require linking CRA process flows in design docs."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "The system shall implement comprehensive operational and security audit logging (including hardening, persistent logs, and redundancy) to record system events, interface activity, sync/reconciliation actions, and security-relevant actions for operational troubleshooting and forensic review.",
+      "source_snippet": "Security and privacy:\n- Protect systems and data supporting outbreak management from sabotage, unauthorized access, and corruption. Also protect components from failure. Raj notes hardening + logging + redundancy. [TBD specifics]",
+      "source_type": "meeting_notes",
+      "reason": "The source explicitly calls out 'hardening + logging + redundancy' as a requirement for security and operations. While the gold set includes general protections, backups, COOP, and monitoring, it does not explicitly require persistent audit/logging of system and interface events (forensic/operational logs and redundancy of logs). This is a distinct, significant system capability implied by the source but not present in the listed gold requirements."
+    }
+  ],
+  "passed": true
+}

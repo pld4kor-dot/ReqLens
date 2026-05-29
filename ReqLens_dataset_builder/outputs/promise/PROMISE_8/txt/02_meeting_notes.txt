@@ -1,0 +1,139 @@
+TYPE  : meeting_notes
+TITLE : Admin Console & Operations Deep-Dive — raw notes
+UNIT  : PROMISE_8
+============================================================
+
+Date: 2025-02-12
+Room/Link: Lagos HQ Conf Rm B + Teams link (audio dropped twice)
+Attendees:
+- Amina (Owner/Founder)
+- Kofi (Izogn Manager - product/ops)
+- Ada (Website Admin)
+- Chinedu (Velkat Tech Support)
+- Blessing (Customer Support lead)
+- Priya (CyberSource partner)
+
+Notes (messy):
+- Scope today = admin console tasks, ops reliability, reporting, compliance (licensing/privacy). Also support flows.
+- Keep within current hardware. Web-only access. No native apps. [reconfirmed]
+- Browsers: IE 5.x, IE 6, Netscape 6/7/8, Firefox 1.0; also MSN TV2. [Chinedu groaned]
+- Streaming: WMP 9.0; encode two bitrates 56k, 256k. Chinedu: “We’ll test both.”
+- “Home page animation stays in Flash” — Amina. Keep it light so legacy setups aren’t bogged down.
+
+Admin tasks speed targets:
+- Add/remove a movie: Ada says goal < 5 min incl. metadata entry + poster upload. DB save to make it visible immediately.
+- Add/remove categories: want < 5 min. Also quick relabeling of categories in < 2 min (duplicate? but keep both metrics) [contradiction?].
+- Add new “product” (e.g., prepaid batch): < 2 min. [Kofi insists]
+- Generate unique prepaid PINs, bulk: within ~2 min for a batch; must export to Excel (.xls ok, .csv also ok?). [Priya suggested csv; Ada prefers xls]
+- Activate a prepaid card: admin-only; action should take ~3–5 sec, target < 5 sec.
+- Deactivate a customer: under 1 min; access revoked immediately.
+- Weekly home page refresh: auto every Friday, show newest 4 movies (by publish date). If fewer than 4, fill with most recent.
+
+Customer-facing flows (but admin affects):
+- Registration flows: pay-as-you-go under 5 min; unlimited sub under 10 min (longer T&Cs). No more than 4 pages to create account. [Kofi wants progress bar]
+- Login target: < 5 sec to authenticate and land on dashboard.
+- Access to purchased movie: 2 clicks from dashboard after login (“My Movies” then “Play”).
+- Purchase-to-play: under 3 min for a single movie (novice benchmark). Blessing: “We should track this time.”
+- Prepaid cards: denominations $5/$10/$20; purchase with credit card OR mail-in option; distribution via email OR printable paper card. [Mail-in needs manual verification step]
+- Prepaid PIN status check for customers (self-service): return balance/validity fast—under ~5 sec; throttle to prevent abuse.
+- Only registered customers can purchase streaming content. Guests browse only.
+- Viewing window: 2 days post-purchase. After that, no streaming allowed. Clear messaging.
+- Free trial: manager-configurable parameters (duration, content in trial? TBD). Kofi to define allowed params.
+- Owner comp access: Owner acct can stream all titles without payment (still log usage).
+- Usability baseline: aim for ~90% of novice users to complete basic tasks without assistance; verify with post-launch surveys.
+
+Payments & CyberSource:
+- Must use CyberSource API for credit card processing; no second gateway.
+- Auth must occur before streaming is allowed. [strict]
+- CC processing time: keep UX; show spinner if longer than ~2 sec; worst case ~15 sec. Priya says 15 is normal upper bound.
+- If CyberSource is down: site still works for browsing & help; show non-blocking alert on checkout; disable purchases until service returns; users can try again later (no queuing of charges).
+
+Reliability & performance:
+- General UI response target: < 5 sec per user action (pages, buttons). Exception: CC processing (<=15 sec), streaming buffer start (<=10 sec + user latency).
+- Streaming available on-demand any time. 24/7 site ops. Uptime target 99.5%.
+- If streaming server down: continue normal site ops (browsing, account, help). Hide/disable Play with explanatory message.
+- Capacity figures: Streaming server ~50 simultaneous connections; per streaming server catalog capacity ~700 titles (add more servers as we grow). Web server ~1,000 simultaneous users. Database ~100,000 customers supported.
+- Maintain within budget for at least 2 yrs; minimize maintenance overhead; scripts for weekly checks.
+
+Security, privacy, integrity:
+- Customer records stored in secure DB; restricted access (authorized personnel only). Sales info also restricted.
+- Card data: do not store full PAN; anything stored is encrypted. Priya: “Encrypt reversible data; mask displays.”
+- Privacy Policy link must be visible on all pages; inform users before collecting info (e.g., forms). Notify customers of changes to info policy (banner + email). Only disclose per policy.
+- Prevent data corruption: strict validation, typed fields, server-side checks.
+- Abuse protection: rate-limit PIN lookups + login attempts; notify admins on suspicious activity (all occurrences?). Ada: “Yes, I want emails when thresholds hit.”
+- Weekly data integrity scripts: check referential integrity, orphaned records, time window enforcement, sales log completeness.
+- Anti-virus on streaming servers. Schedule scans during off-peak. [Chinedu to pick vendor]
+
+Catalog & discovery:
+- Search: by title, actor, director (exact + partial?). [lean toward partial substring]
+- Categories: browsing by admin-created categories. Need quick category maintenance (see above time targets).
+- Movie detail page: shows description, actor(s), director (data from admin entries). Include runtime? [maybe later]
+- Reviews: customers can post reviews; admin approval required before publish; others can read reviews once approved. Moderation queue in admin.
+
+Help & support:
+- Help/FAQ section with common issues (prepaid usage, viewing window, buffering tips, legacy browsers, MSN TV2 specifics). Include 24/7 toll-free 800 number prominently.
+- Velkat tech phone support to Izogn admins 7am–7pm M–F. After-hours by email only [Ada to confirm].
+- Post-launch anonymous pulse surveys: at ~2 weeks target >=70% report being comfortable purchasing; at ~1 month target >=95% report being comfortable using prepaid cards.
+
+Brand & inclusivity:
+- Visual style: vibrant, fun, bright color palette, modern-clean-concise layout. African feel w/o alienating non-Africans. Respect religious/ethnic sensitivities. “Cater to all tribes in Nigeria and broader African audience.”
+- Use standard web conventions, plain language, recognizable icons. Accessibility? [Not in scope today].
+
+Reporting & admin access:
+- Sales logging: all streaming transactions logged in DB; accessible to admins.
+- Daily usage stats: automatically logged; admins can open reports quickly (target: under 2 min to load a report).
+- Exports: Excel for prepaid PIN batches; CSV for sales and usage? [Ada: both would be nice]
+
+Operations & deployment:
+- Install time: must be installable within one working day in the specified environment. Pre-script deployments.
+- Existing hardware only (constraint). No cloud shift (for now).
+- Standards compliance: W3C standards; PHP code follows PEAR conventions. [code review checklists]
+- Licensing: system must align w/ streaming licensing requirements; includes 2-day viewing enforcement, logging for report to rights holders.
+
+Edge Cases / misc:
+- If user network is slow: buffering may exceed 10 sec due to latency; we should message that. Otherwise we consider <10 sec normal.
+- If card authorization fails: do not allow streaming; offer retry or switch to prepaid.
+- Account cancellation: customer-initiated; flow < 2 min; mark inactive; block login. Keep all registered customer information in the database after cancel for records/licensing (do not purge). Admin deactivation also supported (< 1 min), immediate effect.
+- Owner free access role: bypass payments. Still log usage.
+- Preferences retention: store user buying preferences (payment choice, maybe favorite categories). [Privacy policy must mention]
+- Promo/content updates: marketing text/artwork changes should be publishable within a day.
+
+Action Items:
+- [Ada] Draft admin screens: add/remove movie (<5 min), category maintenance (<5 min, relabel <2), customer deactivate (<1), review approval list.
+- [Chinedu] Implement PIN generator + Excel export (batch <2 min). Add activation button (admin-only, <5 sec). Abuse alerts (email on suspicious activity). Weekly DB integrity script.
+- [Priya] Send latest CyberSource API doc; note timeouts; sample error codes to trigger fallback messaging.
+- [Kofi] Define free trial parameters (length, titles included, renew rules) [TBD document]. Confirm gateway outage messaging (disable purchase; allow retry later; no queuing).
+- [Blessing] Draft Help/FAQ including 24/7 toll-free number, buffering expectations, prepaid guidance, browser support notes, MSN TV2 instructions. Include note about the anonymous surveys.
+- [Chinedu] Add AV to streaming servers. Verify capacity numbers (50 streams, 700 titles per server) — test plan.
+- [Ada] Implement policy-change notification (banner + email). Add privacy link to all pages. Confirm Velkat after-hours support channel.
+- [Team] Ensure search covers title/actor/director with partial matches; confirm W3C and PEAR compliance checklist.
+
+Open Issues / Parking Lot:
+- Export formats: Excel only vs CSV too; performance for very large PIN batches [scale tests].
+- Owner access UI — show price crossed-out? or just “Play” button? [Amina to decide]
+- Define survey methodology for novice comfort targets (2-week 70% purchase comfort, 1-month 95% prepaid comfort) — anonymous; who collects, where displayed? [TBD]
+- Data retention post-cancel — indefinite? [Legal check].
+
+Scribbles/metrics (from whiteboard):
+- UI resp <5s
+- CC <=15s
+- Buffer <=10s (+latency)
+- Reg pages: max 4
+- P2P time <3m
+- Streams: 50
+- Catalog/server: 700
+- Users concurrent: 1,000
+- Customers total: 100k
+- Uptime 99.5%
+- Install 1 day
+- Novice usability ~90%
+
+Reminders:
+- Only registered users can purchase.
+- No streaming after 2-day window; enforce.
+- Use standard web symbols, plain words; avoid confusing jargon in UI.
+- Keep brand inclusive to all tribes and religions; avoid alienating non-Africans.
+- Continue site ops if streaming server down; likewise if payment gateway down (browsing unaffected; checkout disabled).
+- Help/FAQ + 24/7 toll-free number must be prominent.
+
+End of notes (audio cut off at 58:22, some items [?]).

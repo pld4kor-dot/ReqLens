@@ -1,0 +1,527 @@
+{
+  "id": "PROMISE_12",
+  "origin": "PROMISE",
+  "created_at": "2026-05-23T15:18:44.889188+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "DoIT kickoff interview on operations monitoring and data flow between CSR and EAM",
+      "text": "Maya [DoIT PM]: Thanks for making the time. I want to walk through how you all imagine day-to-day operations of the new hub. We keep calling it WindyCity Service Link, but the name can change later. The gist is: it sits between the call center system, CSR, and Datastream, the EAM. No point-to-point anymore. Right?\n\nLeo [System Administrator]: Yeah, that’s the big one. We’ve had way too much fragility with direct pipes. When CSR talks straight to Datastream, we can’t see or control the flow. I want a central, uh, console—like a web thing—where I can watch messages moving between them, and spot when something starts to go sideways before the call volume spikes.\n\nNina [CSR Ops Lead]: And for us, the main thing is, uh, fast. The call center folks are on the phone with residents and they don’t want to tell someone “please wait” for five minutes. If we enter a service request and it’s supposed to generate a work order in EAM, I need that to happen, like, almost immediately. Like a couple seconds. Two, maybe.\n\nPriya [DBA]: Two seconds end-to-end is about the tolerance we’ve seen work elsewhere. If the hub can process within that time—well, under—we can design the rest around that. But we’ll need to know how often it checks for new messages. Polling every second is what’s floating in my mind, but I might be misremembering what we did on the water side.\n\nCarlos [EAM Vendor Rep]: One second polling is aggressive, but doable. We generally prefer event-driven callbacks, but I understand you want the hub to pull from queues at a predictable cadence. Just… we need to avoid hammering the API.\n\nMaya [DoIT PM]: Hold that. Leo, describe the operator’s view. What exactly do you want to see when a problem starts to form?\n\nLeo [System Administrator]: Patterns. Heatmaps, maybe. Like, backlog growing on the CSR-to-EAM channel. Latency creeping up. And I want it to tell me—yeah, predict is a strong word—but give me hints when we’re about to get hammered, with alerts. Also, if external folks, like Public Works supervisors, call us, I need to be able to give them answers quickly. Internal and external support depends on visibility.\n\nNina [CSR Ops Lead]: So is that a dashboard? Also, we have our own KPIs, like request-to-dispatch time, and first contact resolution. Could those be shown? I don’t need every low-level message, but I want the trends.\n\nPriya [DBA]: Ad-hoc reports would help the DBAs too, especially when we’re trying to figure out why a set of transactions failed. Not just canned reports—let me slice by route, by service type, by queue name.\n\nMaya [DoIT PM]: Good. But let’s rewind. You mentioned “no direct pipes” earlier, Leo. I want to be crystal clear: all traffic between CSR and Datastream must traverse the hub. There’s no shortcutting.\n\nCarlos [EAM Vendor Rep]: Sure, but I have to say, our folks sometimes ask for a direct integration for performance. If you’re mandating the hub as the only path, we’ll make it work. It just means the hub has to be asynchronous and efficient—so messages don’t block each other.\n\nNina [CSR Ops Lead]: Asynchronous meaning… it’s slower? Because the resident’s still on the phone.\n\nPriya [DBA]: Not slower. It means the pieces don’t wait on each other. You can parallelize. Think of it like… the CSR doesn’t sit around for the full round trip; the system queues the request and returns quickly, while workers process in parallel.\n\nLeo [System Administrator]: Exactly. Multi-threading. Multiple workers chewing through the queue. And some kind of load balancer so if one worker is overloaded, others pick up the slack. It’s the only way to get through those 311 blitz days.\n\nMaya [DoIT PM]: Okay but, we need to put some stakes in the ground. “Fast” for us has meant about two seconds end-to-end. I’ve heard “one second polling” mentioned. Do we agree that’s feasible?\n\nCarlos [EAM Vendor Rep]: It’s feasible if we manage connection pools smartly and don’t just poll with empty calls every tick. Also depends on your queue technology. I’d be more comfortable with an event-driven trigger, but, sure, poll at one second intervals if we keep it efficient.\n\nNina [CSR Ops Lead]: And uptime. We had that outage last summer during the storm. I can’t have that when we’re slammed. I think the city standard on business days is, uh, almost never down, like, four nines. The term… 99.99%? But I don’t know the math of that per month.\n\nLeo [System Administrator]: Four nines during business hours is what I’ve seen in the ops doc. But let’s not get pedantic on what counts as planned vs unplanned. If you can keep it up when we’re busy, we’re good. Normal weekend maintenance is fine as long as it doesn’t wreck the queues.\n\nMaya [DoIT PM]: On the GUI—side note—remember we have to follow the city’s App Dev guide for UI patterns. So no weird bespoke navigation. Uh, sorry, I know that’s not what we’re on right now. We’ll revisit.\n\nPriya [DBA]: While we’re on it, error handling is huge. If a transaction fails, I want the screen to show me exactly where it died: bad mapping, validation fail, endpoint timeout. And give me a path to fix it. Not just “red light.” We need resolution guidance. If we can solve, say, 99% of errors without a developer, that’s a win.\n\nLeo [System Administrator]: Right, like, if an address field is missing, let me patch and replay, or kick off a compensating action. But, uh, maybe I’m jumping topics.\n\nCarlos [EAM Vendor Rep]: Compensating transactions are important if an update got halfway through in EAM. But this starts getting into our side too—routing around failures if one asset subsystem is down. We can handle some of that, but the hub has to know to retry smartly.\n\nNina [CSR Ops Lead]: Sorry, can we go back to the two weeks thing? Training. I’m not sending my admins to a month-long course. Our folks should be comfortable in, like, a couple of weeks of normal use. And they’ll be bouncing calls and doing other stuff; they’re not in there full-time.\n\nMaya [DoIT PM]: Right, usability is on our list. “Up to speed after two weeks” is what we’ve used in other projects. Let’s keep that.\n\nLeo [System Administrator]: Another thing: when the spike hits, I want to add workers on the fly. If we spin up more threads or nodes—whatever you call them—the system should just take them. No service restart, none of this “we’ll get back in an hour.” People are on hold. We can’t go down to add capacity.\n\nPriya [DBA]: And we shouldn’t be committing changes, like upgrades, that force downtime. I know sometimes that’s inevitable, but at least for adding processing power, we need it transparent.\n\nCarlos [EAM Vendor Rep]: There’s a practical limit, but, yes, hot adding of worker processes is something we see in our larger clients. We’ll just need health checks so the load balancer knows a node is ready before sending messages.\n\nNina [CSR Ops Lead]: I’m thinking—what about the day we make a change to CSR? The screen changes and suddenly the hub stops, uh, seeing the messages. That happened last year. Is the hub going to be fragile like that?\n\nPriya [DBA]: If we follow standards for message formats, we avoid a lot of breakage. The hub should be fairly robust and not go down just because one end tweaked an optional field. Validation should catch noncompliant messages and route them to a fix-it queue.\n\nMaya [DoIT PM]: Maya from the future: I just want to flag we also have throughput targets. We’re not a giant e-commerce site, but over a year, we’re in the million transactions ballpark. We’ll detail that in the tech spec later. Actually—sorry, let’s keep on operations.\n\nLeo [System Administrator]: On day one, give me a simple list: messages in, messages out, success/fail, last failure reason. Over time, we can add fancy correlation and forecasting. But from the start, I need to be able to tell the CSR floor “yes, the message left, no, EAM hasn’t acknowledged yet.”\n\nCarlos [EAM Vendor Rep]: And the routing. If the EAM endpoint for, say, Fleet is down, can the hub route around? Well, not route to a different system, but hold and try alternative paths within EAM’s API endpoints. We can expose multiple endpoints; the hub should pick a healthy one.\n\nPriya [DBA]: That’s more on the retry logic and health check integration with your services. But yes, don’t just hammer a dead endpoint. And if something got half-committed, the system needs to compensate—roll back or apply the matching corrective call.\n\nNina [CSR Ops Lead]: You lost me at compensate. I just want it to not mess up. If it does mess up, fix it. The words don’t matter as much.\n\nMaya [DoIT PM]: Totally fair. The point is: the system recovers gracefully.\n\nLeo [System Administrator]: Also, alerts. I don’t want to stare at a screen all day. If the hub detects latency beyond, say, two seconds consistently, notify us. Email alerts at low levels are fine, and I want the dashboard to make it obvious when we’re crossing our thresholds.\n\nPriya [DBA]: And poll intervals—we said one second for the inbound queues, but the checkpointing needs to be efficient. If every second we’re doing a full scan, we’ll overload. So I’m thinking more like subscription or at least incremental reads. But I guess that’s implementation detail.\n\nCarlos [EAM Vendor Rep]: Can I raise something unpopular? If you insist on four nines on business days and two-second processing and one-second polls, you’re going to need to budget for serious infrastructure. Load balancing isn’t magic.\n\nNina [CSR Ops Lead]: We’re not asking for magic; we’re asking not to get yelled at by the alderman’s office because the pothole request disappeared.\n\nMaya [DoIT PM]: Let’s earmark the budget talk for a separate session. For now, we’re framing expectations. Another practical point: no one should create a side door later. We need a governance note: no direct CSR-to-EAM API calls; everything goes through the hub.\n\nLeo [System Administrator]: Put that in writing. We can enforce at the network level but the policy matters.\n\nPriya [DBA]: For the error rates, can we be explicit? If the tool can guide us to fix 99 out of 100 transaction errors without pulling in a developer, that’s the kind of goal that makes my team happy. Maybe it shows recommended corrections or a “replay with fix” button.\n\nCarlos [EAM Vendor Rep]: We can also provide error codes mapping on our side so the hub can translate “EAM-438” into “invalid asset id” and suggest next steps.\n\nNina [CSR Ops Lead]: And just to be clear, the portal should not require me to memorize weird shortcuts. If my folks poke at it for a couple weeks, they should know where to click. We don’t have time for heavy training.\n\nMaya [DoIT PM]: Noted. Two weeks to proficiency, dashboards with KPIs and ad-hoc analysis, one-second intake checks, two-second end-to-end, multi-threaded, load balanced, alerting, and always going through the hub. Did I miss anything big?\n\nLeo [System Administrator]: Perhaps capacity management. When we add more workers, like on a snow day, the system should just take them without a blip. No “we need to schedule downtime.” Transparent, dynamic scaling.\n\nPriya [DBA]: And please, logging with enough detail to correlate across systems. When CSR sends “SR-98765,” I need to see its counterpart in EAM with a matching correlation ID.\n\nCarlos [EAM Vendor Rep]: That’s doable. We can include your correlation ID in our work order creation call and give it back in the response.\n\nNina [CSR Ops Lead]: Quick tangent—can we avoid pushing changes on Friday? We had that with EAM last time, and it broke the screens.\n\nMaya [DoIT PM]: Scheduling is a fight for another day. But yes, we’ll try not to deploy before a holiday weekend. Back to topic.\n\nLeo [System Administrator]: One more thing: we need support workflows. When an external partner calls, I want to pull up the conversation for that message and tell them the status. That’s part of internal/external support—being able to answer quickly.\n\nPriya [DBA]: And please, don’t bury the maintenance tasks. If we need to purge temp queues or archive, give us clear paths. Err, I’m not saying we’ll purge live messages—just that housecleaning shouldn’t take a PhD.\n\nMaya [DoIT PM]: We’ll cover archiving in a different meeting with compliance; today’s already over time. Last call—anything burning?\n\nCarlos [EAM Vendor Rep]: Nothing from me beyond what we said: use parallel workers and sensible retries. We can talk more on the queue tech next time.\n\nNina [CSR Ops Lead]: As long as the agent experience stays snappy in CSR, we’re good.\n\nLeo [System Administrator]: That’s where fast acknowledgments help. CSR can show “request accepted” right away; the heavy lifting happens in parallel.\n\nMaya [DoIT PM]: Alright, I’ll synthesize and send out notes. We’ll circle back on the UI standards and compliance bits next week. Thank you all.\n\nPriya [DBA]: Thanks.\n\nNina [CSR Ops Lead]: Bye.\n\nCarlos [EAM Vendor Rep]: Cheers.\n\nLeo [System Administrator]: Later."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "Architecture & Ops Working Session — Monitoring UI, scaling behavior, and governance",
+      "text": "Date: 2025-03-18\nLocation: Teams call (link: https://citychi.gov/meet/ops-arch-wcsl)\nAttendees:\n- Maya (DoIT PM)\n- Leo (SysAdmin)\n- Priya (DBA)\n- Nina (CSR Ops lead)\n- Arman (DoIT UX)\n- Janet (Security & Compliance)\n- Carlos (EAM vendor rep)\n- Wendy (AppDev standards)\n\nAgenda rough:\n- Monitoring UI requirements + city standards\n- Ops portal reports/KPIs (ad-hoc?)\n- Dynamic changes / transparent capacity add\n- Platform & tech neutrality\n- Release cadence / upgrade behavior\n- Robustness: standards adoption; fault avoidance\n\nNotes — raw (not full, some gaps):\n\nMonitoring UI / City standards\n- Must use City of Chicago Application Development Guide — Wendy says “no exceptions,” structure/navig consistent w/ framework components\n- Arman: use the standardized header, breadcrumbs, forms; no custom wild nav patterns\n- Leo: wants a single pane for message flow; status of CSR->EAM and EAM->CSR; backlog vis\n- Arman: Question: do we need dark mode? [TBD]\n- Wendy: UI code must fit within the AppDev Framework. No direct JS libs that violate security reviews. BUT can include approved charting. Strikethrough: ~custom design system~ (NOT decided yet)\n- Nina: Admins should be comfortable after a couple weeks usage; avoid complex nested menus; short tooltips; inline guidance\n- Priya: Error views must show failure cause, remediation steps; aim for “fix + replay” in tool (resolve most issues w/o devs) — 99% is the target mentioned earlier (check w/ ops)\n- Janet: Audit UI needs to expose message history (time, who touched it, statuses) for at least 1 yr — maybe in portal (note: see retention section)\n\nOps portal reports/KPIs\n- Nina wants ad-hoc reports: filter by service type, ward, route; export to CSV\n- KPIs: queue latency, time-to-ack, error rate %, retry counts, top error codes, SR->WO conversion time\n- Leo: dashboards + alerts -> predictive if possible; threshold config by admin\n- Priya: rolling windows (15m, 1h, 24h) helpful; trend lines\n- Contrad: Arman says keep it minimal v1; Nina says must have ad-hoc from day 1. Compromise? [Parking Lot]\n- Who owns KPI definitions? CSR leadership? DoIT? [TBD — check with CSR analytics]\n\nDynamic change / transparent resource addition\n- Leo: On spike days, add workers live. No service restart. “Transparent” to users.\n- Carlos: hub must advertise health of new workers so LB (load balancer) routes correctly. Health probes.\n- Maya: Dynamic change support is mandatory — scale out/in on demand.\n- Priya: Avoid service interruptions > 1 day — hmm, actually avoid interruptions period; but doc says keep under city thresholds. [clarify exact language]\n- Action: draft plan for hot-add capacity, define node discovery protocol.\n- Note: Also applies when turning off nodes — scale in gracefully; no dropped messages.\n\nPlatform independence / tech neutrality\n- Wendy: Platform-agnostic design — no OS lock-in (Linux/Windows), container friendly but not required\n- Arman: Access from any dev environment — avoid proprietary tied UIs\n- Carlos: Connectors/adapters should be cross-platform to interop with EAM + future tech\n- Janet: ensure third-party libs have security reviews. No vendor-specific encryption-only features\n- Priya: DB backend TBD, but must not force a single RDBMS; support multiple via standard drivers [check with DBA guild]\n- Note: accommodate new tech later without architecture changes — plug-in adapters ok\n\nRelease cadence / upgrade behavior\n- Maya: City cadence expectation: major features approx every 6 months; maintenance updates quarterly\n- Leo: Upgrades should not interrupt service. Keep processing while rolling out — blue/green or rolling deploy? [TBD]\n- Nina: No Friday eve deploys. (non-requirement but preference)\n- Contradiction: Carlos notes some updates might require restarts; Leo insists zero downtime for adding capacity at least.\n- Action: Document which changes must be non-disruptive (e.g., capacity add) vs which may have maintenance windows (rare)\n\nPerformance / polling / throughput\n- Priya: Inbound queues polled around every second (max) — prefer efficient pull or subscription\n- Leo: End-to-end handling should be around 2 seconds typical; alerts if sustained above\n- Nina: ops cares about “feels instant” — tooltips to set expectations in CSR\n- Target volume: >= 1,000,000 tx/yr without degradation (write in perf section). Some spikes (storm days 3x baseline)\n- Carlos: multi-threading + LB to handle spikes (workers parallel)\n\nRobustness / standards-based\n- Janet: Adopt standards for message formats + security to avoid classes of faults (fault avoidance via standards)\n- Priya: Validation schemas prevent bad payloads entering processing; map errors to human-readable messages\n- Carlos: Retry policies, backoff; route around failing internal endpoints when possible\n- Leo: Compensating actions if half-updates detected\n\nSecurity / audit / governance (touched but not deep-dived)\n- Janet: Authentication + authorization required on portal + APIs\n- Integrity checks + encryption at message level preferred (WS-Sec style) [parking lot for details]\n- Governance: CSR and Datastream traffic must go through hub; no direct links (policy + technical controls)\n- Retention: message archive for at least 1 yr for audit/tracking — storage sizing TBD\n\nOpen Issues / Parking Lot\n- Ad-hoc reporting v1 scope — minimal vs full SQL-like builder [TBD]\n- Exact language on availability: “four nines on business days?” vs broader 99% overall — align with city SLA doc\n- Event-driven vs 1-second polling — could we hybrid? [investigate]\n- Which subsystems can upgrade with zero downtime vs maintenance window acceptable [matrix to create]\n- Choice of queue tech [Kafka? MSMQ? AMQP?] — platform neutrality concern\n- Compensating transaction definitions per use case (asset create, work order close) [needs EAM doc]\n- Non-functional testing plan (load, chaos) [TBD]\n\nAction Items\n- Wendy to send App Dev guide links + component list (due Fri)\n- Arman to mock a dashboard adhering to city UI patterns (2 weeks)\n- Priya to draft perf targets doc (2s, 1s poll, 1M/yr) and share (next Tues)\n- Leo to propose hot-add procedure + health checks\n- Janet to outline security requirements (authN/Z, encryption, integrity) — schedule workshop\n- Carlos to provide EAM error code map + health check endpoints\n- Maya to compile release cadence + upgrade behavior section for review\n\nMisc notes / contradictions\n- Nina wants minimal clicks; Arman suggests feature-rich filter; both agree no training course; “learn by doing within ~2 weeks”\n- Strikethrough: ~custom charts lib from vendor~ (needs security review; likely no)\n- Numbers scribbled: 2 (sec), 1 (sec), 1,000,000 (annual), 99.99 (availability?) — verify units\n- Some want push notifications in portal; others say email is enough — revisit\n\nWrap-up\n- Consensus on: follow city UI framework; provide monitoring dashboards + ad-hoc reporting; scale transparently; platform independent; regular releases; robust via standards\n- Still unclear on: exact SLA wording; v1 scope of reporting; queue tech; deployment method\n- Next mtg: 2025-03-25 same link"
+    },
+    {
+      "type": "email_thread",
+      "title": "Thread: CSR-EAM Hub security & retention, platform neutrality, and failure handling",
+      "text": "Email 1\nFrom: Janet <janet.security@citychi.gov>\nTo: Maya <maya.pm@doit.citychi.gov>\nCC: Leo <leo.ops@doit.citychi.gov>, Priya <priya.dba@doit.citychi.gov>\nSubject: CSR<>EAM hub - security expectations and retention (draft)\n\nHi Maya,\n\nFollowing up from yesterday’s call. Please ensure the spec explicitly states:\n- AuthN/AuthZ required for all portal users and service accounts (role-based)\n- Message-level privacy + integrity: encryption in transit AND signatures/validation. I’m leaning WS-Security style envelopes or equivalent — we can hash out tech later, but we need message integrity checks, not just TLS.\n- Audit trail retained minimum 12 months. We can debate warm vs cold storage, but the point is we must be able to reconstruct a transaction trail end-to-end during audits.\n\nIf you have something drafty I can mark up, send it my way. Also, I heard someone mention Friday deployments… please let’s write in that upgrades won’t take the service down.\n\n- J\n\n—\n\nEmail 2\nFrom: Maya <maya.pm@doit.citychi.gov>\nTo: Janet <janet.security@citychi.gov>\nCC: Leo <leo.ops@doit.citychi.gov>, Priya <priya.dba@doit.citychi.gov>, Carlos <carlos.vendor@eamco.com>, Nina <nina.csr@citychi.gov>\nSubject: RE: CSR<>EAM hub - security expectations and retention (draft)\n\nThanks Janet,\n\nAgree on all three. We’ll include:\n- Portal login with roles (ops admin, read-only analyst, etc.). Service accounts scoped least-privilege.\n- Message security: encrypt and sign at the message level; we can reference WS-Sec conventions in the requirements so vendors don’t come back with TLS-only.\n- Retention: 1-year minimum. We’ll need to spell out that message content and metadata (timestamps, correlation IDs, who retried, etc.) are stored.\n\nOn upgrades: the plan is “keep the lights on” during changes. At least for adding new worker capacity, the service shouldn’t blink. For deeper upgrades, we’ll aim for rolling. Leo, can you sanity check? Carlos, any concerns on message signing from your side?\n\n- M\n\n—\n\nEmail 3\nFrom: Carlos <carlos.vendor@eamco.com>\nTo: Maya <maya.pm@doit.citychi.gov>\nCC: Janet <janet.security@citychi.gov>, Leo <leo.ops@doit.citychi.gov>, Priya <priya.dba@doit.citychi.gov>, Nina <nina.csr@citychi.gov>\nSubject: RE: RE: CSR<>EAM hub - security expectations and retention (draft)\n\nHi all,\n\nOn message signing/encryption: we can support WS-Security headers, but be aware it adds processing overhead. If you’re also holding to the ~2s end-to-end target, we’ll need multi-threading and load balancing across the hub’s workers so the crypto doesn’t become the bottleneck.\n\nWe’ve also seen trouble when hubs try to store raw payloads for a year without planning. If you’re retaining, please make sure access to archives is controlled and aligns with city policy.\n\nAlso, I want to raise a design point: failure handling. If a work order create call succeeds in EAM but the hub misses the ack due to a network blip, will you support a compensating mechanism? The goal would be to confirm final state and avoid duplicates while closing the loop. We can coordinate on what our side exposes to help you validate state.\n\nRegarding upgrades: we can align with rolling updates. Hot-adding workers is fine; just register them with the LB. Totally okay from our perspective.\n\n- Carlos\n\n—\n\nEmail 4\nFrom: Leo <leo.ops@doit.citychi.gov>\nTo: Carlos <carlos.vendor@eamco.com>\nCC: Maya <maya.pm@doit.citychi.gov>, Janet <janet.security@citychi.gov>, Priya <priya.dba@doit.citychi.gov>, Nina <nina.csr@citychi.gov>\nSubject: RE: security + failure handling + capacity adds\n\nCarlos,\n\nYup, we’re planning for parallel workers and LB from day one. Crypto overhead is real; we’re not going to sacrifice the security, so we’ll handle it with concurrency. We also have the polling cadence in mind (roughly every second) for inbound, though if we can flip to event-driven later that would be nice.\n\nOn compensating: yes, please. We want both retry/backoff and compensating transactions when partial updates are detected. And the hub needs to “route around” your failing endpoint if one node on your side is sick — hit a healthy one, not beat the dead horse.\n\nOn the archive, we’ll follow the city’s governance on how retention is protected and who can access it. We need the one-year window because when something goes wrong in March, we get asked about it in February next year.\n\nAlso, on auth: we’ll use the city’s standard approach for authentication and then enforce authorization per role. No anonymous admin screens.\n\n- Leo\n\n(sent from mobile, pardon typos)\n\n—\n\nEmail 5\nFrom: Priya <priya.dba@doit.citychi.gov>\nTo: Janet <janet.security@citychi.gov>, Maya <maya.pm@doit.citychi.gov>\nCC: Leo <leo.ops@doit.citychi.gov>, Carlos <carlos.vendor@eamco.com>, Nina <nina.csr@citychi.gov>, Wendy <wendy.standards@doit.citychi.gov>\nSubject: RE: CSR/EAM hub - platform + new tech question (drifting subject)\n\nJumping in with a somewhat related concern: we keep saying “platform-agnostic.” For the record, we need to be able to deploy this on whatever our infra team standardizes on (Windows or Linux VMs, or containers) without rewriting the app. Same for the connectors: we can’t be locked into one vendor’s runtime. And longer term, we’re going to need to integrate a new asset subsystem (unknown tech now). We should capture that the architecture should accept new adapters without re-architecting the core.\n\nAnd to close the loop on retention: please specify we store enough metadata to trace a transaction across systems (IDs, timestamps, who replayed it). At least 12 months, maybe more, but we can start with the one-year commitment and revisit storage growth after go-live.\n\nSide note: the audit folks will want integrity verification — e.g., message-level signatures or digests to prove no tampering. That goes beyond TLS. WS-Sec lines up nicely with that, as Janet said.\n\n- Priya\n\n—\n\nEmail 6\nFrom: Maya <maya.pm@doit.citychi.gov>\nTo: All\nCC: \nSubject: RE: CSR/EAM hub - security, retention, platform, failure handling (summary + next steps)\n\nTeam,\n\nThanks for the inputs. Capturing where we landed (and a couple of open points):\n\nSecurity\n- Authentication + authorization: portal users are role-based; service accounts scoped with least privilege. No anonymous access.\n- Message privacy + integrity: adopt a standards-based approach (WS-Security or equivalent) so payloads are encrypted/signed. We’ll include integrity checks to catch tampering, not rely only on TLS.\n\nAudit/Retention\n- Retain message history + metadata for minimum 1 year. Include correlation IDs, timestamps, actions/retries, and any transformations.\n\nFailure handling\n- Use retry/backoff and support compensating transactions where a step succeeded on one side but not acknowledged. Coordinate with EAM behavior to validate end-state and avoid duplicates.\n- Route around failing endpoints when possible; do health checks and failover to healthy nodes (on the EAM side where supported).\n\nPlatform/Extensibility\n- Platform independent design: no lock-in to a single OS or dev environment. Deployable on Windows/Linux/containers as needed. Adapters/connectors should be cross-platform.\n- Accept new technologies later without core architecture changes (plugin/adapter model).\n\nOperations\n- Adding new processing capacity (more workers) must not interrupt service. We will do hot-add with LB registration.\n- We continue to target around 2s end-to-end handling and frequent (about once per second) intake checks; concurrency + LB are assumed to keep us there even with security overhead.\n\nOpen items / pushback\n- Carlos flagged crypto overhead; we’ll mitigate via concurrency but will baseline perf in perf testing. If we need to tune, we’ll do so without relaxing security requirements.\n- Janet to schedule a security workshop to nail down the WS-Sec profile and key management approach.\n- Priya to propose the archive schema and access controls for audit queries.\n- Maya to verify with Wendy that our UI and API choices still align with the city framework (no off-framework widgets; this is a separate topic but interrelated).\n\nPartial resolution: we’re aligned on the need for role-based access, message-level security, one-year retention, compensating + routing around failures, and platform independence. Remaining action items above. I’ll incorporate this into the requirements draft and circulate by Friday.\n\n- Maya"
+    }
+  ],
+  "gold_requirements": [
+    {
+      "id": "PROMISE_12_R001",
+      "text": "The product shall provide GUI based Monitoring Services.System Administrators shall monitor message exchanges will predict and determine problems and will also provide internal and external support.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R002",
+      "text": "The product shall comply with City of Chicago Application Development Guide Framework.Application Development Framework will provide structured Graphical User Interface.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R003",
+      "text": "The product shall provide Monitoring Services.The product shall be easy for System Administrators and DBAs to use after two weeks of usage.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R004",
+      "text": "The product shall provide Error Tracking Services.The product shall help the System Administrators and DBAs to resolve transaction errors 99% of the time.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R005",
+      "text": "The product shall provide Portals.The product shall help System Administrators to analyze the transactions with ad-hoc reporting and KPIs (Key Performance Indicators)",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R006",
+      "text": "The product shall provide Asynchronous Messaging.The product shall provide asynchronous messaging to enable parallel processing and reduce the overhead in communications",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R007",
+      "text": "The product shall provide Multi-threading and Load Balancing.The product shall provide multi-threading technology as well as load balancing to overcome data load spikes and traffic.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R008",
+      "text": "The product shall process messages within 2 seconds.The product shall have a maximum message processing time of 2 seconds",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R009",
+      "text": "The product shall poll the system for messages every second.The product shall poll the system for new messages at a maximum of every 1 second.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R010",
+      "text": "The product shall provide Dynamic Change Support and Transparent resource addition.The product shall support Transparent Resource addition and Dynamic Change support to provide scalability and avoid service interruptions of more than 1 day.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R011",
+      "text": "The product shall be available 99% of the time. Rationale: To avoid service interruption during busiest customer service response periods. The product shall be available 99.99% of the time for regular business days.",
+      "raw_label": "A",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R012",
+      "text": "The product shall be robust.The product shall have fault avoidance based on standards adoption.",
+      "raw_label": "FT",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R013",
+      "text": "The product shall be robust with fault tolerance.The product shall have fault tolerance by using recovery technique compensatory transaction and routing around failures.",
+      "raw_label": "FT",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R014",
+      "text": "The product shall be able to process all transactions.The product shall process minimum of 1 million transactions per year.",
+      "raw_label": "SC",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R015",
+      "text": "The product shall be platform independent.The product shall enable access to any type of development environment and platform.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R016",
+      "text": "The product shall interface CSR and Datastream.The product shall exchange messages between CSR and EAM on a real time basis without any direct interfaces between two systems.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R017",
+      "text": ": The product shall continue to operate during upgrade change or new resource addition.The product shall be able to continue to operate with no interruption in service due to new resource additions.",
+      "raw_label": "MN",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R018",
+      "text": "The product shall be updated on a regular basis.The product will have a new major feature introduced every six months and quarterly maintenance releases every six months.",
+      "raw_label": "MN",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R019",
+      "text": "The product shall operate with every platform.The product shall accommodate any new technology without any change in its architecture.",
+      "raw_label": "MN",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R020",
+      "text": "The product shall have security.The product shall provide authentication and authorization.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R021",
+      "text": "The product shall information Security. The product shall enable privacy by encryption WS-Security and Integrity Checking.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_12_R022",
+      "text": "The product shall have audit capabilities.The product shall store messages for a minimum of one year for audit and transaction tracking purposes.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    }
+  ],
+  "validation": {
+    "coverage_rate": 1.0,
+    "missing_req_ids": [],
+    "unsupported_count": 3,
+    "repair_rounds_used": 1,
+    "coverage_entries": [
+      {
+        "req_id": "PROMISE_12_R001",
+        "supported": true,
+        "evidence_snippets": [
+          "central, uh, console—like a web thing",
+          "single pane for message flow"
+        ],
+        "reason": "Admins requested a GUI console to monitor message exchanges."
+      },
+      {
+        "req_id": "PROMISE_12_R002",
+        "supported": true,
+        "evidence_snippets": [
+          "Must use City of Chicago Application Dev Guide",
+          "UI code must fit within the AppDev Framework"
+        ],
+        "reason": "Stakeholders mandated the City AppDev Guide and framework usage."
+      },
+      {
+        "req_id": "PROMISE_12_R003",
+        "supported": true,
+        "evidence_snippets": [
+          "Admins should be comfortable after a couple weeks usage",
+          "comfortable in, like, a couple of weeks of normal use"
+        ],
+        "reason": "Users specified two weeks training/usability target for admins/DBAs."
+      },
+      {
+        "req_id": "PROMISE_12_R004",
+        "supported": true,
+        "evidence_snippets": [
+          "If we can solve, say, 99% of errors without a developer",
+          "Error views must show failure cause, remediation steps"
+        ],
+        "reason": "Requirement to show errors and aim to resolve ~99% without devs."
+      },
+      {
+        "req_id": "PROMISE_12_R005",
+        "supported": true,
+        "evidence_snippets": [
+          "ad-hoc reports: filter by service type, ward",
+          "KPIs: queue latency, time-to-ack, error rate %"
+        ],
+        "reason": "Notes call for portals with ad-hoc reporting and KPI dashboards."
+      },
+      {
+        "req_id": "PROMISE_12_R006",
+        "supported": true,
+        "evidence_snippets": [
+          "system queues the request and returns quickly",
+          "Asynchronous meaning… the pieces don’t wait on each other"
+        ],
+        "reason": "Team described queueing and asynchronous processing for parallelism."
+      },
+      {
+        "req_id": "PROMISE_12_R007",
+        "supported": true,
+        "evidence_snippets": [
+          "Multi-threading. Multiple workers chewing through the queue",
+          "some kind of load balancer so if one worker is overloaded"
+        ],
+        "reason": "Discussions explicitly require multithreading and load balancing for spikes."
+      },
+      {
+        "req_id": "PROMISE_12_R008",
+        "supported": true,
+        "evidence_snippets": [
+          "about two seconds end-to-end",
+          "End-to-end handling should be around 2 seconds typical"
+        ],
+        "reason": "Stakeholders set a two-second end-to-end processing target."
+      },
+      {
+        "req_id": "PROMISE_12_R009",
+        "supported": true,
+        "evidence_snippets": [
+          "polled around every second (max)",
+          "one second polling is aggressive, but doable"
+        ],
+        "reason": "Polling at roughly one-second intervals was discussed and tolerated."
+      },
+      {
+        "req_id": "PROMISE_12_R010",
+        "supported": true,
+        "evidence_snippets": [
+          "add workers live. No service restart.",
+          "Avoid service interruptions > 1 day — hmm"
+        ],
+        "reason": "Requirements call for hot-add scaling and avoiding extended downtime."
+      },
+      {
+        "req_id": "PROMISE_12_R011",
+        "supported": true,
+        "evidence_snippets": [
+          "four nines",
+          "99% overall"
+        ],
+        "reason": "Availability targets (99% and 99.99%) discussed in notes."
+      },
+      {
+        "req_id": "PROMISE_12_R012",
+        "supported": true,
+        "evidence_snippets": [
+          "fault avoidance via standards",
+          "Adopt standards for message formats"
+        ],
+        "reason": "Standards adoption cited to avoid faults."
+      },
+      {
+        "req_id": "PROMISE_12_R013",
+        "supported": true,
+        "evidence_snippets": [
+          "compensating actions",
+          "route around failing internal endpoints"
+        ],
+        "reason": "Compensating transactions and routing around failures specified."
+      },
+      {
+        "req_id": "PROMISE_12_R014",
+        "supported": true,
+        "evidence_snippets": [
+          ">= 1,000,000 tx/yr",
+          "Target volume: >= 1,000,000 tx/yr"
+        ],
+        "reason": "Explicit target of one million transactions per year."
+      },
+      {
+        "req_id": "PROMISE_12_R015",
+        "supported": true,
+        "evidence_snippets": [
+          "Platform-agnostic design",
+          "deploy ... Windows or Linux VMs"
+        ],
+        "reason": "Platform neutrality and dev-environment access requirements present."
+      },
+      {
+        "req_id": "PROMISE_12_R016",
+        "supported": true,
+        "evidence_snippets": [
+          "all traffic ... must traverse the hub",
+          "no direct links"
+        ],
+        "reason": "Requirement that CSR↔Datastream traffic traverse hub is explicit."
+      },
+      {
+        "req_id": "PROMISE_12_R017",
+        "supported": true,
+        "evidence_snippets": [
+          "add workers live. No service restart",
+          "Hot-adding workers is fine"
+        ],
+        "reason": "Hot-add/scale without interruption required and discussed."
+      },
+      {
+        "req_id": "PROMISE_12_R018",
+        "supported": true,
+        "evidence_snippets": [
+          "major features approx every 6 months",
+          "maintenance updates quarterly"
+        ],
+        "reason": "Cadence: major features biannual; maintenance quarterly specified."
+      },
+      {
+        "req_id": "PROMISE_12_R019",
+        "supported": true,
+        "evidence_snippets": [
+          "accommodate new tech later",
+          "plug-in adapters ok"
+        ],
+        "reason": "Architecture should accept new technologies without rework."
+      },
+      {
+        "req_id": "PROMISE_12_R020",
+        "supported": true,
+        "evidence_snippets": [
+          "AuthN/AuthZ required for all portal users",
+          "Authentication + authorization required on portal + APIs"
+        ],
+        "reason": "Authentication and authorization requirements explicitly stated."
+      },
+      {
+        "req_id": "PROMISE_12_R021",
+        "supported": true,
+        "evidence_snippets": [
+          "message-level privacy + integrity",
+          "encrypt and sign at the message level",
+          "WS-Security"
+        ],
+        "reason": "Sources mandate message-level encryption, signing, WS-Security style"
+      },
+      {
+        "req_id": "PROMISE_12_R022",
+        "supported": true,
+        "evidence_snippets": [
+          "Audit trail retained minimum 12 months",
+          "store messages for at least 1 yr"
+        ],
+        "reason": "Sources require audit capabilities and one-year message retention"
+      }
+    ],
+    "unsupported_implied": [
+      {
+        "text": "The product shall preserve and propagate correlation identifiers and logging metadata so operators can trace a transaction end-to-end across CSR and EAM (e.g., show matching correlation IDs between CSR SR and EAM work order).",
+        "source_snippet": "Priya: logging with enough detail to correlate across systems. When CSR sends “SR-98765,” I need to see its counterpart in EAM with a matching correlation ID.",
+        "source_type": "meeting_notes",
+        "reason": "The artifacts explicitly require preserved correlation IDs and cross-system traceability as an operational capability; the gold set requires one-year message retention and audit storage but does not explicitly require propagation or preservation of correlation identifiers or the logging/metadata needed to correlate messages across systems."
+      },
+      {
+        "text": "The product shall expose health checks/readiness probes so newly added workers can register with the load balancer only after healthy initialization.",
+        "source_snippet": "Carlos: hub must advertise health of new workers so LB (load balancer) routes correctly. Health probes.",
+        "source_type": "meeting_notes",
+        "reason": "The sources call out a need for explicit health-check behavior to coordinate hot-add of workers and correct LB routing. While the gold requirements demand multi-threading, load balancing, and transparent resource addition, they do not require health checks/readiness probes to ensure safe registration of new nodes."
+      },
+      {
+        "text": "The product shall provide an operational 'fix-and-replay' capability in the UI (allow operators to apply fixes to failed transactions and replay them without developer intervention).",
+        "source_snippet": "Priya: Error views must show failure cause, remediation steps; aim for “fix + replay” in tool (resolve most issues w/o devs) — 99% is the target mentioned earlier (check w/ ops)",
+        "source_type": "meeting_notes",
+        "reason": "Stakeholders explicitly ask for an interactive remediation workflow (fix + replay) as an operational feature so DBAs/ops can resolve failures without developer help. The gold set includes a 99% error-resolution target but does not mandate a specific UI capability such as fix-and-replay to achieve that target."
+      }
+    ],
+    "passed": false
+  },
+  "brief": {
+    "project_name": "WindyCity Service Link",
+    "domain": "Municipal service management and enterprise systems integration",
+    "users": [
+      "System Administrators",
+      "Database Administrators",
+      "IT Operations Analysts"
+    ],
+    "stakeholders": [
+      "City of Chicago Department of Innovation & Technology (DoIT)",
+      "Customer Service (CSR) leadership",
+      "Public Works / Asset Management (EAM/Datastream) team",
+      "City Security & Compliance Office",
+      "EAM/Datastream vendor representatives"
+    ],
+    "business_goals": [
+      "Unify CSR and EAM workflows by exchanging service and work-order data in real time without tight point-to-point coupling",
+      "Give operations staff clear visibility into message flows and issues so they can keep customer response moving during busy periods",
+      "Scale to seasonal spikes and future growth without architectural rewrites or lengthy outages",
+      "Improve first-pass error resolution and reduce rework by tracking and diagnosing transaction failures",
+      "Meet city governance expectations for auditability, security, and standardized UI practices"
+    ],
+    "core_features": [
+      "Web GUI for monitoring message exchanges, with dashboards and alerts so admins can spot and predict problems",
+      "Asynchronous messaging backbone with parallel workers; multi-threading and load balancing to handle spikes",
+      "Error tracking and resolution tools that guide ops to fix nearly all transaction failures",
+      "Operations portal with ad-hoc reports and KPIs for trend analysis and service health",
+      "Hot-scale and transparent resource addition so capacity can grow without pausing service",
+      "Cross-platform connectors/adapters to interoperate with diverse environments and new tech",
+      "Message archiving and audit trail retention for at least one year for traceability"
+    ],
+    "quality_concerns": [
+      "Performance: end-to-end message handling in about two seconds, with inbound queues polled roughly once per second",
+      "Availability: very high uptime targets (e.g., four nines on business days) with strong coverage during peak customer periods",
+      "Scalability and elasticity via load balancing and multi-threading; dynamic changes without noticeable service impact",
+      "Robustness and fault tolerance using standards-based patterns, compensating transactions, and routing around failures",
+      "Throughput capacity of at least a million transactions annually without degradation",
+      "Security: authenticated and authorized access, privacy via encryption and message integrity checks (e.g., WS-Security)",
+      "Usability: admins and DBAs should become effective within a couple of weeks of regular use"
+    ],
+    "constraints": [
+      "Must follow the City of Chicago Application Development Guide/Framework for UI structure and development practices",
+      "Platform-agnostic design that works across diverse development environments and operating systems",
+      "CSR and EAM (Datastream) must integrate through the hub for real-time exchange—no direct point-to-point interface",
+      "Zero- or near-zero-downtime behavior during upgrades and when adding new resources",
+      "Planned release cadence: major feature drops roughly every six months with quarterly maintenance updates",
+      "Adherence to city security and privacy policies, including encryption and integrity verification of messages"
+    ],
+    "terminology": [
+      "CSR: Customer Service Request system used by the city’s call center",
+      "EAM/Datastream: Enterprise Asset Management platform for work orders and assets",
+      "Asynchronous messaging: decoupled, non-blocking message exchange enabling parallel processing",
+      "KPI: Key Performance Indicator used to track operational health",
+      "Compensating transaction: recovery action used to correct or reverse failed steps",
+      "WS-Security: standards-based approach for message-level security (encryption, signatures, integrity)"
+    ]
+  },
+  "metadata": {
+    "project_id": "12",
+    "req_count": 22,
+    "label_dist": {
+      "LF": 2,
+      "US": 3,
+      "PE": 5,
+      "A": 1,
+      "FT": 2,
+      "SC": 1,
+      "O": 2,
+      "MN": 3,
+      "SE": 3
+    },
+    "llm_usage": {
+      "total_calls": 176,
+      "total_input_tokens": 969389,
+      "total_output_tokens": 582393
+    }
+  }
+}

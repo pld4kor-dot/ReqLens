@@ -1,0 +1,107 @@
+TYPE  : meeting_notes
+TITLE : CCR WCS Insight Portal Design Working Session — Raw Notes
+UNIT  : PROMISE_13
+============================================================
+
+Date: 2025-03-18
+Location: Building 12, Room 4C + WebEx link (W3 only)
+Attendees: Raj (CCR Mgr), Mia (CCR Analyst), Noel (UX Lead), Linda (IT Sec), Tom (WCS DBA), Carla (CCR Training/Docs), Jason (W3 Ops) [joined late]
+
+– Kickoff / objectives
+  - mgmt-ready dashboards; quick to run/export; align w/ IBM & CCR standards
+  - W3-only access; Windows env; global datasets later; training plan pre-go-live
+
+– UI/Branding/Usability
+  - Use IBM+CCR branding standards; include both logos (placement top-left or footer?)
+  - Color palette per IBM/CCR (avoid teal? debate). Fonts: IBM Plex [check]
+  - Display must work at 800x600. No horiz scroll at that res. Text readable.
+  - Point-and-click model. Also full keyboard operability: tab order, focus rings, Enter/Space triggers ALL actions.
+  - Hover-only interactions discouraged; 100% features must be accessible via keyboard. (Noel to review components)
+  - Results dashboard: show high-level summary for EACH report type (at least one metric/tile). Exec-friendly presentation. Clear summaries.
+  - First-use success target ~90% able to run a report without help.
+  - Learnability goal: after one session, users should remember flow (target 90% recall of steps). [Mia/Carla to define simple flow cheat sheet]
+  - Use CCR nomenclature consistent w/ existing WCS reports. No ad hoc renames. Validate through CCR user testing.
+  - All interfaces/reports undergo usability tests by CCR users before rollout. (Recruit 8–10 CCR users) [Carla]
+  - Contradiction noted: Raj said maybe no training. Group decided YES one session pre-deploy. [NOT decided yet] → later resolved as YES, 1 session.
+
+– Access/Security/Availability
+  - IBM W3 intranet only. No external exposure. Availability tied to W3 (target 95% of W3 uptime). Avoid advertising 24/7.
+  - Authentication: IBM intranet username/password. No automatic login. No cookies storing credentials (no saved login).
+  - Authorized CCR users only (include approved non‑US CCR staff). Access group config req’d. HRIS sync? [Jason to confirm]
+  - Platform: IBM-issued Windows machines (Windows 2000+). Older workstations must function.
+  - Reminder: Browser password saving discouraged; app should not encourage it. (Note: policy doc link [?])
+
+– Data/Refresh/Connectivity
+  - Weekly refresh of data from WCS sources. Scheduled queries to external WCS databases on a set day. Proposed: Monday night 11pm ET (finish by Tue 6am). Alt: Fri night (Tom to check ops window). [TBD]
+  - Connectivity to additional designated WCS databases not in initial scope. Should be able to add later when approved (WCS data owners sign-off required). No new analytics promised—just additional sources when okayed.
+  - Include regions outside US (datasets). Ensure capability to ingest global data fields. (Localization out of scope now.)
+  - Access for approved non-US CCR staff. Same auth flow on W3.
+
+– Reporting/Exports (Brio)
+  - One-click to generate a report once selection made. One-click to export. No extra confirmation screens.
+  - Exports provided via Brio module. Buttons in UI produce spreadsheet files:
+    • Excel (.xls)
+    • Lotus 1-2-3 (.123) [legacy—still required in some regions]
+  - Button labels should be explicit. Keyboard access to export buttons required. No buried menus.
+  - Reminder: Data exports reflect latest weekly refresh. (Consider showing last refresh date/time on dashboard? [discussion; not mandatory])
+
+– Documentation/Training/Adoption
+  - All changes/updates/additions must be reflected in WCS Developer Guide and WCS User Guide. Every change tracked. Release gated on docs updated? [Carla to propose process]
+  - Pre-deployment training: 1 session covering entire CCR user base (recorded). Aim for broad coverage (attend or watch recording). Scheduling: 90 min. [Carla + Raj]
+  - Usability aligned with IBM standards; CCR users validate nomenclature match w/ WCS. Target: high adoption, reduced time from selection to export.
+
+– Availability / Ops
+  - Service availability depends on W3 network status. Target: 95% of W3 availability window (Jason notes to confirm phrasing). If W3 down → portal down.
+  - No external endpoints. Intranet-only.
+  - Incident comms: [TBD—out of scope?]
+
+– Keyboard/mouse operability details
+  - Ensure all selection & navigation functions activatable by mouse or keyboard (100%).
+  - Avoid mixed controls that break at 800x600.
+
+– Nomenclature specifics
+  - Terms to lock: “Corporate Community Grants (CCR)”, “Workplace Community System (WCS)”, “Grant Recipient”, “Regional Program Coordinator”, etc. Check against current WCS reports [Mia].
+  - If label mismatch found, fix UI to match WCS. Do not change WCS for UI preference.
+
+– Branding specifics
+  - Both IBM and CCR logos required somewhere visible in the interface (header/footer). Not both in the same corner? [Noel to mock].
+  - Visual identity consistent across outputs (dashboards, exports header if any). (Note: exports are raw spreadsheets; brand not embedded beyond filename? [TBD])
+
+– Contradictions / Clarifications
+  - Raj initially: skip training; later group: do 1 session pre-go-live. Resolution: YES training (1 session). Strike-through earlier idea of skipping training.
+  - Availability phrasing: “available at all times as long as W3 accessible” vs “95% of W3 uptime” → Use latter as realistic target; both imply dependency on W3. Keep both ideas in comms carefully.
+  - Export formats: some push to drop Lotus 1-2-3; decision: keep .123 for now. Revisit in Q4. [Parking Lot]
+
+– Timelines / Next steps
+  - Tom: propose weekly refresh day (Mon vs Fri) by end of week. Include run window.
+  - Noel: produce low-res (800x600) wireframes w/ dual logos, dashboard summaries per report type, clear one-click Run/Export. Include keyboard nav plan.
+  - Carla: draft training outline; plan 1 session pre-deploy; ensure docs update checklist in release process.
+  - Jason: confirm W3 availability statement template; check access group setup for non‑US CCR users.
+  - Mia: collect CCR nomenclature examples from current WCS reports; flag discrepancies.
+  - Raj: circulate exec summary expectations (what metrics on dashboard per report type). Number of summary tiles: at least 1 per type; could be 2–3. Keep it “executive friendly”.
+
+Open Issues / Parking Lot
+  - Export: keep Lotus 1-2-3 forever? Many regions still rely on it; but desire to sunset. No decision. Revisit Q4 2025.
+  - Show “last refreshed” timestamp on dashboard? Might help clarity; ensure not a new step. [TBD]
+  - Training attendance metric—100% of CCR users? What about new hires? Will recording suffice to claim coverage? [Carla to propose policy]
+  - Global dataset fields variations (e.g., currency display) — out of current scope, but data inclusion is required. Revisit if execs ask for localization.
+  - Availability wording: “at all times when W3 is accessible” vs “95% of W3 availability”. Choose one in external comms. [Jason]
+  - Authentication: any chance of SSO? Linda says no automatic login; must prompt. Document rationale to preempt user complaints.
+
+Random notes (as captured)
+  - “Make it fast”: No formal perf req captured today. Implicit: one-click run should not feel sluggish. Manage expectations.
+  - “Mouse-only users vs keyboard-only users”: support both equally. No hidden hover actions. Default buttons reachable via tab.
+  - “Windows 2000+” still a thing for a few machines. Ensure no modern dependency that breaks them. [Check IE version? -> left blank, avoid scope creep]
+  - “Consistent CCR terms” — some folks call “Area” instead of “Region”. Use “Region” per WCS. Training to highlight glossary.
+  - Branding: keep both IBM + CCR logos visible. Don’t stack them if space too tight at 800x600; consider footer placement.
+  - Service exposure: intranet-only; do not publish outside W3.
+
+Action Items (mixed in)
+  - Tom: draft refresh schedule (Mon night 23:00 ET; alt Fri) + operations note. Due: 03/21.
+  - Noel: wireframes (low-res variant) + keyboard nav checklist. Due: 03/25.
+  - Carla: training session calendar invite to all CCR users (recorded) + doc process. Due: 04/02.
+  - Jason: confirm 95% target phrasing and access for approved international CCR staff; check with W3 ops. Due: 03/22.
+  - Mia: compile CCR nomenclature list by 03/20; share with Noel.
+  - Raj: send exec summary content examples (what “high-level” means per report). Due: 03/19.
+
+End of notes (raw; may contain errors).

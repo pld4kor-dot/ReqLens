@@ -1,0 +1,451 @@
+{
+  "coverage_rate": 0.9615,
+  "missing_req_ids": [
+    "PROMISE_10_R010",
+    "PROMISE_10_R012"
+  ],
+  "unsupported_count": 2,
+  "repair_rounds_used": 0,
+  "coverage_entries": [
+    {
+      "req_id": "PROMISE_10_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "look like ships at sea"
+      ],
+      "reason": "Vision explicitly requires ships-at-sea look."
+    },
+    {
+      "req_id": "PROMISE_10_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "round viewport",
+        "circle viewport for both grids"
+      ],
+      "reason": "Sources require circular periscope viewport."
+    },
+    {
+      "req_id": "PROMISE_10_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "render ship sprites to match classes",
+        "Ships look like actual classes"
+      ],
+      "reason": "Ship-class images/sprites explicitly required."
+    },
+    {
+      "req_id": "PROMISE_10_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "soft hum and ocean ambience",
+        "bring up an ambient sea layer"
+      ],
+      "reason": "Ambient sea audio on shooter turn specified."
+    },
+    {
+      "req_id": "PROMISE_10_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "distinct splash for a miss",
+        "Distinct sound for miss"
+      ],
+      "reason": "Miss sound (splash) explicitly described."
+    },
+    {
+      "req_id": "PROMISE_10_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "metal-on-metal thump for a hit",
+        "Distinct sound for hit"
+      ],
+      "reason": "Hit sound (impact/thud) explicitly described."
+    },
+    {
+      "req_id": "PROMISE_10_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "creaking and water rushing",
+        "Distinct sound for sink"
+      ],
+      "reason": "Sinking sound (creak/water) explicitly described."
+    },
+    {
+      "req_id": "PROMISE_10_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "24x7 availability",
+        "game has to be running 24x7"
+      ],
+      "reason": "Sources state requirement for 24x7 availability."
+    },
+    {
+      "req_id": "PROMISE_10_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "handle many simultaneous matches",
+        "scale horizontally"
+      ],
+      "reason": "Sources require horizontal scale for many games."
+    },
+    {
+      "req_id": "PROMISE_10_R010",
+      "supported": false,
+      "evidence_snippets": [
+        "95 percent under 2 sec",
+        "tail should not exceed ~4 sec"
+      ],
+      "reason": "Gold mentions \"4%\" but sources specify \"4 seconds\" tail."
+    },
+    {
+      "req_id": "PROMISE_10_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "no chat, no names, no personal info"
+      ],
+      "reason": "Artifacts mandate anonymous presence and no PII."
+    },
+    {
+      "req_id": "PROMISE_10_R012",
+      "supported": false,
+      "evidence_snippets": [
+        "stick to simple."
+      ],
+      "reason": "No measurable 9/10 no-training usability requirement present."
+    },
+    {
+      "req_id": "PROMISE_10_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "Language selection must happen at first access"
+      ],
+      "reason": "Explicit requirement: English, Spanish, French and upfront choose."
+    },
+    {
+      "req_id": "PROMISE_10_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "Strict anonymity: no PII, no usernames, no avatars."
+      ],
+      "reason": "Multiple statements forbid revealing player identities."
+    },
+    {
+      "req_id": "PROMISE_10_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "Maintain a list of players present."
+      ],
+      "reason": "Meeting notes require keeping an anonymous player roster."
+    },
+    {
+      "req_id": "PROMISE_10_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "Players opt in to be shown."
+      ],
+      "reason": "Users can mark themselves available as players (opt-in)."
+    },
+    {
+      "req_id": "PROMISE_10_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "both removed from lobby selection"
+      ],
+      "reason": "When match starts, players are made unpickable immediately."
+    },
+    {
+      "req_id": "PROMISE_10_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "toggle off at any time"
+      ],
+      "reason": "Users can remove themselves from availability immediately."
+    },
+    {
+      "req_id": "PROMISE_10_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "Inactive players should not be selectable."
+      ],
+      "reason": "Idle users are hidden from selection per notes."
+    },
+    {
+      "req_id": "PROMISE_10_R020",
+      "supported": true,
+      "evidence_snippets": [
+        "After 24 hours of no heartbeat, remove"
+      ],
+      "reason": "Docs specify removing users after 24 hours inactivity."
+    },
+    {
+      "req_id": "PROMISE_10_R021",
+      "supported": true,
+      "evidence_snippets": [
+        "One-click start: select an available opponent"
+      ],
+      "reason": "One-click lobby selection starts a match."
+    },
+    {
+      "req_id": "PROMISE_10_R022",
+      "supported": true,
+      "evidence_snippets": [
+        "Two boards: offense and own defense grid"
+      ],
+      "reason": "Each player shown their own defense grid."
+    },
+    {
+      "req_id": "PROMISE_10_R023",
+      "supported": true,
+      "evidence_snippets": [
+        "offense tracking grid"
+      ],
+      "reason": "Each player shown an offensive firing grid."
+    },
+    {
+      "req_id": "PROMISE_10_R024",
+      "supported": true,
+      "evidence_snippets": [
+        "Opponent never sees either. No cross-board view."
+      ],
+      "reason": "Opponent is not allowed to view other's grids."
+    },
+    {
+      "req_id": "PROMISE_10_R025",
+      "supported": true,
+      "evidence_snippets": [
+        "each player places five ships"
+      ],
+      "reason": "Players place five ships on their defense grid."
+    },
+    {
+      "req_id": "PROMISE_10_R026",
+      "supported": true,
+      "evidence_snippets": [
+        "horizontal, vertical, and also diagonal"
+      ],
+      "reason": "Horizontal ship orientation explicitly allowed."
+    },
+    {
+      "req_id": "PROMISE_10_R027",
+      "supported": true,
+      "evidence_snippets": [
+        "horizontal, vertical, and also diagonal"
+      ],
+      "reason": "Vertical ship orientation explicitly allowed."
+    },
+    {
+      "req_id": "PROMISE_10_R028",
+      "supported": true,
+      "evidence_snippets": [
+        "horizontal, vertical, and also diagonal"
+      ],
+      "reason": "Diagonal straight-line placement explicitly allowed."
+    },
+    {
+      "req_id": "PROMISE_10_R029",
+      "supported": true,
+      "evidence_snippets": [
+        "No overlap across ships. Reject placement if occupied"
+      ],
+      "reason": "Overlapping ships are disallowed and blocked."
+    },
+    {
+      "req_id": "PROMISE_10_R030",
+      "supported": true,
+      "evidence_snippets": [
+        "system decides who fires first"
+      ],
+      "reason": "System assigns initial shooter status after placement."
+    },
+    {
+      "req_id": "PROMISE_10_R031",
+      "supported": true,
+      "evidence_snippets": [
+        "one player is the shooter and the other is receiving fire"
+      ],
+      "reason": "Explicit shooter vs receiver per turn stated."
+    },
+    {
+      "req_id": "PROMISE_10_R032",
+      "supported": true,
+      "evidence_snippets": [
+        "Maintain a status per player: offensive or defensive"
+      ],
+      "reason": "Meeting notes require per-player offensive/defensive status."
+    },
+    {
+      "req_id": "PROMISE_10_R033",
+      "supported": true,
+      "evidence_snippets": [
+        "At the start of each turn, repeat that status."
+      ],
+      "reason": "Sources require turn-start notifications of status."
+    },
+    {
+      "req_id": "PROMISE_10_R034",
+      "supported": true,
+      "evidence_snippets": [
+        "Shooter defines a shot by selecting a coordinate"
+      ],
+      "reason": "Shooter selects a coordinate to define a shot."
+    },
+    {
+      "req_id": "PROMISE_10_R035",
+      "supported": true,
+      "evidence_snippets": [
+        "system checks the target’s defense board"
+      ],
+      "reason": "Server evaluates defender board to determine outcome."
+    },
+    {
+      "req_id": "PROMISE_10_R036",
+      "supported": true,
+      "evidence_snippets": [
+        "System notifies both parties of outcome: hit or miss"
+      ],
+      "reason": "Both players are informed of hit/miss outcomes."
+    },
+    {
+      "req_id": "PROMISE_10_R037",
+      "supported": true,
+      "evidence_snippets": [
+        "On defender’s defensive grid: mark cell hit or miss"
+      ],
+      "reason": "Defender's grid is explicitly marked with hit/miss."
+    },
+    {
+      "req_id": "PROMISE_10_R038",
+      "supported": true,
+      "evidence_snippets": [
+        "On shooter’s offensive grid: mirror the same hit/miss mark"
+      ],
+      "reason": "Attacker's firing grid mirrors hit/miss markings."
+    },
+    {
+      "req_id": "PROMISE_10_R039",
+      "supported": true,
+      "evidence_snippets": [
+        "Notify both players that the ship is down"
+      ],
+      "reason": "Sinking events produce notifications to both players."
+    },
+    {
+      "req_id": "PROMISE_10_R040",
+      "supported": true,
+      "evidence_snippets": [
+        "defender board should show that ship as sunk"
+      ],
+      "reason": "Defender's board displays sunk ship outline and type."
+    },
+    {
+      "req_id": "PROMISE_10_R041",
+      "supported": true,
+      "evidence_snippets": [
+        "defender board should show that ship as sunk, labeled"
+      ],
+      "reason": "Defender grid must show sunk ship type."
+    },
+    {
+      "req_id": "PROMISE_10_R042",
+      "supported": true,
+      "evidence_snippets": [
+        "On shooter’s grid: indicate that ship is sunk as well."
+      ],
+      "reason": "Attacker's grid receives sunk indicator."
+    },
+    {
+      "req_id": "PROMISE_10_R043",
+      "supported": true,
+      "evidence_snippets": [
+        "If hit: shooter immediately gets another shot."
+      ],
+      "reason": "Hit grants shooter another shot immediately."
+    },
+    {
+      "req_id": "PROMISE_10_R044",
+      "supported": true,
+      "evidence_snippets": [
+        "If miss: change roles. Shooter becomes targeted"
+      ],
+      "reason": "Miss causes offensive player to become defensive."
+    },
+    {
+      "req_id": "PROMISE_10_R045",
+      "supported": true,
+      "evidence_snippets": [
+        "If miss: ... defender becomes shooter."
+      ],
+      "reason": "Miss causes defensive player to become offensive."
+    },
+    {
+      "req_id": "PROMISE_10_R046",
+      "supported": true,
+      "evidence_snippets": [
+        "Continue assigning turns until end-of-game condition met."
+      ],
+      "reason": "Turns continue iteratively until game end."
+    },
+    {
+      "req_id": "PROMISE_10_R047",
+      "supported": true,
+      "evidence_snippets": [
+        "Win condition: last remaining ship ... sinks. Immediately end match."
+      ],
+      "reason": "Game ends when last defender ship sinks."
+    },
+    {
+      "req_id": "PROMISE_10_R048",
+      "supported": true,
+      "evidence_snippets": [
+        "either player can end a game at any time (resign)"
+      ],
+      "reason": "Players may manually end/resign a match anytime."
+    },
+    {
+      "req_id": "PROMISE_10_R049",
+      "supported": true,
+      "evidence_snippets": [
+        "When that happens, tell both players the match is over"
+      ],
+      "reason": "Both players are notified when game ends."
+    },
+    {
+      "req_id": "PROMISE_10_R050",
+      "supported": true,
+      "evidence_snippets": [
+        "Include reason: victory by all ships sunk, or opponent ended"
+      ],
+      "reason": "End notifications include reason for conclusion."
+    },
+    {
+      "req_id": "PROMISE_10_R051",
+      "supported": true,
+      "evidence_snippets": [
+        "present two actions: relist self as available"
+      ],
+      "reason": "Post-match offers relist option."
+    },
+    {
+      "req_id": "PROMISE_10_R052",
+      "supported": true,
+      "evidence_snippets": [
+        "Self removal instant."
+      ],
+      "reason": "Players can toggle off to remove immediately."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "The system must provide atomic pairing/availability locking (e.g., compare-and-set) so that simultaneous selections of the same opponent cannot create multiple pairings.",
+      "source_snippet": "Edge case: two people clicking same person. Need atomic lock. SRE to add compare-and-swap on availability flag.",
+      "source_type": "meeting_notes",
+      "reason": "The source explicitly requires an atomic compare-and-swap style lock to prevent race conditions during pairing. The gold requirements describe maintaining a list, making players unavailable when a game is initiated, and allowing selection, but they do not require or imply an atomic server-side locking mechanism to prevent concurrent pairing races. This is a significant system-capability (concurrency control) not present in the gold set."
+    },
+    {
+      "text": "The server must be authoritative for turn/role state and confirmation of shot outcomes; clients must not locally award extra turns until the server confirms.",
+      "source_snippet": "Tasha [DevOps SRE]: The roles state should be authoritative on the server. Clients can optimistically highlight, but do not award extra turns locally until the server confirms.",
+      "source_type": "interview_transcript",
+      "reason": "The source explicitly mandates server-authoritative state for player roles and that clients must not grant extra turns locally before server confirmation. While the gold set requires maintaining and notifying player status per turn and marking hits/misses, it does not specify authority/location of truth (i.e., a server-side authoritative requirement) nor prohibition of client-side granting of extra turns. This architectural constraint is a significant capability beyond the gold requirements."
+    }
+  ],
+  "passed": true
+}

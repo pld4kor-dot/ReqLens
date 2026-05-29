@@ -1,0 +1,70 @@
+TYPE  : interview_transcript
+TITLE : Chargeback Compass stakeholder interview — cross‑team discovery session (reconvene)
+UNIT  : PROMISE_4
+============================================================
+
+Priya [Product Owner]: Thanks for joining again. Big picture hasn’t changed: Chargeback Compass needs to be the single place for disputes for both our internal cardmember teams and external merchant folks. Also, to avoid confusion, we are retiring the legacy dispute tools as we roll this out. After the two‑day training, all cardmember service reps and all merchant service reps will be using Compass for their day‑to‑day dispute work—no side processes.
+
+Luis [Cardmember Services Rep]: Music to my ears, as long as the ramp‑up is short. Two days of training and then people should be able to open their first real case without stumbling. And since we’ll be in it daily, it can’t be one of those apps where week three people are still lost.
+
+Dana [Merchant Services Rep]: From our side, we mostly respond and do follow‑ups. So we need clean visibility into the case, what’s pending, and the system should keep us from changing things we shouldn’t. And please don’t show our external reps any buttons that would start a dispute—we don’t want that capability.
+
+Gloria [Compliance/Legal Officer]: We have to align to Regulation E or Z, depending on account type, and the card network operating rules. The business rules must match those—reason codes, response windows, disclosures. Also: duplicate disputes are a serious issue. We need a zero‑tolerance posture—if the system detects the same cardmember/merchant/transaction scenario, it must block it every time.
+
+Mark [System Administrator]: On access, we’ll enforce view versus update at the role level. Only users with the Update privilege will even see initiation controls. Others get view only and a clear “not permitted” message if they try to initiate. Login is locked down—authorized users only, no guest access. Also, governance: if a user is revoked, only my team can reinstate, and we’ll record that.
+
+Ben [IT Operations]: On non‑functional stuff: let’s set expectations—around five seconds max to move between screens, and handle roughly 350 concurrent users without the app feeling sluggish. Availability is 24/7 with planned maintenance windows: Monday through Saturday, 3–4 a.m. Eastern, and Sunday, 1–5 a.m. Eastern. For sign‑in, once people are authenticated and their permissions are validated, the app shouldn’t randomly bounce them. We’ll follow security policy for session timeouts.
+
+Luis [Cardmember Services Rep]: Guardrails are big for us. Our folks shouldn’t see cases for other issuers. If I’m in issuer 4827, I shouldn’t see 1234, period.
+
+Priya [Product Owner]: Agreed. We’ll restrict data scope so each user only sees their own book of business by issuer.
+
+Gloria [Compliance/Legal Officer]: And an audit trail for every touch on a case—who did what and when. System activity should be labeled as such.
+
+Ben [IT Operations]: Noted. We’ll capture user and timestamp on any create/modify and flag system‑generated entries.
+
+Dana [Merchant Services Rep]: Also, please stick to our design system. Merchants notice when the external portal looks off‑brand. Internal folks want consistency too.
+
+Priya [Product Owner]: We’ll use the corporate UI standards for both internal and external apps. Color cues are fine for status, but they’ll be paired with labels/icons for accessibility.
+
+Mark [System Administrator]: One more admin thing: we produce a weekly user access report—new users, role changes, and reinstatements—so Audit & Risk can review. We’ll make sure it’s automated.
+
+Gloria [Compliance/Legal Officer]: Yes, and on governance, no direct database or file access for end users. All updates go through the application so we have a complete trail.
+
+Luis [Cardmember Services Rep]: Quick terminology thing—“issuer number” isn’t the card prefix, right? We just need it for filtering sometimes.
+
+Ben [IT Operations]: Right, issuer number is our internal bank identifier. We’ll keep it visible where it helps, likely under Advanced search.
+
+Priya [Product Owner]: Back to flows. We have two initiation flows: Ticket Retrieval Requests and chargebacks. Only users with Update can initiate, as we said. For retrievals, we’ll guide users through required fields and compute a merchant response due date. External roles must not be able to select the “original receipt” type.
+
+Dana [Merchant Services Rep]: That’s correct—external shouldn’t be able to request originals. Copy and portfolio are fine for them.
+
+Gloria [Compliance/Legal Officer]: And reason codes must be context‑sensitive: based on the transaction type and the merchant’s MCC. No global dump of codes.
+
+Mark [System Administrator]: For follow‑ups, show actions that apply to the case’s current status and the user’s role. If the case is closed, don’t show actions that only make sense for open cases.
+
+Luis [Cardmember Services Rep]: Please. People click the wrong thing when they see it. Hiding non‑applicable actions prevents errors.
+
+Ben [IT Operations]: When the system updates a case automatically—aging, deadlines—we’ll put a new entry in the history and show a notification to the case’s creator the next time they sign in. No emails, just an in‑app alert.
+
+Priya [Product Owner]: Good. On confirmations: after creating a retrieval or a chargeback (pending or immediate), we’ll show a full confirmation—case number, the type/subtype, and the merchant response due date—so there’s no guessing.
+
+Gloria [Compliance/Legal Officer]: One more on retention: six months after a case is closed, it should be removed from the online disputes database. Don’t just hide it in the UI—purge it from the online system per policy.
+
+Priya [Product Owner]: We’ll enforce the six‑month online purge. Also, a reminder: all transaction, cardmember, and merchant details come from their source systems—no manual overrides—so we stay consistent with the systems of record.
+
+Luis [Cardmember Services Rep]: On search—when we do that session, we need simple lookups by case number and by cardmember account, and filters for date, type, status, reason code. Color cues for status help, but please keep text labels too.
+
+Priya [Product Owner]: Noted. We’ll cover search in a separate meeting.
+
+Priya [Product Owner]: To recap: design adheres to corporate standards; two‑day training with first‑attempt success for key tasks, and we’re mandating adoption—after training, all cardmember and merchant reps will use Compass for disputes; performance around five seconds and scale to ~350 concurrent; availability with defined maintenance windows; strict role‑based access with initiation limited to Update roles; strong authentication; full audit trail and weekly user access reporting; no direct DB/file access; users see only their own issuer’s cases; follow‑ups filtered by status and role; in‑app notification to the case creator on next sign‑in for system‑driven changes; compute due dates and show confirmations; reason codes are contextual; external users cannot request original receipts on retrievals; and closed cases are purged from the online database after six months.
+
+Gloria [Compliance/Legal Officer]: And all of that within Regulation E/Z and the network operating rules. If there’s a conflict, compliance wins.
+
+Dana [Merchant Services Rep]: Works for me.
+
+Ben [IT Operations]: Sounds good.
+
+Mark [System Administrator]: All aligned here.
+
+Luis [Cardmember Services Rep]: Same. Let’s make it simple and fast.

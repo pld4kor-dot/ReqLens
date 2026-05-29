@@ -1,0 +1,98 @@
+TYPE  : meeting_notes
+TITLE : Raw notes — UI layout, menus, gameplay states, and stats (Design sync 2025-03-18)
+UNIT  : PURE_2003 - qheadache
+============================================================
+
+Date: 2025-03-18
+Call link: https://meet.example.com/qheadache-design-sync
+Attendees:
+- Maya (BA)
+- Lars (Qt dev)
+- Renee (QA)
+- Victor (PO)
+- Sasha (Community)
+
+Notes (messy):
+- Name: keep official product name as Qheadache. window title, About text, even Save file name if any (but we are NOT doing saves now) [TBD] —> but name Qheadache everywhere.
+- Domain: sliding-block desktop puzzle. one “headache” puzzle only. UI should help you solve that particular layout (not multiple levels). People will try to solve faster/fewer moves.
+- App type: standalone exe/app bundle. No server calls. local-only data. Single user per machine session (no profile switching in-app). [Renee asked: do we ever need user management?] Answer: No. Single local user only.
+- UI approach: menus + graphics + optional audio. Must be fully playable with sound off or system muted. Keep it simple. No audio dependency.
+- Main window: menu bar + board area + status region (time, actions). Keep menu-driven interactions. (No fancy context menu for now; keep top bar.)
+- Board geometry: rectangle height 5x, width 4x. Black background. Fit inside window with some padding. x is layout unit. clamp x within 50–100 pixels. If window big, pad; if small, enforce min window to avoid x < 50.
+- Colors: blocks yellow. Board black. (briefly debated inverted colors — crossed out) NOT decided yet (actually decided: keep black board, yellow blocks). [Update: stick to original plan]
+- Spacing: blocks separated by ~0.1x “gutters”. So visually not touching. Keep consistent around all blocks. (Asked: margin to border as well? Possibly same 0.1x to outside? [TBD], but requirement is block-to-block spacing at least.)
+- Preset set (fixed):
+  * 4 small squares (1x by 1x)
+  * 4 tall rectangles (2x high, x wide)
+  * 1 wide rectangle (x high, 2x wide)
+  * 1 big square (2x by 2x)
+  counts are fixed. no variants. [Someone suggested more pieces — crossed out]
+- Interaction model (pointer-based):
+  * Left mouse down on a block => enter movement state (“block movement”).
+  * While in movement, block should track cursor position. Constraint rules prevent overlap.
+  * On left button release (on that selected block): return to selection state. (Note: confirm nothing odd on release off the board; still return to selection.)
+  * People may use other pointing devices (trackpads etc.). Should still move the block with pointer; keyboard support for menus and entering name.
+- Input devices: keyboard, mouse, touchpad, trackball, etc., anything that moves an on-screen cursor. Use keyboard for menu nav and for victory name entry. (No touch/gesture specifics in scope.)
+- Resolution: 800x600 minimum. At that size, digits for time and action counts must be legible. Use Qt font scaling as needed. Renee to test on 800x600 Windows.
+- Frameworks: Qt required. Cross-platform — runs on OS supported by Qt. Windows support is explicitly required. Also test on Linux; mac if possible.
+- Undo/Redo: provide history up to last 1000 actions. Discussion: is 1000 enough? Yes. Not user-configurable now. Use ring buffer (Lars: implement). [Renee: ensure redo resets correctly when new moves are made.] 
+- Progress tracking: show elapsed time during a game session. Show action count incrementing per move. Present near the board in a non-intrusive area. Keep digits large.
+- On win (victory condition reached): prompt for player name. Record: player name + elapsed time + action count. Save locally. (No online sync.)
+- Statistics: accessible via menu. “Statistics” menu contains two items. Order matters: Display first, Erase second. Accept both mouse and keyboard selection. On Display => open scores window with list of recorded players (all entries visible). On Erase => wipe stored stats (no confirmation for now; keep it simple). After performing either action, the Statistics menu should close — not remain open.
+- Help menu: contains About item. Accept keyboard and mouse selection. On About => open About window. The Help menu closes after About is shown. About text must exactly read: Qheadache 1.0 by Jean-Philippe Brossat jp_brossat@yahoo.fr (Verify exact spaces/characters). [Renee to test literal text]
+- Single-user: Only one user per machine context. Stats are shared on the machine (no per-user profiles). Note: QA to confirm behavior if OS user accounts differ; scope is single user in-app per session. [But we are not preventing multiple OS users; just no multi-profile in app.]
+- Audience assumptions: No special qualifications required. Basic computer users only. Kids as young as 8 should manage without training. Adults (puzzle enthusiasts) also targeted.
+- Menu behavior consistency: After executing an action (Stats->Display or Erase; Help->About), the menu should close. Avoid persistent dropdowns post-action. (Renee: add test case for that.)
+
+Side convos / contradictions / clarifications:
+- “Is board 4x wide by 5x tall or 5x wide by 4x tall?” — Answer finalized: height 5x, width 4x. (Earlier note had it reversed — crossed out.) Document clearly.
+- “Spacing 0.1x: Is that exactly 0.1x or at least 0.1x?” — We say maintain 0.1x between blocks (exact). Border padding [TBD].
+- “Sound effects?” — Keep optional. Must be playable with sound off. No requirement for sound now.
+- “Sorting scores by time?” — Not in scope. Just display all recorded players. [Future? Parking Lot]
+- “DPI scaling on Windows?” — Test at 100%, 125% if possible; the 800x600 requirement is physical resolution; UI must remain usable. [QA note]
+- “Input alternatives?” — Accept keyboard and pointing devices that can move on-screen cursor + name entry. No voice control. No gamepad-specific mapping [out of scope].
+- “Menus closing rule conflicts with About staying open?” — Clarification: The menu itself closes, About window remains until dismissed, which is fine. Not contradictory.
+- “Undo/Redo 1000 actions vs memory usage?” — 1000 is cap. Should be fine. Implementation uses compact move representation. [Lars: Monitor memory in debug.]
+- “Single-user vs OS profiles?” — In-app single-user stance stands. Stats are local to machine’s storage (or current OS user profile storage) — but app doesn’t differentiate users inside UI. [Renee: test new Windows profile -> separate stats file probably, but still no in-app selection.]
+
+Action items:
+- [Lars] Implement main window with menu bar, black board area (5x by 4x), status line w/ time & action count (legible at 800x600). Use Qt.
+- [Lars] Pieces: four 1x1 squares, four 2x by 1x vertical rectangles, one 1x by 2x horizontal rectangle, one 2x by 2x square — all yellow; maintain 0.1x spacing. Ensure movement constraints prevent overlap.
+- [Lars] Input: left mouse down enters movement; while moving, block follows cursor; on left mouse up over selection, return to selection mode. Keyboard and pointer support for menus; keyboard entry for victory name.
+- [Lars] Undo/Redo history support up to 1000 actions. Provide UI hooks for QA to test.
+- [Lars] Statistics menu items: Display (shows scores window), Erase (clears all). Menu closes after action. Help menu: About item; menu closes after showing About. About text must be exact string (see above).
+- [Renee] Prepare test plan for Windows (portable), Linux; test at 800x600; system audio muted tests; DPI scaling tests; verify menu close behavior, About exact text, Stats erase function.
+- [Maya] Write short spec aimed at analysts, developers, and QA testers. Clarify board dimensions, piece set, input model, menu structure, data captured on victory.
+- [Sasha] Draft community blurb explaining that Qheadache is a simple desktop puzzle, easy for kids and adults, no sign-in, shows time and moves, and keeps local scores.
+
+Open Issues / Parking Lot:
+- Sorting or filtering scores — NOT in current release. [Park]
+- Confirm whether border-to-block margin equals 0.1x or something else [TBD]. For now, only block-to-block spacing is committed.
+- Visual feedback on selection (glow/outline?) — Keep minimal. If any highlight is added, must not contradict yellow-on-black clarity. [TBD]
+- Confirmation on Erase? Current stance: no confirm. Might add in future if user feedback says accidental erasure occurs. [Park]
+- Localization — Not in scope. About text is fixed English line. Menus English for now. [Park]
+- Platform packaging for macOS — If time permits. Windows build is priority (explicit portability). [TBD]
+
+Random bits from call (not fully captured):
+- Someone asked if we could add a hint system — crossed out. Out of scope. Keep puzzle pure.
+- There was confusion over “x unit range 50-100 px.” Clarify: x is clamped; actual x used depends on window size. At 800x600 we will pick an x that fits board + UI. Might be around ~80 px, but exact depends on margins.
+- Reminder: End users assumed to know basic PC ops (move cursor, click, type). No special qualifications beyond that. Audience includes 8+ kids and adult puzzle enthusiasts.
+- Recording score on victory: ensure we capture name, elapsed time, action count. The score window lists players. Do not require login. No network. Standalone.
+- The “headache” puzzle is the specific layout we provide. No level select. The UI is there to enable solving that one arrangement by sliding blocks.
+- Menu acceptance input: both mouse clicks and keyboard navigation must trigger items. (Renee to check keyboard focus order.)
+
+Potential contradictions flagged by Renee:
+- One note said “board 5x by 4x, black bg,” another side note scribbled “4x by 5x landscape?” — We resolved it: height 5x, width 4x (portrait). Cross out landscape variant.
+- Erase with confirm vs erase without confirm — For now, without confirm. Add to Open Issues in case we revisit.
+- Spacing constant vs responsive — Keep constant: 0.1x. Not relative to window size beyond x.
+
+Misc:
+- Mind the title: Qheadache. Not “QHeadache,” watch casing in UI.
+- Help->About shows exact text: Qheadache 1.0 by Jean-Philippe Brossat jp_brossat@yahoo.fr. (Exact. No trailing period.)
+- The Stats window is a separate window/dialog. It displays all scores — players’ names, the times, and action counts. We don’t need to specify column order now. [Future: sort?]
+- Undo/redo up to 1000 actions — ensure redo is cleared when a new move is made after undo. QA to validate.
+- The app is menu-driven; keep consistency: menus close after action selection (Stats, Help). No hidden shortcuts required for basic play.
+
+Wrap-up:
+- Deliver a Qt desktop app (Qheadache) that runs on Windows and other Qt-supported OSes. Minimum 800x600, black 5x by 4x board with yellow blocks spaced 0.1x. Specific piece set fixed. Mouse-driven dragging: press to move, release to stop; block follows cursor. Show time and action counts. On victory, prompt for name; record name + time + actions. A Statistics menu with Display, Erase allows showing the scores window and clearing stats; menu closes afterward. Help->About displays the exact credit line; Help menu closes after. Single local user. No special training required. Audience: beginners (8+) and adults. Standalone, no back-end.
+- Next steps: Lars to prototype; Renee to prep tests; Maya to refine spec (analysts/dev/testers). Sasha on messaging later.

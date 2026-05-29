@@ -1,0 +1,273 @@
+{
+  "coverage_rate": 1.0,
+  "missing_req_ids": [],
+  "unsupported_count": 5,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PROMISE_1_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "we’re aiming for a 60-second auto-refresh"
+      ],
+      "reason": "Sources explicitly require ~60 second auto-refresh/polling."
+    },
+    {
+      "req_id": "PROMISE_1_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "stick to the DHS color palette"
+      ],
+      "reason": "Multiple artifacts mandate using the DHS color palette."
+    },
+    {
+      "req_id": "PROMISE_1_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "read the event/activity fields at about 30 feet"
+      ],
+      "reason": "Sources require projection legibility at ~30 ft for most viewers."
+    },
+    {
+      "req_id": "PROMISE_1_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "near 99 percent during normal training/business hours"
+      ],
+      "reason": "Documents specify target ~99% availability during normal business hours."
+    },
+    {
+      "req_id": "PROMISE_1_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "at ~100 ft the 'now' state should still be obvious"
+      ],
+      "reason": "Sources require the now indicator to be obvious from far back."
+    },
+    {
+      "req_id": "PROMISE_1_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "must not show data to people who aren’t authorized internally"
+      ],
+      "reason": "Wallboard must require sign-in and prevent unauthorized data viewing."
+    },
+    {
+      "req_id": "PROMISE_1_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "get the board up ... in well under two hours"
+      ],
+      "reason": "Documents expect intuitive UI and quick setup by new users."
+    },
+    {
+      "req_id": "PROMISE_1_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "keep minute-level updates snappy"
+      ],
+      "reason": "Responsiveness and smooth minute-level updates are explicitly required."
+    },
+    {
+      "req_id": "PROMISE_1_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "split workspace dual-pane wallboard"
+      ],
+      "reason": "Sources specify a split view showing timeline (graph) and table."
+    },
+    {
+      "req_id": "PROMISE_1_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "right panel = vertical table (time-ordered)"
+      ],
+      "reason": "Multiple notes require a vertical, time-ordered right-side table."
+    },
+    {
+      "req_id": "PROMISE_1_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "split view: graph and list side by side"
+      ],
+      "reason": "Interview and notes require a time-based graph/timeline."
+    },
+    {
+      "req_id": "PROMISE_1_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "show both Events and Activities"
+      ],
+      "reason": "Text explicitly states timeline must show Events and Activities."
+    },
+    {
+      "req_id": "PROMISE_1_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "left two-thirds timeline; right one-third table"
+      ],
+      "reason": "Multiple sources specify left 2/3 graphical, right 1/3 table."
+    },
+    {
+      "req_id": "PROMISE_1_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "display the MSEL Summary fields"
+      ],
+      "reason": "Devon and notes state wallboard shows MSEL Summary data fields."
+    },
+    {
+      "req_id": "PROMISE_1_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "Right-side table split: sequential and temporal"
+      ],
+      "reason": "Notes and interview define table split into sequence and temporal."
+    },
+    {
+      "req_id": "PROMISE_1_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "top quarter reserved for sequence-driven items"
+      ],
+      "reason": "Meeting notes explicitly assign top 1/4 to sequence items."
+    },
+    {
+      "req_id": "PROMISE_1_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "bottom 3/4 shows items near current time"
+      ],
+      "reason": "Sources describe lower three-quarters showing near-now relevant items."
+    },
+    {
+      "req_id": "PROMISE_1_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "Use color to reflect variance (ahead/on-time/behind)"
+      ],
+      "reason": "Stakeholders require color coding for schedule variance within palette."
+    },
+    {
+      "req_id": "PROMISE_1_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "pull from Sync Matrix 1.0 and EMT 1.0"
+      ],
+      "reason": "Documents state data sources are Sync Matrix 1.0 and EMT 1.0."
+    },
+    {
+      "req_id": "PROMISE_1_R020",
+      "supported": true,
+      "evidence_snippets": [
+        "items should link back to the exact source record"
+      ],
+      "reason": "Multiple artifacts require deep links to source apps for edits."
+    },
+    {
+      "req_id": "PROMISE_1_R021",
+      "supported": true,
+      "evidence_snippets": [
+        "pick which columns show",
+        "Allow limited column show/hide"
+      ],
+      "reason": "Users can tweak/hide columns and perform light display customization."
+    },
+    {
+      "req_id": "PROMISE_1_R022",
+      "supported": true,
+      "evidence_snippets": [
+        "All Events view",
+        "display of all the Events in the exercise"
+      ],
+      "reason": "Sources explicitly request an All-Events view showing all events."
+    },
+    {
+      "req_id": "PROMISE_1_R023",
+      "supported": true,
+      "evidence_snippets": [
+        "venue filter, Key Events toggle",
+        "Views: per-venue views, Key Events-only view"
+      ],
+      "reason": "Specifies venue filtering and a Key Events toggle/filter."
+    },
+    {
+      "req_id": "PROMISE_1_R024",
+      "supported": true,
+      "evidence_snippets": [
+        "user-defined time segments",
+        "Users could define morning, lunch, afternoon"
+      ],
+      "reason": "Documents user-defined time segments and configurable grid granularity."
+    },
+    {
+      "req_id": "PROMISE_1_R025",
+      "supported": true,
+      "evidence_snippets": [
+        "two clocks on screen: local time and exercise time",
+        "Show local time and exercise time simultaneously"
+      ],
+      "reason": "Multiple sources require separate local and exercise clocks."
+    },
+    {
+      "req_id": "PROMISE_1_R026",
+      "supported": true,
+      "evidence_snippets": [
+        "Pause and Resume",
+        "Pause/Resume control with a clear indicator"
+      ],
+      "reason": "Sources require pausing/resuming auto-refresh with visible paused state."
+    },
+    {
+      "req_id": "PROMISE_1_R027",
+      "supported": true,
+      "evidence_snippets": [
+        "simple chart comparing actual vs planned times",
+        "include a basic chart view for actual vs planned times"
+      ],
+      "reason": "Chart for actual versus planned times is explicitly requested."
+    },
+    {
+      "req_id": "PROMISE_1_R028",
+      "supported": true,
+      "evidence_snippets": [
+        "change history view listing modifications",
+        "surface history from the source apps"
+      ],
+      "reason": "Sources request a change history report of observed/source changes."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "The timeline shall offer selectable grid granularity (e.g., 5, 15, 30 minute intervals) so users can change how time is binned/displayed.",
+      "source_snippet": "\"pick the time window or granularity—like 5, 15, or 30 minute grid\"",
+      "source_type": "interview_transcript",
+      "reason": "The gold set requires allowing user-defined time segments but does not require adjustable timeline grid/granularity options. The source explicitly asks for selectable 5/15/30 minute granularity, which is a distinct UI capability not covered by the gold requirements."
+    },
+    {
+      "text": "The application shall be a single-window split-pane UI only (no pop-ups) — i.e., a single-window MDI with two fixed regions (left/right) and no separate pop-up windows.",
+      "source_snippet": "\"one window with two regions; avoid pop-ups.\"",
+      "source_type": "meeting_notes",
+      "reason": "The gold requires an MDI form showing graph and table but does not forbid pop-ups or require a single-window-only constraint. The source explicitly mandates a single-window split view and forbids pop-ups, which is an additional UI constraint not present in the gold set."
+    },
+    {
+      "text": "Pause must present a clear visible paused state (e.g., a ribbon/banner) and suspend polling; Resume must fetch the latest data and re-synchronize the views to current exercise time.",
+      "source_snippet": "\"Pause/Resume; when paused, visibly indicate paused state; on resume, sync to current exercise time.\"",
+      "source_type": "meeting_notes",
+      "reason": "While the gold requires the ability to pause and resume refresh, it does not require a clearly visible paused indicator nor specify that resume must re-fetch and align the display to exercise time. The source explicitly requires both the visible paused state and the resume re-synchronization behavior, which are concrete functional behaviors beyond the gold wording."
+    },
+    {
+      "text": "The lower (near-now) portion of the right-side table shall present items within a defined proximity window by default (approximately +/-30 minutes) for the 'near now' view.",
+      "source_snippet": "\"Proximity window defaults around +/- 30 minutes [TBD if adjustable].\"",
+      "source_type": "meeting_notes",
+      "reason": "The gold requires the table split into sequential and temporal regions and that the bottom 3/4 hold near-current items, but it does not specify a default proximity window size. The source specifies a concrete default of +/-30 minutes for the proximity window, which is an operational requirement absent from the gold set."
+    },
+    {
+      "text": "The change history view shall include timestamps and, where the source provides it, the identity of who made the change (i.e., surface actor metadata when available).",
+      "source_snippet": "\"change history would help—seeing what changed and when during the day\" / \"timestamps and who made the change when that information is provided by the sources.\"",
+      "source_type": "interview_transcript",
+      "reason": "The gold requires a history report of changes but does not require inclusion of actor/identity metadata. The source explicitly requires showing who made changes when that information is available, which is an additional traceability detail not covered by the gold requirements."
+    }
+  ],
+  "passed": false
+}

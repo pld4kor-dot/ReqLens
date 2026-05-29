@@ -1,0 +1,127 @@
+TYPE  : email_thread
+TITLE : Thread: agentMom+ compatibility, security toggles, substitution, and Phase II demo scope (recap)
+UNIT  : PURE_2003 - agentmom
+============================================================
+
+Email 1
+From: Maya <maya@grad.example.edu>
+To: Priya <priya@partnerlab.example.com>
+CC: Dr. Chen <chen@faculty.example.edu>, Sam <sam.qa@example.edu>, Luis <luis.netops@example.edu>
+Subject: agentMom+ compat + security toggles + demo asks
+
+Hi all,
+
+Quick recap after standup:
+
+- Compatibility stays on by default so new agents can interoperate with agentMom 1.2. Your legacy nodes should still send/receive basic messages without code changes. For features that require shared understanding (e.g., per-message protection), use them where both sides support them; otherwise keep those particular flows plain.
+- Security: per-message protection remains optional. You can flip it on for unicast; the receiver will handle protected messages automatically when configured. Same idea for multicast groups that opt into protection.
+- Group membership: after leave(), deliveries from that group stop without a grace period. For a temporary pause, use opt-out; deliveries halt while paused and resume when re-enabled.
+- Broadcast: behavior is scoped to the local network. If you broadcast a ping, all hosts on that LAN should see it, but it won’t go beyond. It’s intended for discovery/announcements rather than sensitive content.
+- Substitution: we plan to show a replacement agent joining a group and taking over the role so the group can continue without manual reconfiguration.
+- Demo: We’ll keep the “starred” list tight per Dr. Chen. I’ll circulate the list once we finalize it in the SRS draft.
+
+If anything here conflicts with your expectations, please shout.
+
+–Maya
+
+---
+
+Email 2
+From: Priya <priya@partnerlab.example.com>
+To: Maya <maya@grad.example.edu>
+CC: Sam <sam.qa@example.edu>, Dr. Chen <chen@faculty.example.edu>, Luis <luis.netops@example.edu>
+Subject: RE: agentMom+ compat + security toggles + demo asks
+
+Hey Maya,
+
+Thanks. A couple confirmations:
+
+1) Unicast: we want to send some commands protected and have the receiver just handle that automatically. No manual decrypt calls from our app—still correct?
+
+2) Multicast: if a group is configured for protection, members should send/receive protected payloads transparently. Non-members shouldn’t be able to make use of that traffic.
+
+3) Mixed with 1.2: our legacy agents will run plain for now; basic exchange should just work without flipping obscure switches.
+
+Also, leave semantics: we expect deliveries to stop right after leave(). We don’t want buffered stragglers.
+
+And yes, we’d like to include the substitution scenario in the demo—kill one agent and have a standby step in.
+
+-Priya
+
+(sent from mobile)
+
+---
+
+Email 3
+From: Luis <luis.netops@example.edu>
+To: Maya <maya@grad.example.edu>, Priya <priya@partnerlab.example.com>
+CC: Sam <sam.qa@example.edu>, Dr. Chen <chen@faculty.example.edu>
+Subject: RE: agentMom+ compat + security toggles + demo asks (broadcast scope)
+
+Adding a network note: broadcast reaches hosts on the same local subnet only. If you see it across subnets, something’s misconfigured. It’s great for discovery or wake-ups; for anything sensitive, prefer unicast or a group that’s configured for protection.
+
+– Luis
+
+---
+
+Email 4
+From: Sam <sam.qa@example.edu>
+To: Maya <maya@grad.example.edu>, Priya <priya@partnerlab.example.com>
+CC: Dr. Chen <chen@faculty.example.edu>, Luis <luis.netops@example.edu>
+Subject: RE: agentMom+ compat + security toggles + demo asks (QA plan)
+
+QA plan snapshot so it’s written down:
+
+- Unicast protection toggle: when sender flags “protect=true,” the receiver (with config) should hand plaintext to the app; when false, plaintext end-to-end. We’ll verify no spurious failures when protection is off.
+
+- Multicast protection: when a group is configured for it, members (with config) should handle protected messages on receipt. If a node isn’t in the group, our app layer should not treat that traffic as consumable.
+
+- Leave() semantics: deliveries stop immediately after leave(). I’ll assert no group payloads arrive after the leave call.
+
+- Broadcast scope: set up two subnets to confirm broadcast does not cross. On one subnet, every host will receive the ping; on the other, none should.
+
+- Mixed-version tests: 1) 1.2 -> new unicast (plain), 2) new -> 1.2 unicast (plain), 3) new <-> new unicast protected and plain, 4) group membership enforcement around join/leave across versions.
+
+- Substitution: simulate failure of an agent in a group, then start a replacement; verify the group continues and that members see the join/leave notifications around the swap.
+
+If I missed something, reply-all.
+
+— Sam
+
+---
+
+Email 5
+From: Dr. Chen <chen@faculty.example.edu>
+To: Maya <maya@grad.example.edu>
+CC: Priya <priya@partnerlab.example.com>, Sam <sam.qa@example.edu>, Luis <luis.netops@example.edu>
+Subject: RE: agentMom+ compat + security toggles + demo asks (constraints and reminders)
+
+Maya,
+
+Two reminders:
+
+1) The “must demo by end of Phase II” stars in the SRS are commitments. Choose the driving capabilities carefully and deliver them.
+
+2) The SRS is for the committee/advisor only. Keep the file in the restricted folder. The committee expects a clear description of the framework behavior—unicast, multicast, broadcast, conversation control, substitution, compatibility—not marketing.
+
+Carry on.
+
+– YC
+
+---
+
+Email 6
+From: Maya <maya@grad.example.edu>
+To: Priya <priya@partnerlab.example.com>
+CC: Sam <sam.qa@example.edu>, Dr. Chen <chen@faculty.example.edu>, Luis <luis.netops@example.edu>
+Subject: RE: broadcast receive listener (quick answer)
+
+Priya,
+
+Yes—broadcast receive is supported through the framework. You won’t need to hand-roll raw sockets; we’ll document the supported way to consume those messages alongside unicast/multicast in the SDK guide.
+
+On leave(): confirmed again—once processed, deliveries from that group stop. Sam has a regression specifically for the post-leave window.
+
+We’ll include the substitution step-in during the demo: original member exits, replacement joins the group and continues the role, with the join/leave events visible so other agents can react.
+
+–Maya

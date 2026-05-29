@@ -1,0 +1,172 @@
+TYPE  : interview_transcript
+TITLE : Discovery Interview: LeadWash Relay triage and vendor returns
+UNIT  : PROMISE_9
+============================================================
+
+Priya [Technical operations engineer]: Thanks everyone for joining on short notice. I just want to make sure we’re all aligned on what “LeadWash Relay” is supposed to do end-to-end. We’ve heard the goals: we pull in leads through our web service, we validate them, score them, route them—high, medium, low—and then we either hand them to the Enterprise CRM or return them to the source vendor. That’s the gist, right?
+
+Maria [Enrollment Coordinator]: Yeah, that’s the flow. And for the medium ones—like, not obviously great but not junk—I need those to land in eLeads so I can review. I don’t want to have to dig. They should just show up in my queue with a quick note about what tripped it up so I can make the call.
+
+Jason [Admissions Representative]: Sorry, can I jump in? For the good ones, I’m expecting they get assigned to a rep before they show up in the CRM. Because our ARA thing needs a name attached. Otherwise they ping-pong around and we lose time.
+
+Asha [Corporate/School parameter administrator]: Right, and those routing decisions have to follow the parameters Corporate sets, and in some cases the individual school tweaks. Contactability criteria vs academic fit—those are separate components that roll up into the total score. We need both considered, not just one or the other.
+
+Sam [Vendor partner operations contact]: On our side, we just need to know when something’s rejected, why. Like, don’t just say “no good.” If you kick it back, include the reason and the actual payload we sent so I can match it to our system. Otherwise credit disputes get ugly.
+
+Priya [Technical operations engineer]: Got it. Before we go too far, a couple of constraints. We have to run this inside our existing web services infrastructure. No new platform, no shiny external queue. Also, intake format has to be neutral—like XML. Please, no vendor-specific schemas locked to a particular SaaS. We’ll publish an XSD.
+
+Sam [Vendor partner operations contact]: Yeah, XML is fine. Just don’t change the schema every other week. Oh, and if we send JSON… I mean, can we send JSON instead? It’s what our newer partners prefer.
+
+Priya [Technical operations engineer]: For now, no. We’re constrained by what ops supports. It’s the neutral XML that’s already deployed. We can revisit later, but not in this phase.
+
+Jason [Admissions Representative]: When you say “assigned to a rep,” do you mean as soon as it’s scored high? Because ARA needs to make the decision within, like, a few minutes.
+
+Priya [Technical operations engineer]: Exactly. Our total cycle is tightly timed. During the day—8 to 8 Central—we have a looser target, but still fast. Off-hours are actually stricter because there’s less human involvement. We also have a micro target: the washing step should usually complete in, give or take, under half a minute for almost everything. If it runs longer, we’re going to log that as an exception.
+
+Maria [Enrollment Coordinator]: What’s “washing” again? Is that just the validation part?
+
+Asha [Corporate/School parameter administrator]: Washing is both validation and scoring. First we check if the fields are filled in—email, phone, program interest—then we compute the score from contact info and academic signals. Then we apply thresholds: high goes across, medium to EC queue, low back to vendor.
+
+Sam [Vendor partner operations contact]: Okay, so if it’s low, you send it back to us. I want the reason. Ideally, exact reason codes: “invalid phone,” “degree mismatch,” whatever.
+
+Priya [Technical operations engineer]: We’ll include a clear reason when we push it back. And we’ll echo the original lead payload so you can reconcile.
+
+Jason [Admissions Representative]: Sorry, I’m just stuck on timing. If the whole journey takes too long, ARA won’t assign someone in time and we’ll miss our SLA. I remember something like, the rep should be on it within three minutes, start to finish. Is that still true?
+
+Priya [Technical operations engineer]: Yes, we need to keep the total lifecycle within that boundary so ARA can make its choice and stamp the lead with a rep. That’s why we’re keeping the per-lead evaluation tight. Also, the nightly or periodic feed that gives us which reps are available for new inquiries—that needs to be in place so we’re not picking from stale data.
+
+Asha [Corporate/School parameter administrator]: That list—availability—where do we get it? The Enterprise CRM pushes us a file? Or are we polling an API?
+
+Priya [Technical operations engineer]: The CRM team provides a periodic list—an export on a schedule. We ingest that, store who’s available. Then when a lead comes in, before we hand it over, we stamp the rep.
+
+Jason [Admissions Representative]: Good. Because nothing frustrates me more than a lead that comes in “unassigned” and then sits.
+
+Maria [Enrollment Coordinator]: And for my queue—medium ones—can we make sure they don’t get lost if the CRM thinks it’s a duplicate? Like, I’ve had instances where the system just flags potential duplicates and then… poof.
+
+Priya [Technical operations engineer]: On the duplicate point, when the Enterprise system returns “hey, this might be a dupe,” we’ll store that flag on our side. We don’t overwrite; we keep the potential duplicate details so you can still act.
+
+Sam [Vendor partner operations contact]: If you say it’s a duplicate and you reject it for that, are you giving us that reason too? We need to challenge duplicates sometimes.
+
+Asha [Corporate/School parameter administrator]: Not every potential duplicate leads to rejection. But if it does get rejected, yes, the vendor should get the rationale.
+
+Maria [Enrollment Coordinator]: And parameters—you keep saying “thresholds.” When do you change those? Because if Corporate decides to prioritize a new program, I don’t want a surprise mid-day.
+
+Asha [Corporate/School parameter administrator]: We update washing parameters during designated maintenance windows. That’s been the governance from Corporate. No mid-day random changes. Also, I don’t let just anyone do it. There’s authentication and role checks in the admin tool. School admins can tweak only their parts.
+
+Priya [Technical operations engineer]: Right, we’ll build an admin UI for maintaining those settings, and we’ll enforce roles. Changes are restricted to maintenance windows—we’ll coordinate them so folks know ahead of time.
+
+Jason [Admissions Representative]: On the scoring: Are we just guessing, or is it formal? Like, what contributes? GPA? Degree interest?
+
+Asha [Corporate/School parameter administrator]: It’s formal. Two main components: contactability (valid email, phone, time zone alignment, etc.) and academic fit (prior education, program, start date). They combine into a total score. Corporate sets base weights, schools adjust within ranges.
+
+Sam [Vendor partner operations contact]: If our lead fails your “contactability” because of typo in email, is that an automatic low? Or do you just mark it medium and let Maria decide?
+
+Asha [Corporate/School parameter administrator]: Depends on thresholds. If both contact and academic score are low, it’s a return. If one is solid and the other borderline, that’s the medium bucket for manual review.
+
+Maria [Enrollment Coordinator]: I’m okay with that. Just show me in eLeads what was weak—like “email failed validation”—so I can see quickly.
+
+Priya [Technical operations engineer]: For validation, basic structure: check required fields, verify email and phone formats, ensure the program code exists. If it fails basic checks, that’s an immediate return. We still persist it, but route back.
+
+Sam [Vendor partner operations contact]: You said you persist it even if you reject? That’s fine. I mean, do not lose the record. We’ll ask for an audit trail when we request a credit.
+
+Priya [Technical operations engineer]: Yes, everything that hits the web service gets stored. Even the lows we send back, we’ll keep a copy.
+
+Jason [Admissions Representative]: And the highs—those should go to the CRM with the score. Don’t strip the score out. It helps my manager to see why I got it.
+
+Priya [Technical operations engineer]: We can include the score when we send to the Enterprise system for the high tier, no problem.
+
+Sam [Vendor partner operations contact]: On credits, quick question. When you reject as invalid, do you expect us to review and confirm? Or is this just unilateral?
+
+Asha [Corporate/School parameter administrator]: The vendor needs to confirm invalids on their side. It’s not unilateral. Then you submit a record for a credit that Finance applies in the billing system. That’s the process.
+
+Sam [Vendor partner operations contact]: Okay, so we’ll have a workflow. We’ll mark it accepted as invalid. Then we generate a credit file. Where does that go? To the Enterprise billing system, right?
+
+Priya [Technical operations engineer]: Correct. There’s an interface you already use. We just need to ensure the reason codes line up.
+
+Maria [Enrollment Coordinator]: I have a dumb question. Off-hours—who’s watching? If it’s strict timing then, do we have alerts if things slow down?
+
+Priya [Technical operations engineer]: We’ll have logs and defect reports that ops can see at any hour. If washing takes longer than expected—say, over that 25-second benchmark—we’ll record the occurrence and duration. Overnight, support will watch the dashboards.
+
+Jason [Admissions Representative]: Can I see those reports? Or is it just IT?
+
+Priya [Technical operations engineer]: Primarily technical teams, but we can share summaries. The detailed defect reporting is for ops 24/7 though.
+
+Sam [Vendor partner operations contact]: Actually, wait—if you’re logging all this, can you also push us a daily list of rejected leads with reasons? So we don’t have to hit an API each time?
+
+Priya [Technical operations engineer]: For launch we’re sticking to real-time returns only. You’ll get the rejection immediately with the reason and your payload echoed back. We can revisit any kind of summary later.
+
+Asha [Corporate/School parameter administrator]: Speaking of immediate: do not let the washing step get bogged down by duplicate checks with the CRM. If the CRM is slow to respond, we should still keep within our deadline for assignment. Maybe mark it and proceed when possible.
+
+Priya [Technical operations engineer]: We will call out-of-band if necessary, but yes, 97 percent of the time or better, washing must finish within that sub-30-second window. Slow ones get flagged. For duplicates, the Enterprise system will sometimes respond later with a potential match; we store it then.
+
+Maria [Enrollment Coordinator]: Sometimes the Enterprise system says, “Potential duplicate found,” and then nothing else happens. Please make sure I can see that flag in eLeads.
+
+Priya [Technical operations engineer]: Noted. We’ll store potential dupes and make sure that flag is visible so your team isn’t blind to it.
+
+Jason [Admissions Representative]: Another thing, the daily window. I heard someone say five minutes during the day for most leads from first touch to fully handed off? And at night it’s tighter because we don’t have manual steps? That seems backward.
+
+Asha [Corporate/School parameter administrator]: It sounds counterintuitive, but yes. Off-hours we lean on automation, so the expectation is most leads go through faster. Daytime tolerates a little more variance because humans intervene for the middle bucket.
+
+Sam [Vendor partner operations contact]: Can I go back to format? You’ll take XML. Will you reject if an optional field is missing? Because some vendors don’t collect, say, middle name.
+
+Priya [Technical operations engineer]: Optional fields won’t cause rejection. Only required fields and validations. We can publish a list.
+
+Maria [Enrollment Coordinator]: For the medium bucket in eLeads, can we add a “verify and push” button? So when I clear something, it goes on its way without me filing a ticket.
+
+Priya [Technical operations engineer]: That’s the plan: a manual verification step triggers the rest of the flow.
+
+Jason [Admissions Representative]: And those “verified” still get a rep assigned before we push to the CRM, right?
+
+Priya [Technical operations engineer]: Yes. Before submitting to the Enterprise system, we assign a rep using the latest available list, then hand it off.
+
+Sam [Vendor partner operations contact]: If we dispute a rejection, do we submit a new lead or a correction?
+
+Asha [Corporate/School parameter administrator]: That’s outside this scope. But for credits, the expectation is you verify invalids and then submit a credit record for billing. Disputes would be a separate process through partner ops.
+
+Maria [Enrollment Coordinator]: I’m curious, who can change the thresholds? Last time we had an issue where someone bumped the minimum for academic fit and we didn’t know until leads dried up.
+
+Asha [Corporate/School parameter administrator]: Only designated admins. The tool will require authentication and check that the user has rights. And we’ll limit changes to the maintenance window.
+
+Priya [Technical operations engineer]: On that note, we’re not going to have ad hoc Saturday tweaks unless scheduled. We’ve had too many incidents from surprise changes.
+
+Jason [Admissions Representative]: Are we sure we can handle the volume? If we promise that almost all leads finish washing in under half a minute, at lunchtime spikes, can we keep up?
+
+Priya [Technical operations engineer]: We’ll scale within the current web service cluster. We can tune thread pools. But we’re not adding new infrastructure. The target is achievable. And when we miss, we’ll log it precisely—how long, what step.
+
+Sam [Vendor partner operations contact]: And we get an immediate response for low scores? Or do we wait for some batch to tell us?
+
+Priya [Technical operations engineer]: Immediate. The web service will reply with acceptance or rejection, and if rejected, the reason and the lead data you sent.
+
+Maria [Enrollment Coordinator]: I’m good as long as my eLeads view is clean and timely. Mediums should be there quickly, not 10 minutes later.
+
+Priya [Technical operations engineer]: They’ll land within the total workflow time. The gating factor is your review, of course.
+
+Asha [Corporate/School parameter administrator]: Keep the scoring components distinct in the engine so we can adjust weights, but we don’t need to over-complicate the displays.
+
+Jason [Admissions Representative]: Yeah, managers just want the overall score included when it gets to CRM. That’s enough context for us.
+
+Sam [Vendor partner operations contact]: One more thing, and I’ll be quiet: when we accept an invalid and send a credit record, can we get confirmation that it’s been applied? Our finance reconciles monthly.
+
+Priya [Technical operations engineer]: From our side, we push the credit validation into the Enterprise billing interface. Confirmation comes from Finance’s system per their schedule.
+
+Maria [Enrollment Coordinator]: Last thing from me: can someone remind me what “ARA” stands for? I know what it does, I just always forget the acronym.
+
+Asha [Corporate/School parameter administrator]: Auto Rep Assignment. It’s the bit in the Enterprise CRM that chooses who gets the lead.
+
+Jason [Admissions Representative]: And we want ARA to kick in only on the high ones. The mediums wait for Maria; the lows don’t get to us.
+
+Priya [Technical operations engineer]: Correct. High score triggers the CRM path. Medium goes to eLeads for EC review. Low returns to vendor with reason. We’ll make sure that is deterministic based on the thresholds you provide, Asha.
+
+Asha [Corporate/School parameter administrator]: I’ll document the initial thresholds by school and corporate standard weights.
+
+Sam [Vendor partner operations contact]: And you’ll keep the schema stable, right? Last time you updated a namespace and broke our integration on a Friday night.
+
+Priya [Technical operations engineer]: We’ll communicate changes and only deploy within scheduled windows. Also, defect and issue reports will be accessible to our technical on-call around the clock, so if something breaks after hours, we’ll see it.
+
+Jason [Admissions Representative]: Okay, seems like we’re aligned. Make it fast, make it clear, get it to the right people, and don’t lose anything in between.
+
+Priya [Technical operations engineer]: That’s the plan. I’ll write up what we discussed and map it to the timelines and constraints we have, especially the daytime vs off-hours expectations and the 3-minute ARA alignment.
+
+Maria [Enrollment Coordinator]: Great. And if you can add a note about duplicates visibility, I’ll sleep better.
+
+Priya [Technical operations engineer]: Will do. Thanks, everyone.

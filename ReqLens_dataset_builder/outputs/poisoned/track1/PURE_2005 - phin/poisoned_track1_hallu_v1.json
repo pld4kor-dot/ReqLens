@@ -1,0 +1,755 @@
+{
+  "artifact_id": "T1A_7DD6641E",
+  "unit_id": "PURE_2005 - phin",
+  "origin": "PURE",
+  "track_id": "track1",
+  "variant_id": "hallu_v1",
+  "created_at": "2026-05-26T19:20:52.251743+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Discovery interview on PHINTrace OM day-to-day needs and pain points",
+      "text": "Maya [Field Epidemiologist]: Thanks for joining. I know everyone is slammed. I just want to talk through what we actually need to do our jobs with this outbreak management thing. And not just COVID style, like all-hazards, even bioterror stuff if it came up. Because if we can’t run an investigation end to end, and monitor it, and then actually close it out with reporting, it’s not much use.\n\nTom [Contact Tracing Coordinator]: Yeah, baseline functions. I mean, cases, contacts, exposures, that triangle, right? Plus the weird stuff, like environmental exposures and maybe the food distribution warehouse that ends up being central. That needs to be all captured in one place instead of ten spreadsheets.\n\nElena [Laboratory Interface Specialist]: Before we get too far, I need to say something about how we connect with lab data. Actually, wait— we’re not getting into HL7 pipes and such yet, right? I can hold off. But it does affect how we structure IDs for subjects and specimens and how results get linked.\n\nRaj [IT/SecOps Lead]: We can table the messaging specifics for later. Today is more about the model and operations. But note the constraints around secure transport and standard vocabularies. We can’t make something that just invents codes; we need to stick to established vocabularies when we exchange.\n\nDenise [State Health Dept Leadership]: I want to keep this focused on what gets reported upstairs and out to our partners. What matters is we can summarize and tell the story: what happened, who was involved, where, possible source, interventions, and then share appropriately with emergency partners and the public, with approvals. But start at the bottom. What do you need to capture on an individual?\n\nMaya [Field Epidemiologist]: Person-level. So, I need a Subject ID on every person tied to an event. Name, current address, date of birth, gender, phone number. Race and ethnicity too, and country of citizenship. Often, occupation matters, like if they work in a freezer plant or a daycare, plus work history when relevant. I sometimes need to record multiple addresses if they bounce between home and aunt’s place, but at least one address and a way to reach them.\n\nTom [Contact Tracing Coordinator]: And it can’t be limited to just the case. All the contacts need the same structure. We do follow-up on them and if they develop into cases we need to upgrade them, but without breaking the link to the original case they were exposed to. So we need easy linking, not an afterthought.\n\nRaj [IT/SecOps Lead]: On the investigator side, do we store your details? I assume we should capture investigator name, how to contact you, and maybe office address.\n\nMaya [Field Epidemiologist]: Yes, we keep getting bounced around when folks don’t know who owns a record. If the investigator who first interviewed the case is on leave, someone else can pick up the thread if they can find who to call. Name, email, phone, maybe team assignment.\n\nDenise [State Health Dept Leadership]: Also organizations. The hospital or clinic that reported the case, the lab that tested, employer sites. Name, location, contact details for those. When we have to brief leadership we need to be specific: which facility, where, how many linked individuals.\n\nElena [Laboratory Interface Specialist]: On locations, can we be more granular than just street address? We get situations like a single campus with multiple buildings. You want to log a building, a floor, maybe a room, a store number. And sometimes GPS coordinates help, like for a farm or a mobile pop-up site.\n\nTom [Contact Tracing Coordinator]: Yeah, and we need to grab other identifying details too. Like location type, office vs warehouse vs classroom, because it changes the risk profiles. And if there’s a unit number, we need that, or we lose track of which room had the exposure.\n\nMaya [Field Epidemiologist]: Travel history is big too. We end up scribbling in margins. If someone was in Miami, then flew to Houston, and then took a bus, we want to capture the timeline in a structured way. Even if we don’t want to get into flight databases right now, we should at least record what the person tells us: routes, dates, where they stayed, overlaps with others.\n\nDenise [State Health Dept Leadership]: And the suspected agent. Pathogen or toxin, or unknown at first and then updated. If it’s anthrax or ricin, that’s a different posture than norovirus. So agent info should be part of the record and show up in analysis.\n\nRaj [IT/SecOps Lead]: Please don’t say ricin out loud. Joking. But point taken. We need a slot for agent data that can be populated as we learn more.\n\nTom [Contact Tracing Coordinator]: On contacts and exposures, can we assume the system can tie each exposed entity back to the index case? Like, I don’t want a free-floating contact without a link. Every exposure record should say exposed to who or what and when.\n\nMaya [Field Epidemiologist]: And not just people. Sometimes an exposure is a place or a shift, like a lunch room on 5th floor. But yeah, if it’s a contact, it should clearly be tied to a case, and that relationship should be visible later when we review the links.\n\nElena [Laboratory Interface Specialist]: By links, you mean seeing connections among cases, exposures and the other stuff so you can reason about sources, right?\n\nTom [Contact Tracing Coordinator]: Exactly. We’ve been doing that in whiteboards. The system should keep those traceable links. If we can trace back to a common gathering or the same batch of something, we should see it.\n\nDenise [State Health Dept Leadership]: Are you saying you want analytics? Because we don’t have a data scientist on call for each event.\n\nTom [Contact Tracing Coordinator]: No, no. I’m saying the relationships have to be in the records. If later someone wants to analyze, they can. The links must be traceable. At a minimum, we need to know who is connected to whom, and via which exposure type.\n\nMaya [Field Epidemiologist]: And classifying some things as controls during an investigation, like a facility that had no exposure, to compare. We need to mark that status so we can filter them out of certain counts.\n\nRaj [IT/SecOps Lead]: So a flag to classify an entity as a control in the context of a given investigation. That’s doable if we model entity roles per event.\n\nElena [Laboratory Interface Specialist]: On the data collection side, can we not be stuck with fixed forms? When we get a novel agent, we need to add new questions quickly. Like validation and structure for the common stuff, but custom fields for an agent-specific symptom or exposure pathway. And make sure it’s consistent.\n\nTom [Contact Tracing Coordinator]: And signatures. Our field staff sometimes have the subject sign consent on a tablet. Digital signatures should be acceptable, because we cannot print in a parking lot.\n\nMaya [Field Epidemiologist]: The form builder should let us define custom questions for things like other organisms we might record. Not just people and places, but, say, a lot of birds died nearby. We might want to add specific fields. Wait, is that getting too detailed here?\n\nRaj [IT/SecOps Lead]: That’s fine. Configurable entity types and relationships. The key is we can add fields and even a new type during an active investigation without a dev cycle. We’ll constrain it with structured data entry and validation so we maintain data integrity.\n\nDenise [State Health Dept Leadership]: Just don’t let it become a free-for-all of custom fields that ruin reporting. We need governance and data dictionaries when we exchange, but we can discuss exchange later. Today, can we talk about staffing roles? Outbreaks, we have different people responsible for specific activities.\n\nTom [Contact Tracing Coordinator]: We need to define roles and assign activities and responsibilities. My team does follow-up calls and schedules testing; Maya’s team does interviews and site assessments; Denise’s team approves external communications. It would help to have these roles codified in the system so tasks don’t drop.\n\nMaya [Field Epidemiologist]: Check boxes are fine, but don’t make it so formal that we need to submit a work order to reassign tasks. It changes quickly.\n\nElena [Laboratory Interface Specialist]: I have to bring up devices. Field teams often use phones or tablets in locales with no connectivity. We really need a true disconnected mode. They collect data in the field and then sync later when they get back to a hotspot.\n\nRaj [IT/SecOps Lead]: So client-server, web, and offline all supported. With reliable synchronization when they reconnect. When field devices come back online, they should reconcile with the server and other sites so everyone’s outbreak data stays consistent. And the central system should record and store what those devices upload.\n\nTom [Contact Tracing Coordinator]: That’s the idea. If it’s seamless for the field teams, we won’t lose the information they gathered.\n\nDenise [State Health Dept Leadership]: If we go offline-capable, we need to think about protecting data on those devices too. But, sorry, that’s getting into security. Continue.\n\nMaya [Field Epidemiologist]: On communications, we need to push information to appropriate partners. Like emergency management, hazmat teams, public works sometimes, and we have media lines too. But we can’t blast PHI; it has to be within policy. So the system should help us produce updates for those stakeholders with the right level of detail.\n\nRaj [IT/SecOps Lead]: These communications must follow our policies and procedures. We’ll integrate with our PIO processes. The system should make it easier to assemble the correct content, not override policy.\n\nElena [Laboratory Interface Specialist]: Circling back to data capture. For people, you mentioned race and ethnicity and citizenship, but also phone numbers. Can we store multiple numbers? Like mobile and home? And for occupation, at least an initial job title and possibly past roles if relevant.\n\nMaya [Field Epidemiologist]: Yes, if it’s not overkill. Let’s not turn it into HR, but a field for current occupation and something to note a work history timeframe if we need it.\n\nTom [Contact Tracing Coordinator]: Let me just say, I’ve had to track contacts who were not people. Like a contaminated object that many folks touched. I know we’re not getting into objects deeply here, but the point is again: we need to capture entities other than persons. Okay, sorry, parking that for later.\n\nRaj [IT/SecOps Lead]: It’s relevant conceptually. Unified capture of persons and other entities with relationships. We’ll design the model accordingly, but we won’t list every attribute now.\n\nDenise [State Health Dept Leadership]: When you say Subject ID, we also have Case IDs and Event IDs, correct? Do people get confused?\n\nMaya [Field Epidemiologist]: All the time. Subject is the person, case is the person in the context of a disease event. Event is the outbreak itself. The system has to keep those distinctions clear in the UI because people mix them up in conversation.\n\nElena [Laboratory Interface Specialist]: And then there’s Specimen ID, but we said labs later. Sorry. Force of habit.\n\nTom [Contact Tracing Coordinator]: Another thing. When I add a contact exposure, it should auto-link to the related case. I don’t want to do manual lookups every time. But also allow me to record exposures that aren’t direct person-to-person, like exposure to a room or a machine, and still connect it to the index.\n\nMaya [Field Epidemiologist]: Agree. And then when we review links, we want to see those connections cascade. Maybe we can tag likely transmission mechanisms. Not to overcomplicate it, but even a basic classification helps us later when leadership asks for the suspected source.\n\nDenise [State Health Dept Leadership]: Not to be that person, but how do we make sure we don’t expose private data when pulling those summaries? Some audiences should only see aggregate information.\n\nRaj [IT/SecOps Lead]: We can enforce privacy controls by module and role. Again, we can handle the specifics in security requirements sessions, but the general guardrail is understood.\n\nElena [Laboratory Interface Specialist]: On questionnaires, can respondents sign electronically? We had a legal review last year that said electronic signatures are fine as long as we capture the signature with a timestamp.\n\nRaj [IT/SecOps Lead]: Accepted, yes. We’ll support capturing a digital signature blob attached to the form data with a timestamp.\n\nTom [Contact Tracing Coordinator]: And validation. People fat-finger dates. If date of birth is after the interview date, we should get a prompt. That’s basic, but also maybe some custom validations for agent-specific fields.\n\nMaya [Field Epidemiologist]: And as the investigation evolves, we sometimes realize we need a new field. Like, we didn’t originally think to ask about a specific exposure. We need to add that field midstream, and we sometimes follow up later to collect the new info; the system should let us enter it when we get it.\n\nDenise [State Health Dept Leadership]: That’s exactly why we need structured entry for core fields. Do what you want for custom, but don’t let the common fields become optional. Otherwise, in the final report, we won’t have consistent data across cases.\n\nRaj [IT/SecOps Lead]: Noted. Core forms will have required fields with validation. New objects and relationships can be created under admin control.\n\nElena [Laboratory Interface Specialist]: Quick aside: we have a separate question about receiving lab messages and linking to requests and subjects, but let’s keep that for the lab workflow meeting. I think it’s on Friday.\n\nTom [Contact Tracing Coordinator]: Speaking of Friday, can we move it to after 2 pm? I’ve got a clinic observation in the morning.\n\nDenise [State Health Dept Leadership]: No, we’re locked. We promised CDC to give preliminary feedback on messaging by Monday. Keep going.\n\nMaya [Field Epidemiologist]: Okay, fine. Another thing is monitoring restrictions. Like if someone is supposed to isolate, can we track check-ins? I know, that’s in a different module maybe, but our team needs to see who is under isolation, what their check-in status is, and if they’re allowed to work.\n\nRaj [IT/SecOps Lead]: Wait, we might be mixing. Are you asking for the system to run active daily checks or just record monitoring data?\n\nMaya [Field Epidemiologist]: Record it. We can call them or they can submit updates. If they use a web form or call a hotline, we want that captured. And we might be tracking quarantined contacts too, not just cases.\n\nTom [Contact Tracing Coordinator]: Right, and follow-up visits tied to certain treatments also come back to us. If someone got prophylaxis, sometimes you need a follow-up exam. We need a place to put that data. We don’t need to reinvent clinical care, but capture that they came back or reported side effects. Hmm, maybe I’m creeping into countermeasures. Sorry.\n\nDenise [State Health Dept Leadership]: It’s relevant. Just flag that this module should support tracking progress and follow-up for those exposed or potentially exposed. We can coordinate with the clinic team on the specifics, but the data has to live in the same event record.\n\nElena [Laboratory Interface Specialist]: One more thing that always bites us: travel history interleaving with symptoms. We need the ability to say symptom onset was on the 12th, travel from the 10th to 13th, exposure possibly on the 11th, and see that timeline. It doesn’t have to be fancy, but store the dates and relations so we can interpret later.\n\nRaj [IT/SecOps Lead]: This is sounding like a lot of relationships between entities and time-stamped events. But manageable.\n\nTom [Contact Tracing Coordinator]: Also, the route taken. Like if they describe a bus route, we want to record the route or at least the stops. If a flight, at least record flight number. And time windows when they were present at gatherings.\n\nMaya [Field Epidemiologist]: That’s where we need it flexible. We might not always know the exact route but we need to capture whatever details we have. And for gatherings, time, location, what kind, like wedding or conference.\n\nDenise [State Health Dept Leadership]: Let’s not get too deep into event planning. As long as we can say when and where and the nature of the gathering.\n\nElena [Laboratory Interface Specialist]: Could I ask, for organizations, do we also want a contact person? Like for the lab, a specific liaison. That’s captured as a person too, but maybe we link them to the organization record.\n\nTom [Contact Tracing Coordinator]: Yes, otherwise we’re calling a main number and getting nowhere. Please capture organization name, location, and a contact person’s details.\n\nRaj [IT/SecOps Lead]: This is feasible. Organizational entity with address and contact, linked to person entities.\n\nMaya [Field Epidemiologist]: Not trying to be picky, but the system needs to be straightforward to use. Data entry shouldn’t be cumbersome, and the sync after a site visit should complete reliably.\n\nDenise [State Health Dept Leadership]: Performance aside, we also have to think about continuity. If there’s a hurricane and our main site is down, can we still operate? Different meeting, I know. But, please, factor it in early.\n\nRaj [IT/SecOps Lead]: Yeah, that’s later in the security and continuity sessions. But it affects how we choose deployment options. Offline and resilient design are consistent with that.\n\nElena [Laboratory Interface Specialist]: Another question, and sorry if it’s obvious. Can the questionnaire builder accept new agent-specific elements after the event has started? We do this a lot, but sometimes systems lock the form once the event is declared.\n\nTom [Contact Tracing Coordinator]: We just said we need to add midstream. So yes, we need the power to add fields, with some governance.\n\nMaya [Field Epidemiologist]: And please, when we add a field like occupation, don’t make it a giant text box for everything. We want structure. If we can pick from standard lists, then we can actually analyze later.\n\nRaj [IT/SecOps Lead]: We’ll use established vocabularies where applicable and allow configuring domain-specific lists. But the main idea is to keep the common fields standardized.\n\nDenise [State Health Dept Leadership]: Speaking of lists, we need to make sure we adhere to standards for what we send out to other systems. But messaging standards we’ll tackle later. Keep going.\n\nTom [Contact Tracing Coordinator]: On linking, one thing we need to avoid is orphan exposures. Any exposure should indicate exposed entity and the source, like the case they were exposed to. If the exposure is to a location, it still should be anchored to the event and any case involved.\n\nMaya [Field Epidemiologist]: And maybe the system can highlight missing linkage. Like if someone entered a contact but didn’t tie it to a case, that should be flagged.\n\nRaj [IT/SecOps Lead]: We can enforce required relationships. No contact without a parent context. And we can let admin classify some entities as controls in the investigation so they are recognized as not-exposed comparators.\n\nElena [Laboratory Interface Specialist]: On capturing investigator info, can we also record their team role at the time? Some folks switch roles.\n\nMaya [Field Epidemiologist]: That would be useful. And then if we filter by role, we could see who handled exposure tracing vs who did interviews.\n\nTom [Contact Tracing Coordinator]: Tiny aside, scheduling: are we doing another ride-along next week with the mobile team? Sorry, wrong forum.\n\nDenise [State Health Dept Leadership]: Send that offline. Back to the point: I need to be confident that we can produce a situational awareness dashboard that includes counts: number of suspect cases, contacts per case, how many under isolation or quarantine, et cetera. Even if that is not today’s topic, it’s the end goal.\n\nRaj [IT/SecOps Lead]: Noted. We will ensure the captured data supports those aggregate metrics later. The communications module can package those counts for stakeholders within policy.\n\nMaya [Field Epidemiologist]: Also, can we be precise about addresses? City, state, zip, country yes, but sometimes we need cross streets, or other identifiers. And GPS coordinates for non-standard locations are important.\n\nTom [Contact Tracing Coordinator]: For names, we need to store aliases too sometimes. But I know that opens a can of worms. At least legal name, and maybe an alternate name field?\n\nRaj [IT/SecOps Lead]: Alternate names can be captured as additional person details. We’ll define that in the schema. Keep in mind privacy controls will determine who sees what.\n\nElena [Laboratory Interface Specialist]: Since we’re not talking about lab results now, can I just confirm: we will barcode samples in the field, right? Actually, I’ll save that. It’s too detailed for this call.\n\nTom [Contact Tracing Coordinator]: The ability to sync remote device uploads is critical. If someone collects a dozen contacts at a barn, when they get back to a connection, the system should upload and store those records in the central database without them clicking a hundred confirmations.\n\nMaya [Field Epidemiologist]: And we often operate in mixed environments: sometimes a web app at the office, sometimes a client installed on rugged laptops, sometimes offline. So we need all the deployment modes and for the data to end up in the same place after sync.\n\nDenise [State Health Dept Leadership]: If we have offline data walking around on laptops, we need to be extra careful about secure handling. That’s not just an IT problem; it’s training too. But put a pin in that for the training plan discussion. For now, capture that the system must support those modes and sync reliably.\n\nRaj [IT/SecOps Lead]: Agreed. We’ll outline the sync process and ensure it’s robust.\n\nTom [Contact Tracing Coordinator]: Quick question: for travel history, can we link the travel to an exposure? Like if someone says, I sat next to the coughing guy on Flight 123, can we record Flight 123 and tie it to that contact if we find the person?\n\nMaya [Field Epidemiologist]: We may not always identify the other person, but yes, we should record the flight number and route for the travel, and cross-link later if we identify a case.\n\nElena [Laboratory Interface Specialist]: Just make sure that for gather data, we grab the nature of the event. People say party, but is it a wedding, a sports event? It matters.\n\nDenise [State Health Dept Leadership]: That’s getting ahead, but okay. Capturing nature of the gathering is fine.\n\nRaj [IT/SecOps Lead]: Before we close, recap: We need baseline outbreak management that supports investigation, monitoring, management, analysis, reporting. Unified capture of cases, contacts, exposures, plus other entities, with flexible but structured data. Traceable links among entities to understand transmission and sources. Travel history and agent data. Questionnaire designer with validation and digital signatures. Configurable fields and relationships during an investigation. Define personnel roles and responsibilities and mark some entities as controls. Multi-deployment modes including disconnected, with reconnection and synchronization so shared data stays consistent, and remote device uploads recorded centrally. Communications to stakeholders in line with policy. Anything I missed?\n\nMaya [Field Epidemiologist]: Demographics, including race and ethnicity and citizenship, and additional details like occupation and work history. Investigator contact details. Organization info with contact. Location info with GPS and granular location type.\n\nTom [Contact Tracing Coordinator]: And make sure exposures always link back to cases, and no orphan contacts. Also ensure we can store travel details, timeline of key dates.\n\nElena [Laboratory Interface Specialist]: Plus the ability to expand forms with agent-specific questions and have digital signatures on those forms. We’ll dig into lab flows next time.\n\nDenise [State Health Dept Leadership]: Fine. As long as we’re not boiling the ocean, this sounds on target. Next steps: lab workflow on Friday, and we’ll talk exchanges and security next week.\n\nRaj [IT/SecOps Lead]: One last thing. For the sake of expectation-setting, we will need to align with standards when we start sending and receiving anything. And use secure exchange mechanisms for any data leaving the system. But we’ll cover that next time.\n\nMaya [Field Epidemiologist]: Understood. Thanks all.\n\nTom [Contact Tracing Coordinator]: Thanks.\n\nElena [Laboratory Interface Specialist]: See you Friday.\n\nDenise [State Health Dept Leadership]: Goodbye.\n\nRaj [IT/SecOps Lead]: Ending the call."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "PHINTrace OM deep dive - entities beyond persons, restriction monitoring, and lab data",
+      "text": "Date: 2025-03-18\nLocation: Teams call link tbd (audio cut out 2x)\nAttendees: \n- Maya (Field Epi)\n- Tom (Contact Tracing Coord)\n- Elena (Lab Interface)\n- Raj (IT/SecOps)\n- Luis (Quarantine Officer)\n- Carla (Vocabulary Governance)\n- Ben (Data Architect)\n- Denise (Leadership)\n\nNotes (raw, fragmented):\n\nScope today:\n- animal records, objects, conveyances, gatherings, other organisms\n- restriction monitoring (isolation/quarantine)\n- follow-up and progress for exposed/potentially exposed individuals\n- specimen and lab result capture (metadata, granularity)\n- inbound lab messaging and linkage to requests\n- mapping, data dictionaries, grouping observations by type\n- vocabularies (standard + configurable)\n- operational monitoring/alerts [?] and privacy/security considerations\n\nAnimal data:\n- Need to create records for animals tied to investigations (zoonoses, vector-borne, etc.)\n- Required: species/type, age, gender (sex), owner name + address, color, weight\n- Use a Subject ID for animals too (distinct namespace?). Ben: We can prefix or use entity type to distinguish.\n- If tagged animals (ear tags, microchips etc.), record tag identifiers. Tom emphasized tag id is critical when multiple similar animals.\n- Optional: vaccination status [TBD], but we should avoid scope creep.\n- Luis asked if owner contact info same as person record: propose link to a person entity (owner) + store address snapshot.\n\nObject data:\n- Sometimes the vector is a product or a surface. Capture object name, type (device, food product, utensil, packaging), physical descriptors (size, color, material), associated address (warehouse, store, home), any identification numbers like serial numbers, invoice numbers.\n- Time stamps: date/time of invoice, shipping, packaging. Not all at once; store what we have.\n- Carla note: use consistent date fields; define a dictionary entry.\n- Ben: object type should be configurable list (food category etc.) but exchange mapping needed.\n\nConveyances:\n- For conveyance entities: conveyance type (flight, train, bus, ship, rideshare). Capture route. If flight, store flight number and date.\n- Some pushback: Denise said do we legally store flight numbers? Raj: permitted if for public health investigation; ensure privacy guidance.\n- Tom: route details help trace exposures (e.g., specific bus line at specific time window). We need to connect persons to conveyance events.\n\nGatherings:\n- For public/private gatherings (weddings, conferences, worship services, work shifts): capture at minimum time, location, nature of event.\n- Add optional fields: headcount estimate, indoor/outdoor flag [TBD], mask policy [NOT decided yet]. Keep basic required minimal.\n- Elena: link exposure records to gatherings to support later review of connections.\n\nOther living things:\n- Sometimes we log organisms that are not human or animal in the pet sense (e.g., vectors, environmental organism presence). Need a general entity for other living things with a type field (plant, insect, etc.).\n- Must allow users to define custom data collection questions for such entities. Example: for mosquito pools, fields like larval stage count. Do not hardcode; use the questionnaire tool with custom prompts.\n- Carla asks for rules on governance of custom questions. Action: Carla to propose governance doc. [Action]\n\nTravel history:\n- Capture an entity's travel relevant to investigation, but this overlaps with conveyance. Decision: travel history as an activity linked to person with route details; conveyance as an entity when the conveyance is itself modeled (e.g., airline flight). Both allowed.\n- Fields: dates, origin, destination, intermediate stops; free-text notes; tie to gathering if travel was to event.\n\nAgent data:\n- Track suspected agent (pathogen/toxin) for the investigation. Start as unknown, updated later.\n- Use standard vocabularies (SNOMED concepts for organisms) when possible; include local code mapping where necessary.\n\nRestriction monitoring and follow-up:\n- Need to capture data for isolation and quarantine monitoring.\n- Subjects (cases and contacts) may be placed under isolation or quarantine. Store start date, end date, instructions, check-in cadence.\n- Periodic checks: logs of phone calls, in-person visits, telehealth, subject-provided updates (via portal or phone line) and proxy-reported updates.\n- Track compliance status and notes. Do not implement punitive mechanisms; just record.\n- Integration with follow-up examinations (e.g., after prophylaxis) also logged. The requirement is to support monitoring and follow-up collection to track progress and treatment of those exposed or potentially exposed.\n- Luis: we should be able to filter who missed last check. Raj: operational alerts belong to separate monitoring; can display but not commit to automated enforcement. [Open debate]\n- Carla: ensure we can later aggregate counts of persons under isolation/quarantine for reporting; not necessarily part of this item but relevant to dashboards.\n\nQuestionnaire designer reuse:\n- For other living things and for specific events, add custom questions; reuse common data elements for person demographics.\n- Accept digital signatures on electronic questionnaires; capture signature data with timestamp.\n- Structured input and validation for common fields to maintain data integrity, with custom agent-specific fields supported.\n\nSpecimen and sample collection:\n- Capture clinical and environmental specimen collection info. Storage of collection date, collector, site, and assign a barcode at collection time.\n- Support barcoding: scanning in the field, mobile app or handheld scanners (Luis notes bluetooth scanners in use). Barcode must map to Specimen ID.\n- Specimen ID must be unique; if a later lab result comes in, link via this ID. If no collection record exists (e.g., external lab), fallback link to subject by Subject ID. Elena: call this the linkage rule. [Action: document this clearly]\n- For environmental samples, may be linked to locations or objects, not just persons. But still use Specimen ID.\n\nLaboratory results and metadata:\n- Store lab result records and associated metadata: Specimen ID (if available), Subject ID, test date and time, test type (use LOINC if available), result value (coded when applicable, preferably SNOMED), unit of measure, overall interpretation. Store free-text notes.\n- Multiple granularity: specimen-level and assay-level details. Some assays have components; we should support multiple results per specimen. Ben: model supports a parent specimen result with child analytes.\n- Interpretations: positive/negative/inconclusive with supporting details.\n\nInbound lab messages:\n- Receive, parse, process inbound lab result messages. Link results to the corresponding test requests (orders) and to the subject (patient) named in the request. Elena: we need to map the OBR/OBX segments to our results model. Raj: specifics deferred to interface spec meeting, but requirement stands.\n- When specimen collection record exists, link results to that specimen by Specimen ID; otherwise link result to subject by Subject ID. This is the operational rule; do not attempt fuzzy match beyond what policy allows. [Rule restated]\n\nMapping, data dictionaries, observation grouping:\n- For any data exchange, include mapping interfaces and data dictionaries. We must indicate which fields are standard and which are custom.\n- Group message components by observation type: lab, symptom, exposure, risk, treatment, etc., to help recipients process. Elena: grouping is essential for downstream parsers.\n- Support multiple import/export formats: databases, spreadsheets (CSV), messages (HL7 FHIR/HL7 v2), text files. May include JSON. [Note: verify format list with IT]\n- Contradiction noted: Ben prefers only HL7 + CSV to reduce maintenance; Denise says partners demand multiple. Resolve later. [Open]\n\nVocabulary support:\n- Use established vocabulary standards when exchanging data (LOINC for tests, SNOMED for results where applicable, standard race/ethnicity codes). Accept and implement additional standards when defined by CDC or others.\n- Internally, support configurable domain-specific vocabulary for outbreak data (e.g., list of exposure types, object types). Carla will manage vocabulary governance process. [Action]\n\nOperational monitoring and alerts:\n- System should include monitoring that detects and reports operational issues affecting outbreak management (e.g., sync failures, inbound message backlog). Raj to define metrics and alerting thresholds. [Action]\n- Some dispute: Tom wants user-facing notifications; Raj warns of alert fatigue. Compromise: dashboard flags plus ops alerts to IT channels; user notifications limited. [NOT decided yet]\n\nSecurity and privacy:\n- Protect systems and data supporting outbreak management from sabotage, unauthorized access, and corruption. Also protect components from failure. Raj notes hardening + logging + redundancy. [TBD specifics]\n- Apply privacy controls across modules to safeguard patient, organizational, and personnel information from fraudulent/unauthorized use. Role-based access, minimum necessary.\n- Denise asks: Where do we draw the line on de-identification for exports? Carla: policy-driven; coordinate on role-based practices. [Action]\n\nOperations resilience (backups and continuity):\n- Acknowledge need to document and implement backup procedures for OM data and related operations. Define schedules, retention, and restore steps. [Action]\n- Establish and maintain a continuity of operations plan (COOP) for OM and related PHIN functions. The system must support continuity during disruptions and be available after catastrophic events. [Action]\n\nMisc:\n- Training for staff on procedures flagged for separate plan; ensure training enables public health partners to support OM and other PHIN functions. [Action]\n\nContradictions/unclear items:\n- Should isolation status be visible to all investigators or limited to quarantine team? [TBD]\n- Do we store headcount for gatherings? earlier: yes optional, later: maybe no due to data quality. [Unresolved]\n- How many digits for tag id? earlier: record exact tag, later: someone said just type. Resolution: store string, length unconstrained but validated for disallowed chars. [Resolved]\n\nAction items:\n- Carla: propose governance doc for custom questions and vocabularies (due 2 weeks)\n- Elena: draft mapping for inbound lab messages and observation grouping (due next meeting)\n- Raj: write linkage rule doc for lab results to specimen/subject; outline ops monitoring metrics; propose privacy role matrix\n- Ben: finalize data model for specimen with assay-level granularity; confirm object and conveyance schema\n- Luis: list current bluetooth barcode scanners model numbers and test connectivity\n- Tom: define minimal data set for quarantine check log; report on portal feasibility (subject/proxy updates)\n- Denise/Raj: draft documented backup/restore procedures and COOP outline\n\nOpen Issues / Parking Lot:\n- COOP specifics and failover testing plan\n- Backup schedule and retention for OM data\n- User-facing notifications scope (operational vs workflow)\n- Export privacy practices and approval workflow\n- Multiple import/export formats support vs maintenance cost\n- Who approves new custom fields mid-investigation (ops vs admin)\n- Role visibility for restriction status (legal review?)\n\nNumbers noted in margin:\n- 5 conveyance types listed\n- 12+ data points for specimen metadata\n- 3-5 check-ins per week typical for quarantine, but some did 2\n- 1-3 custom questionnaire fields per event initially, grows to 10 in long events\n\nEnd of notes. These are not polished; consult recordings for gaps."
+    },
+    {
+      "type": "email_thread",
+      "title": "Thread: Countermeasures workflow, data exchange, and PHIN alignment",
+      "text": "Email 1\nFrom: Carla Martinez <carla.martinez@stateph.gov>\nTo: Maya Patel <maya.patel@stateph.gov>, Tom Nguyen <tom.nguyen@stateph.gov>, Elena Rossi <elena.rossi@stateph.gov>, Raj Kulkarni <raj.kulkarni@stateph.gov>\nCC: Denise Lane <denise.lane@stateph.gov>, Clinic Ops Team <clinicops@stateph.gov>\nSubject: Countermeasure data (orders, administrations, AE) and messaging\nDate: 2025-04-02 08:14\n\nGood morning team,\n\nFollowing yesterday’s chat with the clinic lead, we need to nail down how PHINTrace OM will handle countermeasures for this program. We’ve gotten burned before by partial records.\n\nHigh level asks:\n- When recording prophylaxis or treatment, we need to capture who ordered it (identity of the prescriber or ordering officer), the product name, date given, type (prophylaxis vs treatment), duration if applicable, and dosage. This will let us follow up on whether it was appropriate and complete.\n- We also need to capture adverse events post administration. We use that data both to decide whether additional interventions are needed (e.g., switch product) and to identify patterns that could point to a problematic batch or perhaps an issue with the administering facility or person.\n- Messaging: we should be able to receive and process messages about administrations that happened at partner sites (e.g., drive-through PODs), and link those administered doses to the person who received them. Conversely, when our epidemiology team needs a clinic to administer prophylaxis, we should be able to send a request message (administration request) and track the response.\n\nI know we also owe DPH a plan for exchanging aggregate numbers out to surveillance and response-tracking systems, like total vaccinations/treatments administered and counts under isolation/quarantine. We can discuss if that flows out of the same pipeline or a separate report job.\n\nPlease poke holes. I’ll start drafting a requirements snippet this afternoon.\n\nCarla\n\n---\n\nEmail 2\nFrom: Tom Nguyen <tom.nguyen@stateph.gov>\nTo: Carla Martinez <carla.martinez@stateph.gov>\nCC: Maya Patel <maya.patel@stateph.gov>, Elena Rossi <elena.rossi@stateph.gov>, Raj Kulkarni <raj.kulkarni@stateph.gov>, Denise Lane <denise.lane@stateph.gov>, Clinic Ops Team <clinicops@stateph.gov>\nSubject: RE: Countermeasure data (orders, administrations, AE) and messaging\nDate: 2025-04-02 09:02\n\nCarla,\n\nAll makes sense. A couple extra clarifications from the field side:\n\n- For adverse events, we don’t need the system to diagnose, but we do want structured capture so we can slice by product and lot/batch. That way if 8 people had similar events after the same lot, we can flag it upstream.\n- On the outbound request, please make sure the receiving entity (clinic, mobile team) gets a patient identifier they can use, and when they respond it should link automatically to our subject record. I think Elena can help here.\n- Re: aggregate numbers, we need to also share counts like number of suspect cases (whatever definition we lock), number of contacts per case, number of persons under isolation or quarantine, and the number of vaccinations or treatments administered. Surveillance has asked for bi-directional so we can ingest their updates too.\n\nAlso, side note: we have to share per our policies with emergency management partners and occasionally media; not asking for anything fancy, but OM should help package those messages with the right level of detail and keep a record that we sent them.\n\nThanks,\nTom\n\nSent from mobile, sorry for typos\n\n---\n\nEmail 3\nFrom: Elena Rossi <elena.rossi@stateph.gov>\nTo: Tom Nguyen <tom.nguyen@stateph.gov>, Carla Martinez <carla.martinez@stateph.gov>\nCC: Raj Kulkarni <raj.kulkarni@stateph.gov>, Denise Lane <denise.lane@stateph.gov>, Clinic Ops Team <clinicops@stateph.gov>, Maya Patel <maya.patel@stateph.gov>\nSubject: RE: Countermeasure data (orders, administrations, AE) and messaging (plus vocab + formats)\nDate: 2025-04-02 10:21\n\nJumping in on the tech bits.\n\n- Receiving and parsing administration messages: yes, we can set up interfaces to accept inbound messages from partner clinics/PODs. We have to stick to PHIN Cross-Functional specs for message construction and parsing and to secure transport rules. I’ll review the current docs at the CDC site again to ensure alignment. Implementers must review those reqs; we can’t wing it.\n- Linking: when an inbound admin message arrives, we’ll map their patient ID to our Subject ID (we may include both in the payload to be safe) and link the administered countermeasure to that subject. If there was a prior request from us, we can link back to the request too.\n- Outbound: generating and sending a request message to administer prophylaxis/treatment is doable. We’ll coordinate with partners on an approved secure transport (e.g., standard secure messaging per PHIN options) so they can receive and respond reliably.\n- Formats and dictionaries: we should support at least HL7 v2 or FHIR for structured messages, and CSV uploads where partners can’t do HL7. We have to publish data dictionaries so they know which fields are standard and which we’ve customized.\n- Vocabularies: when we exchange, we should use established vocab standards (LOINC, SNOMED, race/ethnicity codes). Internally we can have configurable domain vocabularies for outbreak data so Maya’s team can add new exposure types or object categories, but we’ll still map to standards for exchange. We’ll need governance to accept new standards as they’re defined.\n\nSecurity: Raj will say this too, but all exchanged data must use secure mechanisms. No emailing PHI. We’ll stick to the secure transports defined in the PHIN specs.\n\nLastly, the CRA functional requirements for countermeasures are not optional. We need to conform to the Countermeasure/Response Administration process flows so we don’t invent our own AE fields. I’ll link those to the design doc.\n\nElena\n\n---\n\nEmail 4\nFrom: Raj Kulkarni <raj.kulkarni@stateph.gov>\nTo: Elena Rossi <elena.rossi@stateph.gov>, Tom Nguyen <tom.nguyen@stateph.gov>, Carla Martinez <carla.martinez@stateph.gov>\nCC: Denise Lane <denise.lane@stateph.gov>, Clinic Ops Team <clinicops@stateph.gov>, Maya Patel <maya.patel@stateph.gov>\nSubject: RE: Countermeasure data (orders, administrations, AE) and messaging (plus vocab + formats)\nDate: 2025-04-02 11:10\n\nAdding guardrails and a couple of constraints.\n\n1) Secure exchange is non-negotiable. We’ll apply agency policy and legal guidance. Transport must be TLS or approved equivalent; no exceptions. For partners that can’t meet us there, we do not send PHI; we stick to de-identified aggregates.\n\n2) Cross-Functional Components Requirements: Implementers (us and vendor) must review the PHIN Preparedness Cross Functional Components Requirements at cdc dot gov slash phin. Those define message construction, parsing, and secure transport. Also they include operational, vocabulary, security, and availability cross-functional items. No one gets to claim ignorance later.\n\n3) CRA Conformance: As Elena said, we must conform to PHIN Preparedness Countermeasure/Response Administration functional requirements and process flows. That covers prophylaxis/treatment and adverse event data.\n\n4) Backups and COOP: OM data must be covered by documented backup policies/procedures, and we need to actually implement those procedures (jobs, schedules, restore steps). Also, continuity of operations is not a nice-to-have. The organization will establish and maintain a COOP plan, and the system must support continuity so we can maintain outbreak management and other PHIN functions during disruptions and remain available after a catastrophic event. We expect availability even after a catastrophic event. This affects how we architect, where we host, and our runbooks. We need business to sign off on RTO/RPO. [Action: Denise/Raj to propose]\n\n5) Operational monitoring: we’ll instrument the system to detect/report issues that could affect OM activities (e.g., interface queues jammed, sync errors). I’ll own the monitoring stack but we’ll need product to decide what gets bubbled to users vs IT.\n\n6) Training: The organization has to provide employee training on operational procedures so public health partners can support OM and other PHIN areas. This isn’t a feature but we need to plan for it; otherwise people won’t follow workflows.\n\n7) Documentation: System documentation must reference the CRA functional requirements/process flows for monitoring and follow-up data. When audit time comes, we’ll need to show we aligned to those.\n\n8) Deployment reality check: we still support disconnected field use. When devices come back online, they must sync cleanly with server and peer instances so we have consistent shared OM data. Also ensure that data collected on remote devices is uploaded and stored centrally. This is old news for some of you, but I’m repeating it because it affects how we do countermeasure follow-up in the field.\n\nRaj\n\n---\n\nEmail 5\nFrom: Denise Lane <denise.lane@stateph.gov>\nTo: Raj Kulkarni <raj.kulkarni@stateph.gov>, Elena Rossi <elena.rossi@stateph.gov>, Tom Nguyen <tom.nguyen@stateph.gov>, Carla Martinez <carla.martinez@stateph.gov>\nCC: Clinic Ops Team <clinicops@stateph.gov>, Maya Patel <maya.patel@stateph.gov>, PIO Desk <pio@stateph.gov>\nSubject: RE: Countermeasure data + messaging + reporting to partners (subject drift, sorry)\nDate: 2025-04-02 12:33\n\nTwo cents from leadership, plus a curveball.\n\n- Communications: OM should help us communicate to stakeholders per policy. That includes emergency management (FEMA, hazmat, public works), intel partners as appropriate, media, and the public. I don’t want a rogue email campaign; the system should facilitate generating the right content and routing through approved channels. PIO is cc’d; please coordinate with them on templates.\n- Aggregates: We need to provide aggregate data to other systems and partners. Counts of suspect cases, contacts per case, vaccinations and treatments administered, persons under isolation/quarantine. Some of this will be a nightly export; some may be bi-directional exchange with surveillance/early event detection, lab, response tracking, across state and local partners. The interfaces should be established and standards-based.\n- Observation grouping: Make sure messages indicate what is lab vs symptom vs exposure vs risk vs treatment. Our partners have explicitly asked for this grouping in payloads so they can route internally.\n\nPushback item: I am wary of us supporting too many import/export formats. Every additional format is maintenance. We need a minimal set: HL7 v2 or FHIR for structured clinical, CSV for the lowest common denominator, and maybe one text format if absolutely necessary. If we support everything under the sun, we will drown. Let’s document the formats we support and provide mapping/data dictionaries to describe both standard and custom fields.\n\nAlso, Raj, agree on secure exchange and COOP. But cost alert: we have a limited budget for redundant hosting. Please bring options with price tags. Also, training: we can schedule but need to align with union constraints (work hours, etc.).\n\nFinally, we cannot forget privacy. The system must protect sensitive information for patients, orgs, and personnel. I will not sign off if access controls are floppy. Protect from sabotage/unauthorized access too. We’ve had an uptick in phishing attempts.\n\nDenise\n\n---\n\nEmail 6\nFrom: Maya Patel <maya.patel@stateph.gov>\nTo: Denise Lane <denise.lane@stateph.gov>, Raj Kulkarni <raj.kulkarni@stateph.gov>, Elena Rossi <elena.rossi@stateph.gov>, Tom Nguyen <tom.nguyen@stateph.gov>, Carla Martinez <carla.martinez@stateph.gov>\nCC: Clinic Ops Team <clinicops@stateph.gov>, PIO Desk <pio@stateph.gov>\nSubject: RE: Countermeasure data + messaging + reporting to partners (with practical notes)\nDate: 2025-04-02 14:05\n\nThanks all. A few practical notes from the field side and a couple of open questions to close the loop (for now):\n\n- For countermeasure records: we will log ordering provider identity, product name, date, type, duration (if it’s a course), dosage. That’s straightforward. Please also capture the site where it was administered (clinic site) and link to that organization record, so when we look at adverse events we can separate product batch issues from potential admin problems at a site.\n- Adverse events: We will collect follow-up data from subjects and sometimes proxies (caregivers). We also have response examinations required by certain prophylaxis protocols. Our nurses need a place to record that follow-up happened and any findings. We don’t need decision support here, just a place to put it and the ability to query it later.\n- Exchange and aggregates: Agree with Denise on counts. I’d like to see the nightly payload group observations by type (lab, symptom, exposure, risk, treatment) and include a mapping/dictionary so our county partners (who use different systems) can reconcile our custom fields. Bi-directional exchanges are critical; counties often find new contacts before we do.\n- Security and privacy: +1 to Raj and Denise. Please no unsecured anything. And please apply privacy across the board; some modules historically leaked more than others.\n- Disconnected use: We do a lot of follow-up in places with zero connectivity. Make sure when we get back online, the sync is robust and we don’t lose data or corrupt records. Also, it has to upload data from remote devices into the central system without us babysitting it.\n- Backups/COOP: From the user perspective, I don’t care how, but I need the system to still be there after a storm knocks out the main site. If that means we fail over or we run lightweight until we’re back, fine. But please document the backup/restore policies and the continuity steps, and keep the plan current.\n- Training: We have a lot of turnover and surges. If training on operational procedures is not baked in and updated, we will fall back to spreadsheets and phone calls and then we’ll have a mess. Please plan for ongoing training and refreshers.\n- Documentation: Please make sure the system docs explicitly reference the Countermeasure/Response Admin requirements for monitoring and follow-up. The auditors are going to look for that mapping.\n\nOpen questions / actions:\n1) Elena/Raj: Can we lock the minimal set of exchange formats for countermeasure messages this week? Denise is right about maintenance. If HL7 and CSV are the ones, say so. Also need to confirm secure transports we allow.\n2) Carla: Will vocabulary governance cover how we accept new standards (e.g., new LOINC panels)? We’ll need to accept and implement additional standards as they’re defined.\n3) Raj: When we say operational monitoring will detect/report issues, who gets alerted and how? I don’t want my team paged at 2 am for an interface queue glitch unless we decided that is our responsibility.\n4) Tom: Which aggregate metrics do you want in the first drop? Be specific so we don’t leave out isolation/quarantine counts.\n\nPartial resolution: We agree on core countermeasure data capture and the need to send requests and receive/admin messages, link them to subjects, and feed aggregates bi-directionally to partners. We agree on secure exchange, adherence to PHIN Cross-Functional and CRA requirements, and that we will use standard vocabularies in exchanges with configurable internal domain lists.\n\nStill open: exact formats list and transport options; COOP design options with budget; training schedule; ops monitoring alerting policy.\n\nMaya"
+    }
+  ],
+  "candidate_pool": [
+    {
+      "id": "PURE_2005 - phin_R033",
+      "text": "Implementers shall review the PHIN Preparedness Cross Functional Components Requirements (www.cdc.gov/phin) for operational, vocabulary, security, availability, and other cross-functional requirements that span PHIN functional areas.",
+      "requirement_kind": "business_rule",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R014",
+      "text": "The system shall capture an entity's travel history relevant to an investigation.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R018",
+      "text": "The system shall support development, validation, and design of electronic questionnaires that collect common data elements, agent-specific elements, and customized fields, and shall accept digital signatures on electronic questionnaires.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_FAKE_004",
+      "text": "The system shall provide probabilistic duplicate detection for person and organization entities using configurable match rules (e.g., name, date of birth, address) and a human review queue to merge or dismiss candidate duplicates, with a complete merge history retained.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_3927E19E"
+    },
+    {
+      "id": "PURE_2005 - phin_FAKE_006",
+      "text": "The system shall detect potential duplicate records for persons, organizations, and specimens using configurable matching rules and shall provide a supervised merge workflow that preserves all existing identifiers, relationships, and audit history for the merged entities.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_94204259"
+    },
+    {
+      "id": "PURE_2005 - phin_R005",
+      "text": "The system shall capture demographic data for persons involved in an investigation, including Subject ID, name, address, date of birth, gender, phone number, race, ethnicity, country of citizenship, and shall allow capture of additional descriptive person details such as occupation and work history.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R040",
+      "text": "The system shall protect sensitive information and shall apply privacy requirements across PHIN functional areas to protect patient, organizational, and personnel information from fraudulent and unauthorized use.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "privacy",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R038",
+      "text": "The organization shall establish and maintain a continuity of operations plan and the system shall provide continuity of operations capabilities to maintain OM and other PHIN functional activities during disruptions and shall remain available following catastrophic events.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R013",
+      "text": "The system shall capture data about other living things involved in an investigation, record the type of living thing, and allow users to define and use customizable data collection questions for them.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R024",
+      "text": "The system shall receive, parse, and process messages containing laboratory results and shall link those results to the corresponding laboratory test requests and to the subject (patient) the request concerns.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R041",
+      "text": "The organization shall provide employee training on operational procedures to enable public health partners to support Outbreak Management and other PHIN functional areas.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R021",
+      "text": "The system shall capture clinical and environmental specimen/sample collection information and shall support bar-coding to capture detailed specimen and sample data.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_FAKE_007",
+      "text": "The system shall support multilingual data collection by allowing administrators to define translations for questionnaire prompts, fixed-value lists, and validation messages, and shall render forms in the subject’s preferred language while storing a language code with each response set.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_6C28F1ED"
+    },
+    {
+      "id": "PURE_2005 - phin_R032",
+      "text": "Message construction and parsing, and secure data transport requirements are defined in the PHIN Preparedness Cross Functional Components Requirements and shall be reviewed by implementers.",
+      "requirement_kind": "domain_assumption",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R037",
+      "text": "The system shall include monitoring that detects and reports operational issues affecting Outbreak Management activities.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "reliability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R017",
+      "text": "The system shall support monitoring and follow-up data collection to track the progress and treatment of subjects who were exposed or potentially exposed, including follow-up data from subjects or their proxies and follow-up from response examinations required by certain countermeasures.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R011",
+      "text": "The system shall capture data about conveyances involved in an investigation, including conveyance type and the route taken (including flight number where applicable).",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R015",
+      "text": "The system shall capture agent (pathogen or toxin) data relevant to an investigation.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_FAKE_002",
+      "text": "The system shall support multilingual data collection by allowing administrators to author questionnaire forms and common field labels in multiple languages (at minimum English and Spanish) and present the selected language to users based on a per-user or per-subject setting while storing a single canonical coded dataset.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_6A6A3A75"
+    },
+    {
+      "id": "PURE_2005 - phin_R036",
+      "text": "The system shall implement documented system backup policies and procedures for OM-related data and operations.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "reliability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R016",
+      "text": "The system shall capture restriction-monitoring data (e.g., quarantine and isolation monitoring) and collect monitoring data about cases and exposed individuals who are isolated or quarantined.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R020",
+      "text": "The system shall provide functionality to define personnel, roles, activities, and responsibilities necessary to support outbreak management operations and shall provide the ability to classify entities associated with an investigation as investigation controls.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R028",
+      "text": "The system shall include clearly defined mapping interfaces and data dictionaries in data exchanges to indicate and describe both standard and customized fields, group message components by observation type (e.g., laboratory, symptom, exposure, risk, treatment), and support multiple import and export file formats such as databases, spreadsheets, messages, and text files.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R026",
+      "text": "The system shall receive, parse, and process messages describing countermeasures that have been administered, shall link administered countermeasures to the entity that received them, and shall be able to create and send messages to request countermeasure administration.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R035",
+      "text": "The system shall conform to the PHIN Preparedness Countermeasure/Response Administration Functional Requirements and Process Flows for specific prophylaxis/treatment administration and adverse event data requirements.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "compliance",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R003",
+      "text": "The system shall record all entities exposed to a case and link each exposed entity to that case.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R006",
+      "text": "The system shall capture demographic information about the investigator, including name, address, and contact information.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R034",
+      "text": "The system shall support configurable domain-specific vocabulary for outbreak management data, shall use established vocabulary standards when exchanging data, and shall accept and implement additional standards as they are defined.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "compliance",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R030",
+      "text": "The system shall provide mechanisms to communicate information to appropriate stakeholders (e.g., emergency management organizations, FEMA, hazmat teams, public works, intelligence organizations, the media, and the public) in accordance with defined policies and procedures.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R004",
+      "text": "The system shall create traceable links between cases, exposures, and other appropriate entities to support tracing transmission mechanisms and identifying event sources.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R029",
+      "text": "The system shall support multiple deployment modes (including client-server, disconnected, and web-based), allow disconnected instances to reconnect and synchronize with a server and with other instances so shared outbreak management data is consistent, and shall electronically record and store data uploaded from remote devices to an aggregating system.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R007",
+      "text": "The system shall capture organization information involved in investigations or testing, including organization name, location, and contact information.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R042",
+      "text": "System documentation shall reference the PHIN Countermeasure/Response Administration Functional Requirements and Process Flows (available at www.cdc.gov/phin) for information about monitoring and follow-up data.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R031",
+      "text": "The system shall protect exchanged data by using secure exchange mechanisms.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R022",
+      "text": "The system shall store laboratory result records and associated metadata, including Specimen ID, Subject ID, test date and time, test type (LOINC where available), result value (coded when applicable, e.g., SNOMED), unit of measure, overall interpretation, and relevant notes, and shall support multiple levels of granularity for laboratory results (e.g., specimen/sample-level and assay-level).",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R025",
+      "text": "The system shall capture and link prophylaxis and treatment data (including the identity of the person who ordered, name of prophylaxis/treatment, date given, type, duration, and dosage), collect adverse event data for administered vaccines or prophylaxis and use that data to determine the need for additional interventions and to identify potential problems with the pharmaceutical product, its batch, or the administering facility or person.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_FAKE_005",
+      "text": "The system shall provide a training mode that runs on isolated synthetic data sets, allows reset of the training environment, and prevents any exchange messages from leaving the training environment so that exercises do not affect production systems.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_DFA9B923"
+    },
+    {
+      "id": "PURE_2005 - phin_FAKE_001",
+      "text": "The system shall provide automated spatiotemporal cluster detection for cases and exposures using configurable spatial radii (e.g., 1–50 km) and time windows (e.g., 1–30 days), and shall generate a reviewable cluster record when event counts exceed a configurable threshold.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_10B311C1"
+    },
+    {
+      "id": "PURE_2005 - phin_FAKE_008",
+      "text": "The system shall present core forms and electronic questionnaires in multiple languages selectable at runtime (at minimum English and Spanish) based on the subject’s or user’s preferred language, and shall record the language of entry for each submitted form.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_8AE5FA18"
+    },
+    {
+      "id": "PURE_2005 - phin_R009",
+      "text": "The system shall capture animal data for investigations including animal type/species, age, gender, owner name and address, color, weight, and a Subject ID for animals, and shall support recording animal tag identifiers when animals are tagged.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R027",
+      "text": "The system shall exchange messages and provide aggregate data (for example, counts such as number of suspect cases, number of contacts per case, number of vaccinations or treatments administered, number of persons under isolation or quarantine) with surveillance, early event detection, laboratory, response-tracking, and other preparedness systems using established interfaces, and shall support bi-directional exchange with partner organizations across national, state, and local public health levels.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R039",
+      "text": "The system shall protect systems and data supporting Outbreak Management from sabotage, unauthorized access, corruption, and shall protect system components from failure.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R002",
+      "text": "The system shall capture data related to cases, contacts, investigations, and exposures.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_FAKE_003",
+      "text": "The system shall provide appointment scheduling for interviews, specimen collection, and countermeasure administration, including calendar management, resource (site/provider) assignment, and optional automated reminders via SMS and email with delivery status logs.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_9438DA8E"
+    },
+    {
+      "id": "PURE_2005 - phin_R023",
+      "text": "When a specimen/sample collection record exists, the system shall link the laboratory result to that specimen collection record by Specimen ID; otherwise the system shall link the laboratory result to the subject by Subject ID.",
+      "requirement_kind": "business_rule",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R019",
+      "text": "The system shall be configurable to add new data fields, entity types and instances, relationship types, and to define and create new object types and instances during the course of an investigation, and shall provide structured data entry for common forms and fields to ensure data integrity, validity, and standardization.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R008",
+      "text": "The system shall capture location data including location name, location type (e.g., floor, building, room, store), street address, city, state, zip code, country, GPS coordinates, and other specific identifying details.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R010",
+      "text": "The system shall capture data for objects involved in an investigation, including object name, type, physical descriptors, associated address, identification number(s) (e.g., serial number), and relevant dates and times (e.g., invoice, shipping, packaging).",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R001",
+      "text": "The system shall support investigation, monitoring, management, analysis, and reporting of health events and outbreaks (including acts of bioterrorism) and shall implement baseline Outbreak Management functionality.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2005 - phin_R012",
+      "text": "The system shall capture data about public or private gatherings involved in an investigation and, at minimum, record the time, location, and nature of the event.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    }
+  ],
+  "gold_requirement_ids": [
+    "PURE_2005 - phin_R001",
+    "PURE_2005 - phin_R002",
+    "PURE_2005 - phin_R003",
+    "PURE_2005 - phin_R004",
+    "PURE_2005 - phin_R005",
+    "PURE_2005 - phin_R006",
+    "PURE_2005 - phin_R007",
+    "PURE_2005 - phin_R008",
+    "PURE_2005 - phin_R009",
+    "PURE_2005 - phin_R010",
+    "PURE_2005 - phin_R011",
+    "PURE_2005 - phin_R012",
+    "PURE_2005 - phin_R013",
+    "PURE_2005 - phin_R014",
+    "PURE_2005 - phin_R015",
+    "PURE_2005 - phin_R016",
+    "PURE_2005 - phin_R017",
+    "PURE_2005 - phin_R018",
+    "PURE_2005 - phin_R019",
+    "PURE_2005 - phin_R020",
+    "PURE_2005 - phin_R021",
+    "PURE_2005 - phin_R022",
+    "PURE_2005 - phin_R023",
+    "PURE_2005 - phin_R024",
+    "PURE_2005 - phin_R025",
+    "PURE_2005 - phin_R026",
+    "PURE_2005 - phin_R027",
+    "PURE_2005 - phin_R028",
+    "PURE_2005 - phin_R029",
+    "PURE_2005 - phin_R030",
+    "PURE_2005 - phin_R031",
+    "PURE_2005 - phin_R032",
+    "PURE_2005 - phin_R033",
+    "PURE_2005 - phin_R034",
+    "PURE_2005 - phin_R035",
+    "PURE_2005 - phin_R036",
+    "PURE_2005 - phin_R037",
+    "PURE_2005 - phin_R038",
+    "PURE_2005 - phin_R039",
+    "PURE_2005 - phin_R040",
+    "PURE_2005 - phin_R041",
+    "PURE_2005 - phin_R042"
+  ],
+  "seeded_fake_requirement_ids": [
+    "PURE_2005 - phin_FAKE_001",
+    "PURE_2005 - phin_FAKE_002",
+    "PURE_2005 - phin_FAKE_003",
+    "PURE_2005 - phin_FAKE_004",
+    "PURE_2005 - phin_FAKE_005",
+    "PURE_2005 - phin_FAKE_006",
+    "PURE_2005 - phin_FAKE_007",
+    "PURE_2005 - phin_FAKE_008"
+  ],
+  "seed_registry": [
+    {
+      "seed_item_id": "T1S_10B311C1",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2005 - phin_FAKE_001",
+      "requirement_text": "The system shall provide automated spatiotemporal cluster detection for cases and exposures using configurable spatial radii (e.g., 1–50 km) and time windows (e.g., 1–30 days), and shall generate a reviewable cluster record when event counts exceed a configurable threshold.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "No source text references automated cluster detection or spatiotemporal analytics.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_6A6A3A75",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2005 - phin_FAKE_002",
+      "requirement_text": "The system shall support multilingual data collection by allowing administrators to author questionnaire forms and common field labels in multiple languages (at minimum English and Spanish) and present the selected language to users based on a per-user or per-subject setting while storing a single canonical coded dataset.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "Language localization and multilingual questionnaires are not mentioned anywhere in the sources.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_9438DA8E",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2005 - phin_FAKE_003",
+      "requirement_text": "The system shall provide appointment scheduling for interviews, specimen collection, and countermeasure administration, including calendar management, resource (site/provider) assignment, and optional automated reminders via SMS and email with delivery status logs.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "Scheduling and reminder functionality is not discussed in the source texts.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_3927E19E",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2005 - phin_FAKE_004",
+      "requirement_text": "The system shall provide probabilistic duplicate detection for person and organization entities using configurable match rules (e.g., name, date of birth, address) and a human review queue to merge or dismiss candidate duplicates, with a complete merge history retained.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "Entity deduplication and merge workflows are not covered in the sources.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_DFA9B923",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2005 - phin_FAKE_005",
+      "requirement_text": "The system shall provide a training mode that runs on isolated synthetic data sets, allows reset of the training environment, and prevents any exchange messages from leaving the training environment so that exercises do not affect production systems.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "A training or simulation mode is not described in the provided materials.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_94204259",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2005 - phin_FAKE_006",
+      "requirement_text": "The system shall detect potential duplicate records for persons, organizations, and specimens using configurable matching rules and shall provide a supervised merge workflow that preserves all existing identifiers, relationships, and audit history for the merged entities.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "No source text references duplicate detection, matching rules, or merge workflows for entities.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_6C28F1ED",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2005 - phin_FAKE_007",
+      "requirement_text": "The system shall support multilingual data collection by allowing administrators to define translations for questionnaire prompts, fixed-value lists, and validation messages, and shall render forms in the subject’s preferred language while storing a language code with each response set.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "Multilingual user interface and translated questionnaires are not mentioned or implied in the provided materials.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_8AE5FA18",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2005 - phin_FAKE_008",
+      "requirement_text": "The system shall present core forms and electronic questionnaires in multiple languages selectable at runtime (at minimum English and Spanish) based on the subject’s or user’s preferred language, and shall record the language of entry for each submitted form.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "The source texts and gold requirements do not mention multilingual support, localization, or language preferences for forms or UI.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    }
+  ],
+  "brief": {
+    "project_name": "PHINTrace OM",
+    "domain": "public health outbreak management",
+    "users": [
+      "Field epidemiologist/investigator",
+      "Contact tracing coordinator",
+      "Laboratory interface specialist",
+      "Quarantine and isolation officer",
+      "Countermeasure/vaccination clinic lead"
+    ],
+    "stakeholders": [
+      "State health department leadership",
+      "Local public health agencies",
+      "Clinical and public health laboratories",
+      "Emergency management partners (e.g., FEMA, hazmat, public works)",
+      "IT/SecOps and continuity teams",
+      "CDC PHIN program office"
+    ],
+    "business_goals": [
+      "Manage and monitor outbreaks end to end, from investigation to closure",
+      "Provide timely situational awareness via individual and aggregate reporting",
+      "Enable bi-directional data sharing with partner systems across jurisdictions",
+      "Support safe administration of countermeasures with follow-up and adverse event tracking",
+      "Standardize data capture while allowing event-specific flexibility",
+      "Safeguard sensitive data and maintain continuity during disruptions"
+    ],
+    "core_features": [
+      "Unified capture of cases, contacts, exposures, and demographics (subjects and investigators), plus multi-entity data (persons, animals, locations, organizations, objects, conveyances, gatherings, other organisms), including travel history and suspected agent details, with configurable entities and relationships",
+      "Link analysis and exposure tracing that creates traceable relationships among cases, exposures, and other entities; role/activity responsibility definitions; ability to classify entities as investigation controls",
+      "Dynamic questionnaire designer with validation for common and agent-specific elements, customizable fields, structured data entry, and acceptance of digital signatures",
+      "Specimen and laboratory workflow: barcode sample collections; store granular lab results with standard codes and metadata; receive, parse, and link inbound lab messages to test requests and subjects",
+      "Countermeasure management: record orders and administrations, dosage/duration, and adverse events; use data to inform additional interventions; send and receive administration request/response messages",
+      "Restriction monitoring and follow-up for isolated or quarantined subjects, including periodic checks and subject/proxy-reported updates",
+      "Interoperability, communications, and deployment: standards-based bi-directional exchange with mapping/data dictionaries, observation-type grouping (e.g., lab, symptom, exposure, risk, treatment), and multiple import/export formats; produce aggregate metrics and communicate to stakeholders; support client-server, web, and disconnected modes with secure synchronization and remote device uploads"
+    ],
+    "quality_concerns": [
+      "Strong security for data in transit and at rest; protection from unauthorized access, sabotage, and corruption",
+      "Privacy controls across modules to protect patient, organizational, and personnel information",
+      "High availability with continuity of operations and disaster resilience",
+      "Reliable backup/restore and data integrity across synchronized, disconnected deployments",
+      "Operational monitoring and alerting for issues that could impact outbreak management activities",
+      "Standards and vocabulary governance (use established vocabularies and accept new ones as defined)"
+    ],
+    "constraints": [
+      "Follow PHIN Cross-Functional specifications for message formats, construction/parsing, and secure transport; implementers must review these requirements",
+      "Conform to PHIN Countermeasure/Response Administration functional requirements and process flows for prophylaxis/treatment and adverse event data",
+      "System documentation shall reference PHIN Countermeasure/Response Administration requirements for monitoring and follow-up data",
+      "Apply lab result linkage rule: link results to a Specimen ID when a collection record exists; otherwise link to the subject by Subject ID",
+      "Use established vocabulary standards in exchanges and support configurable domain vocabularies for outbreak data",
+      "Provide secure data exchange mechanisms aligned with organizational policy and legal guidance",
+      "Maintain a continuity plan and COOP capabilities; ensure staff are trained on operational procedures"
+    ],
+    "terminology": [
+      "Case, Contact, Exposure",
+      "Event ID, Case ID, Subject ID",
+      "Specimen ID and barcode",
+      "Countermeasure (prophylaxis/treatment)",
+      "LOINC and SNOMED codes",
+      "Quarantine and Isolation monitoring",
+      "Conveyance and Travel history"
+    ]
+  },
+  "metadata": {
+    "file_path": "data/pure/2005 - phin.pdf",
+    "file_type": ".pdf",
+    "char_count": 41801,
+    "profile": {
+      "char_count": 41801,
+      "heading_density": 111,
+      "shall_count": 0,
+      "must_count": 45,
+      "will_count": 6,
+      "use_case_count": 0,
+      "stakeholder_count": 0,
+      "requirement_keyword_count": 46,
+      "structure_strength": "strong"
+    },
+    "section_count": 123,
+    "dense_sections": 39,
+    "gold_count": 42,
+    "section_candidates": 125,
+    "raw_candidates": 57,
+    "llm_usage": {
+      "total_calls": 375,
+      "total_input_tokens": 910373,
+      "total_output_tokens": 860949
+    }
+  }
+}

@@ -1,0 +1,89 @@
+TYPE  : email_thread
+TITLE : Clarifications and Finalization of EVLA Correlator Control System Requirements
+UNIT  : PURE_2002 - evla corr
+============================================================
+
+Email 1:
+From: Laura (Software Developer)
+To: Mike (Project Scientist)
+Subject: Clarification on Correlator Control System Integration
+
+Hi Mike,
+
+I'm reviewing the correlator control system specs and want to confirm the integration requirements. Should the system be fully embedded within the EVLA Monitor and Control infrastructure, or is some level of isolation preferred? Also, are there specific protocols or standards we must adhere to?
+
+Thanks,
+Laura
+
+---
+
+Email 2:
+From: Mike (Project Scientist)
+To: Laura (Software Developer), Team
+Subject: RE: Clarification on Correlator Control System Integration
+
+Hi Laura,
+
+Good questions. The system must integrate fully within the EVLA M&C infrastructure but maintain isolation of the correlator hardware to ease programmability and maintenance. We expect adherence to IEEE 802.3 Ethernet standards at 100 Mbits/sec or better. Network interfaces should be separated to ensure isolation between components.
+
+Best,
+Mike
+
+---
+
+Email 3:
+From: Sarah (Security Specialist)
+To: Mike (Project Scientist), Laura (Software Developer)
+Subject: Security Concerns for Correlator Control System
+
+Hi all,
+
+I want to highlight the importance of strict user authentication and authorization. We must prevent unauthorized access entirely and log all access attempts. Also, role-based access control is essential, with operations personnel having full privileges and other users restricted as appropriate.
+
+Is there a plan for how to implement this securely?
+
+Regards,
+Sarah
+
+---
+
+Email 4:
+From: Mike (Project Scientist)
+To: Sarah (Security Specialist), Laura (Software Developer)
+Subject: RE: Security Concerns for Correlator Control System
+
+Hi Sarah,
+
+Yes, the system will uniquely identify users via username and password. Authentication and authorization will be enforced before granting any access. All attempts, successful or not, will be logged for auditing. Operations personnel will have unrestricted access and can manage user privileges.
+
+Thanks for emphasizing this.
+
+Mike
+
+---
+
+Email 5:
+From: Laura (Software Developer)
+To: Mike (Project Scientist), Sarah (Security Specialist), Team
+Subject: Data Handling and Fault Recovery Questions
+
+Hi team,
+
+Regarding data handling, can the system spool monitor data during network outages to prevent loss? Also, how should the system respond if a CMIB subsystem fails and doesn't recover after reboot attempts?
+
+Thanks,
+Laura
+
+---
+
+Email 6:
+From: Mike (Project Scientist)
+To: Laura (Software Developer), Sarah (Security Specialist), Team
+Subject: RE: Data Handling and Fault Recovery Questions
+
+Hi Laura,
+
+Yes, the system must spool ancillary monitor data including system health, error messages, and configuration echoes during temporary network communication loss. If a CMIB subsystem fails and does not respond to reboot or self-heal attempts, the system must issue an alert for hardware repair and automatically restart and reconfigure the subsystem.
+
+Best,
+Mike

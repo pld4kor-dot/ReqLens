@@ -1,0 +1,78 @@
+TYPE  : meeting_notes
+TITLE : Working Session Notes — Layout, Integrations, and Ops Constraints (revised)
+UNIT  : PROMISE_1
+============================================================
+
+Date: 2025-03-18
+Location: Conference room B / Teams link: https://agency.example/meet/Wallboard-Design-Session
+Attendees: Karen (Exercise Director), Luis (Operations Planner), Mia (O/C), Devon (Data Manager), Priya (IT Admin), Sam (Vendor Lead) [joined late]
+
+Notes (raw, incomplete):
+
+- Goals recap: shared near-real-time exercise view; unify timelines from current planning tools; highlight schedule drift; support after-action with analytics and history; comply with DHS branding.
+
+- Display concept: split workspace dual-pane wallboard. Left larger panel = timeline; right panel = vertical table (time-ordered). Left ~2/3, right ~1/3.
+
+- Right-side table split: top quarter reserved for sequence-driven items (scripted steps we follow in order); lower three quarters focused on items near the current moment (recently completed and upcoming). Proximity window defaults around +/- 30 minutes [TBD if adjustable].
+
+- Table columns (keep minimal): Title, Venue, Planned time, Actual (if available), variance indicator, link to source. Allow limited column show/hide.
+
+- Timeline: show items along time with a clear "now" indicator. Consider shading for past region. Use color to reflect variance (ahead/on-time/behind) within DHS palette. Include a small legend for meaning.
+
+- Variance: compute against exercise time, not local time. Keep this consistent in both panels.
+
+- Two clocks on screen: local time and exercise time. Label clearly.
+
+- Auto refresh: update about once per minute (target 60 sec). Avoid heavy flicker. Provide Pause/Resume; when paused, visibly indicate paused state; on resume, sync to current exercise time.
+
+- Responsiveness: keep minute-level updates snappy. Keep UI navigations smooth.
+
+- Filters/views: venue filter, Key Events toggle, and an All Events view. Add user-defined time segments (e.g., morning/lunch/afternoon) and timeline granularity options (5/15/30 minutes). Users can hide/show select columns. No schema changes; stay within brand.
+
+- Data sources: only Sync Matrix 1.0 and Exercise Management Tool (EMT) 1.0. Wallboard is a read-only display of MSEL Summary fields (title, planned start/duration, venue, key event flag, etc.).
+
+- Deep links: each list row and timeline item should let users jump to the exact source record in Sync Matrix 1.0 or EMT 1.0 for edits there. The wallboard itself does not edit data; links hand off to the source app which enforces its own access.
+
+- Access: the wallboard should require sign-in and must not display data to unauthorized users.
+
+- Availability/Uptime: Target near 99 percent during normal training/business hours in the initial ops period. Schedule maintenance off-hours.
+
+- Training/Adoption: Intuitive UI. Expect most new users to get the board up and displaying Events/Activities in well under two hours on first use. Provide a quick start guide.
+
+- Projection/readability: Design for large-screen projection. Test on a big screen. Aim for ~30 ft readability of key info for most viewers; ensure the "now" state is obvious from farther back even if text isn't fully readable.
+
+- Analytics/Traceability: Provide a simple chart comparing actual vs planned times. Offer a change history view listing modifications to data the wallboard consumes (timestamps and, where provided by sources, who/what changed). In-app only (no export in v1).
+
+- Timing rule: variance indicator uses exercise time; display both clocks to reduce confusion.
+
+- Update cadence: default 60 sec polling. Pause/Resume present. Consider a subtle banner/icon to show paused state.
+
+- Links back to source: links must open the exact item (by ID/GUID as appropriate) in the source app.
+
+- Stateful Pause: when paused, the list and timeline remain fixed; Resume re-synchronizes to current exercise time.
+
+- Views: All-Events view plus per-venue views, and a Key Events-only view.
+
+- Terminology: use agency terms consistently—Event/Activity, Venue, Key Event, Variance (ahead/behind schedule). Provide a small legend.
+
+- Split panes: one window with two regions; avoid pop-ups.
+
+Contradictory/unclear items captured:
+- Strong color signals vs brand limits — resolution: use DHS-approved tones with a legend; may add a small icon/label to reinforce meaning.
+- Update every 60 sec vs real-time push — decision for v1: 60 sec polling; revisit later.
+- Pause allowed vs risk of stale info — mitigate with a clear Paused indicator.
+- Readability at 30 ft vs 100 ft — text readable at ~30 ft; at ~100 ft the "now" state should still be obvious; not all text must be readable at 100 ft.
+
+Action items:
+- Priya to circulate DHS palette and branding guidelines.
+- Devon to define MSEL Summary fields and map from Sync Matrix 1.0 and EMT 1.0.
+- Sam to confirm deep-link patterns and demo a link opening the exact record.
+- Karen to schedule projector readability test (big screen).
+- Luis to draft a quick start (open board, apply filters, read clocks, pause/resume).
+- Priya to draft an availability/maintenance window note (target near 99 percent during business hours; updates off-hours).
+- Devon to propose the actual-vs-planned chart and a change history view format.
+
+Parking Lot / Open:
+- Whether the proximity window for the lower list is fixed or user-adjustable in v1.
+- Saving custom display presets (not in v1).
+- Auto-scroll behavior of the right-side list (check accessibility).

@@ -1,0 +1,116 @@
+TYPE  : meeting_notes
+TITLE : ColorCast Migration — Requirements Workshop Notes (Edited)
+UNIT  : PURE_2004 - colorcast
+============================================================
+
+Date: 2025-01-22
+Location: Teams call (link: https://meet.abcpaint.example.com/colorcast-reqs)
+Attendees: Raj (PM), Linda (Mktg), Maria (IT Ops), Owen (ColorKast), Jade (UX), Tasha (Tech Writer), Ahmed (QA)
+
+— notes start —
+
+Agenda: doc structure; interfaces; non-func; constraints; docs deliverables; feature modules; assumptions/deps.
+
+Doc plan / SRS framing
+- Product spec vs design: keep this doc as PRODUCT SPEC only. No wireframes, no code-level arch diagrams (Jade reminder). Implementation details go elsewhere [TBD]
+- Include TOC (!!) — Tasha will auto-generate from headings. Add page numbers maybe [check with print team]
+- Include a change log / revision history section near front. Linda wants date + short description + owner. Keep granular (week-by-week during rollout).
+- Intro section: must explain purpose, define terms (paint number scheme old/new, collection, RGB color space, 'closest colors', 'user color palette', etc.), and point to where details live.
+- Explicit note: read intro first if you are new to the project — avoid confusion around 'collection' usage. Maybe call out 'Document Conventions' (bold/italics) and 'How to read this' [TBD wording]
+- Section layout: 2 and 4 are 'overall product description' and 'overall constraints'? Raj says yes. 3 is 'external interfaces' (U/HW/SW/communications), 5 is non-functional/perf. Verify alignment w/ corporate template [check with PMO].
+- PMs will make decisions off Sections 3 (interfaces) + 5 (performance/reliability). Call that out in intro so they know.
+- Tasha to insert standard 'Assumptions & Dependencies' section. Keep it updated whenever we decide we rely on 3rd party DB or browser lists.
+
+External interfaces (section 3)
+- User interface (high-level only, details in separate UI whitepaper per Jade) -> include behaviors but not layouts. Include: search by name/number/RGB, translator, visual picker, sample matcher, palette, admin login + console nav (high-level).
+- Hardware interface: client hardware is 'whatever meets browser requirements'; server hardware: note capacity per 50 users (1 GHz CPU + 512 MB). [Legacy guidance]
+- Software interface: supported browsers versions: IE 4.01, Netscape 6.0, Mozilla 1.0+, and compatible w/ most OSes (Windows, Mac; Ahmed asked about Linux — 'should be fine' but put 'most').
+- Communications interface: HTTP/HTTPS over company network + Internet. No extra plugins. All search + storage flow to server.
+
+Non-functional / perf (section 5)
+- Accessibility: keyboard-only operation must be fully usable. Include tab order expectations and focus management [details in UI doc, but requirement here].
+- Availability: 'highly accessible to clients and distributors via web' — aim for HA. Maria wants wording not too prescriptive (ops doc covers clusters etc.).
+- Error reporting UX: non-intrusive. No blocking popups; use minimal overlay or inline message.
+- Error recovery: the system shall attempt to fully recover from errors in all instances (e.g., retry, preserve inputs, restore last state). Avoid wording that guarantees success, but the attempt must be made every time. [QA to define scenarios]
+- Responsiveness: defaults apply to the client unless explicitly marked 'server'. Add explicit note: when spec references 'response time', assume client perception unless 'server throughput' specified.
+
+Constraints / architecture (section 2.5)
+- Deliver as standalone server-based web application (client/server). Fully web client.
+- All search processing + application data storage happen on the server (no client persistence except session cookies).
+- Capacity guideline: 1 GHz CPU + 512 MB RAM per 50 user cohort. Put in constraints, not perf target.
+- Browser support: IE 4.01, Netscape 6.0, Mozilla 1.0+. Client machines must meet/exceed the browser vendor's system requirements (we do not override).
+- Cross-OS compatibility: 'compatible with most operating systems' (not exhaustive list). Jade: add note that theme CSS must not rely on OS-specific fonts.
+- Theme/styling must integrate with ABC site look and navigation. Provide hooks for ABC web designers to blend seamlessly (CSS classes, replaceable skin). Branding placement specifics are handled outside the SRS.
+- Feature modules: each main feature on its own page — independence helps with integration and QA. Provide cross-links rather than combining modules.
+- Design/implementation constraint to record here: 'Error recovery — system shall attempt full recovery on any error condition.'
+- Document design & implementation constraints in SRS — capture all constraints we agree (browsers, server-side only, theme hooks, modular pages, error recovery rule). [Tasha to own]
+
+Features (summary only; details elsewhere)
+- Color search engine: find paints by name/number/standard color value (RGB). Use 3rd party DB for paint data + search index [dependency].
+- Visual color chooser ('graphical picker'). UI patterns in whitepaper, but spec needs to state capability.
+- Image-based match ('color sample matcher' using uploaded image). Server processes image; returns candidates. [Ops note: size limits TBD].
+- Translator: map old paint numbers + collections to new numbers + collections. Migration complexities included (adds, retirements). If a color is retired, show nearest alternatives.
+- Closest-colors finder: determine colors nearest to a given color; algorithm assumption = RGB distance acceptable (document assumption).
+- User color palette: session-based. Default users (non-admin) can use all functionality except admin; their data is session-only, no password-protected storage, expires with session end.
+- Admin console: manage paints, collections, and admin users. Admin roles L1/L2/L3 with permissions: L1 = add + create L1; L2 = add/update + create up to L2; L3 = add/update/delete + create any level.
+- Error utility: users can report errors. Automatic log sending to vendor (ColorKast) on errors; preserve UX (non-intrusive).
+
+Docs deliverables
+- End-user help: website accessible help pages; distributor-friendly printable guide.
+- IT setup/operations guide: full install + management docs for ABC Paint IT so they can manage app internally. Include scaling, backups, monitoring basics.
+- UI whitepaper: separate doc with detailed UI designs, flows, keyboard interactions. Cross-reference from SRS intro.
+- Assumptions/Dependencies doc section: browsers, capacity guidance, 3rd party DB reliance, RGB assumption, environment meeting stated requirements.
+
+Definitions / terminology (include in intro)
+- Paint number scheme: old vs new.
+- Collection = paint line/series.
+- RGB = red-green-blue color space; 'closest colors' uses distance in RGB.
+- User color palette = session-based grouping of user-selected colors.
+- Administrative levels = L1/L2/L3 (L3 highest).
+
+Assumptions & dependencies [some flagged to track]
+- Assume client computers + servers will match/exceed client/server requirements (per section 2.4 in template) and ops environment complies.
+- Assume nearest-color in RGB is good-enough for search/matching (acceptable similarity).
+- Depend on 3rd-party databases for paint information + search/indexing (external service must be up).
+- Assume tool is primarily for the wide-installation/rollout period of the new numbering scheme. Post-rollout deprecation TBD.
+
+Open disagreements / confusion
+- Jade asked if 'RGB' implies HSV; Owen corrected. Resolve: spec says RGB distance, not HSV.
+- Linda wanted unified search + translator; Raj insists modules remain separate pages. Compromise: separate modules with cross-links.
+- IE 4.01 support — Ahmed grumbled it's ancient. Decision: keep for v1 because of policy; revisit later.
+- Accessibility scope: include keyboard-only now; other accessibility specifics live in UI doc.
+
+Open Issues / Parking Lot
+- [TBD] Exact file size limit for image upload in sample matcher.
+- [TBD] Specific HA targets (nines?); for SRS just say 'highly accessible via web' and defer to ops guide.
+- [TBD] Soft-delete vs hard delete for paints in admin (permissions unaffected).
+- [TBD] Printer-friendly stylesheet for palette and translator results.
+- [TBD] Search field(s) layout — single smart box vs tabs (UI whitepaper).
+- [TBD] Do we need a 'status page' for distributors? Maria says out-of-scope for SRS.
+
+Contradictions noted (to resolve)
+- 'Combine search + translate on single page' vs 'each module on separate page' — strike-through combine option. Keep separate modules per original constraint; provide links.
+- 'Blocker error dialog' vs 'non-intrusive error reporting' — choose non-intrusive.
+- 'Document server performance' vs 'Default perf applies to client' — Both: specify default applies to client unless explicitly flagged for server.
+
+Action items (mixed in)
+- Tasha: add TOC, Revision History, Intro guidance, Document Conventions. Draft by Fri.
+- Raj: fill Sections 2 (overall description) and 4 (overall constraints).
+- Jade: finalize UI whitepaper; include keyboard interactions. Link from SRS intro.
+- Owen: draft External Interfaces (section 3): user, hardware, software, communications. Include browsers + server-side processing note.
+- Maria: provide capacity guidance language and environment assumptions to plug into constraints; also compatibility statement 'compatible w/ most OS'.
+- Ahmed: create test plan references for keyboard-only usage and error recovery scenarios.
+- Linda: list of docs needed for distributors/end-users.
+
+Timeline/Versioning
+- Version 1.0 target by end of Q2 2004 (legacy date remains in business plan). No prior live revisions of this app. Ensure this is stated clearly in SRS.
+- Documentation: include revision history for SRS itself, not just software releases.
+
+Random notes
+- Some numbers jotted (capacity): 1 GHz + 512 MB per 50 users (units? CPU GHz/MB RAM — verify).
+- Communications interfaces mention: HTTP; maybe HTTPS if site is global — [check with security].
+- Default user: has access to everything except admin functions. No login. Data ephemeral, session-scoped.
+- Admin roles must be able to create admin users: L1 -> L1 only; L2 -> up to L2; L3 -> all.
+- Theme hooks: CSS class names to be documented; ABC designers can override.
+
+— notes end —

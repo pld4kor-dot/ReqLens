@@ -1,0 +1,71 @@
+TYPE  : meeting_notes
+TITLE : EVLA Correlator Control System Design Meeting
+UNIT  : PURE_2002 - evla corr
+============================================================
+
+Meeting Purpose: Discuss design considerations and integration for the EVLA Correlator Control System
+Date: February 12, 2025
+Attendees: Emily (Systems Operations), Frank (Hardware Maintenance), Gina (Software Development), Henry (Network Architect), Irene (Security Specialist)
+
+Summary:
+- Emily emphasized the need for continuous correlator operation to avoid data loss.
+- Gina outlined the requirement for a Virtual Correlator Interface (VCI) to support both software and GUI-based configuration.
+- Henry discussed the master-slave network architecture with one master computer coordinating multiple slave processors handling real-time hardware control.
+- Irene stressed strict user authentication and role-based access control to secure system functions.
+- Frank highlighted modularity and hot-swappable hardware modules to facilitate maintenance and fault recovery.
+
+Key Points:
+- Integration:
+  * The system must integrate within the overall EVLA Monitor and Control infrastructure.
+  * Network interfaces should be separated to ensure isolation between system components.
+- Network and Cabling:
+  * Twisted pair copper cables will be used unless RFI or physical layout requires fiber optic.
+  * Network switches will be employed inside correlator racks to reduce wiring complexity.
+  * Routers and switches at the MCCC interface will protect against unauthorized access and irrelevant traffic.
+- Redundancy and Availability:
+  * Critical areas require redundancy.
+  * Backup MCCC systems must be available and activated automatically or manually upon primary failure.
+- Monitoring and Control:
+  * Correlator monitor subsystem must provide system-wide access to all correlator states.
+  * Some data must be time-synchronous for backend and archive systems; other data on request.
+  * Error and status messages should be concise, time- and location-stamped, and controllable in content.
+  * The system will spool ancillary monitor data during network outages to prevent data loss.
+- Hardware and Software:
+  * CMIB devices will have unique IP addresses derived from a 16-bit identifier.
+  * Physical indicators on CMIBs will show operational status (green for OK, red for fault).
+  * Hardware specs include at least 64 MB SDRAM, IDE hard disk, serial and parallel interfaces, PCI/ISA bus support, and 100BaseT network.
+  * The system will run a COTS OS in a near real-time environment from local storage.
+  * Multiple Ethernet interfaces and server services will be supported.
+- Fault Detection and Recovery:
+  * The system will detect hardware failures, OS crashes, performance issues, and communication failures.
+  * Automatic corrective actions and self-healing where possible.
+  * Alerts issued if CMIB subsystems fail to recover.
+- Security:
+  * Access restricted to authorized personnel (software/hardware dev, testing, maintenance, operations).
+  * Unique user identification via username/password.
+  * Authentication and authorization required before access.
+  * All access attempts logged.
+  * Systems operations personnel have unrestricted access and can manage user privileges.
+- Maintenance:
+  * Remote inspection and fault tracing tools for CMIB layer devices.
+  * Support for hot-swappable modules.
+
+Decisions Made:
+1. Adopt master-slave network architecture with master handling external interfaces.
+2. Use twisted pair copper cabling by default; fiber optics for shielded room penetration.
+3. Implement VCI as software gateway on MCCC with GUI and software interfaces.
+4. Enforce strict security policies with role-based access and logging.
+5. Deploy network switches and routers for traffic management and security.
+
+Action Items:
+- Gina to draft detailed VCI interface specifications.
+- Henry to design network topology ensuring isolation and redundancy.
+- Irene to develop user authentication and authorization framework.
+- Frank to prepare hardware modularity and hot-swap procedures.
+
+Open Questions:
+- How to best handle real-time data processing requirements on slave processors?
+- What are the exact performance thresholds for fault detection and recovery?
+- Should the system support additional external data feeds beyond models and time standards?
+
+Next Meeting: March 5, 2025, to review progress on action items and address open questions.

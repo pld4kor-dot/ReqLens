@@ -1,0 +1,72 @@
+TYPE  : interview_transcript
+TITLE : Stakeholder Interview: Early Direction for BioGrid 3D Explorer (edited)
+UNIT  : PURE_2005 - grid 3D
+============================================================
+
+Ben [Developer]: Thanks for making time. I wanted to get a rough pass on what's essential versus nice-to-have. I know this is exploratory, so feel free to jump in or push back.
+
+Dr Delmiro [Client]: Sure, Ben. We need something that lets the team—Identifiers, Investigators, and the folks who do demos—actually see these data clouds in three dimensions. Not a gimmick. We need to be able to inspect patterns.
+
+Sara [Investigator]: Right. The thing we keep running into is that our points are there but when we print screenshots for a paper they go muddy. On black-and-white printers the colors wash out. And during rotation the axis labels get weird—sometimes hard to read, sometimes they flip.
+
+Anthony [Supervisor]: Clarity on paper is a must. We submit to journals that expect black-on-white figures. If the palette relies on subtle hues that vanish in grayscale, it's not useful. So: high contrast by default. And the axes? If you rotate the scene, the labels should remain legible. That is table stakes.
+
+Ben [Developer]: Okay, default look suitable for black-on-white printing, high contrast. Axis labels readable even after a reorient. For the labels, do you envision them always facing the viewer? Or just large enough—
+
+Sara [Investigator]: Facing me, ideally. When I rotate I want to still see X, Y, Z clearly, not mirrored or upside-down. I don’t want to squint and guess.
+
+Dr Delmiro [Client]: Also, marker size. We had another tool where the dots were too big and at a distance it looked like a blob. Patterns got distorted. Can we keep them tiny so the overall structure isn't blown out by fat dots?
+
+Ben [Developer]: So: point glyphs sized to preserve the spatial pattern, especially when zoomed out. They can scale a bit when you zoom in, but not so much that they overlap heavily.
+
+Anthony [Supervisor]: Keep interactions simple. No heavy training. Some of our users are Identifiers; they just want to check something and confirm it's where they expect. The basics should be discoverable—mouse drag to rotate, wheel to zoom. Nothing hidden behind obscure key combos.
+
+Sara [Investigator]: Also, response time. If I click to select a point, I need it to react. Not a beach ball. A couple of seconds tops. Faster would be great. Same story when I change the view—spin, zoom—don’t make me wait.
+
+Ben [Developer]: Understood. We'll budget for snappy responses to selection and changing view. No more than about two seconds is what I’m hearing.
+
+Dr Delmiro [Client]: And startup. The team needs to be able to open a dataset between meetings. Typical files are a few tens of thousands of points. If it takes a minute, people drift. Around half a minute would be acceptable, and yes, it depends on how many points there are.
+
+Anthony [Supervisor]: We should be honest that if someone loads a monster dataset it will be slower. But for typical sizes, sub-30 seconds cold start is reasonable.
+
+Ben [Developer]: Okay: on typical datasets, aim to start in about 30 seconds or less, with the caveat that it depends on size. And for user actions like selecting or changing orientation, don't exceed ~2 seconds.
+
+Sara [Investigator]: About the axes: do we need lots of ticks? I get lost without any ticks, but if they cause aliasing during rotation maybe fewer is better. As long as the letters stay readable.
+
+Anthony [Supervisor]: Legibility first, not maximum tick density. We can go lighter on ticks. Also, I'd avoid fancy shading that interferes with print.
+
+Dr Delmiro [Client]: We tried a package with glossy spheres—looked pretty, printed as gray blobs. Useless. So high-contrast, simple markers. Keep the field of view uncluttered.
+
+Ben [Developer]: We’ll keep the markers simple and small by default to support that.
+
+Sara [Investigator]: When I select something, make it obvious. A clear highlight or something. Don’t bury feedback in a menu.
+
+Anthony [Supervisor]: Agreed. Keep the interactions intuitive. A one-page quick start at most. Click to select, drag to rotate, scroll to zoom—simple.
+
+Ben [Developer]: Can we clarify users once more? We’ve said Identifiers, Investigators, and Demonstrators.
+
+Dr Delmiro [Client]: Yes. Identifiers are checking things quickly. Investigators explore—spotting clusters and outliers. Demonstrators need to show the plots in talks—live rotation and then screenshots. Those three groups are our world.
+
+Sara [Investigator]: Speaking of demos, when I rotate for a room, the axis labels need to stay, um, not blocky. We had a time where the Z label turned backward. Another time the labels got lost behind the cloud.
+
+Ben [Developer]: We can make labels keep a stable orientation and render them so they remain readable from the camera angle. We'll test that extensively while rotating.
+
+Dr Delmiro [Client]: Good. But don’t make labels massive and cover the data. Keep them legible without being billboard-sized.
+
+Anthony [Supervisor]: And let's be realistic—startup. If we say under half a minute for typical data, don’t show me 90 seconds. Size-dependent, but make typical usage acceptable.
+
+Ben [Developer]: I’ll prototype with a typical dataset—around the tens of thousands of points—and measure. If we hit limits, we’ll be transparent.
+
+Sara [Investigator]: I’ll provide real files. Also, we’ll run print tests on the lab printer to check that screenshots come out crisp and the dots don’t merge.
+
+Dr Delmiro [Client]: Great. And let’s not turn this into a training burden. Students should be able to sit down and figure it out in a minute by playing around.
+
+Ben [Developer]: Got it: simple interactions, small markers to preserve patterns, axis labels that stay readable even when rotated, print-friendly visuals, start quickly, and be responsive—around two seconds per interaction.
+
+Anthony [Supervisor]: That captures it. Let's reconvene after the prototype is up.
+
+Sara [Investigator]: Sounds good. I’ve got to run to a seminar. Thanks.
+
+Dr Delmiro [Client]: Thanks everyone.
+
+Ben [Developer]: Thanks. I’ll follow up with a summary and questions if anything's unclear.

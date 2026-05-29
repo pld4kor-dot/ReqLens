@@ -1,0 +1,122 @@
+TYPE  : meeting_notes
+TITLE : RoomWise — Architecture/Operations working session notes (revised)
+UNIT  : PROMISE_6
+============================================================
+
+Date: 2025-02-11
+Location: Conf Rm L2 + Teams link (https://meet.example.com/roomwise-arch)
+Attendees: Priya (CIO/IT Ops), Alex (DBA/Systems Arch), Serena (Sec/Compliance), Jordan (Support), Miguel (Facilities), Dana (Product)
+
+— Notes are rough; re-check numbers with Alex —
+
+Agenda
+- Platform + deployment envs
+- DBMS targets + connectivity
+- Browser/email integration
+- Performance goals (latency, concurrency, throughput)
+- Security, access, audits, logging
+- Usability, I18N/L10N, accessibility
+- Facilities features: maps, equipment transport
+- Distribution/licensing/installation/maintenance
+
+Platform
+- Java-based (J2SE/J2EE libs), runs where a JVM exists. OS agnostic: Windows, Linux, macOS server.
+- Must deploy on a web/app server. Default Tomcat; JBoss supported. Packaging (.war vs .ear) [TBD].
+- Install target for a typical office: complete within 2 days (includes DB + email config).
+- Co-exists with other services on the same machine.
+
+DBMS
+- Multi-DB support: Oracle, SQL Server, DB2, MySQL, HSQL, MS Access (legacy acceptable).
+- DB can be local to app or remote on network; must interoperate reliably either way.
+- Transactions must communicate successfully with DB; retry on transient issues; no silent failures.
+- Highly configurable DB layer so admins can swap DB without code changes. Wizard + config files. Target: majority of customers can integrate a different DBMS via configuration.
+
+Browser/Email
+- Interface via standard HTML browsers. Test matrix: at least 8 browsers/versions. Goal: the majority render properly. Document known issues for older ones.
+- Data exchange reliability: client/server round-trips must be clean—forms submit, responses return without unexplained drops.
+- Email servers: integrate with corporate SMTP for outbound (notifications, invites, reminders, confirmations).
+
+Performance
+- Latency: proposed 90% of standard tasks < 5s; 98% < 8s (Support flagged this for SLAs).
+- Concurrency: ~1,000 concurrent requests at launch; plan for ~2,000 in a subsequent release.
+- Throughput: around 10,000 transactions/hour near-term; higher in later releases (validate hardware assumptions).
+- Availability: app-level uptime target ~99.99% excluding infra failures. Longevity: stable operation ≥ 5 years per install.
+
+Security/Access/Audit
+- Access limited to employees + pre-approved external IDs (partners/guests). No public registration.
+- Manager-only ability to search reservations by user. Enforce via role permissions.
+- Input validation: prevent malicious data from causing corruption or crashes. Reject bad input gracefully.
+- Threat management: provide automatic updates for emerging security issues so customers can receive fixes without manual hunting. Delivery details [TBD].
+- Data integrity: reservation records should match user-entered data (avoid stealth truncation/transformations).
+- Exception logging: capture exceptions with enough context for diagnosis; provide a way to transmit logs securely to vendor support. Privacy approach [TBD].
+
+Usability/Adoption/UI
+- Look & Feel: customizable branding (logo/colors). Default theme conservative/professional.
+- Adoption metric: target that a large majority of surveyed users report regular usage after two weeks (product will support measuring this; collection method [TBD—survey]).
+- Ease of use: target that most users can reserve a room within ~5 minutes on first use.
+- Onboarding: new user can be added quickly; aim for 90% to log in within 10 minutes of being added.
+- Clear feedback: show confirmations after actions; later survey whether confirmations are perceived as accurate by most users.
+- Navigation: familiar web-style menus and flows.
+- Search: intuitive discovery of rooms; filters for time, capacity, equipment; show “Available” for unreserved rooms.
+- Accessibility: align with disability access standards (keyboard navigation, ARIA/labels, contrast).
+- Languages: user-selectable languages for target markets; acceptable wording across markets. Plan to add new markets without long lead time.
+- Locale: date/time formatting per user locale.
+- Preferences: per-user start page and view preferences (e.g., Calendar, Room Search, Manager Reports).
+
+Core Features (Facilities + Scheduling)
+- Meeting records: create/update; include agenda with updates recorded, meeting type classification, and organizer contact info.
+- Invitations: organizers invite participants; send notifications (email at minimum) and reminders per user preference where available.
+- Acknowledgements: record attendee responses (accept/decline).
+- Rooms: add/update/delete conference rooms.
+- Equipment: add/update/delete equipment; display per room; reflect in search results based on filters.
+- Availability: search/filter rooms and equipment; show real-time availability; explicitly show an “Available” indicator for free rooms.
+- Scheduling update: when a room is reserved, update the schedule immediately to prevent conflicts.
+- Transport requests: record transport requests for reserved mobile equipment; notify building personnel (authorized list) and track statuses (requested/in transit/delivered/returned).
+- Building maps: display floorplans with room locations and equipment details; allow easy integration of new maps over time with minimal vendor assistance.
+- Manager views: privileged users can view schedules via multiple reporting views (e.g., by team/building/floor/time slice).
+- Organizer confirmation: system sends a confirmation to the organizer when a meeting is created/reserved successfully.
+
+Operability/Maintenance
+- Design approach: employ design patterns and coding best practices. Goal: about 90% of maintenance developers can integrate a modest new feature in roughly 2 working days.
+- Maintenance releases: annual cadence. Target: most customers complete the update in about 5 minutes. Provide a simple updater.
+- Support: self-service support site; goal that a majority of registered users find solutions quickly (within ~5 minutes) via articles/search.
+- Logging/telemetry: exception logs and operational telemetry; ensure compliance with privacy policies (masking/redaction approach [TBD]).
+- Security updates: automatic update path for security/threat fixes (details with Ops/Sec [TBD]).
+
+Distribution/Licensing
+- Distribution channels: Internet download (binary/ZIP) and packaged CD for customers who request physical media. Include checksums.
+- Licensing tiers: per-server—single server; 2–5 servers; 5+ servers. License enforcement approach [TBD].
+
+Open Issues / Parking Lot
+- Whether SMS/text is in initial scope. [TBD]
+- Packaging (.war vs .ear). [TBD]
+- Automatic update delivery approach. [TBD]
+- RSVP processing (inbound email vs link-based). [TBD]
+- Map integration method (file drop vs admin UI). [TBD]
+- Role mapping to “manager” for user-by-user reservation search. [TBD]
+- Accessibility test plan owner. [TBD]
+- Data handling guidelines for exception logs (privacy). [TBD]
+- License metering/enforcement details. [TBD]
+- Browser list/version matrix for QA. [TBD]
+
+Numbers scribbled
+- 5s / 8s latency (90% / 98%).
+- ~1,000 concurrent (launch). ~2,000 (later release).
+- ~10,000 transactions/hour near-term; higher later.
+- Uptime target ~99.99% app-level (excluding infra).
+- 5-year expected lifecycle per install.
+- 10-minute new user add-to-login for most users.
+- Broad adoption within 2 weeks (survey).
+- Majority of tested browsers render OK (min 8 tested).
+- Most maintenance updates complete in ~5 minutes.
+- Most users can book in ~5 minutes on first use.
+- Language acceptability per market (survey).
+- Locale date/time correctness (survey).
+
+Decisions (tentative)
+- Deploy on Tomcat primarily; JBoss acceptable. Packaging TBD.
+- Email notifications day one; other channels as preferences when feasible later.
+- Browser test plan: test at least 8; document known issues; aim for good coverage across the majority.
+- Security: role-based access; manager-only for reservation searches by user.
+- Install time: ≤ 2 days in typical office conditions.
+- Licensing: per-server tiers (1, 2–5, 5+).

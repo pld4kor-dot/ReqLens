@@ -1,0 +1,218 @@
+TYPE  : email_thread
+TITLE : Thread: RoomWise rollout, licensing, and a few last-mile questions (revised)
+UNIT  : PROMISE_6
+============================================================
+
+Email 1
+From: Dana <dana.product@example.com>
+To: Priya <priya.itops@example.com>, Serena <serena.sec@example.com>, Alex <alex.arch@example.com>
+CC: Jordan <jordan.support@example.com>, Miguel <miguel.facilities@example.com>
+Subject: RoomWise rollout assumptions + licensing
+
+Hi all —
+
+Quick recap so we’re not talking past each other:
+
+- Licensing: server-based tiers—single server; 2–5; 5 or more. We’ll need the licensing service to count instances appropriately.
+- Distribution: Internet download (binary/ZIP) plus a packaged CD for the few clients who still require it.
+- Install target: in a typical office, up and running within two days (including DB and email server setup). No custom coding.
+- Platform: Java SE/EE; deploy on Tomcat or JBoss; OS-agnostic (any machine with a JVM).
+- DB: support Oracle, SQL Server, DB2, MySQL, HSQL, MS Access; allow the DB to be local or remote on a LAN.
+- Browser/email: work in common HTML browsers (we’ll test at least eight) and integrate with corporate email servers for outbound mail.
+
+Shout if I misrepresented anything.
+
+— Dana
+
+---
+
+Email 2
+From: Priya <priya.itops@example.com>
+To: Dana <dana.product@example.com>
+CC: Serena <serena.sec@example.com>, Alex <alex.arch@example.com>, Jordan <jordan.support@example.com>, Miguel <miguel.facilities@example.com>
+Subject: RE: RoomWise rollout assumptions + licensing
+
+Hey Dana,
+
+Aligned, with a few specifics to nail down expectations:
+
+- Performance: let’s commit to 90% of standard tasks finishing in under 5s; 98% in under 8s.
+- Capacity: plan for ~1,000 concurrent requests at launch and ~2,000 in a later release. Throughput: about 10k transactions/hour in the near term, scaling up afterward.
+- Uptime: we can target very high app uptime (four nines) if we keep the stack straightforward.
+- Longevity: installations should run for around five years without forcing a replatform.
+
+On licensing metering in clusters—I’ll verify.
+
+ZIP distribution is straightforward; CD is extra work but doable. We’ll attach checksums.
+
+Thanks,
+
+Priya
+
+---
+
+Email 3
+From: Serena <serena.sec@example.com>
+To: Dana <dana.product@example.com>, Priya <priya.itops@example.com>, Alex <alex.arch@example.com>
+CC: Jordan <jordan.support@example.com>
+Subject: RE: RoomWise rollout assumptions + licensing + security asks
+
+All,
+
+Security points we need to hold the line on:
+
+1) Access control: Only employees or pre-approved external users can log in. No public sign-ups.
+2) Manager-only search: Queries that pull reservations by user must be limited to manager roles.
+3) Data integrity: Reservation data in the DB should reflect exactly what the user entered (no silent truncation/alteration).
+4) Malicious inputs: Validate and sanitize. If someone sends garbage, do not crash and do not corrupt data.
+5) Threat updates: Provide a way to deliver automatic updates as new threats emerge (process details can come later with Ops).
+6) Logging: Capture exceptions and provide a way to transmit logs securely to vendor support for diagnosis.
+7) Accessibility: Conform to disability access standards.
+
+Also, please ensure the UI gives users clear confirmations when actions succeed. Silence creates tickets.
+
+— Serena
+
+---
+
+Email 4
+From: Jordan <jordan.support@example.com>
+To: Serena <serena.sec@example.com>, Dana <dana.product@example.com>, Priya <priya.itops@example.com>
+CC: Alex <alex.arch@example.com>, Miguel <miguel.facilities@example.com>
+Subject: RE: RoomWise rollout assumptions + licensing + security asks (support POV)
+
+Team,
+
+From support’s angle, a few items will make a huge difference:
+
+- Onboarding: If 90% of newly added users can log in within 10 minutes, tickets drop immediately.
+- Usability: First-time success matters. Let’s aim that most users can book a room within ~5 minutes on the first try.
+- Confirmations: When users book, invite, or update, show a clear confirmation (e.g., “Meeting confirmed”). We can survey later to ensure users feel confirmations are accurate.
+- Browsers: Render well on mainstream browsers. We’ll test at least eight combinations and document any known limitations.
+- Support site: Don’t forget the self-help portal. Our standard is that a majority of registered users find a solution within ~5 minutes.
+- Maintenance releases: Yearly is fine. The upgrade should be simple and take just a few minutes for most customers.
+
+Also: default theme should be professional. Brandable is fine; just avoid the toy-like look.
+
+Regards,
+
+Jordan
+
+---
+
+Email 5
+From: Miguel <miguel.facilities@example.com>
+To: Dana <dana.product@example.com>, Priya <priya.itops@example.com>
+CC: Serena <serena.sec@example.com>, Jordan <jordan.support@example.com>, Alex <alex.arch@example.com>
+Subject: RE: RoomWise features (facilities specifics) — and a small gripe
+
+Hi,
+
+Facilities items we don’t want to miss:
+
+- Floorplans: Show a building map in the app with where the conference rooms are, plus basic equipment details on click.
+- Easy map updates: We’re renovating. I don’t want to open a ticket to add new maps—let us drop in new ones or configure them with minimal help.
+- Equipment transport: When mobile equipment is reserved, create a transport request and notify building personnel to move it. Track statuses (requested, in transit, delivered, returned).
+- Availability: People ask “Is anything open now?”—show an “Available” status for rooms and let them filter for what’s free.
+- Rooms/equipment mgmt: We add/update/delete rooms and gear constantly. Make it straightforward. And when equipment is reserved, associate it with the meeting.
+
+Gripe: Our old tool updated the room calendar hours later. Here, as soon as someone books, the schedule needs to reflect it so we avoid conflicts.
+
+Thanks,
+
+Miguel
+
+---
+
+Email 6
+From: Alex <alex.arch@example.com>
+To: Miguel <miguel.facilities@example.com>, Dana <dana.product@example.com>
+CC: Priya <priya.itops@example.com>, Serena <serena.sec@example.com>, Jordan <jordan.support@example.com>
+Subject: RE: RoomWise features (facilities specifics) — DB + tech implications
+
+Miguel et al.,
+
+Great list. Here’s how the design aligns with that and our broader plan:
+
+- Meeting model: We’ll store entries with an agenda (and keep updates), a meeting type (for reporting), and attach organizer contact info.
+- Invitations: Organizers can invite other employees. Notifications go out via email at minimum; the framework lets users indicate channel preferences as we expand.
+- Acknowledgements: We’ll record attendee responses.
+- Schedule consistency: When a room is reserved, the schedule will reflect the reservation immediately and avoid conflicts.
+- Search results: Filter rooms and equipment by parameters, and display matches—including a clear “Available” indicator for rooms that are free.
+- Transport: We’ll record equipment transport requests, notify the facilities distribution list, and track status so you can see progress.
+- Maps: We’ll display the building floorplan with room locations. Plan is a configuration-driven approach so you can bring new maps online during the product lifecycle with minimal assistance.
+
+On tech stack:
+
+- DBMS: The product supports Oracle, SQL Server, DB2, MySQL, HSQL, and MS Access. The DB can live on the same machine as the app or on a separate host. The DB layer is configurable—no code changes to swap engines.
+- App server: We’ll deploy on Tomcat primarily; JBoss also works. Java SE/EE for the implementation.
+- Browser/Email: HTML UI tested across a broad set of browsers; we’ll aim for solid rendering across the majority. The app will use corporate email servers to send messages.
+
+We’re also building in exception logging with a way to transmit logs when needed, delivering automatic security updates, and meeting accessibility standards. Performance/uptime targets are being tracked with Ops.
+
+Regards,
+
+Alex
+
+---
+
+Email 7
+From: Serena <serena.sec@example.com>
+To: Alex <alex.arch@example.com>, Dana <dana.product@example.com>
+CC: Priya <priya.itops@example.com>, Jordan <jordan.support@example.com>, Miguel <miguel.facilities@example.com>
+Subject: RE: RoomWise features — privacy and “user search by user” reminder
+
+Two reminders from compliance:
+
+- The “manager reports” are fine, but any functionality that pulls reservations by user stays restricted to manager roles. Please don’t add debug endpoints that bypass this.
+- Exception logs: be careful with PII. If we’re going to transmit logs to the vendor, let’s define redaction/anonymization guidelines before we enable it.
+- Security fixes: we’ll need a safe path to deliver automatic updates for emerging threats; Ops and Sec can settle on the delivery approach.
+- Language and locale: user-selectable languages for our target markets and correct date/time formatting per locale. We’ll do acceptance checks with regional teams.
+- Accessibility: keyboard navigation and proper labeling—no last-minute scramble this time.
+
+— Serena
+
+---
+
+Email 8
+From: Priya <priya.itops@example.com>
+To: Dana <dana.product@example.com>, Alex <alex.arch@example.com>
+CC: Serena <serena.sec@example.com>, Jordan <jordan.support@example.com>, Miguel <miguel.facilities@example.com>
+Subject: RE: RoomWise rollout — install and maintenance reality check
+
+Team,
+
+Two practical points for rollout:
+
+1) Installation: In a typical office, a local admin should be able to install on a standard web server, point it to the DB (local or networked), configure email, and be done within two days—no custom code, no pro services.
+
+2) Maintenance: Annual maintenance release is fine, but the update needs to be quick—about five minutes for most customers. For critical security issues, use the automatic update path we’re planning with Sec.
+
+Bonus: We’ll continue to offer both ZIP download and packaged CD. Also, the product should run for at least five years per site without major upheaval.
+
+Thanks,
+
+Priya
+
+---
+
+Email 9
+From: Dana <dana.product@example.com>
+To: All
+Subject: RE: RoomWise rollout — action items & open items
+
+Thanks all—capturing the current state and what’s left:
+
+- Licensing: server tiers (1, 2–5, 5+). Alex to confirm metering in clusters. [Open]
+- Distribution: Internet download (ZIP) + packaged CD (with checksums). Browser list (min 8) for QA [Open].
+- Install: ≤ 2 days in typical office (Java runtime, Tomcat/JBoss). No code changes required.
+- Platform/DB: Java SE/EE; runs alongside other services; DB local or networked; supports Oracle/SQL Server/DB2/MySQL/HSQL/Access; configurable without code change.
+- Email: Outbound to corporate servers for invites, reminders, confirmations.
+- Features: meeting records (agenda updates, meeting types, organizer contact), invitations, acknowledgements, add/update/delete rooms & equipment, search/filter rooms/equipment, live availability with “Available” indicator, immediate schedule update on reservation, record equipment reserved and transport status, notify building personnel, floorplans with room locations & equipment details, user-preferred notification channels (email now), organizer confirmation, manager reporting views with role limits (including user-by-user searches).
+- Usability/UI: brandable and conservative by default; user-selectable language; preferences for start page/view; familiar navigation; intuitive search; ADA compliance; clear confirmations; adoption and first-time success goals; locale-aware date/time formatting.
+- Performance/Resilience: 90% tasks <5s, 98% <8s; ~1,000 concurrent at launch; ~10k tx/hr near-term; high app uptime; stable multi-year operation; block malicious input without data loss/crashes; DB data matches user input; automatic security/threat updates; exception logging with secure transmit option.
+- Support/Ops: annual maintenance release; quick updater (~5 minutes for most); self-service support site with fast time-to-answer for the majority.
+
+Open items: SMS scope (initial vs later), packaging type (.war vs .ear), automatic update delivery details, manager role mapping, map integration method, and privacy approach for logs.
+
+— Dana

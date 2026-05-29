@@ -1,0 +1,171 @@
+TYPE  : email_thread
+TITLE : Email: Exports, Security, Resolution, and Training — CCR WCS Insight Portal
+UNIT  : PROMISE_13
+============================================================
+
+Email 1
+From: Mia Patel <mpatel@ibm.com>
+To: Noel Chen <nchen@ibm.com>, Tom Alvarez <talvarez@ibm.com>
+CC: Raj Desai <rdesai@ibm.com>, Linda Vargas <lvargas@ibm.com>, Carla Soto <csoto@ibm.com>
+Subject: Export buttons + one-click run (CCR WCS Insight Portal)
+
+Hi all,
+
+Quick follow-up from the workshop. We need to make sure the new portal does what folks expect:
+- After I choose the report type and any filters, I hit “Run” once, it executes. No wizard pages. One click.
+- Then there should be explicit export buttons. I heard Brio supports Excel and (sigh) Lotus 1-2-3. So, two buttons: Export to Excel (.xls) and Export to Lotus (.123). Please don’t hide these in a dropdown.
+- Keyboard equivalents too — I tab there, press Space/Enter, it works.
+
+Also, Noel, can you confirm the results dashboard shows at least one high-level summary per report type? Our execs need to see the “headlines” before they dive.
+
+Thanks,
+Mia
+
+—
+
+Email 2
+From: Noel Chen <nchen@ibm.com>
+To: Mia Patel <mpatel@ibm.com>
+CC: Tom Alvarez <talvarez@ibm.com>, Raj Desai <rdesai@ibm.com>, Linda Vargas <lvargas@ibm.com>, Carla Soto <csoto@ibm.com>
+Subject: RE: Export buttons + one-click run (CCR WCS Insight Portal)
+
+Hi Mia,
+
+Yep, on all points:
+- We’ll do a single prominent Run action post-selection. That meets the “one click” (after selection) goal.
+- Brio will expose two export buttons with clear labels: .xls and .123. We’ll ensure full keyboard operability, and no hover-only controls.
+- Dashboard: Every report type will surface a minimum of one high-level, executive-friendly summary tile, with the detailed rows below.
+
+Also confirming a couple of constraints we’re designing to:
+- Interface operable at 800x600 resolution (I’ve been blocking out layouts to avoid horizontal scroll at that size).
+- Dual branding: IBM + CCR logo present per the standards.
+- CCR nomenclature will mirror what’s in existing WCS reports. We’ll validate via CCR user testing.
+
+I’ll share low-res wireframes early next week.
+
+Best,
+Noel
+
+—
+
+Email 3
+From: Linda Vargas <lvargas@ibm.com>
+To: Noel Chen <nchen@ibm.com>, Mia Patel <mpatel@ibm.com>
+CC: Tom Alvarez <talvarez@ibm.com>, Raj Desai <rdesai@ibm.com>, Jason Wu <jwu@ibm.com>, Carla Soto <csoto@ibm.com>
+Subject: RE: Export buttons + security reminders
+
+Team,
+
+Couple of security reminders and clarifications:
+- Access is for authorized CCR staff only. Users authenticate with their IBM intranet username and password. This is on W3 and stays on W3.
+- No automatic logins. Please do not implement any credential caching. No cookies storing login info — this is non-negotiable.
+- Availability: The portal’s availability is dependent on W3. Our standard wording is “target 95% of W3 availability.” Please don’t promise 24/7.
+
+Jason is CC’d to confirm the exact phrasing for internal comms and to set up the correct access groups, including approved non‑US CCR users.
+
+Thanks,
+Linda
+
+—
+
+Email 4
+From: Tom Alvarez <talvarez@ibm.com>
+To: Linda Vargas <lvargas@ibm.com>, Noel Chen <nchen@ibm.com>
+CC: Mia Patel <mpatel@ibm.com>, Raj Desai <rdesai@ibm.com>, Jason Wu <jwu@ibm.com>, Carla Soto <csoto@ibm.com>
+Subject: RE: Weekly refresh day + adding more WCS sources later
+
+Hi all,
+
+On data refresh: Proposing we set the weekly external WCS queries to run Monday nights starting at 23:00 ET, finishing before 06:00 Tuesday. If Ops prefers Friday night to reduce weekday risk, I can accommodate, but I agree with Mia that Monday makes the Tuesday data “fresh.” Action on me to finalize with Ops by Friday.
+
+On future connectivity: We’ll be able to add additional designated WCS databases that we don’t include at launch, with data owner approval and CCR governance sign-off. No change to auth/roles — still “authorized CCR only” via intranet credentials.
+
+Finally, yes, we will include datasets for regions outside the US. From a DB standpoint, we already have tables for EMEA/APAC. Access for non-US CCR users will go through the same W3 auth, assuming they’re on the approved list.
+
+Regards,
+Tom
+
+—
+
+Email 5
+From: Raj Desai <rdesai@ibm.com>
+To: Carla Soto <csoto@ibm.com>
+CC: Noel Chen <nchen@ibm.com>, Linda Vargas <lvargas@ibm.com>, Mia Patel <mpatel@ibm.com>, Tom Alvarez <talvarez@ibm.com>
+Subject: RE: Training + docs before rollout (and minor gripes)
+
+Carla,
+
+I’ll admit I was skeptical about doing training if the UI is intuitive. But let’s lock it: one training session pre-deployment for all CCR users. Please invite the entire CCR list, record it for folks who can’t attend, and share the link.
+
+Also, please make sure the WCS User Guide and WCS Developer Guide are both updated for any change we ship. We’ve been burned by docs that lag behind. If we rename a filter or alter a summary tile, it needs to show up in both guides before go-live.
+
+Side gripe: I don’t love that we still have to support Lotus 1-2-3 format, but I understand Linda’s point. Keep the Brio export buttons for .xls and .123 for now. Maybe we can revisit sunsetting .123 later this year.
+
+Thanks,
+Raj
+
+—
+
+Email 6
+From: Jason Wu <jwu@ibm.com>
+To: Linda Vargas <lvargas@ibm.com>, Noel Chen <nchen@ibm.com>, Tom Alvarez <talvarez@ibm.com>
+CC: Raj Desai <rdesai@ibm.com>, Mia Patel <mpatel@ibm.com>, Carla Soto <csoto@ibm.com>
+Subject: RE: Availability phrasing + access groups (W3)
+
+Hi folks,
+
+Jumping in late. Confirming the standard line we use: “Portal availability targets 95% of W3’s availability. When W3 is unavailable, the portal is unavailable.”
+
+On access groups: we can include approved international CCR employees in the same group. We’ll sync with HR and CCR management to validate membership. No geo blocks, but obviously it’s only reachable via W3 on IBM-issued Windows machines (Windows 2000 or newer). Intranet-only exposure.
+
+Noel — also confirming the 800x600 requirement is still necessary. We’ve got a surprising number of older workstations out there. Please design and test at that resolution.
+
+Tom — Monday night refresh looks fine at a glance. Please include the planned maintenance window in your note so teams know when data may be updating. Also add a simple note in the onboarding doc about “data refresh occurs weekly on [DAY].” Not a new feature; just documentation.
+
+Carla — training session: once you set the date, I’ll ask Ops to keep the systems quiet during that hour to avoid distractions. Let’s aim for broad coverage (attend or watch recording).
+
+Thanks,
+Jason
+
+—
+
+Email 7
+From: Noel Chen <nchen@ibm.com>
+To: All
+CC: —
+Subject: RE: Wrapping threads — UX items and open actions
+
+Thanks everyone,
+
+Summary on my side:
+- UI will support both mouse and full keyboard interactions for every action (run, navigation, export). No hover-only menus.
+- Dual branding: IBM + CCR logos included per standards.
+- Operable at 800x600; no horizontal scroll; readable at low res.
+- Dashboard per report type will include at least one executive-friendly summary tile above the data table.
+- CCR nomenclature sticks to existing WCS terms. We’ll validate in CCR usability sessions.
+- One-click run after selection; one-click exports via Brio buttons (.xls and .123). No extra dialogs.
+
+Security/Access (Linda/Jason):
+- W3 only; authorized CCR users authenticate with IBM intranet username/password. No auto login; no credential cookies.
+- Availability framed as 95% of W3’s uptime; we won’t claim 24/7.
+
+Data/Refresh (Tom):
+- Weekly data refresh, likely Monday night; queries to external WCS DBs. You’ll finalize day/time.
+- Capability to add more designated WCS databases later with approvals; no change to auth.
+- Include global datasets; approved non-US CCR staff can access via W3.
+
+Docs/Training (Carla):
+- One pre-deployment training session for all CCR users (recorded). Target wide coverage.
+- Every change reflected in WCS User + Developer Guides before rollout.
+
+Open items:
+- Tom to finalize refresh day + comms about the refresh window.
+- Carla to send training invite + doc process.
+- Raj to send examples of what “high-level” means per report type.
+- Minor: review .123 sunset timeline (later).
+
+If I missed anything, please shout. Otherwise, we’re aligned.
+
+Noel
+
+(sent from mobile; forgive typos)

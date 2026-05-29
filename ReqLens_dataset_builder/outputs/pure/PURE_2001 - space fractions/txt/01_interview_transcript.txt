@@ -1,0 +1,148 @@
+TYPE  : interview_transcript
+TITLE : Kickoff Interview: Space Fractions gameplay and content discussion (revised)
+UNIT  : PURE_2001 - space fractions
+============================================================
+
+Andrea [Teacher]: Okay, thanks for making time. I’m Andrea Brooks from Pecan Springs Elementary—sixth grade math—and I’m the one who originally asked for this game. I want to make sure we’re building something that actually helps the kids with fractions, not just flash and bang.
+
+Leo [Student Dev]: Great to meet you, Ms. Brooks. I’m Leo from the S2S student dev team. We’ve skimmed your notes and wanted to walk through the flow—what the kids see first, how they answer, scoring—so we don’t miss anything.
+
+Priya [Student Dev]: And I’m Priya. Mark is our mentor, and Jenna from the site team is listening in for anything hosting-related.
+
+Mark [Mentor]: Hi all. I’ll nudge if we drift.
+
+Jenna [Site Maintainer]: Hey. I care that what you ship runs in the browsers our labs support, and that updates don’t need a chaperone.
+
+Andrea [Teacher]: Right, so first thing, the kids. Sixth graders, and we’ll use it in class. We just pull it up during math block and play. Keep it friendly to mouse clicks—no typing names or anything; they hunt-and-peck and it slows us down.
+
+Leo [Student Dev]: Got it: click-driven UI. For questions, multiple choice with clickable options—no keyboard entry. How about the opening animation—if they get impatient, can a click skip it?
+
+Priya [Student Dev]: We’re calling it a little intro movie. We’ll have a title and maybe the robot sidekick flying in. If they click, we can hop to the main menu; otherwise it plays through and then lands there.
+
+Andrea [Teacher]: Yes, let a click skip. And during that little movie, please don’t have random keys do things. The kids mash keys and then say it broke. Click only.
+
+Mark [Mentor]: So: during the intro, only mouse clicks matter, others ignored. A click takes them to the main menu.
+
+Leo [Student Dev]: Main menu: we’re thinking a big Begin Game button, a Help button, a short blurb about the student team with a link, and a Denominators link—the page on S2S that catalogs the math stuff.
+
+Andrea [Teacher]: Yes. Link out to Denominators. And give credit to the student team—my students love seeing names and a link. Kids click anything that glows.
+
+Priya [Student Dev]: So the main screen waits until they choose: Begin to start, Help for a basic how-to, Denominators link to the site, plus the team blurb. That feels straightforward.
+
+Jenna [Site Maintainer]: If you want the Denominators and any other related links to open separately, say so; otherwise I’ll get “it stole my tab” emails.
+
+Andrea [Teacher]: New window for those external ones. The kids don’t need to navigate away and then we lose the game.
+
+Leo [Student Dev]: Okay, external links in a separate window. Help screen—we’ll keep it simple: “Click the best answer. If you miss, try again. Watch for hints from the robot.”
+
+Andrea [Teacher]: The robot. I want the sidekick to pop in with hints that are specific to the wrong answer. Like, if they keep clicking 1/2 instead of 2/4, the robot says something like “Check if the denominators match before adding.” Not generic “try again.”
+
+Priya [Student Dev]: Context-sensitive hints tied to choices. We’ll design it so a wrong selection triggers a targeted hint, and the editor can tweak that hint text.
+
+Mark [Mentor]: Keep it structured: hints mapped to answer choices or concept tags. No fancy AI.
+
+Andrea [Teacher]: Immediate feedback too, please. If they click the right thing—ding, “You got it!”—and move on. If it’s wrong, tell them and let them try again, but I don’t want full credit if they miss on the first try. The final score should reflect first-try correctness.
+
+Leo [Student Dev]: Understood. Scoring counts only first attempts as correct. If they miss first and then fix it, they continue but it doesn’t add a full point.
+
+Andrea [Teacher]: And the end-of-game—we need the exact score shown. The kids will ask. Also, tie it to the story. Like, “You saved the colony!” if they nailed the crucial decisions, or “You limped home” if they missed them. Kids love story-based endings.
+
+Priya [Student Dev]: That dovetails with branching. We’re planning a plot that branches at certain critical questions—call them checkpoints. Based on those answers, we select a final scene. We can settle on how many endings later, but the mechanism is: some questions flip a branch flag, and at the end we route to the appropriate ending sequence and show a customized message with the score.
+
+Andrea [Teacher]: That sounds right. Don’t just end on a plain number.
+
+Mark [Mentor]: So the game flow: intro movie, skippable on click. Main menu with Begin, Help, team blurb, and a Denominators link. Begin sends them into the question sequence. Questions are multiple choice with cartoon visuals, fraction problems in context. Correct click: positive feedback animation and next question. Incorrect: present hint and allow retry, but not full credit. After the configured number of questions, send them to an ending determined by the critical answers, show exact score and message. Options to replay, exit, or return to menu.
+
+Andrea [Teacher]: Yes. And “replay” right away on that end screen, please. The kids will want to try again.
+
+Leo [Student Dev]: We’ll put “Try Again,” “Main Menu,” and “Exit” on the end screen. Clicking any should do what it says.
+
+Jenna [Site Maintainer]: Quick thing—“Exit” in a browser context varies. Let’s make sure whatever we implement feels consistent across the lab browsers.
+
+Andrea [Teacher]: Okay. Content-wise: it has to be fractions. Numerators, denominators, proper/improper, equivalence, simplifying. I like that you have other games for decimals, but this one stays on fractions. If you link related projects, great, just keep this one focused.
+
+Leo [Student Dev]: The core is fraction problems. We’ll do multiple-choice items with cartoon panels to keep it narrative. Like, “To cross the asteroid field, you need to add 3/8 and 1/8—what’s your fuel fraction now?” Then choices.
+
+Andrea [Teacher]: Good. And mouse clicks only—no “type your answer.” I get ten minutes of “where’s the slash?” every day.
+
+Priya [Student Dev]: That matches our plan. We can add sound cues and small animations to acknowledge clicks and success/failure.
+
+Mark [Mentor]: Short and polite sounds. No blaring sirens.
+
+Andrea [Teacher]: A little chime for correct, a softer “try again” for wrong is perfect. The robot can point or shake his head.
+
+Leo [Student Dev]: We’ll implement audio and small animations for feedback in the Flash movie.
+
+Andrea [Teacher]: About the length—how many questions before the ending kicks in? I don’t want a 40-minute saga.
+
+Priya [Student Dev]: It’s flexible. We’ll set a configured number in the game’s data—maybe around 10 to 12. Once the player reaches that count, we route them to the ending tied to the critical checkpoints. We can make that number adjustable with the editor tool we’re planning.
+
+Andrea [Teacher]: Editor tool?
+
+Leo [Student Dev]: A web-based updater so you or an admin can edit questions and the per-choice feedback. Form-based—pulldowns and text fields—so you can pick the correct choice, the hint text for each wrong choice, and mark critical story points. Then it saves so the game loads the updated questions next time.
+
+Andrea [Teacher]: Huh. That would be nice. Our district locks things down, though—no installs on student machines.
+
+Jenna [Site Maintainer]: You won’t need installs. The updater is a web page on the S2S site, and the game itself runs in the browser. We’ll keep it simple to access for designated editors.
+
+Mark [Mentor]: On the end message—Andrea, you want it aware of the key moments. If the critical ones were correct, show the “you saved the station” ending; if not, a softer one like “You made it back but the station needs repair.”
+
+Andrea [Teacher]: Exactly. Tie performance to narrative.
+
+Leo [Student Dev]: On the main menu, the Help screen will be basic: multiple choice, click answers, hints may pop up, get your score at the end.
+
+Andrea [Teacher]: That’s adequate. Don’t dump a manual on them.
+
+Priya [Student Dev]: We also talked briefly about keyboard navigation, but given your classroom setup, we’ll keep it mouse-only throughout for consistency.
+
+Andrea [Teacher]: Yes, keep it consistent: click to do things.
+
+Jenna [Site Maintainer]: For links, besides Denominators, you mentioned decimals and percents games. If we add a “Related S2S projects” area, those should open in a new window as well.
+
+Leo [Student Dev]: We can do that—small links on the side so they don’t distract from Begin.
+
+Mark [Mentor]: Don’t bury the Start button in a link farm.
+
+Andrea [Teacher]: Sure, small links are fine. And keep the question text clear; the picture should frame the scenario, not hide the math.
+
+Leo [Student Dev]: Scoring stays in memory during the session. At the end, we show the exact number. If they replay, it resets.
+
+Andrea [Teacher]: Perfect. I’m not collecting grades here—just a clear score they can brag about.
+
+Mark [Mentor]: For reliability, we’ll do internal testing and mentor reviews before we call it done. Also break the Flash into scenes and sub-scenes so updates are easier.
+
+Jenna [Site Maintainer]: Fewer headaches that way.
+
+Andrea [Teacher]: One complaint from other games: the browser kept changing sizes and the buttons jumped around. If we can keep behavior consistent across the computers—great. I don’t need pixel-perfect, just no surprises.
+
+Leo [Student Dev]: We’ll aim for consistent behavior across supported setups. Interactions should behave the same.
+
+Priya [Student Dev]: Also, we’re not using mic or camera or anything like that.
+
+Andrea [Teacher]: Good—those get blocked on our machines.
+
+Mark [Mentor]: Schedule wise—Andrea, are you available next Thursday to review a storyboard of the branching points? We’re still figuring which questions are the critical ones.
+
+Andrea [Teacher]: Next Thursday after 3 works. Send the storyboard earlier and I’ll scribble on it.
+
+Leo [Student Dev]: Will do. One more: for wrong answers, we said “try again” is allowed. Unlimited retries okay?
+
+Andrea [Teacher]: Unlimited is fine. Just be clear that missing on the first try affects the score.
+
+Priya [Student Dev]: Noted.
+
+Jenna [Site Maintainer]: When you give me links to other S2S math games—decimals, percents—make sure they open in a new window. We’ll keep the main experience in place.
+
+Leo [Student Dev]: Will do. We’ll also keep the links unobtrusive so they don’t distract from Begin.
+
+Priya [Student Dev]: Summary so far: Mouse-only interaction across the game, including clicking to skip the intro; main title with Begin, Help, team blurb and a Denominators link; questions are all multiple-choice, fraction-focused with cartoon panels; immediate feedback with sound/animation; wrong answers allow retry but not full credit; robot sidekick gives context-sensitive hints; branching based on critical questions determines the ending; end screen shows exact score plus a customized story message and offers Try Again/Main Menu/Exit; related S2S links open in a separate window.
+
+Andrea [Teacher]: That captures it. “Begin Game” should be obvious and big. The kids won’t read two paragraphs before clicking.
+
+Mark [Mentor]: And we’ll keep the code modular in Flash scenes so edits are painless.
+
+Jenna [Site Maintainer]: As painless as Flash ever is.
+
+Leo [Student Dev]: Great. Andrea, we’ll send you a storyboard for the branching and a mock-up of the menu this weekend.
+
+Andrea [Teacher]: Sounds good. If it’s clicky and clear, it’ll get used.

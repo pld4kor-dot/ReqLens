@@ -1,0 +1,407 @@
+{
+  "coverage_rate": 1.0,
+  "missing_req_ids": [],
+  "unsupported_count": 2,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PURE_2004 - colorcast_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "Include TOC (!!)"
+      ],
+      "reason": "Meeting notes explicitly require a TOC."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "change log / revision history"
+      ],
+      "reason": "Notes call for a change log / revision history section."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "Intro section: must explain purpose"
+      ],
+      "reason": "Intro must define purpose, conventions, and guide readers."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "keep this doc as PRODUCT SPEC only"
+      ],
+      "reason": "Multiple artifacts state the document is a product spec, not design."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "Section layout: 2/4 desc; 3/5 interfaces/non-func"
+      ],
+      "reason": "Section roles 2,3,4,5 are described in meeting notes."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "Explicit note: read intro first"
+      ],
+      "reason": "Notes explicitly instruct readers to read the intro first."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "PMs will make decisions off Sections 3 (interfaces) + 5"
+      ],
+      "reason": "PMs are directed to consult sections 3 and 5 for decisions."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "Visual color chooser ('graphical picker')"
+      ],
+      "reason": "Spec and transcript list a visual/graphical color chooser feature."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "Translator: map old paint numbers + collections"
+      ],
+      "reason": "Translator mapping old to new numbers and collections is specified."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "Closest-colors finder; algorithm = RGB distance"
+      ],
+      "reason": "Notes state a closest-colors finder using RGB distance assumption."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "Color search engine"
+      ],
+      "reason": "Spec repeatedly names a color search engine capability."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "sample matcher"
+      ],
+      "reason": "Sources describe an image/sample matcher feature."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "User color palette: session-based"
+      ],
+      "reason": "Meeting notes specify a session-based user palette feature."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "Admin console"
+      ],
+      "reason": "Admin console and user/paint management appear in the spec."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "User interface (high-level only,"
+      ],
+      "reason": "External interfaces (user/hardware/software/communications) are listed."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "UI patterns are going into that separate whitepaper"
+      ],
+      "reason": "UI details are explicitly placed in a separate whitepaper."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "help pages on the site"
+      ],
+      "reason": "End-user help and distributor docs are requested in sources."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "deployment guide"
+      ],
+      "reason": "Docs and deployment guide for Ops/IT management are referenced."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "Assumptions & Dependencies"
+      ],
+      "reason": "An 'Assumptions & Dependencies' section is mandated in notes."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R020",
+      "supported": true,
+      "evidence_snippets": [
+        "translator needs to handle add/remove gracefully"
+      ],
+      "reason": "Translator behavior for adds/discontinuations is explicitly required."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R021",
+      "supported": true,
+      "evidence_snippets": [
+        "Provide CSS hooks for Jade"
+      ],
+      "reason": "Spec requires theme hooks and CSS skinning."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R022",
+      "supported": true,
+      "evidence_snippets": [
+        "each main feature on its own page"
+      ],
+      "reason": "Module-per-page approach required."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R023",
+      "supported": true,
+      "evidence_snippets": [
+        "map old paint numbers + collections to new"
+      ],
+      "reason": "Translator handles mapping for migration."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R024",
+      "supported": true,
+      "evidence_snippets": [
+        "we don't confuse customers during changeover"
+      ],
+      "reason": "Marketing demands customer experience continuity."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R025",
+      "supported": true,
+      "evidence_snippets": [
+        "Deliver as standalone server-based web application"
+      ],
+      "reason": "App delivered as server-hosted web client."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R026",
+      "supported": true,
+      "evidence_snippets": [
+        "All search processing + storage happen on server"
+      ],
+      "reason": "Ops mandates server-side processing and storage."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R027",
+      "supported": true,
+      "evidence_snippets": [
+        "1 GHz CPU + 512 MB RAM per 50 users"
+      ],
+      "reason": "Capacity guideline specified in constraints."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R028",
+      "supported": true,
+      "evidence_snippets": [
+        "IE 4.01, Netscape 6.0, Mozilla 1.0+"
+      ],
+      "reason": "Browser support list explicitly given."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R029",
+      "supported": true,
+      "evidence_snippets": [
+        "Client machines meet browser vendor requirements"
+      ],
+      "reason": "Clients must satisfy browser system requirements."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R030",
+      "supported": true,
+      "evidence_snippets": [
+        "compatible with most operating systems"
+      ],
+      "reason": "Spec states cross-OS compatibility for most OSes."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R031",
+      "supported": true,
+      "evidence_snippets": [
+        "keyboard-only operation must be fully usable"
+      ],
+      "reason": "Accessibility requirement explicitly states keyboard-only usability."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R032",
+      "supported": true,
+      "evidence_snippets": [
+        "auto-send crash logs to us, ColorKast"
+      ],
+      "reason": "Sources require both user report utility and automatic logs to ColorKast."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R033",
+      "supported": true,
+      "evidence_snippets": [
+        "system shall attempt to fully recover from errors"
+      ],
+      "reason": "Meeting notes and emails mandate attempting full recovery on errors."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R034",
+      "supported": true,
+      "evidence_snippets": [
+        "Error reporting UX: non-intrusive. No blocking popups"
+      ],
+      "reason": "Specified non-intrusive reporting and ban on blocking popups."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R035",
+      "supported": true,
+      "evidence_snippets": [
+        "Default users (non-admin) can use all functionality except admin"
+      ],
+      "reason": "Meeting notes define default/non-admin users with all non-admin access."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R036",
+      "supported": true,
+      "evidence_snippets": [
+        "session-only, no password-protected storage, expires with session end"
+      ],
+      "reason": "Notes state default user data is session-only and not password-protected."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R037",
+      "supported": true,
+      "evidence_snippets": [
+        "Admin roles L1/L2/L3 with permissions"
+      ],
+      "reason": "Documents enumerate admin levels L1–L3, implying hierarchical roles."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R038",
+      "supported": true,
+      "evidence_snippets": [
+        "L1 = add + create L1; L2 = add/update + create up to L2; L3 = add/update/delete + create any level"
+      ],
+      "reason": "Meeting notes explicitly list the permissions for L1, L2, and L3."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R039",
+      "supported": true,
+      "evidence_snippets": [
+        "Document design & implementation constraints in SRS"
+      ],
+      "reason": "Notes require documenting design and implementation constraints in SRS."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R040",
+      "supported": true,
+      "evidence_snippets": [
+        "go live by end of Q2 2004"
+      ],
+      "reason": "Email explicitly states business constraint to go live by Q2 2004."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R041",
+      "supported": true,
+      "evidence_snippets": [
+        "assumed to be client-perceived metrics"
+      ],
+      "reason": "Spec says untagged performance defaults to client."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R042",
+      "supported": true,
+      "evidence_snippets": [
+        "will meet or exceed the requirements we specify"
+      ],
+      "reason": "Sources state clients/servers must meet or exceed requirements."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R043",
+      "supported": true,
+      "evidence_snippets": [
+        "intended primarily for rollout"
+      ],
+      "reason": "Email notes this 'wide-installation' use as an assumption."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R044",
+      "supported": true,
+      "evidence_snippets": [
+        "algorithm assumption = RGB distance acceptable"
+      ],
+      "reason": "Meeting and vendor state RGB distance is acceptable for v1."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R045",
+      "supported": true,
+      "evidence_snippets": [
+        "use 3rd party DB for paint data + search index"
+      ],
+      "reason": "Notes and vendor emails state dependency on external paint DBs."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R046",
+      "supported": true,
+      "evidence_snippets": [
+        "'highly accessible to clients and distributors via the web'"
+      ],
+      "reason": "Non-functional section explicitly calls for high accessibility."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R047",
+      "supported": true,
+      "evidence_snippets": [
+        "compatible with most operating systems"
+      ],
+      "reason": "Doc requires compatibility with specified hardware/OS/browser list."
+    },
+    {
+      "req_id": "PURE_2004 - colorcast_R048",
+      "supported": true,
+      "evidence_snippets": [
+        "version 1.0, no prior live revs at ABC"
+      ],
+      "reason": "Emails explicitly state this is v1.0 with no prior live revisions."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "The system shall not require client-side plugins (e.g., Flash) and must operate in regular browsers without plugin dependencies.",
+      "source_snippet": "Raj: Yes, the app is server-based. Clients are regular browsers — no plugins. ... Linda: We cannot alienate people on IE 4.x and Netscape 6. It's in our site compatibility promise. ... Maria: Please don't sneak any Flash in there.",
+      "source_type": "interview_transcript",
+      "reason": "The participants explicitly require the application to run in standard browsers without relying on plugins (and explicitly call out avoiding Flash). The gold requirements do not state a prohibition on client-side plugins or an explicit \"no-plugins\" constraint; that is a significant implementation constraint affecting allowable client-side technologies."
+    },
+    {
+      "text": "The system shall provide print-friendly output or an in-app printing capability (e.g., printer-friendly stylesheet or print function) for user palettes and translator results so store staff can print palettes at the counter.",
+      "source_snippet": "Ben: So I can, as a store clerk, open the site, pick some colors for a customer, add them to a palette, print it if needed, but after I close the browser, it's gone. Fine.",
+      "source_type": "interview_transcript",
+      "reason": "Stakeholders expect the application to let store staff print palettes/results directly from the tool. While the gold set requires distributor documentation and printable guides, it does not require the application itself to provide printer-friendly output or printing functionality for palettes/translator results; this is a distinct, significant user-facing capability implied by the source."
+    }
+  ],
+  "passed": true
+}

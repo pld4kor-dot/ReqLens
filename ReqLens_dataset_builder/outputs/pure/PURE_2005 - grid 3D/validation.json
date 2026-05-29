@@ -1,0 +1,97 @@
+{
+  "coverage_rate": 1.0,
+  "missing_req_ids": [],
+  "unsupported_count": 5,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PURE_2005 - grid 3D_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "point glyphs sized to preserve the spatial"
+      ],
+      "reason": "Stakeholders demanded small markers to preserve distribution."
+    },
+    {
+      "req_id": "PURE_2005 - grid 3D_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "axis labels readable even after a reorient"
+      ],
+      "reason": "Multiple notes require labels remain legible after rotation."
+    },
+    {
+      "req_id": "PURE_2005 - grid 3D_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "black-on-white printing, high contrast"
+      ],
+      "reason": "Team explicitly insisted on high-contrast, print-friendly scheme."
+    },
+    {
+      "req_id": "PURE_2005 - grid 3D_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "No heavy training."
+      ],
+      "reason": "Documents call for intuitive UI and minimal/no specialist training."
+    },
+    {
+      "req_id": "PURE_2005 - grid 3D_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "~25–30 sec; depends on # points"
+      ],
+      "reason": "Explicit cold-start target ~30s for typical datasets, size-dependent."
+    },
+    {
+      "req_id": "PURE_2005 - grid 3D_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "No more than about two seconds"
+      ],
+      "reason": "Interaction latency budget of ~2 seconds stated repeatedly."
+    },
+    {
+      "req_id": "PURE_2005 - grid 3D_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "Identifiers, Investigators, and Demonstrators"
+      ],
+      "reason": "Users personas explicitly named across notes and emails."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "The system shall use specific, discoverable input mappings for basic interactions (e.g., mouse drag to rotate the view, scroll/pinch to zoom, click to select) with no essential functions hidden behind modifier keys.",
+      "source_snippet": "\"Drag = rotate (no modifier keys). \\nScroll/pinch = zoom.\"",
+      "source_type": "meeting_notes",
+      "reason": "The artifacts explicitly require concrete input mappings for basic interactions so users can discover them without training. The gold set requires the system be intuitive and not require specialist training, but does not mandate these specific, discoverable control mappings."
+    },
+    {
+      "text": "The system shall provide minimal onboarding/documentation (a one-page Quick Start and a one-time in-UI hint such as 'drag to rotate') to support discoverability.",
+      "source_snippet": "\"A one-page quick-start is fine, nothing more.\" / \"If anything, show a brief \\\"drag to rotate\\\" hint once.\"",
+      "source_type": "meeting_notes",
+      "reason": "Stakeholders explicitly requested a one-page quick-start and a short in-UI hint to ensure discoverability. The gold requirements prohibit specialist training but do not require a specific quick-start/hint deliverable."
+    },
+    {
+      "text": "The system shall provide immediate, obvious selection feedback (for example a clear highlight or visible side information) when a user selects one or more points.",
+      "source_snippet": "\"When I select something, make it obvious. A clear highlight or something. Don’t bury feedback in a menu.\"",
+      "source_type": "interview_transcript",
+      "reason": "While the gold set specifies interaction latency for selections, it does not require particular visible feedback. The source explicitly asks for prominent, immediate visual feedback when points are selected, which is a distinct UI requirement."
+    },
+    {
+      "text": "The system shall support multi-selection (e.g., lasso selection of sets of points) and meet the same interaction responsiveness targets for multi-select operations (approximately within 2 seconds).",
+      "source_snippet": "\"Selecting a set (lasso) also within ~2 seconds.\"",
+      "source_type": "meeting_notes",
+      "reason": "The artifacts call out lasso/multi-select as a required capability with the same responsiveness bounds. The gold set mentions selecting data points but does not explicitly require multi-select/lasso functionality."
+    },
+    {
+      "text": "The system shall explicitly inform users in the UI about performance dependence on the number of points (e.g., a notice or guidance indicating that startup/interaction times depend on dataset size).",
+      "source_snippet": "\"Please be explicit in the UI about performance dependence on number of points.\"",
+      "source_type": "email_thread",
+      "reason": "Stakeholders expect the UI to communicate that performance varies with dataset size. The gold requirement states timing targets conditioned on dataset size but does not require the system to surface that dependence to users in the UI."
+    }
+  ],
+  "passed": false
+}

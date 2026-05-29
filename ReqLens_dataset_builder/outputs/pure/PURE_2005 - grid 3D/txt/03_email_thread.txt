@@ -1,0 +1,147 @@
+TYPE  : email_thread
+TITLE : Email Thread: Printing, Axis Labels, and Performance Targets (edited)
+UNIT  : PURE_2005 - grid 3D
+============================================================
+
+Email 1
+From: Ben Tagger <ben.tagger@ucl.ac.uk>
+To: Delmiro Fernandez-Reyes <dfr@nirm.ac.uk>
+CC: Anthony Finkelstein <a.finkelstein@ucl.ac.uk>, Sara Patel <s.patel@nirm.ac.uk>
+Date: Tue, 11 Mar 2025 09:14:07 +0000
+Subject: Questions re: Grid 3D printing + responsiveness
+
+Hi Delmiro,
+
+Quick follow-ups after the session last week:
+
+1) Printing: To make screenshots usable for journals, I’m planning a default look that’s essentially dark markers/axes on white, minimal shading. Any objections to prioritizing print clarity over on-screen “prettiness”?
+
+2) Axis labels: There was feedback that after rotating, labels must remain clear and not inverted. I can pin their orientation to the camera and add contrast so they don’t blend into the point cloud. Sound good?
+
+3) Marker sizing: I’ve set very small point markers by default, with mild scaling on zoom. The goal is to preserve the overall pattern and avoid a “blob” look when zoomed out. For presentations we can review sizing later, but accuracy comes first.
+
+4) Performance targets: Is it acceptable to say “typical datasets open in ~30 seconds” (size dependent), and that key interactions (selection, changing orientation) will respond within about 2 seconds? I want to put concrete numbers in so we can test against them.
+
+5) Users: Just confirming the target groups are Identifiers, Investigators, and Demonstrators. I’ll bake their needs into the UX.
+
+Best,
+Ben
+
+---
+
+Email 2
+From: Delmiro Fernandez-Reyes <dfr@nirm.ac.uk>
+To: Ben Tagger <ben.tagger@ucl.ac.uk>
+CC: Anthony Finkelstein <a.finkelstein@ucl.ac.uk>, Sara Patel <s.patel@nirm.ac.uk>
+Date: Tue, 11 Mar 2025 10:02:31 +0000
+Subject: RE: Questions re: Grid 3D printing + responsiveness
+
+Hi Ben,
+
+All fine by me in principle. We’ve burned ourselves before with “pretty” visuals that turned to grey mush on printouts. So yes, make it black-on-white friendly by default. We can live without gradients.
+
+Labels: absolutely must be readable no matter how you rotate. We had a demo where Z looked backwards. Please avoid that embarrassment.
+
+Marker size: tiny by default. We care about seeing the pattern, not beach balls. Presenters do sometimes ask for bolder points in a lecture hall, but don’t mislead—defaults should preserve the distribution.
+
+Performance: I’m okay putting numbers: “cold start in under about half a minute for the usual files,” and “interactions within a couple seconds.” If something is slower, call it out early.
+
+Users: yes, those three. Keep it dead simple for Identifiers; Investigators will poke around; Demonstrators need clean screenshots and smooth rotation.
+
+D.
+
+Sent from mobile
+
+---
+
+Email 3
+From: Anthony Finkelstein <a.finkelstein@ucl.ac.uk>
+To: Ben Tagger <ben.tagger@ucl.ac.uk>, Delmiro Fernandez-Reyes <dfr@nirm.ac.uk>
+CC: Sara Patel <s.patel@nirm.ac.uk>
+Date: Tue, 11 Mar 2025 10:26:44 +0000
+Subject: RE: RE: Questions re: Grid 3D printing + responsiveness (labels)
+
+Jumping in: on the axis labels, pinning their orientation is necessary but not sufficient if they vanish behind the point cloud. Ensure they remain legible when the grid is reoriented—draw in a way that they stay visible. Please test while spinning rapidly; we’ve had aliasing issues.
+
+Also, our lab environments vary. No training is the theme—keep the UI intuitive. A one-page quick-start is fine, nothing more.
+
+A
+
+---
+
+Email 4
+From: Sara Patel <s.patel@nirm.ac.uk>
+To: Ben Tagger <ben.tagger@ucl.ac.uk>
+CC: Delmiro Fernandez-Reyes <dfr@nirm.ac.uk>, Anthony Finkelstein <a.finkelstein@ucl.ac.uk>
+Date: Tue, 11 Mar 2025 12:11:09 +0000
+Subject: RE: Printing + responsiveness + user groups
+
+Hi all,
+
+Adding context: For Identifiers (like Kofi), selecting one point to check something needs to be quick—if it spins for more than 2 seconds people think it’s frozen. Same for lassoing a small set; I demo to students and I can’t have a long lag. Regarding the markers, please keep them small—especially in screenshots. In our last paper, the points looked like smudges when downsampled for print.
+
+Re labels: my biggest pain has been when rotating—the letters either flip or get too small. If the font keeps a minimum on-screen size and the letters face the viewer, it’ll save us a lot of grief.
+
+I’ll send three datasets later today (small ~10k, typical ~40–60k, big ~250k). I agree with D: start time under 30 seconds for the middle one is fine; the huge one will be slower and that’s okay as long as it’s acknowledged.
+
+Sara
+
+---
+
+Email 5
+From: Ben Tagger <ben.tagger@ucl.ac.uk>
+To: Sara Patel <s.patel@nirm.ac.uk>
+CC: Delmiro Fernandez-Reyes <dfr@nirm.ac.uk>, Anthony Finkelstein <a.finkelstein@ucl.ac.uk>
+Date: Tue, 11 Mar 2025 13:02:55 +0000
+Subject: RE: Printing + responsiveness + user groups (perf caveat)
+
+Thanks Sara. One pushback/clarification on start-up: 30 seconds on typical is achievable, but if someone drops in an extremely large file, physics applies. I’ll write the guidance as “typical datasets open in about 30 seconds (size-dependent).” I’ll also make sure selection/orientation changes stay within ~2 seconds under those typical conditions.
+
+On labels: I’m adding camera-aligned axis labels with a contrasting outline so they remain readable during rotation; I’ll also clamp the font size so it never goes below a certain pixel height on screen. We’ll test quickly spinning the scene to ensure legibility.
+
+Markers: default will be very small dots. For presentation use, we’ll evaluate whether a modest size adjustment still preserves the pattern before making any call.
+
+Ben
+
+---
+
+Email 6
+From: Anthony Finkelstein <a.finkelstein@ucl.ac.uk>
+To: Ben Tagger <ben.tagger@ucl.ac.uk>, Delmiro Fernandez-Reyes <dfr@nirm.ac.uk>
+CC: Sara Patel <s.patel@nirm.ac.uk>
+Date: Tue, 11 Mar 2025 14:21:39 +0000
+Subject: RE: RE: Printing + responsiveness + user groups (perf caveat)
+
+Ben,
+
+The guidance text sounds reasonable. Please be explicit in the UI about performance dependence on number of points. I also support the 2 second interaction budget. For print, emphasize black on white first; color is optional. No gradients.
+
+One more: ensure the axes are clearly labeled at all times; the letters must be recognizable—even for someone at the back of a lecture hall. If we must reduce tick density to achieve this, do so.
+
+A
+
+---
+
+Email 7
+From: Delmiro Fernandez-Reyes <dfr@nirm.ac.uk>
+To: Ben Tagger <ben.tagger@ucl.ac.uk>
+CC: Anthony Finkelstein <a.finkelstein@ucl.ac.uk>, Sara Patel <s.patel@nirm.ac.uk>
+Date: Tue, 11 Mar 2025 16:48:03 +0000
+Subject: RE: Printing/labels/perf — next steps
+
+All,
+
+This mostly aligns. Let’s do this:
+
+- Ben to implement: small default markers (do not distort overall patterns), print-friendly default (black on white), labels readable at all orientations, and the ~2s interaction target. 
+- Startup: phrase as “opens in ~30s for typical datasets; depends on size.” We’ll test with Sara’s files once they arrive.
+- Users: proceed assuming Identifiers/Investigators/Demonstrators. Keep the UI discoverable; no specialized training.
+
+Open items: 
+- Review presentation needs around marker and label sizing; if any change risks misrepresenting the data, we won’t do it. 
+- Sara to send data files and do a quick print test on the lab printer (tomorrow?).
+
+Thanks,
+D.
+
+Sent from my phone

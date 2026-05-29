@@ -1,0 +1,100 @@
+TYPE  : meeting_notes
+TITLE : Notes: BioGrid 3D Working Session — Printability & Interaction (edited)
+UNIT  : PURE_2005 - grid 3D
+============================================================
+
+Date: 2025-03-06
+Location: UCL Eng D Building Rm 4.12 / Zoom link: https://ucl.zoom.us/j/9xxx
+Attendees: 
+- Dr Delmiro Fernandez-Reyes (client)
+- Anthony Finkelstein (UCL supervisor)
+- Ben Tagger (developer)
+- Sara Patel (Investigator)
+- Kofi Mensah (Identifier) [joined late]
+
+Context: review early prototype behavior for Grid 3D; focus = clarity when rotating, printing screenshots, basic UX. Raw notes below, not polished.
+
+- Opening check: Ben showed a rough grid of points, small dots, axes X Y Z shown.
+- Sara: when rotating quickly the labels flicker? Or are they aliasing — [?]
+- Ben: testing camera-aligned labels; need to lock orientation to keep them readable.
+- Anthony: Key requirement: labels remain readable after reorientation; recognizable letters; no mirror flips.
+- Delmiro: printing — lab printers (B/W only). Screenshots must be clear black on white. No dark backgrounds.
+- Palette discussion: 
+  - Start with high-contrast monochrome. 
+  - Avoid gradients/shading that muddies print. 
+  - Test on paper (journal guidance suggests black on white).
+- Point markers:
+  - Keep small — "don’t fatten the cloud." 
+  - At zoomed out view, markers shouldn't smear into each other.
+  - At zoom in, scale modestly; avoid occluding neighbors; preserve pattern.
+  - Kofi: Identifier task = find something quickly without training. Keep it simple.
+- Interaction basics:
+  - Drag = rotate (no modifier keys). 
+  - Scroll/pinch = zoom.
+  - Right-click? maybe context, but avoid hidden essentials. [TBD]
+  - Selecting a single point should "feel instant" (<=2 seconds). Selecting a set (lasso) also within ~2 seconds. Sara says 1.5 is ideal, but 2 okay.
+- Startup time: 
+  - Typical dataset: 30k–60k points (need real numbers — Sara to send 3 files).
+  - Cold start target: ~25–30 sec; depends on # points. Anthony warns not to overpromise. 
+  - If very large (hundreds of thousands+), expect longer (document this).
+- Users/personas:
+  - Identifiers → quick check, confirm placement. 
+  - Investigators → explore patterns, outliers.
+  - Demonstrators → live rotate, make screenshots for talks/papers. 
+  - No specialist training expected. Provide a 1-page quick start max. 
+  - Kofi: Please avoid jargon tooltips; keep plain language.
+- Axis & labels specifics:
+  - Labels should not disappear behind points. Consider drawing them so they remain visible (e.g., halo/contrast).
+  - Ticks: fewer ticks if needed to keep letters legible during rotation. 
+  - Font size vs zoom: maintain a minimum on-screen size so they don't shrink to unreadable. 
+  - Bug seen: Z label mirrored when camera past 180 — fix.
+- Graphics representation:
+  - Keep markers simple and print-friendly by default. 
+  - Spheres look nice but ruin print — avoid. 
+  - Minimal lighting; gradients risk muddy prints. 
+- Contradictions noted:
+  - Sara: wants larger markers for seminars so people in the back see. 
+    Anthony: larger markers at distance distort distribution — prefers small. 
+    Note: prioritize accuracy; revisit presentation needs after tests. [TBD]
+  - Delmiro: "Make labels big" vs Kofi: "Labels cover data" — need balance. 
+- Environments (background): machines in the lab vary; keep approach pragmatic. 
+- Performance checklist:
+  - Interaction latency: selection, orientation change → under ~2s. 
+  - Smooth rotate (fps metric TBD) — quantify later. 
+  - Start-up: aim <=30s on typical; note size dependence in the UI. 
+- Printing workflow:
+  - Screenshot with white background, crisp dark markers/labels. 
+  - Export format discussion parked; for now, OS screenshot is fine. 
+  - Test prints: Sara to run on HP LaserJet in NIMR; Anthony to check on dept Xerox. 
+- Discoverability / training:
+  - No specialist training. If anything, show a brief "drag to rotate" hint once. 
+  - Avoid nested menus. Keep selection feedback obvious (e.g., highlight or side info). 
+  - Add short Quick Start (one page max). Owner: Ben (draft), Kofi (plain-language edit). 
+- Data specifics:
+  - File includes point identifiers + 3 parameters per point. 
+  - Multi-select needed; keep scope tight—no advanced stats inside tool.
+- Time pressure:
+  - Publication deadline mid-June. Prototype demo in 2 weeks. 
+  - Scope changes require client okay (Delmiro). 
+- Random notes: 
+  - Someone said "glyphs"; Kofi heard "glands" — clarify terms in UI. 
+  - Avoid fancy transparency — printing risk. 
+  - Axis letters must be recognizable, even during fast spin.
+
+Action Items:
+- Sara: send 3 datasets (small/typical/large) by Friday. 
+- Ben: fix label mirroring; test camera-aligned approach. 
+- Ben: enforce small marker defaults; test zoom scaling behavior. 
+- Kofi: try prototype w/o instructions; note confusion points. 
+- Delmiro: confirm presentation needs for Demonstrators (do they require larger font?) 
+
+Open Issues / Parking Lot:
+- Whether to adjust marker sizing during presentations without misrepresenting distribution — needs test; not decided. 
+- Whether we need ticks at all vs fewer ticks. 
+- Frame rate metric (20? 24? 30?) — needs test data. 
+- Print format export — currently out of scope; revisit if time allows.
+
+Notes addendum (after-call): 
+- Quick hallway test with a monochrome palette looked sharp on white background. 
+- Startup for 48k points on Ben's laptop ~22 sec; on a lab box ~28 sec. Informal; redo properly. 
+- Contradiction flagged: Delmiro pushed for bigger axis labels; Anthony worried about occlusion. Try halo/contrast instead of increasing size.

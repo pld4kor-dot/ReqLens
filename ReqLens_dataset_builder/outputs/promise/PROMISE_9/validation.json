@@ -1,0 +1,236 @@
+{
+  "coverage_rate": 1.0,
+  "missing_req_ids": [],
+  "unsupported_count": 4,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PROMISE_9_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "Daytime 8AM–8PM CST: 90% within 5min",
+        "Off-hours: 99% done within 3 minutes"
+      ],
+      "reason": "Meeting notes include these daytime/off-hours SLA targets."
+    },
+    {
+      "req_id": "PROMISE_9_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "Per-lead washing: 97% finish <25s"
+      ],
+      "reason": "Meeting notes specify 97% under 25 seconds."
+    },
+    {
+      "req_id": "PROMISE_9_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "log any lead that takes longer than 25s"
+      ],
+      "reason": "Docs and ops email require logging event and duration."
+    },
+    {
+      "req_id": "PROMISE_9_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "ARA deadline: CRM expects lead within ~3 min"
+      ],
+      "reason": "Sources state ARA needs assignment within about three minutes."
+    },
+    {
+      "req_id": "PROMISE_9_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "Must accept leads via existing web service infra"
+      ],
+      "reason": "Multiple notes mandate using existing web service infrastructure."
+    },
+    {
+      "req_id": "PROMISE_9_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "Inbound format: neutral non-binding (XML/XSD)"
+      ],
+      "reason": "Sources mandate XML/XSD neutral inbound format in v1."
+    },
+    {
+      "req_id": "PROMISE_9_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "Defect/issue reports: available 24x7 for tech teams"
+      ],
+      "reason": "Notes require 24x7 defect reports accessible to technical teams."
+    },
+    {
+      "req_id": "PROMISE_9_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "parameters adjusted during scheduled maintenance windows"
+      ],
+      "reason": "Asha and notes say parameter changes only in maintenance windows."
+    },
+    {
+      "req_id": "PROMISE_9_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "Vendor side must confirm invalid before credit issuance"
+      ],
+      "reason": "Emails/notes require vendor verification before issuing credits."
+    },
+    {
+      "req_id": "PROMISE_9_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "submit a credit validation record via enterprise billing"
+      ],
+      "reason": "Priya and notes instruct vendors to submit credit validation to billing."
+    },
+    {
+      "req_id": "PROMISE_9_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "include total score in payload"
+      ],
+      "reason": "High leads sent to CRM with score"
+    },
+    {
+      "req_id": "PROMISE_9_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "Validate: required fields present"
+      ],
+      "reason": "Washing includes validation of inbound leads"
+    },
+    {
+      "req_id": "PROMISE_9_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "Insert all leads captured",
+        "Everything that hits the intake gets stored"
+      ],
+      "reason": "All incoming leads are persisted for audit"
+    },
+    {
+      "req_id": "PROMISE_9_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "assign to a rep before submit to CRM",
+        "ARA deadline: CRM expects lead within ~3 min"
+      ],
+      "reason": "High leads get pre-assigned for ARA processing"
+    },
+    {
+      "req_id": "PROMISE_9_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "Medium: EC manual verify in eLeads",
+        "Mediums appear in EC queue promptly"
+      ],
+      "reason": "Medium-scored leads routed to ECs for manual verify"
+    },
+    {
+      "req_id": "PROMISE_9_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "Low: return to vendor right away",
+        "lows never get into eLeads"
+      ],
+      "reason": "Low-scored leads are returned to the vendor"
+    },
+    {
+      "req_id": "PROMISE_9_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "contact score + academic score = total",
+        "keep contact vs academic components distinct"
+      ],
+      "reason": "Total score composed of contact and academic parts"
+    },
+    {
+      "req_id": "PROMISE_9_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "Weighting by Corporate baseline; schools allowed to tweak",
+        "parameters Corporate sets"
+      ],
+      "reason": "Scoring uses corporate and school-supplied parameters"
+    },
+    {
+      "req_id": "PROMISE_9_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "include rejection rationale + original data",
+        "real-time response on a rejection will include a specific reason"
+      ],
+      "reason": "Rejected leads returned with reason and original payload"
+    },
+    {
+      "req_id": "PROMISE_9_R020",
+      "supported": true,
+      "evidence_snippets": [
+        "Admin interface to maintain scoring/washing parameters",
+        "Role-based: Corporate admins (global), school admins (scoped)"
+      ],
+      "reason": "There will be an admin UI to maintain parameters"
+    },
+    {
+      "req_id": "PROMISE_9_R021",
+      "supported": true,
+      "evidence_snippets": [
+        "Authentication: SSO; authorization: roles"
+      ],
+      "reason": "Admin tool enforces role-based auth and scoped permissions."
+    },
+    {
+      "req_id": "PROMISE_9_R022",
+      "supported": true,
+      "evidence_snippets": [
+        "store potential dupes responses in our DB"
+      ],
+      "reason": "Explicit plan to persist potential duplicate flags/details."
+    },
+    {
+      "req_id": "PROMISE_9_R023",
+      "supported": true,
+      "evidence_snippets": [
+        "rep set before submit to CRM"
+      ],
+      "reason": "Pre-assignment to rep required before CRM handoff."
+    },
+    {
+      "req_id": "PROMISE_9_R024",
+      "supported": true,
+      "evidence_snippets": [
+        "periodic list of available reps delivered from CRM"
+      ],
+      "reason": "System ingests scheduled export of available reps."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "Potential duplicate flags must be visible to Enrollment Coordinators in the eLeads UI (i.e., the washing system must display the CRM 'potential duplicate' marker in the EC queue).",
+      "source_snippet": "\"Please make sure I can see that flag in eLeads\"",
+      "source_type": "interview_transcript",
+      "reason": "The source explicitly requires that potential-duplicate responses from the Enterprise CRM be surfaced in the EC user interface so coordinators can act on them. The gold set only requires storing potential duplicates, not that they be displayed in eLeads to ECs."
+    },
+    {
+      "text": "The washing system must not perform automatic corrections to lead content in v1 (validation should be strict and must not materially alter submitted lead data).",
+      "source_snippet": "\"Keep validation strict; do not alter lead content materially. We will not perform automatic corrections in v1.\"",
+      "source_type": "meeting_notes",
+      "reason": "The source imposes a behavioral constraint forbidding automatic correction of incoming lead data. The gold requirements mandate validation and persistence but do not prohibit automatic normalization or correction, so this is an additional system behavior not present in the gold set."
+    },
+    {
+      "text": "At launch the system must give real-time, synchronous acceptance/rejection responses to vendors (immediate reply including a specific rejection reason and an echo of the submitted payload); batch or delayed returns are not supported for the real-time path.",
+      "source_snippet": "\"our real-time response on a rejection will include a specific reason ... and an echo of the lead data you submitted\"",
+      "source_type": "email_thread",
+      "reason": "The source requires immediate real-time replies with detailed rejection information and the echoed payload. The gold set requires returning lead data and reasons, but does not explicitly require synchronous real-time responses or forbid deferred/batch returns; this timing/real-time constraint is an extra requirement."
+    },
+    {
+      "text": "Schema/reason-code changes and other interface changes must be coordinated with partners and only applied in scheduled maintenance windows (notify vendors ahead; avoid mid-week or ad-hoc changes).",
+      "source_snippet": "\"Just don’t change the schema every other week.\" / \"We’ll communicate changes and only deploy within scheduled windows.\"",
+      "source_type": "interview_transcript",
+      "reason": "The source repeatedly mandates stability and advance communication for schema and reason-code changes (and avoidance of ad-hoc changes). The gold requirements include scheduled maintenance windows for parameter updates but do not require partner notification or explicit stability guarantees for schema/reason-code changes; this operational coordination requirement is additional."
+    }
+  ],
+  "passed": false
+}

@@ -1,0 +1,644 @@
+{
+  "artifact_id": "T1A_3CEA8951",
+  "unit_id": "PURE_2001 - esa",
+  "origin": "PURE",
+  "track_id": "track1",
+  "variant_id": "hallu_v1",
+  "created_at": "2026-05-26T18:59:41.751253+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Initial Stakeholder Interview on ASPERA-3 Data System Requirements",
+      "text": "Alice [Project Manager]: Thanks everyone for joining. Let's start with the overall scope. We need to ensure the system handles all data processing and archiving for the Mars Express mission, specifically for ASPERA-3. Bob, can you elaborate on telemetry acquisition?\n\nBob [Data Engineer]: Sure, Alice. We have to pull telemetry data from both NISN and ESOC. That includes not just the instrument data but also spacecraft orbit and attitude telemetry. It's critical for the analysis.\n\nClara [Science Analyst]: Right, and once we get that raw telemetry, the system should convert it into those Instrument Data File Sets, or IDFS. These sets need to include all science data plus any engineering or ancillary info needed for calibration and validation.\n\nAlice: So, the IDFS should be organized logically?\n\nBob: Exactly. We divide the physical components of ASPERA-3 into virtual instruments, each represented as its own IDFS data set. This helps the science team focus on specific parts.\n\nDavid [Archive Specialist]: What if ESOC doesn't provide cleaned-up telemetry?\n\nBob: Then the system has to generate intermediate cleaned-up files ourselves for both ASPERA-3 and orbit/attitude data.\n\nClara: And all these files—raw telemetry, IDFS, intermediate cleaned files—need to be stored locally at SwRI's archive.\n\nDavid: Plus, after calibration and validation, the IDFS data sets must be submitted to the Planetary Data System within six months.\n\nAlice: That timeline is tight. How about data distribution?\n\nClara: The system should distribute all relevant data and intermediate files electronically to all Co-Investigators within 24 hours of telemetry acquisition, assuming no errors in transmission or processing.\n\nBob: Also, we want web-based displays for the latest data, but access should be password protected until the data is publicly released.\n\nDavid: The ASPERA-3 team defines these displays, right?\n\nClara: Yes, and the web server itself should have password protection where needed to restrict access to authorized team members.\n\nAlice: What about system reliability?\n\nBob: We'll build in error handling mechanisms to ensure the system stays dependable.\n\nDavid: On the hardware side, we need UNIX-based development and production machines with archival capabilities, plus a web server.\n\nAlice: Network connectivity?\n\nBob: There must be a reliable network link between SwRI and NISN for data transfers.\n\nClara: We also need to provide Co-Investigators with access to IDFS data and the analysis software developed by SwRI.\n\nAlice: Can we use the www.ASPERA-3.org site for data review?\n\nBob: That's the plan.\n\nDavid: Regarding documentation, the APAF Operations Procedures Document should clearly define distribution mechanisms, installation-dependent requirements, and provide detailed instructions so users don't need extra training.\n\nAlice: And the Software Design Document?\n\nBob: It must fully describe all data products within each virtual instrument, including parameters and internal interfaces.\n\nClara: Also, every requirement should be clear, testable, and feasible within schedule and budget.\n\nDavid: We need unique IDs for each requirement, annotated with verification methods and traceability.\n\nAlice: Verification methods should include demonstrations without special equipment and analysis using calibration data.\n\nBob: We can simulate instrument data sets from calibration data, process them into IDFS, and analyze outputs with the Southwest Data Display and Analysis System.\n\nClara: The entire integrated ASPERA-3 data set must be provided to Co-Investigators and archived in the NASA PDS.\n\nDavid: Don't forget the energy range of measurements—0.1 to 100 keV.\n\nAlice: SwRI is responsible for developing the data reduction system and coordinating with sensor teams on data packetization.\n\nBob: The processing software must meet IRF delivery requirements to support the Mars Express launch and operations schedule.\n\nClara: SwRI will also provide processing algorithms to IRF on an agreed timeline.\n\nDavid: The MO PI will collect engineering and ancillary info needed to validate and calibrate scientific data before PDS deposit.\n\nAlice: Validation and calibration time should be minimized but must not exceed six months after acquisition.\n\nClara: We want to integrate science analysis software developed by the MO PI team into the NASA-approved data repository, providing equal online access to the PI team and the wider science community.\n\nDavid: The project data management plan must cover planning, acquisition, processing, validation, archiving, and preservation, defining roles and interfaces.\n\nAlice: System operation should be restricted to a single mode for simplicity.\n\nBob: And safety is paramount—the system can't pose hazards to personnel, property, or environment.\n\nClara: That covers most points. Any questions?\n\nAlice: None from me. Thanks all for the input."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "ASPERA-3 Data System Design Kickoff Meeting",
+      "text": "Date: March 15, 2025\nAttendees: Emily (Project Lead), Frank (Software Architect), Grace (Security Officer), Helen (Operations Manager), Ian (Data Scientist)\n\nPurpose: To align on initial design considerations and operational constraints for the ASPERA-3 Processing and Archiving Facility (APAF) data system.\n\nDiscussion:\n\n- Emily opened with the need to ensure the system processes and archives Mars Express mission data effectively, emphasizing compliance with NASA PDS standards.\n\n- Frank outlined the system architecture, confirming the use of UNIX-based development and production environments. He stressed the importance of including an archival system integrated with the production environment.\n\n- Helen highlighted operational constraints, noting the system must operate in only one mode to simplify control and reduce complexity.\n\n- Grace raised concerns about data security, recommending password protection on all web-based data displays and servers to restrict access to authorized ASPERA-3 team members until public release.\n\n- Ian discussed data acquisition, confirming telemetry will be received via NISN and ESOC, including spacecraft orbit and attitude data. He stressed the necessity of generating intermediate cleaned-up telemetry files if ESOC does not provide them.\n\n- Emily emphasized the requirement to distribute data and any intermediate files electronically to all Co-Investigators within 24 hours of telemetry acquisition, assuming error-free transmission and processing.\n\n- Frank confirmed the system will provide web-based displays of current data, with access control as per Grace's security recommendations.\n\n- Helen mentioned the APAF Operations Procedures Document must detail installation-dependent requirements and provide comprehensive instructions to eliminate the need for additional user training.\n\n- Ian noted the importance of calibrating and validating data before submission to the NASA Planetary Data System, with a maximum turnaround of six months.\n\n- Emily reminded the team about the need for built-in error handling mechanisms to ensure system reliability.\n\n- Grace requested clarification on how password protection will be implemented on the web server and whether this will affect performance.\n\n- Frank responded that password protection will be integrated at the web server level, using standard authentication protocols, designed to minimize performance impact.\n\n- Helen proposed that the system's software design document should fully define all data products within each virtual instrument, including instrument and spacecraft parameters.\n\n- Emily stressed that all requirements must be objectively verifiable, concise, and feasible within the project schedule and budget.\n\n- Ian suggested simulating instrument data sets from calibration data to test processing algorithms and validate outputs using the Southwest Data Display and Analysis System.\n\nAction Items:\n\n1. Frank to draft the initial system architecture document, including UNIX environment specifications and archival integration. (Due: April 5, 2025)\n2. Grace to develop a security plan detailing password protection mechanisms for web displays and servers. (Due: April 10, 2025)\n3. Helen to begin drafting the APAF Operations Procedures Document with focus on installation and operational instructions. (Due: April 15, 2025)\n4. Ian to prepare a plan for data calibration, validation, and simulation testing using SDDAS. (Due: April 20, 2025)\n5. Emily to coordinate with Co-Investigators to define data distribution requirements and timelines. (Due: April 12, 2025)\n\nDecisions Made:\n\n- System will operate in a single mode to simplify control.\n- Password protection is mandatory for all web-based data access until public release.\n- UNIX-based development and production systems with archival capabilities are confirmed.\n- Data distribution to Co-Investigators within 24 hours post-acquisition is required.\n\nOpen Questions:\n\n- What specific authentication protocols will be used for web server password protection?\n- How will the system handle error detection and recovery during telemetry acquisition and processing?\n- Are there any installation-dependent requirements that might impact deployment timelines?\n\nNext Meeting: April 22, 2025, to review draft documents and progress on action items."
+    },
+    {
+      "type": "email_thread",
+      "title": "Clarifications and Confirmations on ASPERA-3 Data System Requirements",
+      "text": "Email 1:\nFrom: Mark (SwRI Software Engineer)\nTo: Lisa (ASPERA-3 Project Manager)\nSubject: Clarification on Data Distribution Timing and Formats\n\nHi Lisa,\n\nI wanted to confirm the expectations around data distribution to Co-Investigators. The brief mentions distribution within 24 hours of telemetry acquisition, but are there any contingencies if processing delays occur? Also, should the system distribute raw telemetry, cleaned-up intermediate files, or only the final IDFS data sets?\n\nThanks,\nMark\n\n---\n\nEmail 2:\nFrom: Lisa (ASPERA-3 Project Manager)\nTo: Mark (SwRI Software Engineer)\nSubject: RE: Clarification on Data Distribution Timing and Formats\n\nHi Mark,\n\nGood questions. The intent is to distribute all relevant data electronically within 24 hours, including ASPERA-3 and Mars Express Orbit/Attitude IDFS data plus any intermediate cleaned-up telemetry files generated by APAF if ESOC does not provide them. This is contingent on error-free transmission and processing. If errors occur, distribution may be delayed until resolved.\n\nLet me know if you need more details.\n\nBest,\nLisa\n\n---\n\nEmail 3:\nFrom: Mark (SwRI Software Engineer)\nTo: Lisa (ASPERA-3 Project Manager), Tom (Security Officer)\nSubject: Questions About Web Access Security and Password Protection\n\nHi Lisa and Tom,\n\nRegarding the web-based data displays, can you clarify the password protection requirements? Should all displays be password protected until public release, or only certain ones? Also, what about the web server itself—does that require access restrictions?\n\nThanks,\nMark\n\n---\n\nEmail 4:\nFrom: Tom (Security Officer)\nTo: Mark (SwRI Software Engineer), Lisa (ASPERA-3 Project Manager)\nSubject: RE: Questions About Web Access Security and Password Protection\n\nHi Mark,\n\nAll web-based displays defined by the ASPERA-3 team for science analysis must be password protected until the data is made public. Additionally, the web server hosting these displays must have appropriate password protection to restrict access to authorized ASPERA-3 team members only.\n\nThis is to ensure data security and controlled access during the proprietary period.\n\nRegards,\nTom\n\n---\n\nEmail 5:\nFrom: Mark (SwRI Software Engineer)\nTo: Lisa (ASPERA-3 Project Manager), Tom (Security Officer)\nSubject: Confirmation of System Constraints and Safety Requirements\n\nHi Lisa and Tom,\n\nOne last point—are there any constraints on system operation modes or safety requirements we should be aware of? For example, should the system operate in multiple modes or just one? Also, any safety considerations to prevent hazards?\n\nThanks,\nMark\n\n---\n\nEmail 6:\nFrom: Lisa (ASPERA-3 Project Manager)\nTo: Mark (SwRI Software Engineer), Tom (Security Officer)\nSubject: RE: Confirmation of System Constraints and Safety Requirements\n\nHi Mark,\n\nThe system is required to operate in only one mode to simplify control and reduce complexity. Regarding safety, the system must not impose any hazards to personnel, property, or the environment. These constraints are critical and must be incorporated into the design.\n\nPlease let me know if you need further clarification.\n\nBest,\nLisa"
+    }
+  ],
+  "candidate_pool": [
+    {
+      "id": "PURE_2001 - esa_FAKE_003",
+      "text": "The system shall perform nightly incremental and weekly full backups of all telemetry, intermediate, and IDFS products to an off-site facility at least 50 km from the primary site and shall successfully complete quarterly restoration tests demonstrating recovery of a random 1 TB sample within 8 hours.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_E62151E8"
+    },
+    {
+      "id": "PURE_2001 - esa_R013",
+      "text": "The system shall use the www.ASPERA-3.org website for obtaining and reviewing IDFS information.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R031",
+      "text": "The data processing software shall meet the delivery requirements of the IRF to support the launch date and operation of the ESA Mars Express mission.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R007",
+      "text": "The APAF data system shall submit ASPERA-3 IDFS data sets to the Planetary Data System (PDS) for long-term archival in PDS-compliant form, after calibration and validation, no later than six months after acquisition.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "compliance",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R024",
+      "text": "The system shall assign a project-unique identifier to each requirement and annotate each requirement with associated qualification (verification) methods, rationale, and traceability to its source.",
+      "requirement_kind": "business_rule",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R037",
+      "text": "The system shall operate in only one state or mode.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R018",
+      "text": "The system shall calibrate and validate ASPERA-3 data prior to depositing it in NASA PDS.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "reliability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R005",
+      "text": "The APAF data system shall generate intermediate files of cleaned-up ASPERA-3 and Mars Express Orbit/Attitude telemetry if cleaned-up telemetry is not provided by ESOC.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_FAKE_002",
+      "text": "The system shall automatically reprocess all affected IDFS data sets within 48 hours whenever updated calibration constants are posted to the system’s configuration repository.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_7B8CE960"
+    },
+    {
+      "id": "PURE_2001 - esa_R006",
+      "text": "The APAF data system shall store telemetry, IDFS data sets, and any APAF-generated intermediate files of cleaned-up telemetry on a local Southwest Research Institute (SwRI) archive.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "availability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R001",
+      "text": "The system shall process and archive data for the Mars Express mission as part of the ASPERA-3 Processing and Archiving Facility (APAF) ground data system.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_FAKE_006",
+      "text": "The system shall maintain a geographically separate, read-only mirror of the APAF archive at an ESA-designated facility by replicating new or changed files within 12 hours of local archival and verifying integrity via SHA-256 checksum matches for 100% of replicated files.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_D0912BC6"
+    },
+    {
+      "id": "PURE_2001 - esa_FAKE_005",
+      "text": "The system shall synchronize all component clocks to UTC using NTP and timestamp all files and records to at least millisecond precision with a maximum clock drift of ±1 second across the system.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_0D95A72C"
+    },
+    {
+      "id": "PURE_2001 - esa_R028",
+      "text": "The ASPERA-3 Mission of Opportunity shall provide the complete data set of the integrated ASPERA-3 investigation to all ASPERA-3 Co-Investigators and the NASA Planetary Data System.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R038",
+      "text": "The system shall not impose hazards to personnel, property, or the environment.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "safety",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R033",
+      "text": "The ASPERA-3 MO PI shall collect engineering and ancillary information necessary to validate and calibrate scientific data before depositing it in the NASA PDS in a PDS-compliant form.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "compliance",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_FAKE_004",
+      "text": "The system shall send automated email notifications to registered Co-Investigators and operators within 15 minutes of new IDFS data readiness and within 5 minutes of any processing pipeline failure, allowing users to configure subscription preferences.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_18324A38"
+    },
+    {
+      "id": "PURE_2001 - esa_R019",
+      "text": "The system shall determine the exact ASPERA-3 and Mars Express Orbit/Attitude data sets to be distributed to each Co-Investigator based on needs and available resources six months prior to Mars Express launch and clearly define and describe the distribution mechanisms in the APAF Operation Procedures Document.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R016",
+      "text": "The system shall provide a network connection between SwRI and NISN for data transfers and distribution.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R002",
+      "text": "The APAF data system shall acquire ASPERA-3 telemetry data via NISN and from ESOC, including Mars Express Orbit/Attitude telemetry.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R009",
+      "text": "The system shall provide web-based displays of the most current ASPERA-3 data for public viewing, with password protection until data is made public, and displays defined by the ASPERA-3 team that allow use of any available ASPERA-3 data for science analysis.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R017",
+      "text": "The system shall provide APAF system maintenance and software support.",
+      "requirement_kind": "business_rule",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R008",
+      "text": "The system shall distribute ASPERA-3 and Mars Express Orbit/Attitude IDFS data and any APAF-generated intermediate files of cleaned-up telemetry electronically to all ASPERA-3 Co-Investigators within 24 hours of acquiring telemetry, provided transmission and processing are error-free.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R011",
+      "text": "The APAF system shall have built-in error handling to ensure reliability.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "reliability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R003",
+      "text": "The APAF data system shall process telemetry data into Instrument Data File Set (IDFS) data sets, including all ASPERA-3 science data and engineering and ancillary information necessary for calibration and science validation.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R020",
+      "text": "The system shall document any identified installation-dependent requirements in the APAF Operations Procedures Document.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "maintainability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R025",
+      "text": "The system shall verify each requirement using annotated qualification methods and support verification by demonstration without special equipment and by analysis using accumulated data from characterization, calibration, or testing.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R034",
+      "text": "The time to complete validation and calibration of scientific data shall be the minimum necessary to provide accurate data but shall not exceed six months after acquisition.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R023",
+      "text": "The system shall ensure each requirement states a condition for system acceptance, is stated to allow objective verification, is singular, concise, simple, and technically feasible and achievable within schedule and budget.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R010",
+      "text": "The system shall password protect web-based displays defined by the ASPERA-3 team for science analysis until the ASPERA-3 data is made public.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R030",
+      "text": "SwRI shall develop the ASPERA-3 data reduction system and software for instrument integration, test, calibration, and mission operations of the full ASPERA-3 experiment and interface with all ASPERA-3 sensor teams to determine and effect data packetization and storage strategies.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R015",
+      "text": "The system shall provide a UNIX-based APAF system development computer, a UNIX-based APAF system production computer with an archival system, and a web server for the APAF system.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R027",
+      "text": "The system shall document the relationship between each requirement and the project item(s) it addresses, supporting requirements addressing multiple project items and higher-level design elements, and provide for each requirement: Identifier, Description, Source, and Verification Method.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R004",
+      "text": "The APAF data system shall define IDFS data sets based on the physical instruments and ancillary data necessary for scientific analysis and divide each physical component of ASPERA-3 into logical groups called virtual instruments, each formatted as an IDFS data set.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R032",
+      "text": "SwRI shall provide processing algorithms to IRF in preparation for mission operations and data analysis of Mars Express on a schedule that satisfies mission needs per agreement with IRF.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R012",
+      "text": "The system shall provide ASPERA-3 and Mars Express Orbit/Attitude IDFS data and any APAF-generated intermediate files of cleaned-up telemetry to all ASPERA-3 Co-Investigators and make IDFS data access software and science analysis software developed by SwRI available to them.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R035",
+      "text": "The system shall integrate science analysis software developed by the ASPERA-3 MO PI team into the NASA approved data repository and provide equal online access to the science analysis software for the PI team and the science community.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R021",
+      "text": "The APAF Operations Procedures Document shall provide installation and operations instructions detailed enough to eliminate training-related requirements for users and operators of the APAF data system.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_FAKE_001",
+      "text": "The system shall compute a SHA-256 checksum for every telemetry, intermediate, and IDFS file it stores or distributes and shall verify the checksum prior to distribution and upon retrieval to ensure file integrity.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_E2C16708"
+    },
+    {
+      "id": "PURE_2001 - esa_R022",
+      "text": "The system shall have an associated Software Design Document (SDD) that fully defines and describes all data products contained within each individual virtual instrument, including instrument parameters, spacecraft parameters, science information, internal interfaces, and virtual instrument data items.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R026",
+      "text": "The system shall create simulated instrument data sets from accumulated calibration and test data formatted as expected telemetry input, process these into IDFS data sets, and analyze the output using the Southwest Data Display and Analysis System (SDDAS).",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R036",
+      "text": "The ASPERA-3 MO Project shall develop a project data management plan addressing planning, acquisition, processing, data product generation and validation, archiving, and preservation of science data, identifying science and supplementary data products, associated handling systems, and defining roles, responsibilities, and operational interfaces affecting those data and systems.",
+      "requirement_kind": "business_rule",
+      "nfr_subtype": "compliance",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R014",
+      "text": "The APAF system web server shall be password protected where appropriate to allow only pertinent ASPERA-3 team members access.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - esa_R029",
+      "text": "The ASPERA-3 Mission of Opportunity shall deliver specific measurements in the energy range of 0.1 to 100 keV.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    }
+  ],
+  "gold_requirement_ids": [
+    "PURE_2001 - esa_R001",
+    "PURE_2001 - esa_R002",
+    "PURE_2001 - esa_R003",
+    "PURE_2001 - esa_R004",
+    "PURE_2001 - esa_R005",
+    "PURE_2001 - esa_R006",
+    "PURE_2001 - esa_R007",
+    "PURE_2001 - esa_R008",
+    "PURE_2001 - esa_R009",
+    "PURE_2001 - esa_R010",
+    "PURE_2001 - esa_R011",
+    "PURE_2001 - esa_R012",
+    "PURE_2001 - esa_R013",
+    "PURE_2001 - esa_R014",
+    "PURE_2001 - esa_R015",
+    "PURE_2001 - esa_R016",
+    "PURE_2001 - esa_R017",
+    "PURE_2001 - esa_R018",
+    "PURE_2001 - esa_R019",
+    "PURE_2001 - esa_R020",
+    "PURE_2001 - esa_R021",
+    "PURE_2001 - esa_R022",
+    "PURE_2001 - esa_R023",
+    "PURE_2001 - esa_R024",
+    "PURE_2001 - esa_R025",
+    "PURE_2001 - esa_R026",
+    "PURE_2001 - esa_R027",
+    "PURE_2001 - esa_R028",
+    "PURE_2001 - esa_R029",
+    "PURE_2001 - esa_R030",
+    "PURE_2001 - esa_R031",
+    "PURE_2001 - esa_R032",
+    "PURE_2001 - esa_R033",
+    "PURE_2001 - esa_R034",
+    "PURE_2001 - esa_R035",
+    "PURE_2001 - esa_R036",
+    "PURE_2001 - esa_R037",
+    "PURE_2001 - esa_R038"
+  ],
+  "seeded_fake_requirement_ids": [
+    "PURE_2001 - esa_FAKE_001",
+    "PURE_2001 - esa_FAKE_002",
+    "PURE_2001 - esa_FAKE_003",
+    "PURE_2001 - esa_FAKE_004",
+    "PURE_2001 - esa_FAKE_005",
+    "PURE_2001 - esa_FAKE_006"
+  ],
+  "seed_registry": [
+    {
+      "seed_item_id": "T1S_E2C16708",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2001 - esa_FAKE_001",
+      "requirement_text": "The system shall compute a SHA-256 checksum for every telemetry, intermediate, and IDFS file it stores or distributes and shall verify the checksum prior to distribution and upon retrieval to ensure file integrity.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "unsupported_reason": "No source text references cryptographic checksums or integrity verification mechanisms for stored or distributed files.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_7B8CE960",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2001 - esa_FAKE_002",
+      "requirement_text": "The system shall automatically reprocess all affected IDFS data sets within 48 hours whenever updated calibration constants are posted to the system’s configuration repository.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "While calibration and validation are discussed, no automatic reprocessing triggered by updated calibration constants is described.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_E62151E8",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2001 - esa_FAKE_003",
+      "requirement_text": "The system shall perform nightly incremental and weekly full backups of all telemetry, intermediate, and IDFS products to an off-site facility at least 50 km from the primary site and shall successfully complete quarterly restoration tests demonstrating recovery of a random 1 TB sample within 8 hours.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "unsupported_reason": "Backup schedules, off-site replication, and disaster recovery testing are not addressed in the source texts.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_18324A38",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2001 - esa_FAKE_004",
+      "requirement_text": "The system shall send automated email notifications to registered Co-Investigators and operators within 15 minutes of new IDFS data readiness and within 5 minutes of any processing pipeline failure, allowing users to configure subscription preferences.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "The documents do not mention automated alerting or notification mechanisms for data availability or failures.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_0D95A72C",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2001 - esa_FAKE_005",
+      "requirement_text": "The system shall synchronize all component clocks to UTC using NTP and timestamp all files and records to at least millisecond precision with a maximum clock drift of ±1 second across the system.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "Time synchronization standards and timestamp precision requirements are not specified anywhere in the sources.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_D0912BC6",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2001 - esa_FAKE_006",
+      "requirement_text": "The system shall maintain a geographically separate, read-only mirror of the APAF archive at an ESA-designated facility by replicating new or changed files within 12 hours of local archival and verifying integrity via SHA-256 checksum matches for 100% of replicated files.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "The source texts describe only a local SwRI archive and submission to PDS, with no mention of offsite mirroring, replication schedules, or checksum-based integrity verification.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    }
+  ],
+  "brief": {
+    "project_name": "ASPERA-3 Mars Express Data System",
+    "domain": "space science data processing and archiving",
+    "users": [
+      "ASPERA-3 Co-Investigator",
+      "Science Analysis Team Member",
+      "Ground Data System Operator"
+    ],
+    "stakeholders": [
+      "Southwest Research Institute",
+      "European Space Agency",
+      "NASA Planetary Data System",
+      "IRF Science Team"
+    ],
+    "business_goals": [
+      "Provide timely and validated scientific data products for Mars Express mission",
+      "Ensure long-term archival and public accessibility of ASPERA-3 data",
+      "Support science team with data processing, calibration, and analysis tools",
+      "Maintain compliance with NASA PDS standards and mission schedules"
+    ],
+    "core_features": [
+      "Acquisition of telemetry data from NISN and ESOC including spacecraft orbit and attitude",
+      "Processing raw telemetry into standardized Instrument Data File Sets (IDFS)",
+      "Division of instrument data into logical virtual instruments for analysis",
+      "Distribution of data and analysis software to Co-Investigators within 24 hours",
+      "Web-based data visualization with controlled access until public release",
+      "Archival of validated data in PDS within six months of receipt",
+      "Provision of error handling and maintenance support for system reliability"
+    ],
+    "quality_concerns": [
+      "Data security through password protection of web displays and servers",
+      "System reliability with built-in error handling mechanisms",
+      "Objective and verifiable requirements ensuring feasibility and schedule adherence",
+      "Minimizing validation and calibration time without compromising data accuracy"
+    ],
+    "constraints": [
+      "Use of UNIX-based development and production environments with archival capabilities",
+      "Operation restricted to a single system mode to simplify control",
+      "Compliance with safety requirements to avoid hazards to personnel and environment",
+      "Comprehensive Software Design Document detailing data products and interfaces"
+    ],
+    "terminology": [
+      "ASPERA-3: Instrument package on Mars Express measuring particles and fields",
+      "IDFS: Instrument Data File Set formatting scientific and ancillary data",
+      "Virtual Instrument: Logical grouping of instrument components within IDFS",
+      "NISN: NASA Integrated Services Network for telemetry data transfer",
+      "PDS: NASA Planetary Data System for long-term data archiving",
+      "ESOC: European Science Operations Center providing telemetry data",
+      "APAF: ASPERA-3 Processing and Archiving Facility ground data system"
+    ]
+  },
+  "metadata": {
+    "file_path": "data/pure/2001 - esa.pdf",
+    "file_type": ".pdf",
+    "char_count": 37530,
+    "profile": {
+      "char_count": 37530,
+      "heading_density": 39,
+      "shall_count": 56,
+      "must_count": 0,
+      "will_count": 16,
+      "use_case_count": 0,
+      "stakeholder_count": 0,
+      "requirement_keyword_count": 177,
+      "structure_strength": "strong"
+    },
+    "section_count": 57,
+    "dense_sections": 38,
+    "gold_count": 38,
+    "section_candidates": 80,
+    "raw_candidates": 53,
+    "llm_usage": {
+      "total_calls": 89,
+      "total_input_tokens": 149557,
+      "total_output_tokens": 62804
+    }
+  }
+}

@@ -1,0 +1,485 @@
+{
+  "coverage_rate": 1.0,
+  "missing_req_ids": [],
+  "unsupported_count": 3,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PROMISE_4_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "use the corporate UI standards"
+      ],
+      "reason": "Source explicitly mandates corporate UI standards for internal/external apps."
+    },
+    {
+      "req_id": "PROMISE_4_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "Please stick to our design system"
+      ],
+      "reason": "Design system/corporate standards cited for UI consistency across screens."
+    },
+    {
+      "req_id": "PROMISE_4_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "Color cues are fine for status"
+      ],
+      "reason": "Meetings/emails require color cues paired with labels/icons for status."
+    },
+    {
+      "req_id": "PROMISE_4_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "after the two‑day training, all will use Compass"
+      ],
+      "reason": "PO and notes state 100% of reps will use Compass after training."
+    },
+    {
+      "req_id": "PROMISE_4_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "first‑try success for case creation by cardmember"
+      ],
+      "reason": "Training goal explicitly includes first‑try success for case creation."
+    },
+    {
+      "req_id": "PROMISE_4_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "first‑try success for follow‑up by merchant reps"
+      ],
+      "reason": "Notes specify first‑try success for merchant reps performing follow‑ups."
+    },
+    {
+      "req_id": "PROMISE_4_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "around five seconds max to move between screens"
+      ],
+      "reason": "Performance target of ~5 seconds between screens appears in sources."
+    },
+    {
+      "req_id": "PROMISE_4_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "handle roughly 350 concurrent users"
+      ],
+      "reason": "Scale target of 350 concurrent users without slowdown is stated."
+    },
+    {
+      "req_id": "PROMISE_4_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "Availability 24/7; Mon–Sat 3–4am; Sun 1–5am ET"
+      ],
+      "reason": "Availability and explicit maintenance windows are documented in sources."
+    },
+    {
+      "req_id": "PROMISE_4_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "transaction details from Statement Database"
+      ],
+      "reason": "Sources require transaction details come from the Statement Database."
+    },
+    {
+      "req_id": "PROMISE_4_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "cardmember details from Cardmember Information DB"
+      ],
+      "reason": "Source-of-truth mapping explicitly names that DB."
+    },
+    {
+      "req_id": "PROMISE_4_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "merchant details from Merchant Information DB"
+      ],
+      "reason": "Meeting notes specify merchant details come from that DB."
+    },
+    {
+      "req_id": "PROMISE_4_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "handed to Print Letter Utility",
+        "Letters app integration"
+      ],
+      "reason": "Notes/emails describe Letters app + Print Letter Utility integration."
+    },
+    {
+      "req_id": "PROMISE_4_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "Cardmember Posting & Billing: send adjustment requests via API"
+      ],
+      "reason": "Meeting notes require adjustment requests sent to Posting & Billing."
+    },
+    {
+      "req_id": "PROMISE_4_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "enforce view vs update separation",
+        "view vs update access model"
+      ],
+      "reason": "Documents require role-based view vs update gating."
+    },
+    {
+      "req_id": "PROMISE_4_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "Only Update role can initiate TRR/chargeback",
+        "Only users with Update can initiate"
+      ],
+      "reason": "Several artifacts state only Update users may initiate."
+    },
+    {
+      "req_id": "PROMISE_4_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "authorized users only, no guest access",
+        "Only authorized users can log in"
+      ],
+      "reason": "Login restrictions for authorized users are expressly required."
+    },
+    {
+      "req_id": "PROMISE_4_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "app should not bounce authenticated users unpredictably",
+        "once people are authenticated the app shouldn’t bounce them"
+      ],
+      "reason": "Sources require authenticated users remain logged in reliably."
+    },
+    {
+      "req_id": "PROMISE_4_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "weekly 'User Access Changes' report",
+        "User Access Changes report for A&R"
+      ],
+      "reason": "Weekly user-access report is specified for auditing purposes."
+    },
+    {
+      "req_id": "PROMISE_4_R020",
+      "supported": true,
+      "evidence_snippets": [
+        "includes new users and any role/access modifications",
+        "report includes reinstatement events"
+      ],
+      "reason": "Report must record new users and access modifications explicitly."
+    },
+    {
+      "req_id": "PROMISE_4_R021",
+      "supported": true,
+      "evidence_snippets": [
+        "only System Administrator can reinstate"
+      ],
+      "reason": "Reinstatement limited to system admin asserted multiple times."
+    },
+    {
+      "req_id": "PROMISE_4_R022",
+      "supported": true,
+      "evidence_snippets": [
+        "reinstatement is limited to System Admin"
+      ],
+      "reason": "System Admin is defined as sole reinstatement authority."
+    },
+    {
+      "req_id": "PROMISE_4_R023",
+      "supported": true,
+      "evidence_snippets": [
+        "No direct DB or file access for end users."
+      ],
+      "reason": "Documents state end users have no direct DB/file access."
+    },
+    {
+      "req_id": "PROMISE_4_R024",
+      "supported": true,
+      "evidence_snippets": [
+        "All updates go through the application."
+      ],
+      "reason": "Updates must be performed via the application, not directly."
+    },
+    {
+      "req_id": "PROMISE_4_R025",
+      "supported": true,
+      "evidence_snippets": [
+        "Merchant Operating Regulations"
+      ],
+      "reason": "Business must map to and conform with network operating rules."
+    },
+    {
+      "req_id": "PROMISE_4_R026",
+      "supported": true,
+      "evidence_snippets": [
+        "Map business rules to Merchant Operating Regulations"
+      ],
+      "reason": "Meeting notes require business rules align to those regulations."
+    },
+    {
+      "req_id": "PROMISE_4_R027",
+      "supported": true,
+      "evidence_snippets": [
+        "align to Regulation E or Z"
+      ],
+      "reason": "Compliance requires alignment to Regulation E and Z."
+    },
+    {
+      "req_id": "PROMISE_4_R028",
+      "supported": true,
+      "evidence_snippets": [
+        "Map business rules to Regulation E/Z"
+      ],
+      "reason": "Business rules must comply with Reg E/Z per notes."
+    },
+    {
+      "req_id": "PROMISE_4_R029",
+      "supported": true,
+      "evidence_snippets": [
+        "full audit trail: each create/modify stamped"
+      ],
+      "reason": "Sources mandate detailed audit trail for every case touch."
+    },
+    {
+      "req_id": "PROMISE_4_R030",
+      "supported": true,
+      "evidence_snippets": [
+        "capture user and timestamp on any create/modify"
+      ],
+      "reason": "All modifying actions are recorded in the case history."
+    },
+    {
+      "req_id": "PROMISE_4_R031",
+      "supported": true,
+      "evidence_snippets": [
+        "Dual‑audience app (internal + external)"
+      ],
+      "reason": "Spec explicitly targets internal and external users."
+    },
+    {
+      "req_id": "PROMISE_4_R032",
+      "supported": true,
+      "evidence_snippets": [
+        "users access only their assigned cardholder base"
+      ],
+      "reason": "Documents require issuer partitioning and guardrails."
+    },
+    {
+      "req_id": "PROMISE_4_R033",
+      "supported": true,
+      "evidence_snippets": [
+        "Start a retrieval from an eligible transaction view"
+      ],
+      "reason": "UI supports direct entry and real‑time transaction views."
+    },
+    {
+      "req_id": "PROMISE_4_R034",
+      "supported": true,
+      "evidence_snippets": [
+        "View vs Update. Only Update role can initiate"
+      ],
+      "reason": "Role‑based permissions control initiation and follow‑ups."
+    },
+    {
+      "req_id": "PROMISE_4_R035",
+      "supported": true,
+      "evidence_snippets": [
+        "view‑only users see fewer actions"
+      ],
+      "reason": "Spec defines view‑only access for authorized users."
+    },
+    {
+      "req_id": "PROMISE_4_R036",
+      "supported": true,
+      "evidence_snippets": [
+        "Only Update role can initiate TRR/chargeback"
+      ],
+      "reason": "Update privilege grants initiation and update capabilities."
+    },
+    {
+      "req_id": "PROMISE_4_R037",
+      "supported": true,
+      "evidence_snippets": [
+        "Only eligible transactions (age window per Reg/network)"
+      ],
+      "reason": "UI must block too‑old transactions and allow dispute initiation."
+    },
+    {
+      "req_id": "PROMISE_4_R038",
+      "supported": true,
+      "evidence_snippets": [
+        "allow combining multiple transactions from the same merchant"
+      ],
+      "reason": "Multi‑transaction cases allowed if same‑merchant constraint met."
+    },
+    {
+      "req_id": "PROMISE_4_R039",
+      "supported": true,
+      "evidence_snippets": [
+        "Guided fields (wizard/stepper) collect required info"
+      ],
+      "reason": "TRR creation is a guided UI and produces a merchant letter."
+    },
+    {
+      "req_id": "PROMISE_4_R040",
+      "supported": true,
+      "evidence_snippets": [
+        "TRR types: original receipt, copy, portfolio"
+      ],
+      "reason": "Three TRR types specified; portfolio defined in notes."
+    },
+    {
+      "req_id": "PROMISE_4_R041",
+      "supported": true,
+      "evidence_snippets": [
+        "external users must NOT request 'original'"
+      ],
+      "reason": "Meeting and transcript state original receipt is internal‑only."
+    },
+    {
+      "req_id": "PROMISE_4_R042",
+      "supported": true,
+      "evidence_snippets": [
+        "show a full confirmation—case number, type, due date"
+      ],
+      "reason": "Notes and emails require confirmation with case, type, due date."
+    },
+    {
+      "req_id": "PROMISE_4_R043",
+      "supported": true,
+      "evidence_snippets": [
+        "Chargeback can be 'pending' or 'immediate.'",
+        "send chargeback notification via Letters app"
+      ],
+      "reason": "Chargeback flow, required prompts, and printed notification specified."
+    },
+    {
+      "req_id": "PROMISE_4_R044",
+      "supported": true,
+      "evidence_snippets": [
+        "confirmation: case number, pending/immediate, due date"
+      ],
+      "reason": "Documentation mandates confirmations with case, type, and due date."
+    },
+    {
+      "req_id": "PROMISE_4_R045",
+      "supported": true,
+      "evidence_snippets": [
+        "Zero tolerance—block 100% of duplicates."
+      ],
+      "reason": "Compliance and notes explicitly require blocking duplicates 100%."
+    },
+    {
+      "req_id": "PROMISE_4_R046",
+      "supported": true,
+      "evidence_snippets": [
+        "Reason codes context‑sensitive by txn type and MCC"
+      ],
+      "reason": "Multiple sources require reason codes derived from type and MCC."
+    },
+    {
+      "req_id": "PROMISE_4_R047",
+      "supported": true,
+      "evidence_snippets": [
+        "open case details with history and follow‑ups"
+      ],
+      "reason": "Search/listing and UI notes describe viewing existing cases."
+    },
+    {
+      "req_id": "PROMISE_4_R048",
+      "supported": true,
+      "evidence_snippets": [
+        "Search by case#, merchant acct#, cardmember#, issuer#",
+        "Filters: date range, dispute type, status, reason code"
+      ],
+      "reason": "Meeting notes and emails list these search fields and filters."
+    },
+    {
+      "req_id": "PROMISE_4_R049",
+      "supported": true,
+      "evidence_snippets": [
+        "color cues paired with labels/icons",
+        "color accents paired with a text label"
+      ],
+      "reason": "List view must distinguish type/status with color and labels."
+    },
+    {
+      "req_id": "PROMISE_4_R050",
+      "supported": true,
+      "evidence_snippets": [
+        "full audit trail: user + timestamp on create/modify",
+        "view the complete timeline/history on the case"
+      ],
+      "reason": "Audit trail and full case history viewing are repeatedly required."
+    },
+    {
+      "req_id": "PROMISE_4_R051",
+      "supported": true,
+      "evidence_snippets": [
+        "show actions that apply to the case’s current status",
+        "Follow‑up actions menu filtered by case status and user access"
+      ],
+      "reason": "Source explicitly requires filtered follow‑up actions"
+    },
+    {
+      "req_id": "PROMISE_4_R052",
+      "supported": true,
+      "evidence_snippets": [
+        "who did what and when",
+        "each create/modify stamped with user + timestamp"
+      ],
+      "reason": "Source mandates full audit trail with user and timestamp"
+    },
+    {
+      "req_id": "PROMISE_4_R053",
+      "supported": true,
+      "evidence_snippets": [
+        "system updates ... put a new entry in the history",
+        "trigger an in‑app notification for the case creator"
+      ],
+      "reason": "Source requires system events create activity and notify creator"
+    },
+    {
+      "req_id": "PROMISE_4_R054",
+      "supported": true,
+      "evidence_snippets": [
+        "formatted to Letters app spec -> Print Letter Utility",
+        "must match the Print Letter Utility’s format exactly"
+      ],
+      "reason": "Source requires letters follow Print Letter Utility format"
+    },
+    {
+      "req_id": "PROMISE_4_R055",
+      "supported": true,
+      "evidence_snippets": [
+        "purge dispute cases from the online disputes database",
+        "closed cases older than six months must be purged"
+      ],
+      "reason": "Source specifies six‑month online purge of closed cases"
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "System notifications for system-driven case updates must be delivered only as in‑app alerts on next sign‑in; email notifications must not be used for these notifications.",
+      "source_snippet": "When the system updates a case automatically—aging, deadlines—we’ll put a new entry in the history and show a notification to the case’s creator the next time they sign in. No emails, just an in‑app alert.",
+      "source_type": "interview_transcript",
+      "reason": "The gold set requires notification on next logon for system actions but does not prohibit or restrict alternate channels; the source explicitly mandates in‑app‑only notifications and forbids email, which is a distinct constraint on notification delivery not present in the gold requirements."
+    },
+    {
+      "text": "The weekly User Access Changes report must include audit fields: timestamps and the actor/admin (who performed the add/change/reinstatement) for new users, role changes, and reinstatements.",
+      "source_snippet": "Weekly “User Access Changes” report for A&R: includes new users and any access/role changes; include reinstatement events; timestamps; actor/admin recorded. [Asha to specify fields]",
+      "source_type": "meeting_notes",
+      "reason": "While the gold set requires a User Report of new users and access changes, it does not mandate specific audit fields; the source explicitly requires timestamps and the acting admin/actor be recorded on the weekly report, which is a specific reporting capability not specified in the gold requirements."
+    },
+    {
+      "text": "Once authenticated and authorization validated, the application must preserve user session continuity and must not unexpectedly sign users out (session stability behavior aligned to security policy).",
+      "source_snippet": "For sign‑in, once people are authenticated and their permissions are validated, the app shouldn’t randomly bounce them. We’ll follow security policy for session timeouts.",
+      "source_type": "interview_transcript",
+      "reason": "The gold requirements mandate authorized login but do not specify session stability or prohibiting unexpected sign‑outs; the source introduces a behavioral requirement that authenticated users should not be unpredictably logged out and that session handling must follow policy, which is a significant operational/session management capability not covered by the gold set."
+    }
+  ],
+  "passed": false
+}

@@ -1,0 +1,489 @@
+{
+  "coverage_rate": 0.9825,
+  "missing_req_ids": [
+    "PURE_1998 - themas_R028"
+  ],
+  "unsupported_count": 2,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PURE_1998 - themas_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "simulated thermostat prototype mentioned"
+      ],
+      "reason": "Meeting requires qualification via simulator prototype."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "provide tech description (functional + perf)"
+      ],
+      "reason": "Leo asked SRS include technical software description."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "tie requirements back to SoW IDs"
+      ],
+      "reason": "Carla requested traceability to Statement of Work."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "thermostat input: current temp + setpoint"
+      ],
+      "reason": "Notes list thermostat inputs and H/C outputs."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "doc must be useful to Design Req team"
+      ],
+      "reason": "Audience explicitly includes Design Requirements and Principal Architect."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "keep the SRS strictly software"
+      ],
+      "reason": "Scope repeatedly emphasized software-only."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "Only \"shall\" is binding."
+      ],
+      "reason": "Binding language rule stated explicitly."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "thermostat simulator must be spelled out"
+      ],
+      "reason": "Qualification requirement requires simulator for V&V."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "not tie to vendors"
+      ],
+      "reason": "Notes instruct avoiding detailed vendor/external system definitions."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "basis of the software design"
+      ],
+      "reason": "Leo stated SRS used as basis for software design."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "Put the full references list in the SRS."
+      ],
+      "reason": "Meeting/email explicitly require references included in SRS."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "SRS wins over refs; SoW overrides SRS"
+      ],
+      "reason": "Sources state SRS precedence and SoW overrides SRS."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "generally available via libraries"
+      ],
+      "reason": "Notes/emails state standards available from libraries."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "Copies of non-public refs via Barry."
+      ],
+      "reason": "Sources specify Barry provides copies of referenced specs."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "Prepared per ANSI/IEEE 830-1984."
+      ],
+      "reason": "Meeting notes require ANSI/IEEE 830-1984 conformance."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "Section 2: product perspective; product functions"
+      ],
+      "reason": "Section 2 contents explicitly listed in meeting notes."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "Section 3: functional and performance reqs"
+      ],
+      "reason": "Section 3 content (functional/perf/design/interface) listed."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "Architecture modules: four sections"
+      ],
+      "reason": "Documents repeatedly enumerate four system sections."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "Each as a software CI"
+      ],
+      "reason": "Meeting notes state each section is a software CI."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R020",
+      "supported": true,
+      "evidence_snippets": [
+        "other three pair with hardware CIs"
+      ],
+      "reason": "Notes state three sections have hardware CIs; Reports software-only."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R021",
+      "supported": true,
+      "evidence_snippets": [
+        "keep the SRS strictly software. Hardware reqs go to system-level spec"
+      ],
+      "reason": "SRS scoped software-only; hardware goes to system spec."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R022",
+      "supported": true,
+      "evidence_snippets": [
+        "thermostat input: current temperature + desired setpoint only"
+      ],
+      "reason": "Sources state only temp and setpoint are received; no unit feedback."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R023",
+      "supported": true,
+      "evidence_snippets": [
+        "we don’t expect any confirmation back from the unit"
+      ],
+      "reason": "Text explicitly says no execution confirmation from units."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R024",
+      "supported": true,
+      "evidence_snippets": [
+        "runtime target is Windows NT environment. IPC also NT."
+      ],
+      "reason": "Sources mandate Windows NT runtime and internal IPC on NT."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R025",
+      "supported": true,
+      "evidence_snippets": [
+        "Device interfaces on NT stack."
+      ],
+      "reason": "Device/interface stack explicitly stated to run on NT."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R026",
+      "supported": true,
+      "evidence_snippets": [
+        "all traffic through designated interfaces; no direct device manipulation"
+      ],
+      "reason": "Communication must occur via defined interfaces only."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R027",
+      "supported": true,
+      "evidence_snippets": [
+        "a unit can’t report its on/off state (incapable)"
+      ],
+      "reason": "Assumption documented that units cannot report on/off state."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R028",
+      "supported": false,
+      "evidence_snippets": [
+        "Those conflict. Mark the second as [TBD]"
+      ],
+      "reason": "Assumption exists but marked TBD and not adopted in SRS."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R029",
+      "supported": true,
+      "evidence_snippets": [
+        "supervisor can send manual ON or OFF to a specific unit"
+      ],
+      "reason": "Sources state supervisor may issue manual ON/OFF requests."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R030",
+      "supported": true,
+      "evidence_snippets": [
+        "reads an initialization file",
+        "send requests to turn all units off at startup"
+      ],
+      "reason": "Initialization file and startup initialization behavior are specified."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R031",
+      "supported": true,
+      "evidence_snippets": [
+        "reads an initialization file"
+      ],
+      "reason": "Sources state initialization file defines unit mappings."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R032",
+      "supported": true,
+      "evidence_snippets": [
+        "unique IDs"
+      ],
+      "reason": "Bundle says thermostat identifiers (unique IDs) are loaded."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R033",
+      "supported": true,
+      "evidence_snippets": [
+        "turn all units off at startup"
+      ],
+      "reason": "Startup behavior: send OFF requests to establish known state."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R034",
+      "supported": true,
+      "evidence_snippets": [
+        "read current temperature and current setpoint"
+      ],
+      "reason": "Sources specify reading both current temp and setpoint."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R035",
+      "supported": true,
+      "evidence_snippets": [
+        "two data points from each thermostat"
+      ],
+      "reason": "Documents explicitly list current temperature and target setpoint."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R036",
+      "supported": true,
+      "evidence_snippets": [
+        "indicates valid vs invalid status"
+      ],
+      "reason": "Validation against valid range and status marking described."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R037",
+      "supported": true,
+      "evidence_snippets": [
+        "accepts the setpoint and applies it"
+      ],
+      "reason": "When setpoint valid, system accepts and applies it per notes."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R038",
+      "supported": true,
+      "evidence_snippets": [
+        "LO = TSET minus OD and UO = TSET plus OD"
+      ],
+      "reason": "Transcript gives exact LO/UO formulas and exceedance check."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R039",
+      "supported": true,
+      "evidence_snippets": [
+        "LT = TSET minus TD and UT = TSET plus TD"
+      ],
+      "reason": "Sources define LT/UT using TD and triggering logic."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R040",
+      "supported": true,
+      "evidence_snippets": [
+        "sections 3.1.4.1 and 3.1.4.2"
+      ],
+      "reason": "Meeting notes state SRS must follow those control rules."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R041",
+      "supported": true,
+      "evidence_snippets": [
+        "keeps the intended ON/OFF status per unit"
+      ],
+      "reason": "Source states software tracks intended unit ON/OFF status."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R042",
+      "supported": true,
+      "evidence_snippets": [
+        "max number of units enforced; a waiting queue",
+        "semantics LIFO"
+      ],
+      "reason": "Meeting notes prescribe cap, waiting queue, and LIFO semantics."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R043",
+      "supported": true,
+      "evidence_snippets": [
+        "pull from the queue, re-check the thermostat need"
+      ],
+      "reason": "Notes explicitly describe pulling queue and rechecking before ON."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R044",
+      "supported": true,
+      "evidence_snippets": [
+        "H/C ON/OFF request signals"
+      ],
+      "reason": "Interfaces described as emitting H/C ON/OFF request signals."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R045",
+      "supported": true,
+      "evidence_snippets": [
+        "log a “Unit Unavailable” event",
+        "Unit Unavailable event"
+      ],
+      "reason": "Documents require logging a 'Unit Unavailable' event when denied."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R046",
+      "supported": true,
+      "evidence_snippets": [
+        "must be validated against the allowed range",
+        "validate current temperature and temperature settings"
+      ],
+      "reason": "Multiple statements require validating temperature inputs against ranges."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R047",
+      "supported": true,
+      "evidence_snippets": [
+        "Monitor Temperature as a primary function",
+        "read two data points from each thermostat"
+      ],
+      "reason": "Monitor Temperature is listed as a primary software function."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R048",
+      "supported": true,
+      "evidence_snippets": [
+        "Determine Utilization as a module",
+        "enforces max concurrent units"
+      ],
+      "reason": "Determine Utilization module and utilization rules are specified."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R049",
+      "supported": true,
+      "evidence_snippets": [
+        "H/C ON/OFF request signals",
+        "log alarms and operational events"
+      ],
+      "reason": "Sources require emitting H/C requests and logging alarms/events."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R050",
+      "supported": true,
+      "evidence_snippets": [
+        "change the setpoint from a list of valid temps",
+        "A dropdown or a list"
+      ],
+      "reason": "Supervisor console allows selecting thermostat and valid-value list."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R051",
+      "supported": true,
+      "evidence_snippets": [
+        "I can see all thermostats and their current"
+      ],
+      "reason": "Supervisor UI must show thermostats and temps."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R052",
+      "supported": true,
+      "evidence_snippets": [
+        "historical (12 months) vs monthly"
+      ],
+      "reason": "Docs specify two report types and operator selection."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R053",
+      "supported": true,
+      "evidence_snippets": [
+        "plain text files; operator picks path/name"
+      ],
+      "reason": "Reports required as plain ASCII and operator selects path."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R054",
+      "supported": true,
+      "evidence_snippets": [
+        "select all events, sort by date/time"
+      ],
+      "reason": "Operational history pulls events, sorts, and creates ASCII."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R055",
+      "supported": true,
+      "evidence_snippets": [
+        "present a list of months to select"
+      ],
+      "reason": "System shows months list and generates ASCII after selection."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R056",
+      "supported": true,
+      "evidence_snippets": [
+        "per-day % on-time per unit"
+      ],
+      "reason": "Monthly stats must include per-day unit on-time percentages."
+    },
+    {
+      "req_id": "PURE_1998 - themas_R057",
+      "supported": true,
+      "evidence_snippets": [
+        "grant vs deny ratios per thermostat"
+      ],
+      "reason": "Reports include grant/deny request ratios per thermostat."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "The system shall validate the initialization file on load and, if validation fails, abort initialization, log an error, and ensure a safe known state (all units OFF).",
+      "source_snippet": "\"We’ll validate it on load. If it fails, we abort and log an error. ... When we abort, we still should have a safe state—everything OFF—so we don’t get stuck with units on.\"",
+      "source_type": "meeting_notes",
+      "reason": "The source explicitly states validation-on-load and abort-on-failure with a requirement to log the error and maintain a safe OFF state. The gold set requires reading an initialization file and issuing OFF at startup but does not require validation with abort behavior or the explicit guarantee to leave the system in a safe (all OFF) state on init failure, so this is an additional, significant operational safeguard not present in the gold requirements."
+    },
+    {
+      "text": "The system shall record diagnostic/tracing information of computed boundary values (LO, UO, LT, UT) and validation status for each thermostat read in logs or traces for later diagnosis.",
+      "source_snippet": "“when we compute LO, UO, LT, UT, all of that should be precise and we should record those values in our logs or traces so we can diagnose weirdness in pilot if something looks off.”",
+      "source_type": "interview_transcript",
+      "reason": "The stakeholders explicitly request that computed trigger/limit values and validation status be recorded in logs/traces for diagnostics. Although the gold requirements mandate computing LO/UO and LT/UT and generating events/alarms, they do not require persisting the precise computed boundary values and validation status in logs for diagnosis; this logging requirement is therefore an additional, significant capability implied by the source."
+    }
+  ],
+  "passed": true
+}

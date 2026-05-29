@@ -1,0 +1,128 @@
+TYPE  : meeting_notes
+TITLE : Working Session Notes — NurseTrack Scheduler: Planning, Access, and Reporting (Revised)
+UNIT  : PROMISE_3
+============================================================
+
+Date: 2025-03-18
+Location: Nursing Admin Conf Rm B / Teams link: https://teams.univ.edu/meet/NT-Scheduler-Planning
+Attendees:
+- Dr. Susan Poslusny — Program Director
+- Dr. Julie Donalek — Associate Dean
+- Karen Sysol — Operations Coordinator
+- Mia Torres — Program Administrator
+- Alex Kim — University IT/Security
+- Ben Patel — Systems Integration Engineer
+
+Note-taker: Mia (incomplete; some items from memory)
+
+Session goals: clarify specific needs for cohorts/programs, clinicals/labs, reports/printables, notifications, security roles.
+
+General expectations / constraints
+- Office environment: Win XP Pro desktops; no heavy client installs. [Alex]
+- Must work in any standards-compliant HTML browser (Firefox OK; IE legacy present). Avoid browser-specific hacks.
+- Availability target: 8a–6p with ~95% uptime. Concurrency: ~10 staff working 9–5 most days. Handle usage during business hours.
+- Performance: typical actions ~5s or faster; heavy schedule generation <= 30s (target). If slower, revisit approach.
+- Longevity/scale: handle all nursing students/classes now + growth over next 10 yrs. Platform expected to remain viable for at least 5 years.
+- Integrations: publish finalized sections to CampusConnect central; pull faculty from faculty central; student data from student master.
+- Security posture: follow University information policy; harden app; play nicely with Univ standard antivirus.
+
+Usability / language
+- Easy/intuitive; 1-day training -> staff productive. Majority should complete tasks without hand-holding.
+- Use standard nursing terminology + clear English labels (no invented jargon).
+- Timely task completion (no waiting around for common operations).
+
+Roles / access restrictions
+- Clinical site details visible only to authorized staff (Program Admins/Nursing Staff). Others minimal access.
+- Student PII viewable only by Dr. Susan + Dr. Julie. Others see name/ID and directory contact where policy allows.
+- CampusConnect publishing area visible only to authorized roles; final publish limited to Susan + Karen.
+- All edits should be logged (system log printable).
+
+Data validation / integrity
+- Basic checks: valid emails, required IDs present, time sanity (no zero-duration items), non-negative numbers, etc.
+- Cohort cannot be linked to more than one Program of Study. Enrollment eligibility check vs cohort’s PoS.
+
+Program of Study (PoS)
+- Create PoS: name + list of required classes (clinical + non-clinical).
+- Modify PoS: rename program; update required class list as curriculum changes.
+
+Classes
+- Classes are either non-clinical OR clinical.
+- Non-clinical: capture course name, lecture room needs (e.g., projector, seating), instructor needs.
+- Clinical: capture course name, lecture room needs, clinical site needs, lecture instructor needs, clinical lab instructor needs.
+- Add new classes to system; later link to PoS + cohort sequences.
+
+Cohorts
+- Add new cohort by start month + year (e.g., Sep 2026).
+- Cohort associated with exactly one PoS; no mixing.
+- Staff set preferred sequence of classes for cohort and assign which quarter each course is offered.
+- Modify cohort info: identifier, PoS assignment, preferred sequence, per-class quarter mapping.
+
+Scheduling / conflict handling
+- For a given cohort, classes/sections must not overlap in day/time; hard prevention preferred.
+- Build class timelines; generate sections/labs without time/day conflicts for that cohort.
+
+Clinical sites
+- Add new site records; fields: site name, contact person, contact info (email/phone), address. Print site info as needed.
+- Modify site info as contacts change. Restrict details to authorized staff.
+
+Clinical lab sections
+- Add lab section for a clinical class; include site name, class instructor, day/time; track department/section label.
+- Modify lab section info: site, department label, instructor, day/time, contact info.
+- Cancel lab section only if 0 students enrolled (disable cancel otherwise).
+
+Student management
+- Add new nursing students.
+- Assign students to cohorts (bulk upload OR single). Validate eligibility (PoS match) before assignment; provide clear warning if there are issues.
+- Manage lab enrollment: add student registered for a clinical class to a lab section; move student to another lab section (same clinical only); remove from lab if dropped.
+- Manage part-time plans: adjust sequence + timelines per student; reflect in their summary; record changes in logs.
+- Modify student info: ID, name, phone, email, status (FT/PT), Program of Study (if switching track), with permissions.
+
+Reports + printables
+- Cohort snapshot printable: students, PoS, sequence, cohort progress, estimated completion timeline.
+- Clinical site overview (by quarter) printable: site info + labs at that site (dates/times).
+- Clinical lab roster printable: class name + number, lab section id, list of enrolled students, instructor, day(s)/time, location.
+- Individual student summary printable: name, ID, admission date, classes, credits, GPA, cohort.
+- System log printable (for audit, troubleshooting).
+- Planning report (quarterly) across all cohorts/programs: classes to offer, number of sections, number of labs, room types needed.
+
+Notifications / communications
+- Email is primary channel; no SMS. Templates in clear English.
+- Routine comms: inform students of upcoming classes/timeline.
+- Change alerts:
+  - Clinicals: capacity changes; lab cancellations (global or week-specific).
+  - Classes: cancellations; section detail changes (time/room/instructor); changes to offerings for a quarter.
+  - Cohorts: sequence changes; weekly schedule changes (e.g., instructor illness).
+  - Individual students: status change FT->PT; moved to a different clinical lab section.
+- Recipients: only affected parties (cohort-level vs section-level vs individual).
+
+Availability + concurrency
+- Business hours 8–6; aim 95% availability. Handle expected user activity during these hours.
+- Expect ~10 simultaneous staff active 9–5.
+
+Integrations (detail)
+- CampusConnect: publish finalized section schedules (not drafts). Access to workflow restricted; final publish only Dr. Susan + Karen.
+- Faculty central server: instructor roster/IDs.
+- Student master server: admission date, student ID, enrollment status for verification/eligibility.
+
+Security specifics
+- Role-based access—PII view: Dr. Susan + Dr. Julie only; clinical site details restricted; publish area locked down.
+- Data protection: adhere to University Info Policy; app hardened (input validation, secure sessions, etc.).
+- Antivirus: app must not conflict with Univ standard AV.
+
+Edge cases / misc
+- Batch cohort assignment: validate eligibility; if issues detected, clearly warn the user so they can correct and retry.
+- Labs overlapping across cohorts (not same cohort) are allowed; same cohort overlaps blocked.
+- Printables should be simple, clean; no fancy formatting required.
+- Language: consistent nursing terms (e.g., “Clinical Lab Section,” not “practicum event”).
+
+Open items
+- Eligibility rule details beyond PoS (e.g., GPA) — defer; PoS-only for now.
+- Browser test matrix: Firefox ESR + IE8 on XP; confirm any others with IT.
+- Integration endpoint details for CampusConnect — Ben to confirm.
+
+Random notes / fragments
+- “We need to see who changed what” — logging printable.
+- Part-time management: adjust sequence + timeline; email the student when status toggles.
+- Planning report example counts discussed (for illustration only).
+- Training: 1 day. Goal: majority proficient by Day 2.
+- Availability: focus on business hours; outside that window is not a priority for operations.

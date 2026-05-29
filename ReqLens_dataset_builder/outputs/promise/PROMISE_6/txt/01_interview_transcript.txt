@@ -1,0 +1,158 @@
+TYPE  : interview_transcript
+TITLE : RoomWise stakeholder discovery — cross-functional interview (revised)
+UNIT  : PROMISE_6
+============================================================
+
+Dana [Executive Sponsor/Product Owner]: Thanks everyone for making time. Working title is RoomWise. We’re aiming to cover room booking, equipment, and the operational glue. Let’s talk through what you actually need day to day.
+
+Miguel [Facilities Manager]: From my shop, people need to see what rooms are free, pick one, and when they grab it the system should mark it as taken so nobody else can stack a meeting on top. No double-booking.
+
+Priya [CIO/IT Operations Lead]: So live availability and quick updates. And speed matters—folks won’t wait around.
+
+Jordan [Support/Helpdesk Lead]: If a search or a booking spins beyond a few seconds, I hear about it. I’m pushing for most actions to complete in under five seconds, and even at rush hour still under eight, or I get roasted.
+
+Alex [DBA/Systems Architect]: That lines up with what I’ve been modeling—typical interactions sub-five seconds, with a worst case tail still under eight. And mornings are intense. We should be comfortable around a thousand simultaneous requests for launch and plan to scale up from there.
+
+Serena [Security & Compliance Officer]: Before we get too far—access control. Only our employees and any vetted external guests should be able to log in. No open sign-ups. Every login must tie back to our directory or a pre-approved guest ID.
+
+Dana [Executive Sponsor/Product Owner]: Absolutely. Also, I don’t want just a booking tool. We need it to reach out—send invitations and reminders, plus confirmations.
+
+Miguel [Facilities Manager]: Email at least. Some managers like text for last-minute changes—
+
+Priya [CIO/IT Operations Lead]: Let’s commit to email out of the gate and leave other channels as a preference we can expand on later. Users should be able to pick their preferred way to get notified where possible.
+
+Jordan [Support/Helpdesk Lead]: Right: invites, reminders, and the organizer gets a confirmation when the booking completes. That’s table stakes.
+
+Alex [DBA/Systems Architect]: And we should store meeting details: agenda, meeting type, organizer contact info, plus whether invitees accepted or declined. Otherwise we have no history.
+
+Serena [Security & Compliance Officer]: Recording acknowledgements helps for audits too. On the reporting side, I want to be crystal clear: if anyone tries to pull reservations by user, that’s a manager-only capability. Don’t expose individual schedules to the whole company.
+
+Dana [Executive Sponsor/Product Owner]: Noted. On look and feel: keep it clean and professional, brand-aligned. No cartoonish UI. Can we skin it with our logo and colors?
+
+Priya [CIO/IT Operations Lead]: Brandable is fine. Also give people a way to choose their start page. Managers may want reporting first; others might want their calendar or room search.
+
+Jordan [Support/Helpdesk Lead]: If I can set my home screen to room search or a personal calendar, that will cut down confusion. Keep navigation familiar—standard web conventions.
+
+Miguel [Facilities Manager]: Searching should be dead simple: “I need a room for eight with a projector Tuesday at 10.” Filters for time, capacity, and equipment. Show if the equipment is available too.
+
+Alex [DBA/Systems Architect]: So, filter by parameters and clearly show the current availability state. And when someone reserves, the schedule should reflect it right away and prevent conflicts. Let’s also surface a clear “Available” badge for free rooms.
+
+Serena [Security & Compliance Officer]: Data integrity matters. What users type in should be what lands in the database—no silent truncation or auto-corrections that change meaning. And we’ll harden inputs so malicious content is blocked without crashing anything or corrupting data.
+
+Priya [CIO/IT Operations Lead]: Yes to defenses and stability. We also want automatic updates for emerging security issues—so customers don’t have to hunt for patches.
+
+Dana [Executive Sponsor/Product Owner]: Platform-wise: we’re a mixed environment. If the machine runs Java, we’re fine. We have Linux and Windows, plus a few macOS servers in labs. We’re comfortable with Tomcat or JBoss as the app container.
+
+Alex [DBA/Systems Architect]: Java SE/EE stack, deploy to Tomcat by default, JBoss is fine. Browser-based UI—standard HTML that renders properly on the mainstream browsers we test.
+
+Jordan [Support/Helpdesk Lead]: Please include a broad browser test matrix—Edge, Chrome, Firefox, Safari, a few versions. If the bulk of those render cleanly, support can document the outliers.
+
+Miguel [Facilities Manager]: The building map is a big deal. People get lost in E wing. A floorplan view with rooms and the gear they contain would help a lot.
+
+Dana [Executive Sponsor/Product Owner]: Yes—show floorplans with room locations and equipment details. And make it easy for facilities to add new maps when we renovate. I’d rather not need code changes for that.
+
+Priya [CIO/IT Operations Lead]: Config-driven maps sound right. Ideally you can drop a file in or use an admin setup—aim for minimal IT involvement.
+
+Serena [Security & Compliance Officer]: User onboarding shouldn’t be a slog. Can we target that a new employee added to the system can log in within ten minutes? That’s been a pain in past tools.
+
+Jordan [Support/Helpdesk Lead]: If 90% of new users can log in within ten minutes of being added, I’ll count that a win. Directory sync or SSO would help, but the key is making the flow easy.
+
+Alex [DBA/Systems Architect]: Database standards—we need to be agnostic.
+
+Priya [CIO/IT Operations Lead]: We use Oracle, SQL Server, DB2, MySQL, HSQL for tests, and even some Access in legacy corners. The app should run with any of those, either local to the app server or over the network.
+
+Alex [DBA/Systems Architect]: Then we’ll abstract the DB layer and make it configurable—point it to the engine via config, no code changes. And ensure reliable connectivity so writes don’t get lost.
+
+Dana [Executive Sponsor/Product Owner]: Don’t forget reminders. No-shows drop when people get nudged. Also, I want adoption without heavy training: in the first two weeks, I’d like the vast majority to choose it for booking on their own.
+
+Jordan [Support/Helpdesk Lead]: If the first-run experience is good, that’s realistic. After 15 minutes of exploring, even a new employee should be able to create a meeting and book a room.
+
+Miguel [Facilities Manager]: Equipment logistics: if someone books a room and requests a mobile projector, we need to track that move. And building staff should get alerted when there’s a transport request.
+
+Serena [Security & Compliance Officer]: Fine—make sure those alerts go only to authorized facilities contacts.
+
+Alex [DBA/Systems Architect]: We’ll record which equipment is reserved and track a status timeline like “requested,” “in transit,” “delivered,” “returned.” Also, when organizers update agendas, we should keep a record of the changes.
+
+Dana [Executive Sponsor/Product Owner]: And categorize the meeting type—staff meeting, client meeting, workshop—so managers can report on it.
+
+Priya [CIO/IT Operations Lead]: Managers also want different ways to view schedules—by building, team, floor, maybe time slices. Those views should be limited to privileged roles.
+
+Jordan [Support/Helpdesk Lead]: Search should help when people only type part of a term. Filters for time, capacity, equipment, and an “available now” toggle.
+
+Miguel [Facilities Manager]: And make the status unambiguous. If it’s free, say “Available.”
+
+Serena [Security & Compliance Officer]: Accessibility—keyboard navigation, screen reader labels, color contrast. We need to align with disability access standards.
+
+Dana [Executive Sponsor/Product Owner]: International offices: language selection per user would be ideal. We’ll start with our main markets, and we’ll need correct date/time formats so no one argues about 03/04.
+
+Priya [CIO/IT Operations Lead]: Language packs and locale-aware formatting. Also, keep right-to-left in mind in the design even if not day one.
+
+Alex [DBA/Systems Architect]: On code structure: let’s build with recognized design patterns and best practices. I want future changes to be straightforward—set a bar that roughly nine out of ten maintenance devs can add a modest feature in about two working days.
+
+Jordan [Support/Helpdesk Lead]: Maintenance releases: we’re thinking annual. Upgrades should be quick—ideally just a few minutes for most customers. And please, keep the install process simple.
+
+Priya [CIO/IT Operations Lead]: Deployment needs to be doable in a normal office setting—install within two days, including DB and email setup. And licensing will be per server, with tiers for single, a few, and many.
+
+Dana [Executive Sponsor/Product Owner]: Distribution—yes, a downloadable ZIP or installer, and we’ll also provide a packaged disc for clients who still want it.
+
+Serena [Security & Compliance Officer]: Don’t forget exception logging. If something goes wrong, we need a record we can send to support for diagnosis. And for availability—aside from hardware issues, we expect near-constant uptime.
+
+Alex [DBA/Systems Architect]: Throughput-wise, I’m projecting around ten thousand transactions an hour in the near term, and we should plan to grow beyond that later.
+
+Jordan [Support/Helpdesk Lead]: Keep it snappy or people will go back to email chains to book rooms.
+
+Miguel [Facilities Manager]: One more map note—when we expand, facilities shouldn’t need IT to wire in a new floorplan.
+
+Priya [CIO/IT Operations Lead]: Right—config-driven so you can integrate new maps during the product’s lifecycle with minimal help.
+
+Serena [Security & Compliance Officer]: And again, those reservation lookups by user stay manager-only.
+
+Jordan [Support/Helpdesk Lead]: We’ll enforce that via roles.
+
+Dana [Executive Sponsor/Product Owner]: Just confirming—we’re browser-based; it should work in typical office browsers.
+
+Priya [CIO/IT Operations Lead]: Covered. We’ll test a representative set and aim for good rendering across the majority. Also ensure client-server requests don’t mysteriously drop.
+
+Alex [DBA/Systems Architect]: On DB communication, we’ll use reliable patterns and retries as needed so the app doesn’t end up in partial states.
+
+Miguel [Facilities Manager]: When equipment needs moving, facilities should get an email when that transport is requested.
+
+Serena [Security & Compliance Officer]: Send it to our designated lists and track that the alert went out.
+
+Jordan [Support/Helpdesk Lead]: And after an organizer sets up a meeting, send them a confirmation. If they don’t see that, they’ll assume it failed and try again.
+
+Dana [Executive Sponsor/Product Owner]: Also, for global teams, show date and time in the user’s locale format.
+
+Priya [CIO/IT Operations Lead]: And installation—let’s keep it squarely within a two-day window for a typical office setup.
+
+Alex [DBA/Systems Architect]: Tech stack recap: Java SE/EE on Tomcat or similar; DB backend pluggable—Oracle, SQL Server, DB2, MySQL, HSQL, and yes, MS Access if needed.
+
+Jordan [Support/Helpdesk Lead]: If Access keeps a small office happy, fine—just make sure the product talks to the DB reliably.
+
+Serena [Security & Compliance Officer]: For uptime, let’s target the app to be available essentially all the time when the servers are healthy.
+
+Dana [Executive Sponsor/Product Owner]: Summing up: make it pleasant to use, give clear confirmations, managers get oversight, facilities get transport alerts, and IT can roll it out broadly without re-architecting.
+
+Miguel [Facilities Manager]: Please make that “available now” view easy to find. And don’t forget the map.
+
+Jordan [Support/Helpdesk Lead]: And make it intuitive from the first click. If most people can book in a few minutes on first use, we’re in good shape.
+
+Priya [CIO/IT Operations Lead]: We’ll also keep the security update path in place so sites aren’t babysitting patches.
+
+Alex [DBA/Systems Architect]: And exception logs—yes, with a way to share them for troubleshooting when needed.
+
+Serena [Security & Compliance Officer]: Lastly, ensure it’s deployed on a web/app server—this is not a desktop tool.
+
+Alex [DBA/Systems Architect]: It’ll run in Tomcat or similar, with browsers connecting to it.
+
+Dana [Executive Sponsor/Product Owner]: Great. Let’s document and move forward.
+
+Miguel [Facilities Manager]: Thanks.
+
+Jordan [Support/Helpdesk Lead]: Thanks all.
+
+Serena [Security & Compliance Officer]: Cheers.
+
+Priya [CIO/IT Operations Lead]: Good session.
+
+Alex [DBA/Systems Architect]: I’ll write up the architecture notes.

@@ -1,0 +1,162 @@
+TYPE  : interview_transcript
+TITLE : ColorCast Migration — Stakeholder Discovery Interview (Revised Transcript)
+UNIT  : PURE_2004 - colorcast
+============================================================
+
+Linda [Marketing]: Thanks for making time. I want to make sure we aren't... well, that we don't confuse customers during the paint number changeover. Our big thing is continuity, you know? If someone walks in with the old card or sees a name in a magazine, they shouldn't hit a dead end on the site.
+
+Raj [Product Manager]: Totally. The center of gravity is that translation from the legacy numbering into the new scheme. And not just numbers — we also have to handle those collections and series labels. Like, 'Coastal 2001' becomes part of 'Modern Naturals' or whatever the new thing is.
+
+Owen [ColorKast Vendor]: Right, the translator module we proposed maps the old codes to the new SKUs and collection descriptors. It's not one-to-one in every case, so we need to specify rules. And the UI should present it—
+
+Jade [UX Designer]: Sorry to jump in — we said UI patterns are going into that separate whitepaper, remember? The spec here should call the capability, but not wireframes. I have a draft of the UI doc.
+
+Maria [IT Ops]: Please keep those separate. Our ops team reads the product specs differently than design. If it says 'how it looks' here, people think we've coded the look into the server. We need the spec to say what it does, interfaces, constraints, and such.
+
+Ben [Distributor]: Can I just ask, is this for us distributors too? We need some docs we can print for our counters so staff can answer customers. Like quick guides.
+
+Linda [Marketing]: Yes, absolutely. And customers, too. We want help pages on the site, simple explanations — what happens when they type an old paint number, where the new one shows up.
+
+Raj [Product Manager]: On features: there are a few buckets. Search by name or number, and by technical color value. And a visual picker. Plus, that thing where you load a swatch image and it guesses the paint — the sample matcher.
+
+Owen [ColorKast Vendor]: Color search will use our backend indexes. The nearest match calculations use RGB distance. We validated that is fine for production. It’s not CIE-Lab fancy, but it's acceptable similarity per your earlier notes.
+
+Jade [UX Designer]: Wait, is 'RGB distance' the one that's like Euclidean in 3D? Because I was thinking of HSV. Sorry if I'm off.
+
+Owen [ColorKast Vendor]: Yeah, it's Euclidean in the red-green-blue space. Works well enough and it’s fast. We can note the assumption explicitly so nobody expects perfect perceptual matching.
+
+Maria [IT Ops]: Just to confirm, all the heavy lifting is server-side, yes? Nothing on the client other than the browser doing basic display and form submissions? We have to be strict that search logic and persistent storage sit on the servers we run.
+
+Raj [Product Manager]: Yes, the app is server-based. Clients are regular browsers — no plugins. We stick to, um, the old browser list we inherited. I know it's dated, but Marketing insisted.
+
+Linda [Marketing]: We cannot alienate people on IE 4.x and Netscape 6. It's in our site compatibility promise. Sorry, Jade. I know.
+
+Jade [UX Designer]: It's okay. We'll gracefully degrade. Just please, minimum requirements need to be explicit. Also, I want it to work on Macs and PCs — different OSes — because our audience and stores use mixed environments.
+
+Ben [Distributor]: My POS runs Windows 2000. The in-shop kiosks have Mozilla 1.0. Some reps have Netscape 6. Please don't make me update all of them this quarter.
+
+Maria [IT Ops]: Okay, so supported browsers are those versions and beyond. Client machines must meet whatever the browser vendor says. We're not spec'ing RAM on the client; we point to browser requirements. Any performance metrics we write should default to client-side expectations unless we say otherwise for the server.
+
+Raj [Product Manager]: Right, and for servers, we have capacity guidance. Per 50 users, we need roughly a 1 GHz processor and half a gig of RAM. It's a crude yardstick but it's what we budgeted back in Q1.
+
+Owen [ColorKast Vendor]: On modules: we keep each main feature as its own page. Like, a Search page, a Visual Picker page, a Sample Match page, a Translate page, and the Admin console is completely separate. Helps with theming as well.
+
+Jade [UX Designer]: Yes, and for the ABC designers — that's me and team — we need hooks: CSS classes, maybe a skin file. The tool cannot look like a foreign widget. It should inherit the ABC site chrome. Please expose a theme toggle or include a style package we can replace.
+
+Linda [Marketing]: It should look like part of our site. When people jump to ColorCast, it shouldn't feel like they left. Use our header and footer; nav links should live where they expect. Also don't put your own brand logo as a top banner — sorry, Owen.
+
+Owen [ColorKast Vendor]: We can white-label. Branding placement is a legal/marketing topic — for the spec, just say it integrates with the ABC site theme.
+
+Ben [Distributor]: If I go to the translator and put in 'A12-4 Coastal Blue' from the old book, I should get the new number and what family it belongs to now. And if it was discontinued, maybe it points me to the closest alternatives, yeah?
+
+Raj [Product Manager]: Exactly — during migration, colors or entire series may get dropped or renamed. The translator needs to handle add/remove gracefully, and if something is retired, the nearest substitutes should be shown.
+
+Maria [IT Ops]: Speaking of graceful — error handling. If something breaks, I want it to recover without blanking out the page. At least reuse the last criteria and try again. And users should be able to report the issue without getting kicked out. Let's put in the spec that the application always attempts a full recovery from any error condition.
+
+Owen [ColorKast Vendor]: We'll put a 'Report a Problem' link and also auto-send crash logs to us, ColorKast, when a server exception occurs. And yes, we can make it a constraint that the system attempts full recovery on any error — retry, preserve inputs, reload the last state — without blocking the task.
+
+Jade [UX Designer]: Not a modal that traps focus, please. Accessibility-wise, we must be operable by keyboard alone. No hidden hover controls.
+
+Linda [Marketing]: Yes, we have to check the accessibility box. Keyboard-only operation is important — and we’ll handle the rest of the UX details in the UI doc.
+
+Raj [Product Manager]: On the Default user: we don't want accounts for the everyday user. They should be able to use the whole tool minus admin stuff. And their palette — we talked about a personal palette that persists while they browse.
+
+Jade [UX Designer]: I'd do a temporary palette that lives for the session only. No login, so it dies when they close the browser. We can keep it in memory server-side or track it with a session cookie ID.
+
+Maria [IT Ops]: I'm okay with session-only storage for non-admins. No password, no PII. Make sure we don't accidentally write those palettes to database beyond the session. We can purge them when the session expires.
+
+Ben [Distributor]: So I can, as a store clerk, open the site, pick some colors for a customer, add them to a palette, print it if needed, but after I close the browser, it's gone. Fine.
+
+Raj [Product Manager]: Admins are a different story. We'll have three levels. Level one is the entry point — can add things. Level two can also update. Level three can do the full gamut, including deletes, and manage admin users of any type.
+
+Maria [IT Ops]: Let's be precise. L1 can create L1s. L2 can create up to L2. L3 can create any admin role. Permissions are add only at L1, add/update at L2, and add/update/delete at L3.
+
+Owen [ColorKast Vendor]: That mapping is clear. Also, the admin console is where you manage paints, collections, and user accounts, right?
+
+Raj [Product Manager]: Yes. Paint data and admin user management. We'll have to make sure it reflects migration realities: paints get added, colors retired, collections renamed. We need a way to mark statuses.
+
+Linda [Marketing]: Wait, before we dive deeper, timeline. We have to have version 1.0 live by Q2 — sorry, it's a hard date because the rebrand goes public then. There was no previous version on our site, so it's not an upgrade, it's a new drop.
+
+Ben [Distributor]: Are we talking April? May?
+
+Raj [Product Manager]: Window is by end of Q2. Earlier is better for distributors to train staff.
+
+Maria [IT Ops]: High availability is still a must. Our web servers have maintenance windows, but this tool is going to be used by dealers in different time zones. We should aim for minimal downtime and have a rollback plan.
+
+Owen [ColorKast Vendor]: We can architect clustering on your side, but note we're submitting a product spec, not the detailed deployment plan. We'll document the constraints and the dependencies — like the third-party paint database we connect to — and your ops team can decide HA topology.
+
+Jade [UX Designer]: Sorry, I zoned out for a second. You said 'product spec'. Can we make sure the doc has a clean structure? Table of contents, revision history up front so we can track changes. An intro that tells readers where to look. I hate fishing for definitions.
+
+Raj [Product Manager]: We'll do that. Introduce purpose, conventions, then point to sections explaining interfaces and performance constraints. We should remind readers to read the intro before diving into the rest.
+
+Maria [IT Ops]: And a clear separation: what's overall description, what's interfaces, what's non-functional. Project managers will use the interface and performance sections to make decisions about hardware.
+
+Linda [Marketing]: Back on customer experience — the search. If someone types 'Sunrise' or 'A12-4' it should find something. If they paste hex or RGB values from a design tool — can we handle that?
+
+Owen [ColorKast Vendor]: Yes, we accept name, number, and standard color values like RGB tuples. And we can convert from a hex string too. We'll translate into our internal representation and fetch nearest paints.
+
+Ben [Distributor]: Nearest paints is that 'closest colors' bit you mentioned? Helpful when a color is out of stock or no longer in the new line.
+
+Jade [UX Designer]: In the visual picker, I'd like a hue-saturation square with a lightness slider. Yes, I know, UI doc. But the idea is they can pick a color you see. Also the image upload — they should point to a JPG of a room and we sample it.
+
+Maria [IT Ops]: Wait, image upload — is that server-side processing? No hefty client scripting. We can accept an image, do server processing, return a short list of candidate colors.
+
+Owen [ColorKast Vendor]: Correct, the algorithm runs on the server. We'll need to watch file sizes. But yes, all search and processing happen server-side.
+
+Linda [Marketing]: And the tool fits inside our site. Theming, I mean. The modules shouldn't break our navigation. Make it feel native.
+
+Jade [UX Designer]: We can implement a theme layer. But please call out in the spec that ABC designers can drop in our CSS and a header include. No hard-coded inline styles.
+
+Ben [Distributor]: I have a weird question. If my kiosk loses network for a second and the request fails, will the page crash? Can the tool recover, like, try again or show a message without making me re-type everything?
+
+Owen [ColorKast Vendor]: We can preserve the last input server-side and attempt to reload gracefully. Error capture runs in the background; if it's fatal, we auto-submit a report to us and keep a non-blocking notice. The intent is to always attempt a full recovery so you can continue without re-typing.
+
+Jade [UX Designer]: Please, no big red 'An error occurred' banners. Just a non-blocking toast or a subtle message with a 'Send feedback' link. And keyboard focus shouldn't jump around.
+
+Maria [IT Ops]: Keyboard again — can someone navigate the entire app without a mouse? Tab order, skip links, all that. We can't ship something that forces mousing.
+
+Raj [Product Manager]: Yes, that's in scope. We list it as an accessibility constraint. Keep the language 'must be usable with the keyboard alone'.
+
+Linda [Marketing]: Also, can we add a user palette so customers can collect a few options while they browse different modules? Like they find a color via search, then go to the translator, still see their saved colors.
+
+Jade [UX Designer]: That should be session-wide. We store an array of color IDs on the server keyed by session. It appears as a panel on all modules. No signup required. If they close the browser, poof, it's gone.
+
+Ben [Distributor]: Yeah, don't store it long term. If a customer wants to keep it, they can print or copy it.
+
+Owen [ColorKast Vendor]: That’s aligned with no password protection for default users. We won’t write their palette to a persistent user profile, because there is none.
+
+Maria [IT Ops]: Just to reiterate, admin accounts are separate. Secure, with levels. We'll manage those. The general public are default users.
+
+Raj [Product Manager]: Quick tangent — the SRS will be a product spec. No implementation code or UI designs. For example, we say 'Provide a method to search by RGB', but not 'Add a text field on the left of the header'. Detailed UI sits in the other document Jade owns.
+
+Jade [UX Designer]: I’ll link that whitepaper from the SRS. Also, I want an overview at the beginning of the SRS that says, 'If you are a project manager, read sections on interfaces and non-functional requirements.' People keep asking me, 'Where do I find the browser list?' Make it easy.
+
+Linda [Marketing]: I also want a revision log. We keep changing names. 'New Classics' became 'Classic New' for a day — a mess. If we can track doc changes date-by-date, we avoid misunderstandings.
+
+Ben [Distributor]: About the search page, can I type into a single box and it figures out if it's a number, name, or RGB? Or do we need tabs?
+
+Jade [UX Designer]: I'd prefer a smart field, but we can decide in the UI doc. The SRS should just say the system accepts those inputs. Feature modularization still stands — search as one module page regardless of input.
+
+Owen [ColorKast Vendor]: On a technical note — we depend on third-party repositories for paint details and search indexing. We'll spell out that dependency; you own the subscription, we integrate.
+
+Maria [IT Ops]: And let's add the design constraints we already agreed: server-side only processing for search and storage, supported browsers list, theming must not break your header, etc. Those need to be documented as constraints, not assumptions. Include the error recovery rule we just discussed.
+
+Raj [Product Manager]: We'll compile a section on assumptions and dependencies too: e.g., that the environment meets the minimum specs and browsers are available. Also, the use case is primarily for the rollout period. Not a forever tool, though marketing may keep it a bit longer.
+
+Linda [Marketing]: We keep saying 'rollout'. Are we planning to decommission later? I thought it's around the installation and transition window, after which normal site pages take over.
+
+Ben [Distributor]: As long as we have a translator during the messy months. After, it can be archived.
+
+Jade [UX Designer]: Sorry — off-topic: my calendar says we have a brand shoot on the 15th. Can we not deploy that day? I can't be on call.
+
+Maria [IT Ops]: We don't release on Fridays anyway. We'll coordinate downtime.
+
+Owen [ColorKast Vendor]: We’ll get you a spec draft with modules separated, error reporting flow, admin roles, and the backend assumptions about RGB and data sources.
+
+Raj [Product Manager]: Perfect. Meeting adjourned — unless someone has a last-second blocker?
+
+Maria [IT Ops]: I'm good. Just please don't sneak any Flash in there.
+
+Jade [UX Designer]: Ha, no Flash. Promise.
+
+Linda [Marketing]: Done. Thanks everyone.

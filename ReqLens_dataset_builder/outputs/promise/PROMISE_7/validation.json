@@ -1,0 +1,212 @@
+{
+  "coverage_rate": 0.9565,
+  "missing_req_ids": [
+    "PROMISE_7_R021"
+  ],
+  "unsupported_count": 2,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PROMISE_7_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "last 30 days should complete in about 30 minutes"
+      ],
+      "reason": "30-minute target for 30-day rebuild specified."
+    },
+    {
+      "req_id": "PROMISE_7_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "support at least six concurrent users"
+      ],
+      "reason": "Six concurrent users explicitly required."
+    },
+    {
+      "req_id": "PROMISE_7_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "run on existing in-store Windows PCs"
+      ],
+      "reason": "Must run on current store Windows PCs; no new hardware."
+    },
+    {
+      "req_id": "PROMISE_7_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "in-app scheduled backups and on-demand restore"
+      ],
+      "reason": "Scheduled automated backups and in-app restore requested."
+    },
+    {
+      "req_id": "PROMISE_7_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "apply consistently across IQA, PFE, PME"
+      ],
+      "reason": "Central accounts with password/permission propagation required."
+    },
+    {
+      "req_id": "PROMISE_7_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "Role-based access per subsystem"
+      ],
+      "reason": "Granular, per-subsystem role-based access specified."
+    },
+    {
+      "req_id": "PROMISE_7_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "outputs must be acceptable to external auditors"
+      ],
+      "reason": "Audit-readiness and traceability to satisfy external auditors."
+    },
+    {
+      "req_id": "PROMISE_7_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "avoid any components that charge per user"
+      ],
+      "reason": "Stakeholders forbid per-user or royalty-fee components."
+    },
+    {
+      "req_id": "PROMISE_7_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "manual \"Run IQA for Day\" action"
+      ],
+      "reason": "On-demand day-specific IQA run explicitly requested."
+    },
+    {
+      "req_id": "PROMISE_7_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "Rebuild From Date regenerates all adjustments"
+      ],
+      "reason": "Rebuild-from-date option requested to regenerate range."
+    },
+    {
+      "req_id": "PROMISE_7_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "consult on-hand stock; apply substitution lists"
+      ],
+      "reason": "Source requires using on-hand stock for substitutions."
+    },
+    {
+      "req_id": "PROMISE_7_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "Maintain formulas"
+      ],
+      "reason": "PFE described for maintaining product formulas."
+    },
+    {
+      "req_id": "PROMISE_7_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "semi-products that are used inside other formulas"
+      ],
+      "reason": "Semi-products with own formulas referenced by finals."
+    },
+    {
+      "req_id": "PROMISE_7_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "Each ingredient can have an allowed substitution list."
+      ],
+      "reason": "Ingredients support defining allowed substitution lists."
+    },
+    {
+      "req_id": "PROMISE_7_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "propose common alternates automatically"
+      ],
+      "reason": "PFE will auto-suggest common alternates to pre-fill lists."
+    },
+    {
+      "req_id": "PROMISE_7_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "order is meaningful and must persist across sessions"
+      ],
+      "reason": "Substitution order is stated as persistent and meaningful."
+    },
+    {
+      "req_id": "PROMISE_7_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "pull directly from the accounting product catalog"
+      ],
+      "reason": "PME is required to build and manage POS menus."
+    },
+    {
+      "req_id": "PROMISE_7_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "pull directly from the accounting product catalog"
+      ],
+      "reason": "PME must source products from accounting catalog."
+    },
+    {
+      "req_id": "PROMISE_7_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "support nested menus and submenus",
+        "preserve the order you set"
+      ],
+      "reason": "Nested menus with explicit, persistent ordering required."
+    },
+    {
+      "req_id": "PROMISE_7_R020",
+      "supported": true,
+      "evidence_snippets": [
+        "single product may be placed in more than one submenu"
+      ],
+      "reason": "Source explicitly allows products in multiple submenus."
+    },
+    {
+      "req_id": "PROMISE_7_R021",
+      "supported": false,
+      "evidence_snippets": [
+        "classic Windows—menus, toolbars",
+        "Must run on existing in-store Windows PCs"
+      ],
+      "reason": "Classic Windows UI requested, but Windows XP not specified."
+    },
+    {
+      "req_id": "PROMISE_7_R022",
+      "supported": true,
+      "evidence_snippets": [
+        "IQA docs generated automatically upon import",
+        "tie-back to relevant product/formula"
+      ],
+      "reason": "IQA generation tied to sales and product/formula traceability."
+    },
+    {
+      "req_id": "PROMISE_7_R023",
+      "supported": true,
+      "evidence_snippets": [
+        "auto-generate IQAs when the POS sales file arrives"
+      ],
+      "reason": "Source explicitly requires automatic IQA on sales import."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "The application shall provide in-app scheduled automated backups and an in-app restore workflow (i.e., backup scheduling and restore must be managed from the application UI rather than relying on external/command-line tools).",
+      "source_snippet": "Provide scheduled automated backups of RMS business data (nightly acceptable); also allow an in-app on-demand restore when needed (e.g., menu changes made in error).",
+      "source_type": "meeting_notes",
+      "reason": "The gold set requires automatic backups and on-demand restore but does not specify that backup scheduling and restore must be performed inside the application (as opposed to external scripts or command-line tools). The source explicitly requires in-app scheduling/restore, and also elsewhere rejects reliance on command-line tools — a stronger deployment/UX constraint not covered by the gold requirements."
+    },
+    {
+      "text": "The system shall keep a basic log/trail of backup and restore actions to support audit checks.",
+      "source_snippet": "Keep a basic log/trail of backup and restore actions to support audit checks.",
+      "source_type": "meeting_notes",
+      "reason": "The source explicitly requires basic logging of backup/restore operations to support audits. The gold requirements mandate backup and restore functionality and audit-readiness of data, but do not require retention of a backup/restore action log — a tangible audit-support feature missing from the gold list."
+    }
+  ],
+  "passed": true
+}

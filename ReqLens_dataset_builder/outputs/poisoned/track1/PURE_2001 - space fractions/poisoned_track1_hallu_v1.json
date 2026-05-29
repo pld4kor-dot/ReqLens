@@ -1,0 +1,612 @@
+{
+  "artifact_id": "T1A_FD66153A",
+  "unit_id": "PURE_2001 - space fractions",
+  "origin": "PURE",
+  "track_id": "track1",
+  "variant_id": "hallu_v1",
+  "created_at": "2026-05-26T19:03:45.030665+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Kickoff Interview: Space Fractions gameplay and content discussion (revised)",
+      "text": "Andrea [Teacher]: Okay, thanks for making time. I’m Andrea Brooks from Pecan Springs Elementary—sixth grade math—and I’m the one who originally asked for this game. I want to make sure we’re building something that actually helps the kids with fractions, not just flash and bang.\n\nLeo [Student Dev]: Great to meet you, Ms. Brooks. I’m Leo from the S2S student dev team. We’ve skimmed your notes and wanted to walk through the flow—what the kids see first, how they answer, scoring—so we don’t miss anything.\n\nPriya [Student Dev]: And I’m Priya. Mark is our mentor, and Jenna from the site team is listening in for anything hosting-related.\n\nMark [Mentor]: Hi all. I’ll nudge if we drift.\n\nJenna [Site Maintainer]: Hey. I care that what you ship runs in the browsers our labs support, and that updates don’t need a chaperone.\n\nAndrea [Teacher]: Right, so first thing, the kids. Sixth graders, and we’ll use it in class. We just pull it up during math block and play. Keep it friendly to mouse clicks—no typing names or anything; they hunt-and-peck and it slows us down.\n\nLeo [Student Dev]: Got it: click-driven UI. For questions, multiple choice with clickable options—no keyboard entry. How about the opening animation—if they get impatient, can a click skip it?\n\nPriya [Student Dev]: We’re calling it a little intro movie. We’ll have a title and maybe the robot sidekick flying in. If they click, we can hop to the main menu; otherwise it plays through and then lands there.\n\nAndrea [Teacher]: Yes, let a click skip. And during that little movie, please don’t have random keys do things. The kids mash keys and then say it broke. Click only.\n\nMark [Mentor]: So: during the intro, only mouse clicks matter, others ignored. A click takes them to the main menu.\n\nLeo [Student Dev]: Main menu: we’re thinking a big Begin Game button, a Help button, a short blurb about the student team with a link, and a Denominators link—the page on S2S that catalogs the math stuff.\n\nAndrea [Teacher]: Yes. Link out to Denominators. And give credit to the student team—my students love seeing names and a link. Kids click anything that glows.\n\nPriya [Student Dev]: So the main screen waits until they choose: Begin to start, Help for a basic how-to, Denominators link to the site, plus the team blurb. That feels straightforward.\n\nJenna [Site Maintainer]: If you want the Denominators and any other related links to open separately, say so; otherwise I’ll get “it stole my tab” emails.\n\nAndrea [Teacher]: New window for those external ones. The kids don’t need to navigate away and then we lose the game.\n\nLeo [Student Dev]: Okay, external links in a separate window. Help screen—we’ll keep it simple: “Click the best answer. If you miss, try again. Watch for hints from the robot.”\n\nAndrea [Teacher]: The robot. I want the sidekick to pop in with hints that are specific to the wrong answer. Like, if they keep clicking 1/2 instead of 2/4, the robot says something like “Check if the denominators match before adding.” Not generic “try again.”\n\nPriya [Student Dev]: Context-sensitive hints tied to choices. We’ll design it so a wrong selection triggers a targeted hint, and the editor can tweak that hint text.\n\nMark [Mentor]: Keep it structured: hints mapped to answer choices or concept tags. No fancy AI.\n\nAndrea [Teacher]: Immediate feedback too, please. If they click the right thing—ding, “You got it!”—and move on. If it’s wrong, tell them and let them try again, but I don’t want full credit if they miss on the first try. The final score should reflect first-try correctness.\n\nLeo [Student Dev]: Understood. Scoring counts only first attempts as correct. If they miss first and then fix it, they continue but it doesn’t add a full point.\n\nAndrea [Teacher]: And the end-of-game—we need the exact score shown. The kids will ask. Also, tie it to the story. Like, “You saved the colony!” if they nailed the crucial decisions, or “You limped home” if they missed them. Kids love story-based endings.\n\nPriya [Student Dev]: That dovetails with branching. We’re planning a plot that branches at certain critical questions—call them checkpoints. Based on those answers, we select a final scene. We can settle on how many endings later, but the mechanism is: some questions flip a branch flag, and at the end we route to the appropriate ending sequence and show a customized message with the score.\n\nAndrea [Teacher]: That sounds right. Don’t just end on a plain number.\n\nMark [Mentor]: So the game flow: intro movie, skippable on click. Main menu with Begin, Help, team blurb, and a Denominators link. Begin sends them into the question sequence. Questions are multiple choice with cartoon visuals, fraction problems in context. Correct click: positive feedback animation and next question. Incorrect: present hint and allow retry, but not full credit. After the configured number of questions, send them to an ending determined by the critical answers, show exact score and message. Options to replay, exit, or return to menu.\n\nAndrea [Teacher]: Yes. And “replay” right away on that end screen, please. The kids will want to try again.\n\nLeo [Student Dev]: We’ll put “Try Again,” “Main Menu,” and “Exit” on the end screen. Clicking any should do what it says.\n\nJenna [Site Maintainer]: Quick thing—“Exit” in a browser context varies. Let’s make sure whatever we implement feels consistent across the lab browsers.\n\nAndrea [Teacher]: Okay. Content-wise: it has to be fractions. Numerators, denominators, proper/improper, equivalence, simplifying. I like that you have other games for decimals, but this one stays on fractions. If you link related projects, great, just keep this one focused.\n\nLeo [Student Dev]: The core is fraction problems. We’ll do multiple-choice items with cartoon panels to keep it narrative. Like, “To cross the asteroid field, you need to add 3/8 and 1/8—what’s your fuel fraction now?” Then choices.\n\nAndrea [Teacher]: Good. And mouse clicks only—no “type your answer.” I get ten minutes of “where’s the slash?” every day.\n\nPriya [Student Dev]: That matches our plan. We can add sound cues and small animations to acknowledge clicks and success/failure.\n\nMark [Mentor]: Short and polite sounds. No blaring sirens.\n\nAndrea [Teacher]: A little chime for correct, a softer “try again” for wrong is perfect. The robot can point or shake his head.\n\nLeo [Student Dev]: We’ll implement audio and small animations for feedback in the Flash movie.\n\nAndrea [Teacher]: About the length—how many questions before the ending kicks in? I don’t want a 40-minute saga.\n\nPriya [Student Dev]: It’s flexible. We’ll set a configured number in the game’s data—maybe around 10 to 12. Once the player reaches that count, we route them to the ending tied to the critical checkpoints. We can make that number adjustable with the editor tool we’re planning.\n\nAndrea [Teacher]: Editor tool?\n\nLeo [Student Dev]: A web-based updater so you or an admin can edit questions and the per-choice feedback. Form-based—pulldowns and text fields—so you can pick the correct choice, the hint text for each wrong choice, and mark critical story points. Then it saves so the game loads the updated questions next time.\n\nAndrea [Teacher]: Huh. That would be nice. Our district locks things down, though—no installs on student machines.\n\nJenna [Site Maintainer]: You won’t need installs. The updater is a web page on the S2S site, and the game itself runs in the browser. We’ll keep it simple to access for designated editors.\n\nMark [Mentor]: On the end message—Andrea, you want it aware of the key moments. If the critical ones were correct, show the “you saved the station” ending; if not, a softer one like “You made it back but the station needs repair.”\n\nAndrea [Teacher]: Exactly. Tie performance to narrative.\n\nLeo [Student Dev]: On the main menu, the Help screen will be basic: multiple choice, click answers, hints may pop up, get your score at the end.\n\nAndrea [Teacher]: That’s adequate. Don’t dump a manual on them.\n\nPriya [Student Dev]: We also talked briefly about keyboard navigation, but given your classroom setup, we’ll keep it mouse-only throughout for consistency.\n\nAndrea [Teacher]: Yes, keep it consistent: click to do things.\n\nJenna [Site Maintainer]: For links, besides Denominators, you mentioned decimals and percents games. If we add a “Related S2S projects” area, those should open in a new window as well.\n\nLeo [Student Dev]: We can do that—small links on the side so they don’t distract from Begin.\n\nMark [Mentor]: Don’t bury the Start button in a link farm.\n\nAndrea [Teacher]: Sure, small links are fine. And keep the question text clear; the picture should frame the scenario, not hide the math.\n\nLeo [Student Dev]: Scoring stays in memory during the session. At the end, we show the exact number. If they replay, it resets.\n\nAndrea [Teacher]: Perfect. I’m not collecting grades here—just a clear score they can brag about.\n\nMark [Mentor]: For reliability, we’ll do internal testing and mentor reviews before we call it done. Also break the Flash into scenes and sub-scenes so updates are easier.\n\nJenna [Site Maintainer]: Fewer headaches that way.\n\nAndrea [Teacher]: One complaint from other games: the browser kept changing sizes and the buttons jumped around. If we can keep behavior consistent across the computers—great. I don’t need pixel-perfect, just no surprises.\n\nLeo [Student Dev]: We’ll aim for consistent behavior across supported setups. Interactions should behave the same.\n\nPriya [Student Dev]: Also, we’re not using mic or camera or anything like that.\n\nAndrea [Teacher]: Good—those get blocked on our machines.\n\nMark [Mentor]: Schedule wise—Andrea, are you available next Thursday to review a storyboard of the branching points? We’re still figuring which questions are the critical ones.\n\nAndrea [Teacher]: Next Thursday after 3 works. Send the storyboard earlier and I’ll scribble on it.\n\nLeo [Student Dev]: Will do. One more: for wrong answers, we said “try again” is allowed. Unlimited retries okay?\n\nAndrea [Teacher]: Unlimited is fine. Just be clear that missing on the first try affects the score.\n\nPriya [Student Dev]: Noted.\n\nJenna [Site Maintainer]: When you give me links to other S2S math games—decimals, percents—make sure they open in a new window. We’ll keep the main experience in place.\n\nLeo [Student Dev]: Will do. We’ll also keep the links unobtrusive so they don’t distract from Begin.\n\nPriya [Student Dev]: Summary so far: Mouse-only interaction across the game, including clicking to skip the intro; main title with Begin, Help, team blurb and a Denominators link; questions are all multiple-choice, fraction-focused with cartoon panels; immediate feedback with sound/animation; wrong answers allow retry but not full credit; robot sidekick gives context-sensitive hints; branching based on critical questions determines the ending; end screen shows exact score plus a customized story message and offers Try Again/Main Menu/Exit; related S2S links open in a separate window.\n\nAndrea [Teacher]: That captures it. “Begin Game” should be obvious and big. The kids won’t read two paragraphs before clicking.\n\nMark [Mentor]: And we’ll keep the code modular in Flash scenes so edits are painless.\n\nJenna [Site Maintainer]: As painless as Flash ever is.\n\nLeo [Student Dev]: Great. Andrea, we’ll send you a storyboard for the branching and a mock-up of the menu this weekend.\n\nAndrea [Teacher]: Sounds good. If it’s clicky and clear, it’ll get used."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "Requirements Working Session — structure, platform, and flow (revised)",
+      "text": "Date: 2025-02-18\nCall link: https://meet.s2s.local/space-fractions-work\nAttendees:\n- Andrea Brooks (Teacher, Pecan Springs Elementary — requester)\n- Leo (S2S student dev)\n- Priya (S2S student dev)\n- Mark (Mentor)\n- Jenna (Site/hosting)\n\nNotes (raw):\n\n- SRS will cover the Space Fractions product end-to-end; use one document as the formal spec with requester info in the header (Andrea Brooks, Pecan Springs Elementary).\n- SRS structure: Use the component template: Purpose, Inputs, Processing, Outputs for each module (Intro movie, Menu, Game sequence, End screen, Updater tool).\n  - Inputs: user clicks, browser environment; question data comes from a server text file (format TBD); fractions shown as a/b.\n  - Processing: advance on correct; allow retry on incorrect; branch ending based on flagged critical questions; ignore keyboard during intro; basic validation in updater.\n  - Outputs: visual screens, sound cues, immediate feedback; display exact score on end screen with a story message; offer Try Again/Main Menu/Exit.\n  - Storage: score maintained only in session; no permanent files on student machines.\n\nPlatform/constraints:\n- Web-based delivery. Runs in a browser; no installs on lab PCs.\n- Implementation: Macromedia Flash (v5) + HTML. UI composed of linked Flash movies (intro, menu, main game, endings). Light JavaScript only to host.\n- Browser requirements: needs JavaScript and the Flash plug-in available on lab image (Jenna to confirm supported versions).\n- Runs on any Internet-capable computer; no new hardware; no direct device access (no mic/camera).\n- Standalone in browser — NOT embedded in other software. Umbrella interface unifies intro/menu/game/end; links to other S2S projects are external.\n- Consistent behavior across supported browsers: visuals may differ slightly; program logic must behave the same.\n\nGameplay/story:\n- Audience: sixth-graders and teachers in classroom setting.\n- Interaction: mouse-only across gameplay. During intro, only mouse clicks are honored; other inputs ignored. No text-entry answers.\n- Correct answer: show clear “correct” indicator (text + small animation/sound) then advance to next question automatically.\n- Incorrect answer: show message and a hint; allow another attempt. First attempt wrong does not count as full correct in scoring; scoring counts first-try corrects.\n- Robot sidekick: provides context-sensitive hints tied to particular answer choices or concepts.\n- Branching narrative: designate “critical questions.” Performance at those points determines the final scene. Non-critical questions affect score but not the ending.\n- After N questions (N configurable in data), route to ending scene. End screen displays exact overall score and a customized message tied to the branch.\n\nIntro/menu/help/links:\n- Startup shows brief intro movie (skippable): If user clicks, skip immediately to main menu. While intro active, ignore all inputs except mouse click. If no click, movie finishes then goes to main title screen.\n- Main title screen provides: Begin Game, Help, team blurb (with link to team site), link to Denominators page. Wait state: do nothing until user chooses.\n- Begin Game takes the user directly into the game sequence.\n- Help: basic instructions (how to click answers, hints, score and ending). Single page is sufficient.\n- End screen: shows exact score + plot-based conclusion message; options to Exit, Main Menu, Try Again.\n- Related S2S projects: include links (fractions, decimals, percents) opening in a separate window; placed unobtrusively on menu.\n\nScore/Storage:\n- Scoring maintained only within the session. No permanent storage on the client. Replay resets score.\n\nUpdater tool (admin/content):\n- Web-accessible question updater: allows an admin to create/edit game content and modify any question.\n- Input via forms (pulldowns + text fields), page-by-page navigation per question with Next/Prev and a Submit button.\n- Validation: check required fields (prompt, choices, one marked correct) and format (fractions as a/b). If invalid, prompt and do not write.\n- On submit, generate a text file on the game server with updated question data. Game sequence loads this dynamically at run time.\n- Admin can customize per-question feedback outputs (per-choice hints/feedback).\n- Access: protect the updater with a password so only designated editors can change content (Jenna to coordinate setup).\n\nMaintainability/Design:\n- Flash game modularized into scenes/sub-scenes for intro/menu/game/end; separate assets where feasible so incremental changes don’t require a full rebuild.\n- Reliability: thorough testing by team members; mentors to review before classroom tryout. Test branching correctness and updater validation.\n\nSecurity/Hosting (brief):\n- Security model matches standard browser/hosting context. Updater page will be password-protected per hosting policy.\n- Availability: Hosted on the S2S website for broad access; acceptable for multiple students to use at the same time.\n\nDiscussion fragments:\n- Keyboard shortcuts were proposed but rejected; stick to mouse-only for consistency.\n- Number of endings: more than one; exact count TBD with content.\n- Data format for question file: CSV vs custom text — TBD.\n\nAction items:\n- Leo: Draft SRS component sections using Purpose/Inputs/Processing/Outputs for Intro, Menu, Game, End, Updater.\n- Priya: Prototype intro movie with click-to-skip and ignore other inputs during it. Prepare Help screen text (one page).\n- Jenna: Provide list of supported browsers with Flash 5 plug-in status; confirm hosting wrapper; set up password protection for updater access.\n- Andrea: Provide 10–12 fraction problems with cartoon scenario notes + indicate the “critical questions.” Include per-choice feedback ideas.\n- Mark: Create testing checklist (browser consistency, branching coverage, updater validation). Review modular scene plan.\n\nOpen Issues / Parking Lot:\n- [TBD] Number of endings — 2 vs 3 vs more. Content-dependent.\n- [TBD] Data file format specifics (delimiters/encoding) and server storage path.\n- [TBD] Team site link URL — confirm final path.\n\nMisc notes:\n- Keep behavior consistent even if fonts differ slightly between browsers.\n- Top-level “Space Fractions” interface unifies linked Flash movies; do not embed into external platforms.\n- Sounds/animations should be short to suit classroom use.\n- Denominators link on main screen; small section for related S2S projects; all open in a separate window."
+    },
+    {
+      "type": "email_thread",
+      "title": "Thread: Hosting, updater workflow, and links behavior for Space Fractions (revised)",
+      "text": "Email 1\nFrom: Leo <leo@s2s.dev>\nTo: Jenna <jenna@s2s.site>\nCC: Priya <priya@s2s.dev>, Mark <mark@s2s.mentor>, Andrea <abrooks@pecansprings.edu>\nDate: Mon, Mar 3, 2025 09:12:07 -0600\nSubject: Space Fractions: hosting assumptions + browser requirements\n\nHey Jenna,\n\nQuick confirmations so we don’t run into lab surprises:\n- We’re targeting Macromedia Flash + HTML for the game shell. The interface is a set of linked Flash movies (intro, main menu, game, end) with a simple HTML wrapper.\n- We need a browser that supports JavaScript + the Flash plug-in.\n- The game runs standalone in the browser. It’s not embedded in another platform/LMS. The “Space Fractions” landing page will be the umbrella that unifies those movies, and links out to related S2S projects.\n- External links (Denominators page + related projects like decimals/percents) — plan is to open these in a separate window so students don’t lose their place in the game.\n\nFlag anything that conflicts with site policies.\n\nThanks,\nL\n\n---\n\nEmail 2\nFrom: Jenna <jenna@s2s.site>\nTo: Leo <leo@s2s.dev>\nCC: Priya <priya@s2s.dev>, Mark <mark@s2s.mentor>, Andrea <abrooks@pecansprings.edu>\nDate: Mon, Mar 3, 2025 10:01:42 -0600\nSubject: RE: Space Fractions: hosting assumptions + browser requirements\n\nHey Leo,\n\nLooks aligned with what we can host.\n- Flash 5 is on the lab image. Keep the wrapper simple.\n- Yes, standalone in the browser. If teachers link it from their LMS, that’s just a regular hyperlink out to the S2S site.\n- New window for external links: approved.\n- No direct hardware calls (mic/camera) — understood.\n- Expect that multiple students will load it at the same time; keep assets reasonable in size.\n\nJ\n\n(sent from mobile)\n\n---\n\nEmail 3\nFrom: Andrea <abrooks@pecansprings.edu>\nTo: Leo <leo@s2s.dev>, Priya <priya@s2s.dev>\nCC: Mark <mark@s2s.mentor>, Jenna <jenna@s2s.site>\nDate: Mon, Mar 3, 2025 10:33:19 -0600\nSubject: RE: Space Fractions: hosting assumptions (+ a question about buttons)\n\nHi all,\n\nTwo quick checks:\n1) The main screen has the big “Begin Game” button and the link to the Denominators page, right? When kids click Begin, it should go straight into the questions. And when they click the Denominators link, it should actually go to that page in a new window.\n2) Could we let students use keyboard arrows? (My colleague asked.) I told her you were planning mouse-only but wanted to confirm.\n\nAlso, on the end of game, please show the exact score and let them click to try again or go back to menu.\n\nThanks,\nAndrea\n\n---\n\nEmail 4\nFrom: Priya <priya@s2s.dev>\nTo: Andrea <abrooks@pecansprings.edu>\nCC: Leo <leo@s2s.dev>, Mark <mark@s2s.mentor>, Jenna <jenna@s2s.site>\nDate: Mon, Mar 3, 2025 11:05:55 -0600\nSubject: RE: buttons + updater details\n\nHi Andrea,\n\nOn your points:\n1) Yes — “Begin Game” will send the player directly into the game sequence. And the Denominators link on the main title will navigate to that web page in a separate window so they keep their place in the game.\n2) We’re sticking with mouse-only input throughout the game for simplicity and classroom consistency. During the intro animation, clicking will skip it; other inputs are ignored until it finishes and lands on the main title.\n\nOther items you might care about:\n- We’ll include a small “Related Projects” area (fractions, decimals, percents). Those links open in a new window on click.\n- End-of-game screen will show the player’s exact overall score and a customized message that corresponds to their performance at critical plot points. That screen will offer “Try Again,” “Exit,” and “Main Menu,” all triggered by mouse clicks.\n- Scores live only for the current session; when they try again, it resets.\n\nAbout the content editor/updater tool:\n- It will be a simple web form (no installs) for creating and editing questions.\n- Forms will use pulldowns and text fields, one page per question, with Next/Prev navigation and a Submit button.\n- Submitted data will be validated for completeness (prompt, choices, one correct) and format (fractions in a/b).\n- On submit, it will generate a text file on the game server containing the updated question set; the game loads that at runtime.\n- You’ll be able to customize per-choice hints/feedback for each question.\n- Access to the updater page will be protected with a password so only designated editors can make changes.\n\nWe’ll send screenshots once we have the first pass. Feedback welcome.\n\nThanks,\nPriya\n\n---\n\nEmail 5\nFrom: Mark <mark@s2s.mentor>\nTo: Leo <leo@s2s.dev>, Priya <priya@s2s.dev>\nCC: Jenna <jenna@s2s.site>, Andrea <abrooks@pecansprings.edu>\nDate: Mon, Mar 3, 2025 12:21:03 -0600\nSubject: RE: consistency, branching, and testing\n\nTeam,\n\nReminders before we prototype:\n- Consistency across supported browsers: behavior must be the same. If the End screen says “Try Again,” it restarts the sequence everywhere.\n- Standalone vs. embed: implement it as one umbrella experience composed of the independent Flash movies; don’t embed into an LMS.\n- Interaction: we’ve agreed on mouse-only input; during the intro movie only mouse clicks should be honored.\n- Testing: plan for extensive team testing and a mentor pass before Andrea’s classroom tryout. Include click paths, branching accuracy, and updater validation in the checklist.\n- Content flow: keep the question count configurable so after the configured number, you direct the player to the ending based on answers to the designated critical questions.\n\n—Mark\n\n---\n\nEmail 6\nFrom: Jenna <jenna@s2s.site>\nTo: All\nDate: Mon, Mar 3, 2025 13:02:49 -0600\nSubject: RE: Hosting and availability\n\nQuick add from hosting:\n\n- This will live on the S2S website and be Internet accessible. Expect multiple students at once, including from the same lab. Keep assets reasonably sized.\n- For the “Related S2S projects” links and the Denominators link, opening in a separate window is the right call so students keep the game in place.\n- No special hardware required beyond what runs a browser with the Flash plug-in.\n\nJ\n\n---\n\nEmail 7\nFrom: Leo <leo@s2s.dev>\nTo: All\nDate: Mon, Mar 3, 2025 14:19:21 -0600\nSubject: RE: Finalizing assumptions + a couple of open items\n\nThanks everyone. Quick summary + open items:\n\n- Tech: HTML + linked Flash movies; requires JavaScript and Flash plug-in. No installs on student machines. No direct hardware use.\n- Experience: Space Fractions runs standalone in the browser; one interface unifies Intro/Menu/Game/End; external links open in a new window.\n- Menu behavior: “Begin Game” goes straight to the game; Denominators link goes to that web page in a new window; Help gives basic instructions.\n- Gameplay: mouse-only input. Correct -> show message and advance. Incorrect -> show message and allow retry. Score counts first-try corrects.\n- Ending: after the configured number of questions, route to an ending determined by responses at critical questions. End screen shows exact score + customized plot conclusion; options to Try Again / Exit / Main Menu.\n- Updater: web form with pulldowns/text fields; page-by-page editing with nav + Submit; validation for completeness/format; generates a text file the game loads at runtime; supports per-choice hints; access protected with a password.\n- Availability/consistency: Hosted on S2S website; multiple users acceptable; we’ll test for consistent behavior across supported browsers.\n\nOpen items:\n1) Exact data file format spec for the updater (CSV vs custom text) — Priya and I will draft and circulate.\n2) Andrea to confirm number of critical branch questions in her content set.\n\n—Leo"
+    }
+  ],
+  "candidate_pool": [
+    {
+      "id": "PURE_2001 - space fractions_R009",
+      "text": "The system shall run on any Internet-accessible computer without requiring installation of new hardware and shall not perform explicit interactions with the client's hardware.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R017",
+      "text": "The system shall provide a robotic sidekick that assists the user and provides hints toward correct responses.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R033",
+      "text": "The system shall be as secure as the web browser that runs it (security is provided by the underlying browser environment).",
+      "requirement_kind": "domain_assumption",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_FAKE_004",
+      "text": "The system shall provide a 'Print Certificate' function on the end-of-game screen that generates a printer-friendly page containing the player’s score, the ending title, and the current date/time, and shall invoke the browser’s print dialog without requiring any text input.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_A20F2EE2"
+    },
+    {
+      "id": "PURE_2001 - space fractions_R029",
+      "text": "The system shall provide a web-accessible question-updater tool that allows a game administrator to create and edit custom games and modify any question; the tool shall present pulldown menus and text fields for input, show each question update on a separate page with navigation controls and a submission button, validate submitted data for completeness and contextual consistency, and generate a text file on the game server containing the updated question data for the game sequence to dynamically load.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R022",
+      "text": "When the user selects the 'Begin Game' button the system shall forward the user to the game sequence component.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R016",
+      "text": "When the user selects an incorrect answer the system shall inform the user that the answer is incorrect and allow the user another attempt; the system shall not count the question as answered correctly for scoring if the user initially selected an incorrect answer for that question.",
+      "requirement_kind": "business_rule",
+      "nfr_subtype": "usability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R032",
+      "text": "The system shall be designed for maintainability by modularizing the main Flash game into appropriate sub-scenes to allow easy future code alterations.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R004",
+      "text": "Each functional component description in the SRS shall use the template containing sections titled Purpose, Inputs, Processing, and Outputs, with Inputs specifying elements, formats, sources and legal domains; Processing describing outcomes, validity checks, timing and abnormal handling; and Outputs describing form, destination, volume, timing, parameter ranges/units, storage/destruction and error handling.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R024",
+      "text": "The system shall provide a general help screen accessible from the main title screen that explains basic gameplay instructions.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R012",
+      "text": "The system shall present an interactive educational game that helps students learn to solve arithmetic problems involving fractions.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R013",
+      "text": "The system shall present the main story as a series of plot-based, cartoon-image multiple-choice questions that use fractional numbers.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R028",
+      "text": "The system shall provide links to related S2S projects organized by topic (for example fractions, decimals, and percents) and shall open the specified S2S product in a separate window when a user clicks a link.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R006",
+      "text": "The system shall be a web-based application that runs over the Internet and shall not create permanent files on the user's computer.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R020",
+      "text": "The system shall present a brief introductory movie on startup and shall display the main title screen when the movie finishes; the system shall provide an option to skip the movie and, if the user clicks any mouse button while the movie is playing, shall terminate the movie and forward the user to the main menu; while the movie is active the system shall ignore inputs other than mouse clicks.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R007",
+      "text": "The system shall be implemented using Macromedia Flash and HTML; the user interface shall be implemented as Flash movies linked together.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_FAKE_002",
+      "text": "The system shall randomize the order of questions within each game session and independently shuffle the positions of the multiple-choice options every time a question is presented.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_65B38687"
+    },
+    {
+      "id": "PURE_2001 - space fractions_R019",
+      "text": "The system shall direct the user to the ending scene after the user has proceeded through the configured number of questions.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_FAKE_001",
+      "text": "The system shall provide a persistent Mute/Unmute control accessible from the main title screen, the Help screen, and during gameplay that disables all audio playback while maintaining all visual feedback.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_26056596"
+    },
+    {
+      "id": "PURE_2001 - space fractions_R034",
+      "text": "The system shall undergo extensive testing by team members and by mentors, when available, to help ensure reliability.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "reliability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_FAKE_003",
+      "text": "The system shall support English and Spanish language modes selectable from the main title screen and shall load all on-screen text, help content, and per-choice hint text from the selected language’s resource file for the duration of the session.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_384D6637"
+    },
+    {
+      "id": "PURE_2001 - space fractions_R023",
+      "text": "When the user selects the Denominators' link the system shall open or navigate to the Denominators' web page.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_FAKE_005",
+      "text": "The system shall detect 120 seconds of user inactivity during gameplay and display a pause overlay with a 'Resume' button; upon resuming, the system shall restore the current question state including any selected answers.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_3874A3C6"
+    },
+    {
+      "id": "PURE_2001 - space fractions_R030",
+      "text": "The system shall allow the game administrator to customize feedback outputs based on users' performance on individual questions.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R011",
+      "text": "The system shall provide consistent program behavior across different browser configurations even if the external interface presentation varies by environment.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "reliability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R005",
+      "text": "The intended primary users of the product shall be sixth-grade students and their teacher.",
+      "requirement_kind": "domain_assumption",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R018",
+      "text": "The system shall adapt gameplay and dynamically present different storylines based on the user's progress and shall branch the plot at designated critical questions, determining the final scene based on responses to those critical questions.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R027",
+      "text": "The system shall provide sounds and animations via Flash movies to acknowledge success or failure in answering fraction questions.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R026",
+      "text": "The system shall store each user's score locally within the game and present the user's results at the end of the game.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_FAKE_006",
+      "text": "The system shall provide a high-contrast display mode toggle accessible from the Help screen that, when enabled, replaces the default color palette with high-contrast colors and increases text size across all screens.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_D7F23FA8"
+    },
+    {
+      "id": "PURE_2001 - space fractions_R008",
+      "text": "The system shall require a web browser that supports JavaScript and the Macromedia Flash (Flash 5) plug-in and shall run on hardware meeting the minimum configuration required for Flash and HTML playback.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R010",
+      "text": "The system shall operate without dependency on other software and shall not be implemented as a component of another program; it shall be implemented as a single umbrella component composed of several independent programs unified under a single interface.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R015",
+      "text": "When the user selects the correct answer the system shall display a message indicating correctness and then advance to the next question.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R002",
+      "text": "The SRS shall identify the requester as Ms. Andrea Brooks of Pecan Springs Elementary School.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R025",
+      "text": "The system shall display the player's exact overall score and a customized message (including a plot-based conclusion based on performance at critical points) on the end-of-game screen and shall provide options to exit the game, return to the main menu, or try again; the system shall accept the user's selection via mouse clicks and perform the selected action.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R001",
+      "text": "The document shall serve as the Software Requirements Specification (SRS) for the Space Fractions project.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R003",
+      "text": "The SRS shall describe the software product's purpose and functionality and shall include details of the project's requirements, interfaces, design issues, and components.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R014",
+      "text": "The system shall present each game question as a multiple-choice question and shall accept all user input via mouse clicks; the system shall not require any keyboard input.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R031",
+      "text": "The system shall be available via the Internet through the S2S website, allowing multiple users to access and download its content.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2001 - space fractions_R021",
+      "text": "The system shall present a main title screen that provides clear controls to start the game and access general help, displays a short team summary with a link to the team's website and a link to the Denominators' web page, and shall wait until the user selects either the 'Begin Game' button or the Denominators' link.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    }
+  ],
+  "gold_requirement_ids": [
+    "PURE_2001 - space fractions_R001",
+    "PURE_2001 - space fractions_R002",
+    "PURE_2001 - space fractions_R003",
+    "PURE_2001 - space fractions_R004",
+    "PURE_2001 - space fractions_R005",
+    "PURE_2001 - space fractions_R006",
+    "PURE_2001 - space fractions_R007",
+    "PURE_2001 - space fractions_R008",
+    "PURE_2001 - space fractions_R009",
+    "PURE_2001 - space fractions_R010",
+    "PURE_2001 - space fractions_R011",
+    "PURE_2001 - space fractions_R012",
+    "PURE_2001 - space fractions_R013",
+    "PURE_2001 - space fractions_R014",
+    "PURE_2001 - space fractions_R015",
+    "PURE_2001 - space fractions_R016",
+    "PURE_2001 - space fractions_R017",
+    "PURE_2001 - space fractions_R018",
+    "PURE_2001 - space fractions_R019",
+    "PURE_2001 - space fractions_R020",
+    "PURE_2001 - space fractions_R021",
+    "PURE_2001 - space fractions_R022",
+    "PURE_2001 - space fractions_R023",
+    "PURE_2001 - space fractions_R024",
+    "PURE_2001 - space fractions_R025",
+    "PURE_2001 - space fractions_R026",
+    "PURE_2001 - space fractions_R027",
+    "PURE_2001 - space fractions_R028",
+    "PURE_2001 - space fractions_R029",
+    "PURE_2001 - space fractions_R030",
+    "PURE_2001 - space fractions_R031",
+    "PURE_2001 - space fractions_R032",
+    "PURE_2001 - space fractions_R033",
+    "PURE_2001 - space fractions_R034"
+  ],
+  "seeded_fake_requirement_ids": [
+    "PURE_2001 - space fractions_FAKE_001",
+    "PURE_2001 - space fractions_FAKE_002",
+    "PURE_2001 - space fractions_FAKE_003",
+    "PURE_2001 - space fractions_FAKE_004",
+    "PURE_2001 - space fractions_FAKE_005",
+    "PURE_2001 - space fractions_FAKE_006"
+  ],
+  "seed_registry": [
+    {
+      "seed_item_id": "T1S_26056596",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2001 - space fractions_FAKE_001",
+      "requirement_text": "The system shall provide a persistent Mute/Unmute control accessible from the main title screen, the Help screen, and during gameplay that disables all audio playback while maintaining all visual feedback.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "Audio cues are mentioned, but there is no mention of any user-accessible audio controls or a mute feature.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_65B38687",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2001 - space fractions_FAKE_002",
+      "requirement_text": "The system shall randomize the order of questions within each game session and independently shuffle the positions of the multiple-choice options every time a question is presented.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "The sources do not specify any randomization of question order or answer choices.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_384D6637",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2001 - space fractions_FAKE_003",
+      "requirement_text": "The system shall support English and Spanish language modes selectable from the main title screen and shall load all on-screen text, help content, and per-choice hint text from the selected language’s resource file for the duration of the session.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "No multilingual or localization capability is mentioned or implied in the sources.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_A20F2EE2",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2001 - space fractions_FAKE_004",
+      "requirement_text": "The system shall provide a 'Print Certificate' function on the end-of-game screen that generates a printer-friendly page containing the player’s score, the ending title, and the current date/time, and shall invoke the browser’s print dialog without requiring any text input.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "The sources do not mention any printing functionality or certificates.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_3874A3C6",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2001 - space fractions_FAKE_005",
+      "requirement_text": "The system shall detect 120 seconds of user inactivity during gameplay and display a pause overlay with a 'Resume' button; upon resuming, the system shall restore the current question state including any selected answers.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "No inactivity detection, pause behavior, or auto-return mechanisms are described in the sources.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_D7F23FA8",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2001 - space fractions_FAKE_006",
+      "requirement_text": "The system shall provide a high-contrast display mode toggle accessible from the Help screen that, when enabled, replaces the default color palette with high-contrast colors and increases text size across all screens.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "The sources contain no accessibility display options such as high-contrast or text size controls.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    }
+  ],
+  "brief": {
+    "project_name": "Space Fractions: Denominator Dash",
+    "domain": "K-12 math education (web game)",
+    "users": [
+      "Sixth-grade students learning fractions",
+      "Sixth-grade math teacher",
+      "Game administrator/content editor"
+    ],
+    "stakeholders": [
+      "Ms. Andrea Brooks, Pecan Springs Elementary (requester)",
+      "S2S student development team",
+      "Team mentor",
+      "S2S site/hosting maintainers"
+    ],
+    "business_goals": [
+      "Boost sixth-graders' fraction skills through an engaging interactive game",
+      "Offer a single hub that also links to prior S2S math games",
+      "Allow teachers/admins to keep questions and feedback current via a web updater",
+      "Publish the game on the S2S website for broad, easy access",
+      "Provide motivating feedback with scores and story-based outcomes"
+    ],
+    "core_features": [
+      "Interactive fraction multiple-choice gameplay using mouse only, with immediate feedback and retries without awarding full credit after a first miss",
+      "Plot-driven questions with branching at key points and endings that reflect choices",
+      "Robotic sidekick that offers context-sensitive hints",
+      "Startup intro movie (skippable by click) leading to a main menu with Begin, Help, team blurb, and a Denominators link; basic help screen explains how to play",
+      "Score kept within the game and shown exactly at the end with a tailored message; options to replay, exit, or return to the menu",
+      "Links to related S2S projects (fractions, decimals, percents) opening in a separate window",
+      "Web question-updater tool to create/edit games and per-question feedback using forms (pulldowns/text fields), page-by-page navigation with submit, input validation, and generation of a server text file for the game to load"
+    ],
+    "quality_concerns": [
+      "Consistent behavior across different supported browsers and setups",
+      "Accessible online via the S2S site for multiple simultaneous users",
+      "Maintainable modular Flash design with scenes/sub-scenes for easy updates",
+      "Reliability supported by thorough team testing and mentor reviews",
+      "Security aligned with the hosting browser; updater protected by password"
+    ],
+    "constraints": [
+      "Web-based delivery; no installation and no permanent files on student machines",
+      "Built with Macromedia Flash (v5) and HTML; UI is linked Flash movies with sound/animation cues",
+      "Requires a browser with JavaScript and the Flash plug-in; runs on any Internet-capable computer without new hardware or direct device access",
+      "Runs standalone in the browser; not embedded in other software; umbrella interface unifies several independent game modules",
+      "SRS uses a component template (Purpose, Inputs, Processing, Outputs) and covers requirements, interfaces, design issues, and components",
+      "During intro/movie segments only mouse clicks are honored; other inputs are ignored"
+    ],
+    "terminology": [
+      "Fraction (numerator/denominator; proper vs improper; equivalence)",
+      "Multiple-choice question",
+      "Critical question and branching ending",
+      "Robotic hint sidekick",
+      "Flash movie (intro, menu, main game)",
+      "Question updater (forms, validation, server text file)",
+      "S2S/Denominators link"
+    ]
+  },
+  "metadata": {
+    "file_path": "data/pure/2001 - space fractions.pdf",
+    "file_type": ".pdf",
+    "char_count": 20061,
+    "profile": {
+      "char_count": 20061,
+      "heading_density": 52,
+      "shall_count": 0,
+      "must_count": 3,
+      "will_count": 82,
+      "use_case_count": 0,
+      "stakeholder_count": 0,
+      "requirement_keyword_count": 30,
+      "structure_strength": "strong"
+    },
+    "section_count": 25,
+    "dense_sections": 13,
+    "gold_count": 34,
+    "section_candidates": 106,
+    "raw_candidates": 0,
+    "llm_usage": {
+      "total_calls": 125,
+      "total_input_tokens": 303823,
+      "total_output_tokens": 288894
+    }
+  }
+}

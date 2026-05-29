@@ -1,0 +1,271 @@
+{
+  "coverage_rate": 0.9667,
+  "missing_req_ids": [
+    "PURE_2004 - grid bgc_R011"
+  ],
+  "unsupported_count": 3,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PURE_2004 - grid bgc_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "move data and trigger runs over the grid"
+      ],
+      "reason": "Portal + grid-backed compute for BGC runs described"
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "interpolation over the target grid"
+      ],
+      "reason": "Daymet described turning station obs into gridded outputs"
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "support Daymet projects directly"
+      ],
+      "reason": "Sources state Daymet projects can be defined and run"
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "run Daymet and Biome-BGC"
+      ],
+      "reason": "Multiple references to running Biome-BGC for BGC modeling"
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "web portal — a proper GUI"
+      ],
+      "reason": "Interview explicitly states a web GUI for users"
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "GSI-based security"
+      ],
+      "reason": "Globus/GSI and grid-secured channels required by sources"
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "mature mechanisms for robust operation"
+      ],
+      "reason": "Globus described as providing robust, reliable grid interactions"
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "use the Globus toolkit"
+      ],
+      "reason": "Multiple artifacts state the system will use Globus"
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "comply with NCAR security policies"
+      ],
+      "reason": "Priya and notes repeatedly require NCAR policy compliance"
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "NCAR Mass Storage System"
+      ],
+      "reason": "Sources mandate final file storage reside in NCAR MSS"
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R011",
+      "supported": false,
+      "evidence_snippets": [
+        "disturbance inputs used by Biome-BGC"
+      ],
+      "reason": "No statement about storing climate-factor details."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "Event types covered for v1: fires, deforestation"
+      ],
+      "reason": "Fires and deforestation explicitly listed as event types."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "Disturbance project collects many events."
+      ],
+      "reason": "Disturbance projects described as containing many events."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "Unlimited events — no hard coded max."
+      ],
+      "reason": "Team explicitly rejected an event cap; no limit."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "Each event = an instantaneous point in time."
+      ],
+      "reason": "Events are point-in-time with date/time; no durations."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "only users on the approved list can access"
+      ],
+      "reason": "Access limited to approved accounts managed by admins."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "one-time login per session, got it."
+      ],
+      "reason": "Single initial credential prompt; no re-prompting thereafter."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "unlock user accounts — within the admin console."
+      ],
+      "reason": "Admins explicitly given ability to unlock accounts."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "Gatekeeper for login; admins manage approvals"
+      ],
+      "reason": "Mentions Gatekeeper, roles, approvals, and admin lifecycle."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R020",
+      "supported": true,
+      "evidence_snippets": [
+        "It’ll be a web portal — a proper GUI"
+      ],
+      "reason": "Stakeholders describe a web portal GUI front end."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R021",
+      "supported": true,
+      "evidence_snippets": [
+        "goes out to the compute nodes."
+      ],
+      "reason": "Remote compute on Hemisphere cluster, not portal host."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R022",
+      "supported": true,
+      "evidence_snippets": [
+        "online help manual and context-sensitive help"
+      ],
+      "reason": "Includes online manual and field tooltips."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R023",
+      "supported": true,
+      "evidence_snippets": [
+        "retain that linkage after the run"
+      ],
+      "reason": "Objects/projects model with recorded provenance and input-output links."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R024",
+      "supported": true,
+      "evidence_snippets": [
+        "Share and merge is key."
+      ],
+      "reason": "Objects can be shared, merged; provenance recorded."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R025",
+      "supported": true,
+      "evidence_snippets": [
+        "create -> edit -> submit/publish -> delete"
+      ],
+      "reason": "Templates have access control and full lifecycle operations."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R026",
+      "supported": true,
+      "evidence_snippets": [
+        "CRUD coverage required for domain objects"
+      ],
+      "reason": "Meeting notes require CRUD for all listed domain objects."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R027",
+      "supported": true,
+      "evidence_snippets": [
+        "quick-look visualizations for Surface Observation"
+      ],
+      "reason": "Low-priority quick-look visualizations for those four types."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R028",
+      "supported": true,
+      "evidence_snippets": [
+        "Data downloads: allowed on dataset-bearing objs"
+      ],
+      "reason": "Downloads exposed on dataset-bearing objects via Globus/MSS."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R029",
+      "supported": true,
+      "evidence_snippets": [
+        "keep three object categories."
+      ],
+      "reason": "Design states three object categories explicitly."
+    },
+    {
+      "req_id": "PURE_2004 - grid bgc_R030",
+      "supported": true,
+      "evidence_snippets": [
+        "Scientists, Admins, Data Users"
+      ],
+      "reason": "Three user classes with prioritized functionality described."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "The system shall stage files to temporary scratch storage on compute nodes for processing (ephemeral staging), distinct from canonical storage in the NCAR Mass Storage System.",
+      "source_snippet": "\"We can stage to scratch on the compute side, but final outputs and the user datasets live in NCAR’s Mass Storage.\"",
+      "source_type": "meeting_notes",
+      "reason": "The source explicitly requires using compute-side scratch for staging prior to writing final outputs to MSS. The gold set mandates MSS for file-based storage but does not require or describe ephemeral/staging storage on compute nodes as a capability."
+    },
+    {
+      "text": "The system shall support UI scalability for very large disturbance event lists by using lazy-loading or pagination (e.g., loading ~50 events at a time) so the interface remains responsive with unlimited events.",
+      "source_snippet": "\"Disturbance events per project: unlimited (0..n). UI loads ~50 at a time (lazy).\"",
+      "source_type": "meeting_notes",
+      "reason": "The source explicitly prescribes a UI behavior (lazy-load ~50 items at a time) to handle unlimited disturbance events. The gold requirements allow unlimited events but do not specify UI scalability or lazy-loading/pagination as a required capability."
+    },
+    {
+      "text": "The system shall present job state/status information in the portal (i.e., communicate remote job states to users via the web UI).",
+      "source_snippet": "\"Using Globus to manage secure data movement and remote execution. Communicate job states in the portal as appropriate in later iterations.\"",
+      "source_type": "meeting_notes",
+      "reason": "The source indicates an intention to surface job states in the portal UI. The gold requirements require remote compute nodes and use of grid technologies, but do not require the portal to report or present remote job status information to users."
+    }
+  ],
+  "passed": false
+}

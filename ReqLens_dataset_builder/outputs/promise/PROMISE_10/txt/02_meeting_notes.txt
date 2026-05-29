@@ -1,0 +1,137 @@
+TYPE  : meeting_notes
+TITLE : Gameplay flow and lobby ops working session (raw notes)
+UNIT  : PROMISE_10
+============================================================
+
+Date: 2025-06-11
+Call link: https://meet.example.com/periscope-duel-ops
+Attendees: Mia PO, Raj Eng Lead, Tasha SRE, Luis Privacy, Camille Loc, Owen Audio UX, Felix QA [joined late]
+
+- Vision recap: fast, anonymous head-to-head. Periscope illusion. Ships look like actual classes (not blobs). Ocean feel.
+- UI mask: circle viewport for boards. Outside of circle dimmed, metal rim? Owen says yes. Raj: caution on small screens.
+- Two boards per player always shown (within circle): offense tracking grid and own defense grid. Opponent never sees either. No cross-board view.
+- Lobby basics:
+  - Maintain a list of players present. It is anonymous list, not names. [check empty state UI]
+  - Players opt in to be shown. Toggle to set self as available. Can toggle off at any time. Self removal instant.
+  - Inactive players should not be selectable. Hide them if no activity for some interval [?].
+  - After 24 hours of no heartbeat, remove from list entirely. Hard drop. Cron? [Tasha to confirm]
+  - One-click start: select an available opponent => system pairs them. Immediately both removed from lobby selection (not pickable). Lock until game end.
+  - Edge case: two people clicking same person. Need atomic lock. SRE to add compare-and-swap on availability flag.
+
+- Localization:
+  - Language selection must happen at first access. Only English, Spanish, French. Persist choice per session.
+  - All messages, including turn notices, sink notices, end-of-game reasons, must be localized.
+  - French strings longer; watch space in circle. Icons where possible. [TBD: truncation strategy]
+
+- Privacy:
+  - Strict anonymity: no PII, no usernames, no avatars. Only presence and state.
+  - Notifications must not include any identifiers. Just event-based language.
+  - Opponent boards must never be visible. No spectate. No hints about layouts.
+
+- Setup phase:
+  - Each player places five ships on defense grid. Classes: [Owen to list assets].
+  - Orientations allowed: horizontal, vertical, diagonal. Not zig-zag.
+  - No overlap across ships. Reject placement if any cell is already occupied.
+  - Off-grid placement should snap back or be blocked.
+  - Players can rearrange until pressing Ready.
+  - Both must press Ready; only then choose first shooter. Random assignment is fine.
+
+- Turn engine:
+  - At start of each turn, clearly notify both players of status: shooter vs targeted. Copy must be simple. Consider colors too. [Felix: test colorblind]
+  - Maintain a status per player: offensive or defensive. Server is source of truth.
+  - Shooter defines a shot by selecting a coordinate on their firing grid.
+  - Server evaluates defender’s grid to determine hit or miss.
+  - System notifies both parties of outcome: hit or miss. Keep copy concise.
+  - Mark the result on both sides:
+    - On defender’s defensive grid: mark cell hit or miss.
+    - On shooter’s offensive grid: mirror the same hit/miss mark.
+  - Sinking logic:
+    - When hits result in all cells of a ship being struck, that ship is sunk.
+    - Notify both players that the ship is down. Include ship class in the defender’s context.
+    - On defender’s grid: show the sunk ship outline and type. On shooter’s grid: indicate that ship is sunk as well.
+  - Turn continuation:
+    - If hit: shooter immediately gets another shot. No status flip.
+    - If miss: change roles. Shooter becomes targeted, defender becomes shooter. Update UI and notify at turn start.
+  - Continue assigning turns until end-of-game condition met.
+
+- End-of-game conditions:
+  - Win condition: last remaining ship of target side sinks. Immediately end match.
+  - Early end: either player can end a game at any time (resign). [Check words: End vs Surrender vs Give up]
+  - On ending, notify both players that the game concluded. Include reason: victory by all ships sunk, or opponent ended, or you ended.
+  - Post-match options: present two actions: relist self as available OR remove self from the lobby. Keep it simple.
+
+- Audio plan:
+  - Ambient ocean loop during aim and firing sequence. Trigger when shooter status begins.
+  - Distinct sound for miss. Water splash suggestion.
+  - Distinct sound for hit. Impact or metallic thud.
+  - Distinct sound for sink. Longer, deeper audio cue.
+  - Optional end-of-match bell. NOT decided yet. [Owen leaning yes; Mia neutral]
+
+- Visual plan:
+  - Ship images reflect class types. Avoid generic tokens. Small silhouettes okay.
+  - Periscope circle for both grids. Outer rim effect, subtle blur outside. Performance check.
+  - When sunk: mark whole shape. Add ship class label on defender side. Shooter side gets a sunk indicator too.
+
+- Performance and ops:
+  - Target perceived responsiveness so turn flow feels snappy.
+  - Baseline: 95 percent of user actions should round-trip under 2 sec. Remaining tail should not exceed ~4 sec. [Tasha: confirm instrumentation]
+  - 24x7 availability. Plan zero downtime deploys. Maintenance windows must avoid peak. Prefer rolling.
+  - Must handle many simultaneous matches. Scale horizontally. [Numbers TBD; load test]
+
+- Compliance notes:
+  - Double down on identity protection. No fields or UI that can carry personal info. No cross-exposure of anything.
+  - Logging must not accidentally include identifiers in client-visible messages. Server logs ok with anonymized IDs. [Luis to review]
+
+- QA items:
+  - Verify that a miss swaps roles exactly once and that a hit does not. Race conditions under lag.
+  - Verify that sunk event marks both boards appropriately. Defender gets class name. Shooter gets sunk badge.
+  - Verify five ships only; sixth placement blocked.
+  - Diagonal placement acceptance test. Ensure contiguous straight cells. No L shapes.
+  - Overlap prevention tests. Try stacked diagonals crossing. Fail expected.
+  - First-turn assignment after both Ready. Notify correctly. No pre-turn shots.
+  - Inactivity rules: hide idle. Remove after 24 hr. Show time-driven change. [Simulation needed]
+
+- Contradictions or unclear:
+  - Ambient during aim vs only on shot: we wrote both. Decide: start ambient at shooter turn start. Keep on until resolve. [Resolved in call? maybe]
+  - Language selection persistence: per session vs device. TBD. Privacy says avoid tying to device profile. Lean session-only.
+  - End-of-match bell: struck through earlier then re-added. NOT decided yet.
+
+- Parking Lot / Open Issues:
+  - Need exact copy for end-of-game reasons in three languages. Camille to propose.
+  - Should we show a small summary of sunk classes on shooter’s grid? Space constraints.
+  - Color palette for status indicators. Accessibility check for colorblind.
+  - Atomic pairing lock approach. SRE to design CAS. Retry behavior if race detected.
+  - When a player removes self mid-lobby, do we soft hide or hard remove from list? The spec says allow removal at any time; implementation detail TBD.
+  - Placement timer? We did not want timers, but do we need one to prevent stalls? For now, no. If no, ensure players can end game at any time even pre-turn? [Mia says yes, players can end anytime]
+  - Copy for shooter prompt: Your shot vs Fire when ready. Choose one per locale.
+  - French class names for ships. Some may not translate 1:1. Check naval terminology.
+
+- Action items:
+  - Raj: draft state machine doc with states: Lobby, Placement, Turn Offense, Turn Defense, End. Include role flips, hit streak rule, miss swap rule.
+  - Owen: deliver audio prototypes for ambient, miss, hit, sink by next Friday. Include short versions.
+  - Camille: provide first pass of UI strings for ENG, ESP, FRA, focusing on turn notifications, lobby buttons, sink messages, end-of-game reasons.
+  - Tasha: write ops SLOs for latency p95 under 2s, p100 under 4s, 24x7 availability. Define load test targets for concurrent match count. Propose atomic pairing pattern.
+  - Luis: review lobby and turn notifications for privacy leaks. Document no-PII guardrails. Confirm that identity is protected entirely.
+  - Felix: build test matrix for diagonal placement and overlap detection. Include off-grid attempts.
+
+- Random notes:
+  - Someone mentioned spectating. That is out of scope. Crossed out.
+  - If opponent leaves lobby after match, do we show a farewell toast? Probably not needed. Keep it simple.
+  - Sunk sound might scare headphones users if too loud. Normalize volume.
+  - Response times vary with network. Client should show spinner if wait exceeds 1.5s, but action must complete under 2s in most cases.
+  - Ambient loop should not loop click when muted. Also, consider mute per session. [Privacy: okay]
+
+- Recap of rules for quick reference:
+  - Five ships per player, placed on defensive grid. Horizontal, vertical, diagonal allowed. No overlaps, no off-grid.
+  - After both press Ready, random first shooter assigned. Notify both of role at start of turn.
+  - Offensive player selects target cell. Server computes hit or miss by checking defender’s grid.
+  - Notify both: hit or miss. Mark on both boards accordingly.
+  - When a ship is completely hit, it is sunk. Notify both. Defender sees class and sunk outline; attacker sees sunk indicator.
+  - Hit grants another shot. Miss swaps offense and defense roles.
+  - Keep alternating or continuing as per rules until end. End when all ships of one side are down, or when a player ends the match manually.
+  - On game end, show end-of-game notice with reason. Then offer relist self as available or leave lobby entirely.
+
+- Ops recap:
+  - Always-on service target. Many concurrent matches. Snappy interactions to keep flow. Internationalization at entry. Anonymity throughout.
+
+- End of notes. Some parts incomplete, see [?] and [TBD] tags.

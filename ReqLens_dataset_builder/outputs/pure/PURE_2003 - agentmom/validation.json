@@ -1,0 +1,303 @@
+{
+  "coverage_rate": 0.9706,
+  "missing_req_ids": [
+    "PURE_2003 - agentmom_R002"
+  ],
+  "unsupported_count": 3,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PURE_2003 - agentmom_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "SRS outline (IEEE-flavored)"
+      ],
+      "reason": "Meeting notes require IEEE-style SRS conformity."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R002",
+      "supported": false,
+      "evidence_snippets": [
+        "SRS is for the advisor and committee only."
+      ],
+      "reason": "No statement about submission for MSE degree found."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "The SRS describes framework behavior"
+      ],
+      "reason": "Document explicitly described as describing framework behavior."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "Document is for the advisor and committee only."
+      ],
+      "reason": "Meeting notes and emails require restricted visibility."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "Constraints/assumptions to state explicitly in Sec 2"
+      ],
+      "reason": "Sec 2 content and mapping are specified in meeting notes."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "Use cases (sketches for Sec 3)"
+      ],
+      "reason": "Meeting notes provide Sec 3 use case and requirements plan."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "publish a join notice to a control channel"
+      ],
+      "reason": "Join notifications are explicitly specified in multiple artifacts."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "a corresponding leave notice"
+      ],
+      "reason": "Leave notifications are explicitly specified in sources."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "we stop delivering that group's messages to it"
+      ],
+      "reason": "Leave/opt-out semantics state deliveries halt immediately."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "A substitute agent can join and act within the same group"
+      ],
+      "reason": "Agent substitution and takeover described in notes and transcript."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "support sending and receiving unicast"
+      ],
+      "reason": "Transcript and notes describe unicast send/receive capability."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "Delivery goes only to the specified destination"
+      ],
+      "reason": "Source states delivery is targeted to specified address only."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "in-order delivery"
+      ],
+      "reason": "Unicast is described as ordered (A then B arrives A then B)."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "You can toggle encryption per send"
+      ],
+      "reason": "Per-message protection/encryption capability is described."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "automatically presented as plaintext"
+      ],
+      "reason": "Receivers handle protected payloads and present plaintext automatically."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "sender choose encryption per message"
+      ],
+      "reason": "Sources explicitly state agents can choose protection per send."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "automatically presented as plaintext"
+      ],
+      "reason": "Automatic decryption/handling of protected messages is described."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "Multiple group subscriptions allowed concurrently"
+      ],
+      "reason": "Documents describe multicast groups, subscriptions, and reception."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "Explicit join request required"
+      ],
+      "reason": "Join request required before receiving any group traffic."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R020",
+      "supported": true,
+      "evidence_snippets": [
+        "Explicit leave request"
+      ],
+      "reason": "Leave request stops deliveries; sources specify leave() semantics."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R021",
+      "supported": true,
+      "evidence_snippets": [
+        "no group traffic is delivered to an agent"
+      ],
+      "reason": "Source enforces no delivery until join request accepted."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R022",
+      "supported": true,
+      "evidence_snippets": [
+        "we stop delivering that group’s messages to it"
+      ],
+      "reason": "Deliveries stop immediately after the leave request is processed."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R023",
+      "supported": true,
+      "evidence_snippets": [
+        "We expose TTL and socket options"
+      ],
+      "reason": "TTL is exposed and configurable via APIs."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R024",
+      "supported": true,
+      "evidence_snippets": [
+        "Expose TTL, group address, and port"
+      ],
+      "reason": "Group address and port are configurable via config/APIs."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R025",
+      "supported": true,
+      "evidence_snippets": [
+        "Multiple concurrent group subscriptions are supported"
+      ],
+      "reason": "System supports binding to and receiving from multiple groups."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R026",
+      "supported": true,
+      "evidence_snippets": [
+        "Optional group message protection when configured"
+      ],
+      "reason": "Group-level protection (encrypt) is supported when configured."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R027",
+      "supported": true,
+      "evidence_snippets": [
+        "handle protected messages automatically when configured"
+      ],
+      "reason": "Recipients automatically handle (decrypt) protected group messages."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R028",
+      "supported": true,
+      "evidence_snippets": [
+        "broadcast send and receive are supported"
+      ],
+      "reason": "Framework supports sending broadcast messages on the LAN."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R029",
+      "supported": true,
+      "evidence_snippets": [
+        "broadcast receive is supported"
+      ],
+      "reason": "Framework supports receiving broadcast messages."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R030",
+      "supported": true,
+      "evidence_snippets": [
+        "all hosts on the local subnet see it"
+      ],
+      "reason": "Broadcasts are scoped to local subnet; reach all local hosts."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R031",
+      "supported": true,
+      "evidence_snippets": [
+        "interoperate with agentMom 1.2"
+      ],
+      "reason": "Sources state compatibility with agentMom 1.2."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R032",
+      "supported": true,
+      "evidence_snippets": [
+        "must demo by end of Phase II"
+      ],
+      "reason": "Starred driving capabilities committed to Phase II demo."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R033",
+      "supported": true,
+      "evidence_snippets": [
+        "agent-driven conversations"
+      ],
+      "reason": "Spec explicitly supports agent-driven conversation mode."
+    },
+    {
+      "req_id": "PURE_2003 - agentmom_R034",
+      "supported": true,
+      "evidence_snippets": [
+        "component-driven mode"
+      ],
+      "reason": "Spec explicitly supports component-driven conversation orchestration."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "The system shall tag unicast messages with sequence numbers (or equivalent) and expose those sequence numbers in logs so reordering can be detected and verified.",
+      "source_snippet": "\"tagging with sequence numbers so we can detect reordering\" / \"I’ll wire logs to show unicast sequence numbers\"",
+      "source_type": "interview_transcript | meeting_notes",
+      "reason": "The artifacts explicitly state using sequence numbers and logging them to detect/verify reordering. The gold set requires ordered unicast delivery but does not require sequence-number tagging or logging for verification/diagnosis; this is a distinct, significant capability implied by the source."
+    },
+    {
+      "text": "The system shall produce logs (or equivalent observable events) that include group join and leave events so behavior can be demonstrated and audited.",
+      "source_snippet": "\"I’ll wire logs to show ... the join/leave events for groups\" / \"We emit group-level events. On join, we publish a join notice ... on leave, a corresponding leave notice.\"",
+      "source_type": "interview_transcript | meeting_notes",
+      "reason": "While the gold set requires notifications for join/leave, the artifacts additionally require that these events be recorded/exposed in logs for demonstration and QA. Logging/auditing of these events is a separate operational capability not covered by the gold requirements."
+    },
+    {
+      "text": "The system shall ensure protected (encrypted) messages are unusable by recipients that lack the required keying material or are not members of the protected group (i.e., non-members cannot make use of protected traffic).",
+      "source_snippet": "\"If the recipient lacks what’s needed, the payload won’t be usable by that recipient\" / \"Non-members shouldn’t be able to make use of that traffic.\"",
+      "source_type": "interview_transcript | meeting_notes | email_thread",
+      "reason": "The artifacts state that protected messages must not be usable by recipients without the proper material (and non-members should not be able to use protected group traffic). The gold set specifies encryption/decryption capabilities but does not state this access-control behavior for recipients lacking keys or for non-members; this is a significant security behavior implied by the sources."
+    }
+  ],
+  "passed": false
+}

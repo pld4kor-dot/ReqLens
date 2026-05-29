@@ -1,0 +1,159 @@
+TYPE  : email_thread
+TITLE : Thread: Hosting, updater workflow, and links behavior for Space Fractions (revised)
+UNIT  : PURE_2001 - space fractions
+============================================================
+
+Email 1
+From: Leo <leo@s2s.dev>
+To: Jenna <jenna@s2s.site>
+CC: Priya <priya@s2s.dev>, Mark <mark@s2s.mentor>, Andrea <abrooks@pecansprings.edu>
+Date: Mon, Mar 3, 2025 09:12:07 -0600
+Subject: Space Fractions: hosting assumptions + browser requirements
+
+Hey Jenna,
+
+Quick confirmations so we don’t run into lab surprises:
+- We’re targeting Macromedia Flash + HTML for the game shell. The interface is a set of linked Flash movies (intro, main menu, game, end) with a simple HTML wrapper.
+- We need a browser that supports JavaScript + the Flash plug-in.
+- The game runs standalone in the browser. It’s not embedded in another platform/LMS. The “Space Fractions” landing page will be the umbrella that unifies those movies, and links out to related S2S projects.
+- External links (Denominators page + related projects like decimals/percents) — plan is to open these in a separate window so students don’t lose their place in the game.
+
+Flag anything that conflicts with site policies.
+
+Thanks,
+L
+
+---
+
+Email 2
+From: Jenna <jenna@s2s.site>
+To: Leo <leo@s2s.dev>
+CC: Priya <priya@s2s.dev>, Mark <mark@s2s.mentor>, Andrea <abrooks@pecansprings.edu>
+Date: Mon, Mar 3, 2025 10:01:42 -0600
+Subject: RE: Space Fractions: hosting assumptions + browser requirements
+
+Hey Leo,
+
+Looks aligned with what we can host.
+- Flash 5 is on the lab image. Keep the wrapper simple.
+- Yes, standalone in the browser. If teachers link it from their LMS, that’s just a regular hyperlink out to the S2S site.
+- New window for external links: approved.
+- No direct hardware calls (mic/camera) — understood.
+- Expect that multiple students will load it at the same time; keep assets reasonable in size.
+
+J
+
+(sent from mobile)
+
+---
+
+Email 3
+From: Andrea <abrooks@pecansprings.edu>
+To: Leo <leo@s2s.dev>, Priya <priya@s2s.dev>
+CC: Mark <mark@s2s.mentor>, Jenna <jenna@s2s.site>
+Date: Mon, Mar 3, 2025 10:33:19 -0600
+Subject: RE: Space Fractions: hosting assumptions (+ a question about buttons)
+
+Hi all,
+
+Two quick checks:
+1) The main screen has the big “Begin Game” button and the link to the Denominators page, right? When kids click Begin, it should go straight into the questions. And when they click the Denominators link, it should actually go to that page in a new window.
+2) Could we let students use keyboard arrows? (My colleague asked.) I told her you were planning mouse-only but wanted to confirm.
+
+Also, on the end of game, please show the exact score and let them click to try again or go back to menu.
+
+Thanks,
+Andrea
+
+---
+
+Email 4
+From: Priya <priya@s2s.dev>
+To: Andrea <abrooks@pecansprings.edu>
+CC: Leo <leo@s2s.dev>, Mark <mark@s2s.mentor>, Jenna <jenna@s2s.site>
+Date: Mon, Mar 3, 2025 11:05:55 -0600
+Subject: RE: buttons + updater details
+
+Hi Andrea,
+
+On your points:
+1) Yes — “Begin Game” will send the player directly into the game sequence. And the Denominators link on the main title will navigate to that web page in a separate window so they keep their place in the game.
+2) We’re sticking with mouse-only input throughout the game for simplicity and classroom consistency. During the intro animation, clicking will skip it; other inputs are ignored until it finishes and lands on the main title.
+
+Other items you might care about:
+- We’ll include a small “Related Projects” area (fractions, decimals, percents). Those links open in a new window on click.
+- End-of-game screen will show the player’s exact overall score and a customized message that corresponds to their performance at critical plot points. That screen will offer “Try Again,” “Exit,” and “Main Menu,” all triggered by mouse clicks.
+- Scores live only for the current session; when they try again, it resets.
+
+About the content editor/updater tool:
+- It will be a simple web form (no installs) for creating and editing questions.
+- Forms will use pulldowns and text fields, one page per question, with Next/Prev navigation and a Submit button.
+- Submitted data will be validated for completeness (prompt, choices, one correct) and format (fractions in a/b).
+- On submit, it will generate a text file on the game server containing the updated question set; the game loads that at runtime.
+- You’ll be able to customize per-choice hints/feedback for each question.
+- Access to the updater page will be protected with a password so only designated editors can make changes.
+
+We’ll send screenshots once we have the first pass. Feedback welcome.
+
+Thanks,
+Priya
+
+---
+
+Email 5
+From: Mark <mark@s2s.mentor>
+To: Leo <leo@s2s.dev>, Priya <priya@s2s.dev>
+CC: Jenna <jenna@s2s.site>, Andrea <abrooks@pecansprings.edu>
+Date: Mon, Mar 3, 2025 12:21:03 -0600
+Subject: RE: consistency, branching, and testing
+
+Team,
+
+Reminders before we prototype:
+- Consistency across supported browsers: behavior must be the same. If the End screen says “Try Again,” it restarts the sequence everywhere.
+- Standalone vs. embed: implement it as one umbrella experience composed of the independent Flash movies; don’t embed into an LMS.
+- Interaction: we’ve agreed on mouse-only input; during the intro movie only mouse clicks should be honored.
+- Testing: plan for extensive team testing and a mentor pass before Andrea’s classroom tryout. Include click paths, branching accuracy, and updater validation in the checklist.
+- Content flow: keep the question count configurable so after the configured number, you direct the player to the ending based on answers to the designated critical questions.
+
+—Mark
+
+---
+
+Email 6
+From: Jenna <jenna@s2s.site>
+To: All
+Date: Mon, Mar 3, 2025 13:02:49 -0600
+Subject: RE: Hosting and availability
+
+Quick add from hosting:
+
+- This will live on the S2S website and be Internet accessible. Expect multiple students at once, including from the same lab. Keep assets reasonably sized.
+- For the “Related S2S projects” links and the Denominators link, opening in a separate window is the right call so students keep the game in place.
+- No special hardware required beyond what runs a browser with the Flash plug-in.
+
+J
+
+---
+
+Email 7
+From: Leo <leo@s2s.dev>
+To: All
+Date: Mon, Mar 3, 2025 14:19:21 -0600
+Subject: RE: Finalizing assumptions + a couple of open items
+
+Thanks everyone. Quick summary + open items:
+
+- Tech: HTML + linked Flash movies; requires JavaScript and Flash plug-in. No installs on student machines. No direct hardware use.
+- Experience: Space Fractions runs standalone in the browser; one interface unifies Intro/Menu/Game/End; external links open in a new window.
+- Menu behavior: “Begin Game” goes straight to the game; Denominators link goes to that web page in a new window; Help gives basic instructions.
+- Gameplay: mouse-only input. Correct -> show message and advance. Incorrect -> show message and allow retry. Score counts first-try corrects.
+- Ending: after the configured number of questions, route to an ending determined by responses at critical questions. End screen shows exact score + customized plot conclusion; options to Try Again / Exit / Main Menu.
+- Updater: web form with pulldowns/text fields; page-by-page editing with nav + Submit; validation for completeness/format; generates a text file the game loads at runtime; supports per-choice hints; access protected with a password.
+- Availability/consistency: Hosted on S2S website; multiple users acceptable; we’ll test for consistent behavior across supported browsers.
+
+Open items:
+1) Exact data file format spec for the updater (CSV vs custom text) — Priya and I will draft and circulate.
+2) Andrea to confirm number of critical branch questions in her content set.
+
+—Leo

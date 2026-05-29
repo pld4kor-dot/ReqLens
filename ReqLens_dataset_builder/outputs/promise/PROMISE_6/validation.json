@@ -1,0 +1,634 @@
+{
+  "coverage_rate": 0.8514,
+  "missing_req_ids": [
+    "PROMISE_6_R008",
+    "PROMISE_6_R009",
+    "PROMISE_6_R010",
+    "PROMISE_6_R021",
+    "PROMISE_6_R024",
+    "PROMISE_6_R032",
+    "PROMISE_6_R033",
+    "PROMISE_6_R034",
+    "PROMISE_6_R036",
+    "PROMISE_6_R045",
+    "PROMISE_6_R046"
+  ],
+  "unsupported_count": 3,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PROMISE_6_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "DB can be local to app or remote"
+      ],
+      "reason": "Multi-DB support and local/remote DB interoperability stated."
+    },
+    {
+      "req_id": "PROMISE_6_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "runs where a JVM exists. OS agnostic"
+      ],
+      "reason": "Java/JVM support across Windows, Linux, macOS explicitly stated."
+    },
+    {
+      "req_id": "PROMISE_6_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "DB can be local to app or remote"
+      ],
+      "reason": "Requires DB collaboration; same-machine or networked deployment noted."
+    },
+    {
+      "req_id": "PROMISE_6_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "Default Tomcat; JBoss supported."
+      ],
+      "reason": "Specifies deployment on Tomcat or JBoss web/app servers."
+    },
+    {
+      "req_id": "PROMISE_6_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "Oracle, SQL Server, DB2, MySQL, HSQL"
+      ],
+      "reason": "These specific database engines are listed for integration."
+    },
+    {
+      "req_id": "PROMISE_6_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "customizable branding (logo/colors)"
+      ],
+      "reason": "Allows skinning with customer logo and colors."
+    },
+    {
+      "req_id": "PROMISE_6_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "Default theme conservative/professional."
+      ],
+      "reason": "Requires a conservative, professional default appearance."
+    },
+    {
+      "req_id": "PROMISE_6_R008",
+      "supported": false,
+      "evidence_snippets": [
+        "large majority of surveyed users"
+      ],
+      "reason": "Mentions 'large majority' but does not specify 80% metric."
+    },
+    {
+      "req_id": "PROMISE_6_R009",
+      "supported": false,
+      "evidence_snippets": [
+        "reserve a room within ~5 minutes"
+      ],
+      "reason": "'Most users' target given, no 90% success-rate specified."
+    },
+    {
+      "req_id": "PROMISE_6_R010",
+      "supported": false,
+      "evidence_snippets": [
+        "show confirmations after actions"
+      ],
+      "reason": "Confirms need for confirmations but no 80% accuracy survey metric."
+    },
+    {
+      "req_id": "PROMISE_6_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "user-selectable languages for target markets"
+      ],
+      "reason": "Meeting notes specify selectable languages for target markets."
+    },
+    {
+      "req_id": "PROMISE_6_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "per-user start page and view preferences"
+      ],
+      "reason": "Sources state per-user start page and view preference customization."
+    },
+    {
+      "req_id": "PROMISE_6_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "reserve a room within ~5 minutes on first use"
+      ],
+      "reason": "Goal: most users can reserve a room within about five minutes."
+    },
+    {
+      "req_id": "PROMISE_6_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "standard web conventions",
+        "familiar web-style menus and flows"
+      ],
+      "reason": "Documents require familiar, standard web navigation and menus."
+    },
+    {
+      "req_id": "PROMISE_6_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "filters for time, capacity, and equipment"
+      ],
+      "reason": "Search described as simple with time/capacity/equipment filters."
+    },
+    {
+      "req_id": "PROMISE_6_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "align with disability access standards"
+      ],
+      "reason": "Accessibility requirements call for disability-access standards compliance."
+    },
+    {
+      "req_id": "PROMISE_6_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "90% of standard tasks < 5s; 98% < 8s"
+      ],
+      "reason": "Performance targets explicitly state 90% <5s and 98% <8s."
+    },
+    {
+      "req_id": "PROMISE_6_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "app-level uptime target ~99.99%"
+      ],
+      "reason": "Meeting notes specify a 99.99% app-level uptime target."
+    },
+    {
+      "req_id": "PROMISE_6_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "capture exceptions and transmit logs securely"
+      ],
+      "reason": "Sources require exception logging and secure transmission to vendor."
+    },
+    {
+      "req_id": "PROMISE_6_R020",
+      "supported": true,
+      "evidence_snippets": [
+        "plan for ~1,000 concurrent requests at launch"
+      ],
+      "reason": "Concurrency targets state ~1,000 at launch, ~2,000 planned later."
+    },
+    {
+      "req_id": "PROMISE_6_R021",
+      "supported": false,
+      "evidence_snippets": [
+        "Throughput: around 10,000 transactions/hour"
+      ],
+      "reason": "Source lists 10k near-term but not 20k or two-year deadline."
+    },
+    {
+      "req_id": "PROMISE_6_R022",
+      "supported": true,
+      "evidence_snippets": [
+        "Longevity: stable operation ≥ 5 years"
+      ],
+      "reason": "Source explicitly requires five-year operation per install."
+    },
+    {
+      "req_id": "PROMISE_6_R023",
+      "supported": true,
+      "evidence_snippets": [
+        "typical office"
+      ],
+      "reason": "Multiple artifacts reference typical office deployment."
+    },
+    {
+      "req_id": "PROMISE_6_R024",
+      "supported": false,
+      "evidence_snippets": [
+        "Test matrix: at least 8 browsers"
+      ],
+      "reason": "Source requires mainstream browsers and eight tests, not 'any' or 80%."
+    },
+    {
+      "req_id": "PROMISE_6_R025",
+      "supported": true,
+      "evidence_snippets": [
+        "Multi-DB support: Oracle, SQL Server..."
+      ],
+      "reason": "Source mandates multi-DB support and reliable DB transactions."
+    },
+    {
+      "req_id": "PROMISE_6_R026",
+      "supported": true,
+      "evidence_snippets": [
+        "integrate with corporate SMTP for outbound"
+      ],
+      "reason": "Source requires email integration and sending notifications."
+    },
+    {
+      "req_id": "PROMISE_6_R027",
+      "supported": true,
+      "evidence_snippets": [
+        "Internet download (binary/ZIP)"
+      ],
+      "reason": "Source states distribution via Internet as binary/ZIP."
+    },
+    {
+      "req_id": "PROMISE_6_R028",
+      "supported": true,
+      "evidence_snippets": [
+        "packaged CD for the few clients"
+      ],
+      "reason": "Source mentions providing a packaged CD distribution option."
+    },
+    {
+      "req_id": "PROMISE_6_R029",
+      "supported": true,
+      "evidence_snippets": [
+        "Licensing: server-based tiers—single server; 2–5; 5 or more"
+      ],
+      "reason": "Source defines the one/2–5/5+ server licensing tiers."
+    },
+    {
+      "req_id": "PROMISE_6_R030",
+      "supported": true,
+      "evidence_snippets": [
+        "90% to log in within 10 minutes"
+      ],
+      "reason": "Source sets 90% target for login within ten minutes."
+    },
+    {
+      "req_id": "PROMISE_6_R031",
+      "supported": true,
+      "evidence_snippets": [
+        "employ design patterns and coding best practices"
+      ],
+      "reason": "Matches explicit design patterns and 90%/2-day maintenance goal."
+    },
+    {
+      "req_id": "PROMISE_6_R032",
+      "supported": false,
+      "evidence_snippets": [
+        "swap DB without code changes"
+      ],
+      "reason": "Configurable DB layer present, but no 80% end-user metric."
+    },
+    {
+      "req_id": "PROMISE_6_R033",
+      "supported": false,
+      "evidence_snippets": [
+        "Maintenance releases: annual cadence"
+      ],
+      "reason": "Annual releases and ~5min update claimed, but no 80% figure."
+    },
+    {
+      "req_id": "PROMISE_6_R034",
+      "supported": false,
+      "evidence_snippets": [
+        "majority find solutions within ~5 minutes"
+      ],
+      "reason": "Support site and ~5min goal exist, but 70% figure not stated."
+    },
+    {
+      "req_id": "PROMISE_6_R035",
+      "supported": true,
+      "evidence_snippets": [
+        "drop a file in or use an admin setup"
+      ],
+      "reason": "Explicitly requires easy map updates with minimal vendor help."
+    },
+    {
+      "req_id": "PROMISE_6_R036",
+      "supported": false,
+      "evidence_snippets": [
+        "add new markets without long lead time"
+      ],
+      "reason": "Languages and market plan noted, but no 5-day configuration claim."
+    },
+    {
+      "req_id": "PROMISE_6_R037",
+      "supported": true,
+      "evidence_snippets": [
+        "Oracle, SQL Server, DB2, MySQL, HSQL, MS Access"
+      ],
+      "reason": "Exact list of supported DBMS appears in multiple artifacts."
+    },
+    {
+      "req_id": "PROMISE_6_R038",
+      "supported": true,
+      "evidence_snippets": [
+        "up and running within two days"
+      ],
+      "reason": "Install target of two days is stated for typical deployments."
+    },
+    {
+      "req_id": "PROMISE_6_R039",
+      "supported": true,
+      "evidence_snippets": [
+        "Access limited to employees + pre-approved IDs"
+      ],
+      "reason": "Source explicitly forbids public sign-ups; logins must be approved."
+    },
+    {
+      "req_id": "PROMISE_6_R040",
+      "supported": true,
+      "evidence_snippets": [
+        "Manager-only ability to search reservations by user"
+      ],
+      "reason": "Manager-only reservation-by-user search and role enforcement specified."
+    },
+    {
+      "req_id": "PROMISE_6_R041",
+      "supported": true,
+      "evidence_snippets": [
+        "no silent truncation or auto-corrections"
+      ],
+      "reason": "Specifies stored data must equal user input."
+    },
+    {
+      "req_id": "PROMISE_6_R042",
+      "supported": true,
+      "evidence_snippets": [
+        "Malicious inputs: Validate and sanitize."
+      ],
+      "reason": "Requires input validation to prevent data corruption."
+    },
+    {
+      "req_id": "PROMISE_6_R043",
+      "supported": true,
+      "evidence_snippets": [
+        "do not crash and do not corrupt data"
+      ],
+      "reason": "Specifies system must not crash from malicious input."
+    },
+    {
+      "req_id": "PROMISE_6_R044",
+      "supported": true,
+      "evidence_snippets": [
+        "automatic updates for emerging security issues"
+      ],
+      "reason": "Calls for automatic delivery of security updates."
+    },
+    {
+      "req_id": "PROMISE_6_R045",
+      "supported": false,
+      "evidence_snippets": [
+        "user-selectable languages for target markets"
+      ],
+      "reason": "Languages supported, but no 90% per-country acceptance metric."
+    },
+    {
+      "req_id": "PROMISE_6_R046",
+      "supported": false,
+      "evidence_snippets": [
+        "date/time formatting per user locale"
+      ],
+      "reason": "Locale formatting specified, but no 90% survey metric."
+    },
+    {
+      "req_id": "PROMISE_6_R047",
+      "supported": true,
+      "evidence_snippets": [
+        "Java-based (J2SE/J2EE libs)"
+      ],
+      "reason": "Sources explicitly require J2SE/J2EE Java stack."
+    },
+    {
+      "req_id": "PROMISE_6_R048",
+      "supported": true,
+      "evidence_snippets": [
+        "Meeting records: create/update"
+      ],
+      "reason": "Meeting entries and records are explicitly required."
+    },
+    {
+      "req_id": "PROMISE_6_R049",
+      "supported": true,
+      "evidence_snippets": [
+        "send notifications (email at minimum)"
+      ],
+      "reason": "Invitations/notifications via email are required."
+    },
+    {
+      "req_id": "PROMISE_6_R050",
+      "supported": true,
+      "evidence_snippets": [
+        "send invitations and reminders"
+      ],
+      "reason": "Reminders are explicitly called out to be sent."
+    },
+    {
+      "req_id": "PROMISE_6_R051",
+      "supported": true,
+      "evidence_snippets": [
+        "organizer contact info"
+      ],
+      "reason": "Sources state meeting records include organizer contact."
+    },
+    {
+      "req_id": "PROMISE_6_R052",
+      "supported": true,
+      "evidence_snippets": [
+        "record attendee responses (accept/decline)"
+      ],
+      "reason": "Materials require recording attendee acknowledgements/responses."
+    },
+    {
+      "req_id": "PROMISE_6_R053",
+      "supported": true,
+      "evidence_snippets": [
+        "add/update/delete conference rooms"
+      ],
+      "reason": "Facility features explicitly allow adding rooms."
+    },
+    {
+      "req_id": "PROMISE_6_R054",
+      "supported": true,
+      "evidence_snippets": [
+        "add/update/delete conference rooms"
+      ],
+      "reason": "Sources explicitly require updating conference rooms."
+    },
+    {
+      "req_id": "PROMISE_6_R055",
+      "supported": true,
+      "evidence_snippets": [
+        "add/update/delete conference rooms"
+      ],
+      "reason": "Deletion of rooms is explicitly mentioned."
+    },
+    {
+      "req_id": "PROMISE_6_R056",
+      "supported": true,
+      "evidence_snippets": [
+        "Equipment: add/update/delete equipment"
+      ],
+      "reason": "Sources state ability to add/store room equipment."
+    },
+    {
+      "req_id": "PROMISE_6_R057",
+      "supported": true,
+      "evidence_snippets": [
+        "Equipment: add/update/delete equipment"
+      ],
+      "reason": "Updating existing equipment is explicitly required."
+    },
+    {
+      "req_id": "PROMISE_6_R058",
+      "supported": true,
+      "evidence_snippets": [
+        "Equipment: add/update/delete equipment"
+      ],
+      "reason": "Deletion of equipment is explicitly required."
+    },
+    {
+      "req_id": "PROMISE_6_R059",
+      "supported": true,
+      "evidence_snippets": [
+        "organizers invite participants"
+      ],
+      "reason": "Invitations by organizers are described (email notifications)."
+    },
+    {
+      "req_id": "PROMISE_6_R060",
+      "supported": true,
+      "evidence_snippets": [
+        "update the schedule immediately"
+      ],
+      "reason": "Immediate schedule updates on reservation prevent conflicts."
+    },
+    {
+      "req_id": "PROMISE_6_R061",
+      "supported": true,
+      "evidence_snippets": [
+        "track statuses (requested/in transit/delivered/returned)"
+      ],
+      "reason": "Transport requests include tracked statuses."
+    },
+    {
+      "req_id": "PROMISE_6_R062",
+      "supported": true,
+      "evidence_snippets": [
+        "display floorplans with room locations"
+      ],
+      "reason": "Floorplans with room locations are required."
+    },
+    {
+      "req_id": "PROMISE_6_R063",
+      "supported": true,
+      "evidence_snippets": [
+        "include agenda with updates recorded"
+      ],
+      "reason": "Agendas and their updates are explicitly recorded."
+    },
+    {
+      "req_id": "PROMISE_6_R064",
+      "supported": true,
+      "evidence_snippets": [
+        "system sends a confirmation to the organizer"
+      ],
+      "reason": "Organizer confirmation on booking is specified."
+    },
+    {
+      "req_id": "PROMISE_6_R065",
+      "supported": true,
+      "evidence_snippets": [
+        "reflect in search results based on filters"
+      ],
+      "reason": "Equipment appears in search results per filters."
+    },
+    {
+      "req_id": "PROMISE_6_R066",
+      "supported": true,
+      "evidence_snippets": [
+        "filters for time, capacity, equipment"
+      ],
+      "reason": "Room search supports filtering by parameters."
+    },
+    {
+      "req_id": "PROMISE_6_R067",
+      "supported": true,
+      "evidence_snippets": [
+        "meeting type classification"
+      ],
+      "reason": "Meeting type classification is part of records."
+    },
+    {
+      "req_id": "PROMISE_6_R068",
+      "supported": true,
+      "evidence_snippets": [
+        "associate it with the meeting"
+      ],
+      "reason": "Reserved equipment is associated with the meeting record."
+    },
+    {
+      "req_id": "PROMISE_6_R069",
+      "supported": true,
+      "evidence_snippets": [
+        "notify building personnel"
+      ],
+      "reason": "Transport requests must notify building personnel."
+    },
+    {
+      "req_id": "PROMISE_6_R070",
+      "supported": true,
+      "evidence_snippets": [
+        "privileged users can view schedules via multiple reporting views"
+      ],
+      "reason": "Manager/privileged multi-view schedule reporting is specified."
+    },
+    {
+      "req_id": "PROMISE_6_R071",
+      "supported": true,
+      "evidence_snippets": [
+        "Users should be able to pick their preferred way"
+      ],
+      "reason": "Users can choose notification channels; email is minimum."
+    },
+    {
+      "req_id": "PROMISE_6_R072",
+      "supported": true,
+      "evidence_snippets": [
+        "customizable branding (logo/colors)"
+      ],
+      "reason": "Explicit request to skin UI with logo and colors."
+    },
+    {
+      "req_id": "PROMISE_6_R073",
+      "supported": true,
+      "evidence_snippets": [
+        "Navigation: familiar web-style menus and flows"
+      ],
+      "reason": "Spec calls for familiar, intuitive navigation and search."
+    },
+    {
+      "req_id": "PROMISE_6_R074",
+      "supported": true,
+      "evidence_snippets": [
+        "show \"Available\" for unreserved rooms"
+      ],
+      "reason": "Sources require an explicit Available indicator for free rooms."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "The product must integrate with the corporate directory or support SSO/directory-sync so that every login ties back to the company directory or a pre‑approved guest ID.",
+      "source_snippet": "\"Every login must tie back to our directory or a pre-approved guest ID.\"",
+      "source_type": "interview_transcript",
+      "reason": "The source explicitly requires logins to be tied to the corporate directory or pre‑approved guest IDs and mentions directory sync/SSO as a desired mechanism. The gold set requires that only employees or approved external users may log in but does not require directory integration or SSO/directory‑sync as the authentication mechanism."
+    },
+    {
+      "text": "Exception log transmission must include secure transmission and built‑in PII redaction/anonymization before logs are sent to vendor support.",
+      "source_snippet": "\"Exception logging: capture exceptions with enough context for diagnosis; provide a way to transmit logs securely to vendor support. Privacy approach [TBD].\"",
+      "source_type": "meeting_notes",
+      "reason": "While the gold set requires creation/transmission of exception logs, the source adds a requirement for secure transmission and explicit redaction/anonymization of PII in logs. The gold requirements do not specify secure transport or PII redaction guidelines for transmitted logs."
+    },
+    {
+      "text": "Notifications to building/facilities personnel must include delivery tracking (confirming that the alert was sent to the designated distribution lists).",
+      "source_snippet": "\"Send it to our designated lists and track that the alert went out.\"",
+      "source_type": "email_thread",
+      "reason": "The gold set requires notifying building personnel of equipment transport requests but does not require tracking or confirming that those notification messages were actually delivered to designated lists. The source explicitly demands delivery tracking as part of the notification behavior."
+    }
+  ],
+  "passed": false
+}

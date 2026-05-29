@@ -1,0 +1,118 @@
+TYPE  : meeting_notes
+TITLE : PocketMLS Field Kit — Ops/Design/MLS Sync Working Session (Raw Notes)
+UNIT  : PROMISE_2
+============================================================
+
+Date: 2025-03-18
+Location: Conf Rm B / Teams link tbd (Priya to send)
+Attendees: Priya (IT/Ops), Dana (PM), Alex (Mobile Eng), Brooke (Broker/Owner), Leo (Team Lead Realtor), Miguel (MLS Board Rep), Kira (Designer), Owen (QA) — plus 2 agents joined late [names?]
+
+Agenda (loosely):
+- Device UX standards on Palm OS/Windows CE
+- Search/map/directions and photos
+- Sync cadence w/ office (contacts + appts)
+- CMA in field; perf targets
+- Availability, offline, prefs
+- Security/auth; user base scale
+- Listing create/update rules
+
+Notes (messy):
+- UI/UX:
+  - Use native controls only on both platforms → no custom nav widgets; standard menus & buttons. Agents expect Back, Menu, soft keys to work. “This should look like a normal Palm app, not a game” (Leo).
+  - Brand consistency: Brooke: keep our blue, gray, font sizes consistent across screens; professional look, no playful icons. Kira to align w/ brand guide. Fonts: map to CE/Palm stock fonts, keep consistent.
+  - Zero training philosophy: terms familiar to Realtors: “CMA,” “comps,” “showing,” “listing,” “buyer,” not “entity”/“record.” Self-explanatory flow. “If they need a training video we blew it” (Brooke).
+  - Ease of learning: New hire should pick up in minutes; minimal learning curve. Onboarding screens? [TBD — Brooke wants none; Kira suggests 2-screen tip]. NOT decided yet.
+  - Install: Self-installable installer; no printed instruction sheet. Owen asked about QR code quick-start; Brooke says ok but no paper booklet. Goal: 90%+ of untrained agents succeed on first try. [Track metric].
+
+- Search / Photos / Save:
+  - MLS query from device — must support typical criteria (price range, beds, neighborhood), no weird query syntax. Use realtor-friendly labels.
+  - Results need to feel fast. Priya wrote: “Search < 30 sec after submit” (metrics). Leo: “fast as humanly possible,” but ok with upper bound.
+  - Show clear property images in results + detail. Avoid over-compression. Ensure tap-through to larger image view given device constraints.
+  - Allow saving of search results; accessible later. Clarify: save criteria + result snapshot? [TBD]. Important for offline.
+  - Area map view: show pins in specified area. At minimum: retrieve map showing property locations for chosen area.
+  - Driving directions: tap a listing → route shown. Use built-in mapping or light directions.
+
+- CMA:
+  - Generate CMA in field. Quick comps selection → summary report. Timing: under ~60 (Dana said 60). “Acceptable time” for CMA = minute-ish, not coffee break. Owen: log the time from criteria entry to report.
+  - CMA correctness: Use board data; respect permissions.
+  - Cache generated CMAs for offline viewing later.
+
+- Sync (office system):
+  - Automatic sync cadence: every hour. “On the hour” job already exists on ops side. We will not change this. [Earlier idea of 10-min push — crossed-out].
+  - Sync covers client contacts + appointments. After sync completes, device should notify user of new or changed appointments. (Example: “2 new showings added since 11:00”).
+  - Perceived speed: sync should feel timely. Agents shouldn’t wonder “did it work?”. Show last synced time.
+  - Downloaded items accessible offline later.
+  - Confusion: Leo asked “can we pull immediately after someone hits save at office?” Priya said no → office system is hourly; the device can’t make it faster. [Open issue: whether a UI ‘Sync now’ button is acceptable — Brooke wary of UX clutter]. NOT decided yet.
+
+- Offline + Availability + Prefs:
+  - Offline mode: when connection drops, app still usable. View cached searches, previous CMA reports, and appointments.
+  - Availability target: treat as 24/7. Priya wrote “999/1000 availability expectation” — roughly 99.9%. Brooke: “We show on Sundays. Don’t go down.”
+  - Preferences: persist user settings frequently so crash/outage doesn’t wipe them. On restart, 100% of saved prefs restored exactly. QA to test crash scenarios.
+
+- Security:
+  - Access limited to registered, licensed agents only. No guest mode. Tie to brokerage directory + MLS where needed.
+  - Every user authenticated AND authorized. Don’t conflate — AuthN vs AuthZ. Role checks for listing edit vs view.
+  - Input validation everywhere to avoid bad data entering system (e.g., no negative prices, required fields for listings, date formats). Protect MLS and office systems from junk.
+
+- Listings (create/update):
+  - Agents want to update open house time, fix typos, change status. Create new listing from device also requested by Brooke (scope confirmed by Dana). Must respect MLS rules, picklists, required fields.
+  - Edge cases: network drops during update → retry later; do not create duplicates. Owen to define.
+
+- Scalability / Users:
+  - Multi-remote-user support baseline. QA load testing: 1000 simultaneous agents expected today. Plan for growth to 5x (~5000) within a year. Priya: “Don’t melt the server during spring rush.”
+  - Consider modest headroom for spikes. Logins at top of hour with sync — watch contended endpoints.
+
+- Device constraints:
+  - Target platforms: Windows CE and Palm OS only (for v1). Conform to native UI conventions. No custom gestures. Use platform-standard menus, buttons, dialog patterns.
+  - Notifications: use platform-appropriate alerts; don’t simulate iOS banners.
+  - Font/color: use consistent palette + font mapping. Designer to provide a mapping doc.
+
+- Calls & Notifications:
+  - In-app calling to buyers/sellers to coordinate showings.
+  - Notify agent when client responds (call back, confirms/cancels). Works when the call starts from the app so we can detect it. Coordinate details with ops.
+
+- Misc / Contradictions captured:
+  - Leo wants “real-time” sync. Priya says not possible due to office system. Decision: keep hourly; explore making top-of-hour sync more visible. [Action: Kira design a subtle banner].
+  - Brooke prefers zero onboarding steps; Kira suggests minimal tips. NOT decided yet.
+  - Brooke wants “no lag at all” on images; Alex warns device memory limits. Agreement: prioritize clarity; may limit number of simultaneous thumbnails.
+
+Action Items:
+- Kira: draft UI with standard device menus/buttons; include brand-consistent color/fonts; no custom components. Due 3/25.
+- Alex: prototype search → results → map → directions flow on CE; time search returns. Target under 30 from submit. Log metrics.
+- Priya: confirm hourly sync job details and payload (contacts + appts). Add “last synced” timestamp. Provide sample. Due 3/21.
+- Owen: define crash/power-cut test to verify 100% preference restoration. Include offline viewing of saved searches, CMAs, appointments. Due 3/28.
+- Miguel: send MLS validation rule set and picklists. Due EOW.
+- Dana: write success criteria for 90% self-install by untrained agents. Consider in-app tips vs none. Due 3/22.
+- Leo: compile top 10 search criteria agents actually use; ensure terms are realtor-friendly. Due 3/20.
+
+Performance Targets (scribbles on whiteboard):
+- Search: “reasonable” → define as <= 30 seconds after submit. Faster better. [Agreed].
+- CMA: “quick” → define as <= 60 seconds after criteria confirmed. [Agreed].
+- Sync: “feels timely” → remains hourly, finish promptly; notify of new appts. [Agreed].
+- Uptime: 24/7 objective; ~99.9% avail (999/1000). [Target].
+
+Open Issues / Parking Lot:
+- Can we show a small “Sync Now” control without implying real-time? [Brooke concerned about support calls]. [TBD].
+- Save search: criteria only vs criteria + snapshot; implications for storage and offline. [TBD].
+- Onboarding tips: 0 vs 2 screens. [Not decided].
+- Listing creation on Palm: form length vs screen size; need to chunk fields; validate early. [Design prototype].
+- Map area filter (draw shape?) likely not v1. Keep to specified area list and map display; no freehand. [Defer].
+
+Random Notes (abbrev, messy):
+- “Make buttons look like buttons” (Leo). Use standard Palm soft key labels.
+- Protect from malformed inputs. Price, dates, MLS IDs. Error messages in plain language (no codes).
+- Agents expect native feel — no new gestures or custom nav. Use OS back behavior.
+- Multi-user concurrency: 1000 now, 5x later. Monitor memory. Test top-of-hour load.
+- When offline: read-only views of cached data. Don’t block.
+- Calling workflow: Place call from listing detail; on response (client calls back or confirms), notify agent with link to the relevant screen. Log behavior TBD.
+- Install: aim for tap-install, sign-in, done. No printed guide. Provide on-screen hints only if necessary.
+- Security posture: no sharing logins. Only licensed agents. Authenticated + authorized per role.
+- Device list: CE, Palm only. No iOS/Android in v1. Avoid references in UI to touch gestures not present.
+- Direction flow: map shows area, user taps property, route displays.
+- Photos: ensure clarity. Preload a few thumbnails; lazy-load rest. Avoid fuzzy first impression.
+- Consistency: color + font across screens; keep pro look. No playful icons.
+
+Summary (chaotic):
+- Yes to: native UI, pro/consistent visuals, realtor-friendly terms, MLS search on device, map + directions, saved searches, clear photos, CMA under 60, hourly sync of contacts/appts, notify after sync, in-app call + notify on response, offline cached access, 24/7-ish uptime, preferences persist/restore, secure (licensed only, authN/Z, input validation), listing create/update, 1000 users scale now + 5x growth, run on CE/Palm.
+- No to: 10-minute sync push (crossed-out), custom UI widgets.
+- Not decided: sync now button; onboarding tips; save search snapshot semantics.

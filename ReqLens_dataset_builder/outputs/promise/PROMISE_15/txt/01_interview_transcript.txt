@@ -1,0 +1,120 @@
+TYPE  : interview_transcript
+TITLE : Kickoff interview with Finance, Architecture, Ops, and a Regional Controller (revised)
+UNIT  : PROMISE_15
+============================================================
+
+Maria [PCG Finance Lead]: Thanks for making time. BudgetPulse RFS has to get us through the next budgeting cycle with fewer headaches than last year. I want to start with availability because the phones light up when folks can’t get in.
+
+Dev [ENET Architect]: Sure. On availability, we’re planning for intranet access around the clock, but we set the targets differently inside and outside the budgeting window.
+
+Lila [Regional Controller]: Around the clock as in weekends too? I’m often in the office on Sundays finalizing the branch roll-ups.
+
+Sam [IT Ops]: Yes, the intranet runs 24/7. There are rare change-control windows. During budgeting we tighten the target; off-peak we’re more relaxed.
+
+Maria [PCG Finance Lead]: I want the numbers spelled out.
+
+Dev [ENET Architect]: Year-round baseline we use 90% for this class of internal tools, and during the budgeting period we push up to 98% availability. If it is down in that window, we aim to get it back within about an hour once it’s reported to helpdesk.
+
+Lila [Regional Controller]: An hour seems fine if it’s unusual. Last October we had… well, you know.
+
+Sam [IT Ops]: We’ll treat RFS as high priority during the budgeting window and have after-hours on-call.
+
+Maria [PCG Finance Lead]: Good. Next, performance. People keep saying it needs to be fast. We had complaints about waiting for pages to paint.
+
+Dev [ENET Architect]: We can target round trips within two seconds for most interactions — roughly nine out of ten clicks. For heavier actions, up to ten seconds is tolerable occasionally, but that should be the exception.
+
+Lila [Regional Controller]: Two seconds is fine for normal save. But the account roll-ups pulled slowly last time.
+
+Dev [ENET Architect]: We’ll tune those. Also, visual standards — we stick to intranet guidelines, which include supporting lower resolutions. Minimum is still 800 by 600.
+
+Sam [IT Ops]: Compliance says from 800x600 upward. We’ll test a spread of resolutions; if someone finds a weird case after go-live, we’ll turn around a fix quickly.
+
+Maria [PCG Finance Lead]: Architecture signoff — we got dinged last time for not following the look and feel. We need pre-release approval. I’m okay if a small portion gets corrected after go-live, but not months later.
+
+Dev [ENET Architect]: The ENET Architecture group needs to approve the majority of UI before rollout. Historically about 95% is approved pre-release; the small tail we fix within a month.
+
+Lila [Regional Controller]: Okay. What about the data? Branches, complexes, districts, regions — there were missing complexes last year. Finance folks were upset.
+
+Maria [PCG Finance Lead]: That was because the BDW snapshot and the app didn’t line up. This time, I want it fully aligned. Everything that exists as of the October month-end has to show up before we start budgets. I don’t want surprises mid-year.
+
+Sam [IT Ops]: The plan is to load from BDW one business day before kickoff. They deliver seven files — I have the list — and we run a load job. We block out a three-hour window to ingest them all. That data is the October month-end snapshot.
+
+Dev [ENET Architect]: For practice and testing through the year, we can ask BDW for test drops. Not unlimited — they cap the number per year.
+
+Maria [PCG Finance Lead]: Five, right? Up to five mock runs to test the workflow.
+
+Sam [IT Ops]: That’s what I recall too. We’ll schedule those.
+
+Lila [Regional Controller]: And that will include new branches and revenue/expense accounts? We had new revenue lines show up in January that weren’t budgetable.
+
+Maria [PCG Finance Lead]: For the budget period, we only need what exists at October month-end. Anything added after that is next year’s problem. But everything that exists as of that date — one hundred percent — must be in RFS when we open it.
+
+Dev [ENET Architect]: That aligns with the snapshot principle. We will ensure the import pulls the full set of org units and accounts from those seven files.
+
+Lila [Regional Controller]: Can you send an email if the load fails? Sorry, I’m jumping ahead.
+
+Sam [IT Ops]: If something goes wrong during the run, Ops will handle communications through the helpdesk. Just to be clear, we’re not putting any new notification features inside RFS.
+
+Maria [PCG Finance Lead]: Fine. Authorization — we can’t have just anyone snooping. We need to use corporate sign-on. And roles — branch people see their stuff, regional see theirs, etc.
+
+Dev [ENET Architect]: We’ll integrate with UAS for identities. That’s the source of truth. We won’t maintain local accounts. Access to functions will key off roles that match PCG hierarchy levels — branch, complex, district, region.
+
+Lila [Regional Controller]: UAT handles that? Sorry, I always mix that up.
+
+Sam [IT Ops]: UAS, not UAT. User Access System. It’s our identity and authorization service.
+
+Lila [Regional Controller]: Right, UAS. So if someone is in the region role, they won’t accidentally get to post changes at the branch level they don’t own?
+
+Dev [ENET Architect]: Exactly. Functionality will be limited by role. The UI will hide what you don’t have permission for.
+
+Maria [PCG Finance Lead]: Training — we can’t do a month-long boot camp. We’ll do a quick ramp one week before go-live, virtual sessions. We need a high completion rate on budgets — like nearly everyone getting done on time.
+
+Sam [IT Ops]: We can handle scheduling the webinars and record them. Metrics-wise, what’s the success criterion?
+
+Maria [PCG Finance Lead]: We’ve used 98% completion within the deadline as our target. I want to stick to that. If we need to tweak the screens to make it easier, do that.
+
+Dev [ENET Architect]: Usability within the intranet standards, approved by the architecture group. We can have a quick usability pass in our joint testing.
+
+Lila [Regional Controller]: Speaking of testing, the formulas — revenue and expense — they change every year. When do we get them into RFS?
+
+Maria [PCG Finance Lead]: Finance sends final formula changes, and then we need them applied quickly. Within a week after we hand them over. Then we devote two weeks to testing the calculations together — dev team and Finance — before the budget opens.
+
+Dev [ENET Architect]: That cadence works. We’ll need your acceptance criteria on the computed values. We’ll set up test datasets during those two weeks.
+
+Sam [IT Ops]: Let’s line one of those cycles up with a BDW test load so it’s close to production data.
+
+Lila [Regional Controller]: Sorry to derail, but my branch admins complain their machines are too old. Are there minimum specs we need to communicate?
+
+Sam [IT Ops]: Yes. We do a workstation readiness push before rollout. We need free disk space — roughly 400 megabytes — and the standard software stack. And while I know people hate it, we’re still on the old browser.
+
+Dev [ENET Architect]: The app uses IE and the classic ASP.NET stack. Specifically, IE-era compatibility and .NET Framework 1.1 with the IE Web Controls. I know it’s heritage, but that’s the supported baseline on ENET for this line of apps.
+
+Lila [Regional Controller]: Wait, IE that old? My laptop runs something newer.
+
+Sam [IT Ops]: The enterprise image includes compatibility modes and the IE Web Controls. The point is, the app must work in that environment. We’ll validate that the vast majority of machines — like 98% — have the right setup before we flip the switch.
+
+Maria [PCG Finance Lead]: Please send a checklist: disk space, browser, .NET version, that control library. Branches will do the cleanup.
+
+Dev [ENET Architect]: UI guidelines — we’ll pre-submit to Architecture for look-and-feel approval. Historically, they approve most of it before release — call it 95%. The little bits we miss we fix within a month.
+
+Lila [Regional Controller]: And the resolution thing — can we stop supporting 800x600? It’s tiny.
+
+Dev [ENET Architect]: We don’t force it. We support it. Pages should render properly from 800x600 upwards. We test popular settings and try to have almost all corrected pre-go-live. If we miss a screen, we’ll fix it within a week once notified.
+
+Sam [IT Ops]: On outages — to circle back — if we do hit downtime during budgeting, have the business call the helpdesk. We can usually have it back within an hour once it’s reported. Our SLA is structured like that.
+
+Maria [PCG Finance Lead]: Noted. Also, we need to load all organizational units and account codes. No partial hierarchies. Some folks tried to budget into accounts that were missing and that caused chaos.
+
+Dev [ENET Architect]: Understood. 100% of what BDW has at the snapshot gets loaded.
+
+Lila [Regional Controller]: Works for me. Just please don’t make me click five times to save. And don’t make the page jump around.
+
+Dev [ENET Architect]: We’ll keep the UX calm. Within the ENET style guide.
+
+Maria [PCG Finance Lead]: And no slipping the scope. No new features, just make the core work and make it reliable. That’s it.
+
+Sam [IT Ops]: Copy that.
+
+Dev [ENET Architect]: Agreed.
+
+Lila [Regional Controller]: Thanks, all. I’ll send feedback after I use the test build.

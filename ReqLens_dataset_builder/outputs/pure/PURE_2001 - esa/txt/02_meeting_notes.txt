@@ -1,0 +1,64 @@
+TYPE  : meeting_notes
+TITLE : ASPERA-3 Data System Design Kickoff Meeting
+UNIT  : PURE_2001 - esa
+============================================================
+
+Date: March 15, 2025
+Attendees: Emily (Project Lead), Frank (Software Architect), Grace (Security Officer), Helen (Operations Manager), Ian (Data Scientist)
+
+Purpose: To align on initial design considerations and operational constraints for the ASPERA-3 Processing and Archiving Facility (APAF) data system.
+
+Discussion:
+
+- Emily opened with the need to ensure the system processes and archives Mars Express mission data effectively, emphasizing compliance with NASA PDS standards.
+
+- Frank outlined the system architecture, confirming the use of UNIX-based development and production environments. He stressed the importance of including an archival system integrated with the production environment.
+
+- Helen highlighted operational constraints, noting the system must operate in only one mode to simplify control and reduce complexity.
+
+- Grace raised concerns about data security, recommending password protection on all web-based data displays and servers to restrict access to authorized ASPERA-3 team members until public release.
+
+- Ian discussed data acquisition, confirming telemetry will be received via NISN and ESOC, including spacecraft orbit and attitude data. He stressed the necessity of generating intermediate cleaned-up telemetry files if ESOC does not provide them.
+
+- Emily emphasized the requirement to distribute data and any intermediate files electronically to all Co-Investigators within 24 hours of telemetry acquisition, assuming error-free transmission and processing.
+
+- Frank confirmed the system will provide web-based displays of current data, with access control as per Grace's security recommendations.
+
+- Helen mentioned the APAF Operations Procedures Document must detail installation-dependent requirements and provide comprehensive instructions to eliminate the need for additional user training.
+
+- Ian noted the importance of calibrating and validating data before submission to the NASA Planetary Data System, with a maximum turnaround of six months.
+
+- Emily reminded the team about the need for built-in error handling mechanisms to ensure system reliability.
+
+- Grace requested clarification on how password protection will be implemented on the web server and whether this will affect performance.
+
+- Frank responded that password protection will be integrated at the web server level, using standard authentication protocols, designed to minimize performance impact.
+
+- Helen proposed that the system's software design document should fully define all data products within each virtual instrument, including instrument and spacecraft parameters.
+
+- Emily stressed that all requirements must be objectively verifiable, concise, and feasible within the project schedule and budget.
+
+- Ian suggested simulating instrument data sets from calibration data to test processing algorithms and validate outputs using the Southwest Data Display and Analysis System.
+
+Action Items:
+
+1. Frank to draft the initial system architecture document, including UNIX environment specifications and archival integration. (Due: April 5, 2025)
+2. Grace to develop a security plan detailing password protection mechanisms for web displays and servers. (Due: April 10, 2025)
+3. Helen to begin drafting the APAF Operations Procedures Document with focus on installation and operational instructions. (Due: April 15, 2025)
+4. Ian to prepare a plan for data calibration, validation, and simulation testing using SDDAS. (Due: April 20, 2025)
+5. Emily to coordinate with Co-Investigators to define data distribution requirements and timelines. (Due: April 12, 2025)
+
+Decisions Made:
+
+- System will operate in a single mode to simplify control.
+- Password protection is mandatory for all web-based data access until public release.
+- UNIX-based development and production systems with archival capabilities are confirmed.
+- Data distribution to Co-Investigators within 24 hours post-acquisition is required.
+
+Open Questions:
+
+- What specific authentication protocols will be used for web server password protection?
+- How will the system handle error detection and recovery during telemetry acquisition and processing?
+- Are there any installation-dependent requirements that might impact deployment timelines?
+
+Next Meeting: April 22, 2025, to review draft documents and progress on action items.

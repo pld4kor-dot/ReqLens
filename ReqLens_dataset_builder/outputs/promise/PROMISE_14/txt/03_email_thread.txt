@@ -1,0 +1,171 @@
+TYPE  : email_thread
+TITLE : Thread: Wednesday Maintenance Window, Owner Auth, and UI Consistency Questions
+UNIT  : PROMISE_14
+============================================================
+
+Email 1
+From: Maya Patel <maya@gridironhub.com>
+To: Tom Rivera <tom.commish@example.com>, Riley Hu <riley.owner@example.com>
+CC: Jorge Salgado <jorge.ops@gridironhub.com>, Priya Menon <priya.dba@gridironhub.com>, Alex Park <alex.design@gridironhub.com>
+Subject: Quick confirmations: access, wall teaser, and midweek updates
+Body:
+Hey Tom and Riley,
+
+Quick sanity checks so we can lock a few things:
+- Owner dashboards require sign-in with username/password. No anonymous viewing of team pages, correct?
+- League page will have a simple message wall that shows the latest five posts with a short preview (we're capping the teaser around 150 characters). Sound right?
+- We're scheduling in-season app updates during an early Wednesday window (3–6 AM Central). Outside of that, we avoid changes. Major new version goes live at the beginning of the NFL season.
+- Also, we're standardizing a breadcrumb trail on every page and keeping action buttons separated from navigation so you don't accidentally hit the wrong thing.
+- From the owner dashboard, add/drop/trade flows will be just one click away, with a confirm step for drop/trade to avoid accidental roster changes.
+
+Anything in there you disagree with?
+
+Thanks!
+Maya
+
+—
+
+Email 2
+From: Tom Rivera <tom.commish@example.com>
+To: Maya Patel <maya@gridironhub.com>
+CC: Riley Hu <riley.owner@example.com>, Jorge Salgado <jorge.ops@gridironhub.com>, Priya Menon <priya.dba@gridironhub.com>
+Subject: RE: Quick confirmations: access, wall teaser, and midweek updates
+Body:
+Hey Maya,
+
+All that looks good. Two emphatic yes-es from me:
+- Only the commissioner in a given league can change league settings. Please make sure nobody else even sees those controls.
+- Early Wednesday updates are fine. Just not Sunday. Ever. If you need to do a season-start push, do it right when the season flips.
+
+Breadcrumb thing is helpful. And the wall preview length sounds right. Five posts is plenty.
+
+Thanks,
+Tom
+
+—
+
+Email 3
+From: Riley Hu <riley.owner@example.com>
+To: Maya Patel <maya@gridironhub.com>
+CC: Tom Rivera <tom.commish@example.com>, Alex Park <alex.design@gridironhub.com>
+Subject: RE: Quick confirmations: access, wall teaser, and midweek updates (and quick actions)
+Body:
+Hi all,
+
+No complaints here. Just make the roster actions front and center. If I can hit Add, Drop, or Trade from my owner page without digging, that’s perfect. One click to start. And PLEASE show me a confirm before it actually drops or trades a guy—my thumbs are clumsy.
+
+Also, one thing that bugs me on other sites: they hide the points behind a tooltip. If you’re showing those 25-plus stats, just include points visibly on every page that lists players. I don’t want to guess.
+
+Breadcrumbs will help me not get lost. Keep the navigation and the action buttons apart. I’ve tapped the wrong one before when they jam everything together.
+
+Thanks,
+Riley
+
+—
+
+Email 4
+From: Jorge Salgado <jorge.ops@gridironhub.com>
+To: Maya Patel <maya@gridironhub.com>, Alex Park <alex.design@gridironhub.com>
+CC: Tom Rivera <tom.commish@example.com>, Riley Hu <riley.owner@example.com>, Priya Menon <priya.dba@gridironhub.com>, Sahana Iyer <sahana.backend@gridironhub.com>
+Subject: RE: Quick confirmations: access, wall teaser, and midweek updates — perf and uptime caveats
+Body:
+Jumping in with ops constraints so we’re not overpromising:
+
+- Performance: We’re targeting that every user transaction (think add, drop, trade confirmations, etc.) completes over the network in about a quarter of a second. 250 ms on the server side is the SLO we’re drafting. That means we’ll need to keep payloads tight — e.g., limiting the league wall to five posts helps a lot.
+
+- Availability: The business has floated a minutes-per-year downtime goal. I’ve penciled in a 10 minutes/year upper bound outside the scheduled Wednesday window. It’s aggressive but we’ll plan around it.
+
+- Hosting: This is a web application server deployment. Just clarifying we’re not doing any native app in scope right now.
+
+- Maintenance: Agree on the 3–6 AM CST Wednesday in-season updates. Season-start major version is fine. If we need an emergency outside that slot, we will coordinate and avoid Sundays.
+
+Alex — keeping actions and nav separated and a breadcrumb on each page both reduce errors, so I’m on board.
+
+Jorge
+
+—
+
+Email 5
+From: Priya Menon <priya.dba@gridironhub.com>
+To: Maya Patel <maya@gridironhub.com>, Jorge Salgado <jorge.ops@gridironhub.com>
+CC: Alex Park <alex.design@gridironhub.com>, Sahana Iyer <sahana.backend@gridironhub.com>, Tom Rivera <tom.commish@example.com>
+Subject: RE: perf/uptime caveats + data layout note
+Body:
+Adding DB angle:
+
+- We will keep a primary database focused on active users’ needs. It will act like a cached store for hot data — current rosters, pending add/drop/trade transactions, current week stat lines. That’s how we can realistically hit the ~250 ms target without recomputing.
+
+- A secondary database will hold the long-term historicals: prior seasons’ stats, career numbers, old message wall posts, long-term league records. We’ll archive into this regularly so the primary stays lean.
+
+- For the message wall, I’ll index by league and timestamp in the primary to fetch exactly the last five quickly. Teaser length we can cap around 150 chars at the app layer.
+
+- Points will be included in the stat line object we serve to the UI so that wherever players show up, they get 25+ stats plus points without extra calls.
+
+Priya
+
+—
+
+Email 6
+From: Alex Park <alex.design@gridironhub.com>
+To: Maya Patel <maya@gridironhub.com>, Riley Hu <riley.owner@example.com>
+CC: Jorge Salgado <jorge.ops@gridironhub.com>, Priya Menon <priya.dba@gridironhub.com>, Tom Rivera <tom.commish@example.com>, Chen Li <chen.fe@gridironhub.com>
+Subject: RE: UI bits — actions vs nav, breadcrumbs, and clutter
+Body:
+Hey team,
+
+Design take:
+- We’ll standardize a global navigation zone with the breadcrumb trail visible at the top of every page. That breadcrumb will include league and team names so orientation is obvious.
+- Action items (Add, Drop, Trade) will live in a predictable action block on owner pages. Same placement page-to-page. From there, you’ll have a single click to start each flow.
+- Confirmations: we will add a clear confirmation step for drop/trade. I’ll avoid dark patterns.
+- Stats: I’ll work with FE to show at least 25 stats plus points everywhere players are listed. On mobile we might collapse some groups but the data will still be present.
+- League wall: last five posts only, teaser roughly 150 characters. Clean and small so it doesn’t slow down.
+
+Riley, LMK if that sounds like what you had in mind.
+
+Alex
+
+—
+
+Email 7
+From: Tom Rivera <tom.commish@example.com>
+To: Maya Patel <maya@gridironhub.com>
+CC: Alex Park <alex.design@gridironhub.com>, Jorge Salgado <jorge.ops@gridironhub.com>, Priya Menon <priya.dba@gridironhub.com>, Riley Hu <riley.owner@example.com>
+Subject: RE: UI bits — one more commissioner thing
+Body:
+Small nit from the commish side: make absolutely sure only I can adjust league settings. One user per league with that authority. I don’t even want a co-commissioner option at launch. And please keep those controls away from the roster actions visually.
+
+Also, unrelated but important: If a new person signs up, they should be able to get to the league and their team fast. You keep saying 30 seconds. That sounds right. Just confirming you’re designing for that.
+
+Thanks,
+Tom
+
+—
+
+Email 8
+From: Maya Patel <maya@gridironhub.com>
+To: Tom Rivera <tom.commish@example.com>, Riley Hu <riley.owner@example.com>
+CC: Jorge Salgado <jorge.ops@gridironhub.com>, Priya Menon <priya.dba@gridironhub.com>, Alex Park <alex.design@gridironhub.com>, Chen Li <chen.fe@gridironhub.com>
+Subject: RE: UI bits — closing the loop (some open items)
+Body:
+Thanks everyone — summarizing where we landed and what’s still open:
+
+- Owner pages behind username/password. Yes, locked.
+- Commissioner-only controls per league for settings. We’ll hide them from other roles and enforce on the backend too.
+- Consistent layout: navigation zone + breadcrumb on all pages; action items in a distinct place. We’ll stick to that pattern.
+- League wall shows last 5 posts, teaser length capped around 150 chars.
+- Owner dashboard has one-click entry to Add, Drop, Trade flows. There will be a confirmation prompt before any drop or trade is committed.
+- Stats: on any page where players show up, we’ll display at least 25 stats and the fantasy points.
+- Performance target: transactions complete in roughly a quarter second over the network. Jorge is writing the SLO doc.
+- Availability target: minutes of downtime per year, with a 10 min/year budget we’re planning against.
+- Infra: Web application server, primary DB for hot (cached-by-usage) data, secondary DB for historical and long-term records.
+- Updates: In-season updates only Wednesday 3–6 AM CST. Major version release aligned to the start of the NFL season.
+
+Open items:
+- Alex and Chen to finalize exact placement of the action block (but it will be consistent). Due next week.
+- Jorge to clarify whether the 10 min/year includes planned maintenance or just unplanned. He’ll propose language.
+
+Thanks all — replies inline if you disagree with anything above.
+
+Maya
+
+(sent from mobile, excuse typos)

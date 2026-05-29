@@ -1,0 +1,228 @@
+TYPE  : interview_transcript
+TITLE : Kickoff Interview: AfriStream On-Demand vision, flows, and constraints
+UNIT  : PROMISE_8
+============================================================
+
+Amina [Business Owner]: Thanks for making time, everyone. I want us to walk through the experience end-to-end. I keep saying this: I want a site that feels vibrant and modern, very African but welcoming to non-Africans, and it has to be easy for people who are new to buying things online. Nine out of ten first-time internet users should be able to get through without needing to call for help.
+
+Kofi [Izogn Manager]: Right, and we also have to be mindful of the older tech in the field. We promised the board we’ll stick to our current hosting and those legacy browsers. Also MSN TV2, remember that one? It’s still in the mix.
+
+Chinedu [Velkat Tech Support]: We can do that, but it’s a tight fit. IE 5 and 6, Netscape 6 to 8, Firefox 1.0… plus Windows Media Player 9 for streaming, encoded at 56k and 256k. It’s like a museum of browsers.
+
+Ada [Website Administrator]: People still use MSN TV2 in some regions. I had one support ticket last month about that. So yes, compatibility is real.
+
+Priya [CyberSource Partner]: Sorry—MSN TV2 is a device, not a browser, right? I just need to understand from a payments standpoint.
+
+Chinedu [Velkat Tech Support]: It’s more like a set-top browser. We must ensure basic pages render and the credit card form works. From your end, it’s just HTTPS calls to your API; from ours, old DOM quirks.
+
+Amina [Business Owner]: Payment is crucial. We only process credit cards through CyberSource. No other gateways. And for people uncomfortable with cards, we’ll have prepaid cards—$5, $10, $20—buyable by card or mail-in.
+
+Kofi [Izogn Manager]: And they can redeem those via a PIN to pay for a stream. We should let them check whether a card has balance by entering the PIN, quickly.
+
+Ada [Website Administrator]: I’d love a tiny box on the site where a customer types the PIN and it returns the status instantly—like in a few seconds. Also, only admins should be able to activate those cards in the back-office.
+
+Chinedu [Velkat Tech Support]: Yeah, we’ll ensure activation is an admin-only function. We can target the admin activation to run in, say, around three seconds if the network’s healthy—definitely staying under five seconds.
+
+Priya [CyberSource Partner]: On authorizations, our typical turnaround is fast, but it may vary. We can commit to something around, hm, fifteen seconds worst case during the payment step. Usually it’s much faster.
+
+Amina [Business Owner]: Good. From the user side, it must feel snappy. I don’t want a page that sits there. Page to page, clicking around should be, I don’t know, under five seconds response time ideally. People drop off otherwise.
+
+Kofi [Izogn Manager]: Let’s talk flows. Registration has to be short. For pay-as-you-go I’d say under five minutes. For an unlimited subscription—longer because of terms and card verification—but not more than ten minutes.
+
+Ada [Website Administrator]: And an absolute maximum of four pages to make an account. That’s my hill to die on. We can compress fields and do a clear step indicator.
+
+Chinedu [Velkat Tech Support]: Four pages max is doable. One thing: we’ll store their preferences—like most used payment method, favorite categories—so repeat purchases are quicker.
+
+Amina [Business Owner]: Yes, we should remember what they like. Novices shouldn’t get lost. Also, we need to use familiar symbols—like a cart, a search magnifying glass, ratings stars—standard web conventions. No reinventing basic UI.
+
+Kofi [Izogn Manager]: And after logging in, I don’t want them clicking five different tabs. It should take, like, two clicks to get to their purchased streams.
+
+Ada [Website Administrator]: So, after login, a “My Movies” button right on the dashboard and then the stream link. Two clicks. Perfect.
+
+Priya [CyberSource Partner]: Quick question: you mentioned mail-in payments for prepaid. We’re not involved in that, but you’ll need a way to flag those orders manual-processed to generate PINs. And a batch export—Excel, right?
+
+Ada [Website Administrator]: Yes, please. I want to generate PINs in bulk and export to Excel with the unique codes. It shouldn’t take long—like a minute or two to generate a batch.
+
+Chinedu [Velkat Tech Support]: That’s fine. We’ll do a unique PIN generator in admin with CSV/Excel export. Also, we’ll log all sales events. Management needs to see those quickly.
+
+Kofi [Izogn Manager]: I want to pull sales and usage reports in under two minutes from the console—no fiddling. And daily usage stats automatically logged so I can assess peaks. Oh, and the homepage should automatically refresh every Friday with the latest four movies.
+
+Amina [Business Owner]: Right, the “New This Week” slot. And we have to keep the page bright, colorful, animated on the home page. We said we’re using Flash for the homepage animations—it’s fine.
+
+Chinedu [Velkat Tech Support]: We’ll keep the Flash animation on the home page. We can’t put it everywhere, but for the hero area that’s okay. The rest of the site must still be accessible for old browsers.
+
+Ada [Website Administrator]: Content—search by title, actor, director. And browse by categories we define. When you open a movie’s page, it should show the description, and the cast, director info we entered in the admin.
+
+Kofi [Izogn Manager]: Reviews. Let customers post reviews, but I want to moderate—so nothing goes live until we approve. We can’t risk something offensive on the site.
+
+Amina [Business Owner]: Agreed. We should not offend any religions or tribes. The visual design must be respectful, inclusive. Not just Nigeria. Pan-African, but we also don’t want non-Africans to feel excluded.
+
+Chinedu [Velkat Tech Support]: Got it. Also, the streaming pipeline: we’ll encode WMP 9.0 streams at 56k and 256k. That covers very slow and basic broadband. Max buffering at start—can we aim for ten seconds or less? Anything beyond that, user connection latency is the cause.
+
+Kofi [Izogn Manager]: Yes, under ten seconds startup buffering is acceptable. During playback, if it re-buffers beyond normal, it should be because of the user’s connection.
+
+Priya [CyberSource Partner]: From the payment steps, the purchase screen will pre-authorize cards before we let them stream, correct?
+
+Ada [Website Administrator]: Right. No stream until the charge is authorized. Same for prepaid: the PIN must be valid with balance. And we restrict purchases to registered users; guests can browse but can’t buy.
+
+Amina [Business Owner]: Viewing window is critical! Two days after purchase they can watch. Then it should stop. Make that very clear on the site. We’ll verify this and other comfort metrics with an anonymous survey soon after launch.
+
+Chinedu [Velkat Tech Support]: We’ll enforce a 48-hour window from the transaction timestamp. The system won’t deliver a stream link after it expires.
+
+Kofi [Izogn Manager]: We must keep the site up all the time. 24/7 availability. We promised 99.5% uptime in the pitch deck.
+
+Chinedu [Velkat Tech Support]: With our existing hardware, it’s achievable if we keep things lean. We’ll need to degrade gracefully: if the streaming server is down, browsing still works, purchase flows maybe disabled or queued. If the payment gateway is down, people can still browse and we display a polite message; we’ll temporarily disable purchases until it’s back.
+
+Priya [CyberSource Partner]: On gateway downtime, we can send specific error codes. You’ll want to catch those and not show a scary error. Just say “temporarily unavailable.”
+
+Ada [Website Administrator]: And we need the help/FAQ section plus the 24-hour toll-free support number on the site. People will definitely call at 3am.
+
+Amina [Business Owner]: Yeah, customer support is 24/7. And internally, Velkat supports us 7am to 7pm weekdays, right?
+
+Chinedu [Velkat Tech Support]: That’s our admin support window. We’ll publish that to your admin team so they know when to call us directly.
+
+Kofi [Izogn Manager]: Scalability. How many simultaneous users can the web server handle? And how many concurrent streams on the streaming server?
+
+Chinedu [Velkat Tech Support]: On the current streaming box, we’re targeting about 50 simultaneous streams reliably. Max catalog per streaming server: around 700 movies. If we need more, we add another streaming server. For the main web app, aiming at 1,000 concurrent users. Overall we should be able to support 100,000 registered customers in the database.
+
+Amina [Business Owner]: That’s fine as long as we can add servers later. Budget wise, we need this to run within our maintenance budget for at least two years without surprises.
+
+Ada [Website Administrator]: Admin tasks—you said add or remove movies quickly. I need to be able to do that in under, say, five minutes total, including metadata. Categories, too, add/remove within five minutes. But ideally updating category labels in under two minutes.
+
+Kofi [Izogn Manager]: New products—like if we define a new item, I want the workflow to be quick. Two minutes to add a new product configuration, like a new prepaid batch.
+
+Chinedu [Velkat Tech Support]: We’ll streamline the forms and pre-fill standards. Also, promo updates: if you want to swap banners or text on the marketing pages, we’ll make it so it doesn’t take more than a day to roll out a change. Not instant, but not dragging on.
+
+Amina [Business Owner]: Good. On privacy, the policy link must be visible on all pages, and we have to tell customers when we update the policy. And we only disclose private info per that policy. No random data sharing.
+
+Priya [CyberSource Partner]: Please also ensure card data is encrypted at rest. And restrict access to that and to sales data—only authorized administrators.
+
+Chinedu [Velkat Tech Support]: We’ll encrypt card data in the database. Actually, wait—correction: we don’t store full PAN unless required. But anything we do store—tokens, last four—will be encrypted. Customer records and sales info will be behind admin auth with proper roles.
+
+Ada [Website Administrator]: And weekly data integrity checks, please. A script that verifies referential integrity, looks for anomalies. If something’s off, I want an alert.
+
+Kofi [Izogn Manager]: Also, any abuse—like someone trying to brute-force PINs—should trigger an alert to administrators. We can block them or throttle.
+
+Chinedu [Velkat Tech Support]: Yes, we’ll add abuse protection, throttling for PIN lookups, and email alerts. And validation so bad inputs don’t corrupt our data.
+
+Amina [Business Owner]: We need antivirus on the streaming server. I know it’s not typical for video servers, but we’ve had scares before.
+
+Chinedu [Velkat Tech Support]: We can install anti-virus. It adds overhead, but it’s manageable.
+
+Kofi [Izogn Manager]: Let’s not forget licensing. We have to meet the licensing requirements to stream these films. The system needs to support the controls we promised the rights holders—like the two-day window and proper reporting.
+
+Ada [Website Administrator]: Speaking of which, I want the sales and usage logs accessible so I can send reports. All sales recorded, obviously.
+
+Amina [Business Owner]: Another thing: the owner account—me—should have free access to all movies. Complimentary privileges. I need to do demos anytime.
+
+Priya [CyberSource Partner]: Does that mean zero-amount authorization or bypass of charge? You’ll want to ensure the system recognizes a privileged account without attempting a payment.
+
+Chinedu [Velkat Tech Support]: We’ll flag the owner role to bypass payment checks. It still logs the viewing, no charge.
+
+Ada [Website Administrator]: On accounts: customers should be able to cancel themselves. It should be quick—like two minutes tops. When they cancel, mark them inactive so they can’t log in. But we keep their records for reporting and licensing; do not purge—keep the registered customer information in the database even after cancellation.
+
+Kofi [Izogn Manager]: And I want the power to deactivate a customer account from admin in under a minute. Sometimes we have to block access immediately.
+
+Amina [Business Owner]: Make sure login is fast—under five seconds. Once they enter email and password, they should land right in their dashboard.
+
+Chinedu [Velkat Tech Support]: That’s feasible. We’re cautious about heavy queries on login. Caching where possible.
+
+Priya [CyberSource Partner]: Authorization and capture step: your checkout page should be crisp. But please set the expectation in the UI that card processing can take up to about 15 seconds during peak. We’ll aim for less.
+
+Ada [Website Administrator]: We’ll show a spinner with polite text. Also, we need a Help/FAQ page explaining prepaid—how to buy online with card or mail-in, and how to receive the code by email or print it. People get confused.
+
+Amina [Business Owner]: The tone has to be friendly and simple. After two weeks, we want the majority of users—like seventy percent—comfortable purchasing. After a month, nearly everyone—like ninety-five percent—should be fine with prepaid cards. Let’s run an anonymous pulse survey to measure both.
+
+Kofi [Izogn Manager]: Also test novices. The whole buy-and-play flow should be under three minutes for a single movie, once they’re registered.
+
+Chinedu [Velkat Tech Support]: That means minimal steps: choose movie, pay, play. And streaming begins within ten seconds of buffering, ideally.
+
+Ada [Website Administrator]: The catalog: I’ll maintain categories, keep them fresh. Also, can we make promotions update within a day? Sometimes legal wants new disclaimers.
+
+Chinedu [Velkat Tech Support]: Yes, within a day for promos. And just to confirm—this is a web-only service. No desktop app. Everything in the browser over the Internet.
+
+Amina [Business Owner]: Correct. And code-wise, stay compliant—W3C standards, and for PHP follow PEAR coding conventions. It’s part of our vendor agreement.
+
+Priya [CyberSource Partner]: No issues from our side. Our integration guide works with those stacks.
+
+Kofi [Izogn Manager]: Search function: not just titles—actors and directors too. That’s essential. And the movie detail page should show the description, cast, director as we entered them.
+
+Ada [Website Administrator]: And reviews: customers can add one for a film, others can read, but nothing goes live until I approve in admin. That’s standard.
+
+Chinedu [Velkat Tech Support]: We’ll build the workflow: submitted state, approve/reject, publish. Timers on the admin screen so you can do it quickly.
+
+Amina [Business Owner]: Visual branding—bright color palette. It should feel fun but respectful. Avoid anything that could be misread across tribes or religions. Include pan-African imagery without stereotyping.
+
+Kofi [Izogn Manager]: Maybe that’s a bit subjective. Let’s do user tests across Yoruba, Igbo, Hausa groups, and also non-African viewers. But also, watch the Flash—some people dislike it.
+
+Chinedu [Velkat Tech Support]: We’re constrained to use Flash for home animations. We’ll keep it light so it doesn’t get in the way for legacy setups.
+
+Ada [Website Administrator]: On security: admins only for sensitive things: customer records, sales reports, prepaid activation. And we limit access by role. Also hide card data—never show full numbers.
+
+Priya [CyberSource Partner]: We prefer tokens. As for the database, you have to encrypt any stored sensitive elements. And ensure that only the authorized team can view sales data. We can audit if needed.
+
+Chinedu [Velkat Tech Support]: We’ll put in role-based access. Also, weekly scripts to check database integrity. If anything looks corrupt, we’ll flag and roll back. And we’ll implement throttling to protect from intentional abuse—like too many failed logins or PIN tries—and notify administrators each time those thresholds are tripped.
+
+Amina [Business Owner]: Availability: we can’t go dark. If the stream server goes down, don’t crash the entire site. People should still browse, read info, contact support. Same with payment gateway outages.
+
+Kofi [Izogn Manager]: Capacity: remind me—we can onboard up to 100,000 customers. For concurrent, 1,000 users active on the site, 50 streaming simultaneously per streaming server, and we cap at 700 movies per streaming node. If the catalog grows, we add nodes.
+
+Chinedu [Velkat Tech Support]: Exactly. And we’ll put an antivirus on streaming servers. It’s a bit unusual, but we’ll schedule scans during low-traffic hours to limit impact.
+
+Ada [Website Administrator]: Users need to update their billing and contact info in My Account. And when they cancel, as we said, make them inactive—no login—yet keep their profile for records in the DB.
+
+Amina [Business Owner]: And we’ll need to deploy this quickly. Our board is pushing for a rollout that installs within a single working day. Is that still realistic?
+
+Chinedu [Velkat Tech Support]: For the environment we discussed, yes, if we’re reusing existing hardware, which we are. We’ll prep scripts to deploy in hours.
+
+Priya [CyberSource Partner]: Don’t forget about audit logs—keep a trail of sales, usage. Admins need to access those. It also helps with licensing reports.
+
+Kofi [Izogn Manager]: Which reminds me: we promised weekly homepage updates showing the four newest movies. That must be automatic. No one should manually curate every Friday.
+
+Ada [Website Administrator]: We’ll set a scheduled job that grabs the latest four by publish date, flips it every Friday at, say, 6am.
+
+Amina [Business Owner]: For the Help content, list the toll-free 800 number, 24/7, and cover the usual friction points: how to use the prepaid PIN, how long the viewing window is, what to do if CyberSource is down, basic browser support.
+
+Chinedu [Velkat Tech Support]: Understood. Also, we should set expectations in the UI: “Login usually takes a second or two,” “Payments may take up to 15 seconds,” and for streaming “Your video will start shortly—usually under 10 seconds.”
+
+Priya [CyberSource Partner]: And if a policy changes—say, how we store data—you’ll email or notify in the app to users who have accounts, right?
+
+Ada [Website Administrator]: Yes, we’ll implement a banner or an email blast for policy changes. The privacy policy link will be in the footer, visible on all pages, before we collect any form data.
+
+Kofi [Izogn Manager]: I want us to run a pulse survey a couple of weeks after launch to see comfort with purchasing. If we don’t hit seventy percent of users feeling comfortable, we revisit the flow. For prepaid, check again after a month—aim at ninety-five percent. Make both surveys anonymous so people answer honestly.
+
+Amina [Business Owner]: And we need standard internet UI conventions. No weird scroll hijacks. Big readable fonts, clear CTAs. Keep it clean and concise.
+
+Chinedu [Velkat Tech Support]: Noted. Also, remind me—we’re logging all streaming sales, yes. And daily usage stats, both accessible by admins. We’ll put that under “Reports.”
+
+Ada [Website Administrator]: People call me when they see failures, so let’s make sure our outage messages are clear and non-alarming. If checkout is down, tell them to try again later; no background charges.
+
+Chinedu [Velkat Tech Support]: We can do that. If the gateway is down, we put the site into a “browse-only” mode and show a non-blocking alert.
+
+Kofi [Izogn Manager]: About the cancel flow: customers shouldn’t have to call. It should take them under two minutes. A big “Cancel Subscription” button and a confirmation. Then the account turns inactive immediately.
+
+Amina [Business Owner]: Great. And yes, keep all these flows short because novices will abandon. Two clicks to get to a movie after login. And if they want to use prepaid, they should be able to quickly see balance after entering their PIN.
+
+Priya [CyberSource Partner]: Quick last note: refrain from storing full card data. Encryption is mandatory for whatever you keep, but ideally just store tokens and last four. Access restricted to authorized Izogn admins only.
+
+Chinedu [Velkat Tech Support]: That’s our plan. Role-based permissions for customer records and sales reports. We’ll log access attempts too.
+
+Amina [Business Owner]: Okay, final point—license compliance. We’re going to document our adherence to the rights holders’ requirements in our admin workflows—reporting, viewing window, no downloads, all that. And we’re web-only. No apps, no extra devices beyond what we already said.
+
+Kofi [Izogn Manager]: All right, we’ve covered a lot. Next steps: mock up the sign-up flow—four screens. Show me how the “owner free access” looks in the UI. And the Friday auto-refresh slot for “Latest 4.”
+
+Ada [Website Administrator]: I’ll prepare admin screenshots for adding/removing movies and categories—aiming for under five minutes end to end. Also the quick category relabel in under two minutes, and adding a prepaid product in two minutes.
+
+Chinedu [Velkat Tech Support]: I’ll spec the performance thresholds: 5-second max for UI responses, 15 seconds for credit card, buffering under 10 seconds. And implement abuse monitoring with admin email alerts.
+
+Priya [CyberSource Partner]: I’ll send our API docs, and we can run a test to confirm the fallback behavior when our gateway is unavailable—your site keeps browsing live and checkout is disabled with a clear message.
+
+Amina [Business Owner]: Excellent. Let’s keep the look bright and inviting—fun, but respectful. I don’t want any imagery that alienates non-Africans or disrespects any group. Thank you all.
+
+Kofi [Izogn Manager]: Done. Talk soon.
+
+Ada [Website Administrator]: Thanks everyone.
+
+Chinedu [Velkat Tech Support]: Cheers.
+
+Priya [CyberSource Partner]: Thanks, bye for now.

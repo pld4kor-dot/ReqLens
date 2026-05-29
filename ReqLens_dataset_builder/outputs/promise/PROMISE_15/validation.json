@@ -1,0 +1,133 @@
+{
+  "coverage_rate": 1.0,
+  "missing_req_ids": [],
+  "unsupported_count": 2,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PROMISE_15_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "98% during the critical window",
+        "get it back within about an hour"
+      ],
+      "reason": "Source states 90% baseline, 98% budgeting, ~1hr restore."
+    },
+    {
+      "req_id": "PROMISE_15_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "Aim for 98% of user workstations",
+        "Min hardware: ~400MB free disk"
+      ],
+      "reason": "Notes require 98% compliance and 400MB free disk."
+    },
+    {
+      "req_id": "PROMISE_15_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "Software: IE browser, .NET Framework 1.1, IE Web Controls",
+        "We’ll try to get 98% compliance before go-live"
+      ],
+      "reason": "Documents specify IE/.NET/WebControls and 98% target."
+    },
+    {
+      "req_id": "PROMISE_15_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "We will deliver seven files",
+        "one business day before the budgeting kickoff",
+        "plan for a 3-hour processing window"
+      ],
+      "reason": "BDW will send 7 files, Oct snapshot, 1-day lead, 3-hour load."
+    },
+    {
+      "req_id": "PROMISE_15_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "within 1 week of Finance delivering changes",
+        "then 2 weeks of joint testing"
+      ],
+      "reason": "Source mandates 1 week implementation then 2 weeks joint testing."
+    },
+    {
+      "req_id": "PROMISE_15_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "one hundred percent — must be in RFS",
+        "includes all organizational units"
+      ],
+      "reason": "Stakeholders require 100% of October snapshot orgs/accounts in RFS."
+    },
+    {
+      "req_id": "PROMISE_15_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "integrate with UAS for identities. We won’t maintain local accounts",
+        "UAS will be the sole source for authentication and authorization"
+      ],
+      "reason": "All access/authentication must come from UAS; no local accounts."
+    },
+    {
+      "req_id": "PROMISE_15_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "Functionality will be limited by role. The UI will hide what you don’t have permission for",
+        "Map to PCG hierarchy levels (branch, complex, district, region)"
+      ],
+      "reason": "Access limited by role; roles map to PCG hierarchy levels."
+    },
+    {
+      "req_id": "PROMISE_15_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "Historically about 95% is approved pre-release",
+        "small tail we fix within a month"
+      ],
+      "reason": "ENET architecture pre-approval target ~95%, remainder fixed within month."
+    },
+    {
+      "req_id": "PROMISE_15_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "support from 800x600 and higher",
+        "aim to have most of them correct before rollout",
+        "we will correct it within a week"
+      ],
+      "reason": "Sources require 800x600+ support, most correct pre-rollout, fixes within week."
+    },
+    {
+      "req_id": "PROMISE_15_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "one week of training",
+        "98% of users finish budgets"
+      ],
+      "reason": "One-week training and 98% completion target stated."
+    },
+    {
+      "req_id": "PROMISE_15_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "2 sec response for 90% interactions",
+        "up to 10 sec acceptable for the rest"
+      ],
+      "reason": "90% ≤2s and 10% ≤10s performance targets stated."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "The system and QA process shall collect and log performance metrics (performance statistics) to verify the stated response-time targets (e.g., record stats to show 90% of interactions <= 2s and 10% <= 10s).",
+      "source_snippet": "Response times — log performance stats in QA to ensure 90% under 2 sec, 10% under 10 sec.",
+      "source_type": "meeting_notes",
+      "reason": "The gold set specifies response-time targets but does not require the system/QA to collect or log performance metrics. Instrumentation and logging to demonstrate compliance is a distinct operational capability implied by the source."
+    },
+    {
+      "text": "The RFS shall not implement any new in‑app notification features for events such as BDW load failures or access changes; communications must use existing helpdesk/ops channels instead.",
+      "source_snippet": "we're not putting any new notification features inside RFS.",
+      "source_type": "interview_transcript",
+      "reason": "The source explicitly rules out adding in-app notification features and mandates relying on existing helpdesk/operations communication channels. The gold requirements do not state this prohibition or communication constraint, so this is an additional functional limitation on the product."
+    }
+  ],
+  "passed": true
+}

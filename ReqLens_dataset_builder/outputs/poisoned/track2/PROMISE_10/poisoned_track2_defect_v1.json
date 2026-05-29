@@ -1,0 +1,793 @@
+{
+  "artifact_id": "T2A_CD131605",
+  "unit_id": "PROMISE_10",
+  "origin": "PROMISE",
+  "track_id": "track2",
+  "variant_id": "defect_v1",
+  "created_at": "2026-05-26T19:29:15.407779+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Periscope Duel kickoff intake interview",
+      "text": "Mia [Product Owner]: Thanks for hopping on. Big picture, Periscope Duel is supposed to feel like a quick head-to-head skirmish. You jump in, pick someone from the lobby, and you are looking down a periscope at your boards. Like, it needs to look like ships at sea, not just a spreadsheet of squares.\n\nRaj [Game Client Engineering Lead]: Yeah, the circular view is doable. We can mask the two grids in a round viewport to sell the periscope vibe. We can do a subtle vignette around the edges. Just, uh, we need to be careful with performance there.\n\nOwen [Audio and UX Designer]: Visuals are one side. Sound sells it. When you line up a shot, I want the soft hum and ocean ambience in your ears. Then a distinct splash for a miss, a hard metal-on-metal thump for a hit, and something more dramatic for a sink, like creaking and water rushing.\n\nTasha [DevOps SRE]: I am going to say this early: please do not tie any of that to blocking server calls. We can stream the ambient and just trigger event sounds based on responses. But we need to keep the round trip snappy.\n\nLuis [Privacy Compliance]: And while you are selling a vibe, we cannot sell identities. There is no chat, no names, no personal info. Just anonymous presence in the lobby and in the match. Nothing that can be reverse engineered to identify a player.\n\nCamille [Localization Manager]: Also, the very first thing a new user sees should ask language. English, Spanish, French. Not hidden in a settings menu. Up front. After that, all system prompts, labels, and those notifications should reflect the choice.\n\nMia [Product Owner]: Right, language on entry. And on game flow, we stick to simple. Two boards per player. Your own fleet board, and your firing board. You never see the other person’s layout.\n\nRaj [Game Client Engineering Lead]: Quick check: when you say two boards, you mean an offensive grid where you track where you shot, and a defensive grid which is where your ships live. Not two copies of the same thing.\n\nMia [Product Owner]: Exactly. And both are visible within that circular periscope viewport. The offensive one could be the foreground when it is your turn to shoot.\n\nLuis [Privacy Compliance]: Hold on, the term offensive grid worried me. That does not mean we expose the opponent’s squares, correct?\n\nRaj [Game Client Engineering Lead]: No, sorry. Offensive grid is just your log of where you have fired. It is not the other person’s board. You only ever see your own ships and your own shot history.\n\nMia [Product Owner]: Right. And for setup, each player places five ships. Standard set. Place them on your defense side. No overlap. They can be horizontal, vertical, and also diagonal. That is a bit different from some classic rules, but we want that extra twist.\n\nOwen [Audio and UX Designer]: Visual-wise, I want them to look like actual ship classes. Not generic rectangles. A battleship looks like a battleship, a destroyer like a destroyer. Within the grid aesthetic, of course.\n\nRaj [Game Client Engineering Lead]: We can render ship sprites to match classes. I will need asset lists from you, Owen. Also, diagonal placement is fine, but I have to implement the occupancy check so that the path is contiguous and does not cross another ship.\n\nMia [Product Owner]: Exactly, no overlaps. If someone tries to drop one on top of another, the UI should nudge them, red outline, whatever, and refuse to place.\n\nTasha [DevOps SRE]: Question, do we lock in both players before we start placement? Or can you browse the lobby while placing ships? That would be a sync headache.\n\nMia [Product Owner]: Once you click an opponent, both of you leave the lobby list. That is a one-click action to start, and now you are unavailable to others until the match ends.\n\nLuis [Privacy Compliance]: Do not forget the idle behavior in the lobby. If someone is not actually active, they should not be shown as available. And if they disappear for a day, they should be cleared out.\n\nCamille [Localization Manager]: Also those messages like You are no longer available to others, we will need strings for the three languages and for the match state notifications too.\n\nRaj [Game Client Engineering Lead]: On the turn system, after both players place all five ships, we assign who shoots first. Is that random or based on something?\n\nMia [Product Owner]: Random is fine. The key is: each turn, one player is the shooter and the other is receiving fire. Say so plainly at the start of every turn. Notifications like Your shot or Brace, incoming.\n\nOwen [Audio and UX Designer]: We can have the ambient sea bed come up right as the offensive turn starts, then layer the event sounds after the server reply.\n\nTasha [DevOps SRE]: That means the server has to evaluate very quickly. We are aiming for, what, sub two seconds for most user actions? If the tail goes to four, users will feel it. We can buffer sounds client-side while we wait.\n\nMia [Product Owner]: Keep the experience fast, yes. But let us park the exact metrics for later. I do want to lock the rules. Shooter taps a coordinate on their firing board. The system checks the target’s defense board, returns hit or miss.\n\nRaj [Game Client Engineering Lead]: And we mirror that into visuals. On the defender’s own board, the cell gets marked as hit or miss. On the shooter’s firing grid, mark the same. It needs to be consistent.\n\nLuis [Privacy Compliance]: We are not showing any of that from the defender’s perspective to the attacker though, right? No ghosting or revealing patterns.\n\nRaj [Game Client Engineering Lead]: Correct. The shooter only sees their own firing marks. The defender only sees the impact marks on their own board. No peeking.\n\nMia [Product Owner]: When a ship is completely hit, we call it sunk and say what went down. Like You sank their destroyer. Both players get notified. And the defender board should show that ship as sunk, labeled with the type.\n\nOwen [Audio and UX Designer]: And the sinking sound is distinct. A lower, longer sound. Not just a repeated hit.\n\nCamille [Localization Manager]: We will need ship class names in Spanish and French. Some classes differ in common usage. Check with me before finalizing the labels.\n\nRaj [Game Client Engineering Lead]: Do we also mark sunk on the attacker’s firing grid? That would help them track which targets are off the table.\n\nMia [Product Owner]: Yes, mark that as sunk on the attacker’s side too. Different icon or overlay so it is clear that ship is down.\n\nTasha [DevOps SRE]: Timing of state change matters. When do we decide sink? After we process the hit, we check if all cells for that ship are hit, then send out a sunk event. The client needs to handle the three paths: miss, hit, ship sunk.\n\nOwen [Audio and UX Designer]: Exactly. Audio cues map one-to-one with those. Miss is splash, hit is impact, sink is dramatic. And the ambient is during the aiming or right at the start of a shot. I do not want silence.\n\nLuis [Privacy Compliance]: Also, no player-to-player messaging in the notifications. Just event descriptions. No names, no handles. Purely system-generated status.\n\nMia [Product Owner]: And shots are sometimes streaks. If you hit, you get another shot. Miss means hand the periscope to the other person.\n\nRaj [Game Client Engineering Lead]: So on a miss, we flip the roles. Shooter becomes defender, defender becomes shooter. On a hit, the shooter stays offensive for another try.\n\nTasha [DevOps SRE]: The roles state should be authoritative on the server. Clients can optimistically highlight, but do not award extra turns locally until the server confirms.\n\nCamille [Localization Manager]: Those turn status prompts at the start of each turn need translations too. And consistent grammar even when the message is short.\n\nMia [Product Owner]: We should highlight Your turn and Not your turn clearly. I want new players to understand without a tutorial.\n\nOwen [Audio and UX Designer]: UI copy plus tone of the sounds can teach the flow. For first-timers, if the labels and cues are clean, they should be able to play through to the end without reading a manual.\n\nRaj [Game Client Engineering Lead]: Back to setup. Diagonals worry me. Not technically, but players might try weird Z-shaped placements. We are restricting to straight lines on diagonals, right? No curves.\n\nMia [Product Owner]: Straight lines only. Diagonals allowed, but not zigzags. And again, no overlaps. If the path intersects an existing ship cell, reject the placement.\n\nLuis [Privacy Compliance]: On the lobby, how does a player identify themselves as available? Is there a big button, or is presence automatic?\n\nMia [Product Owner]: They have to opt in. Like a Set me as available toggle. And back out at any time. They can delist themselves whenever.\n\nRaj [Game Client Engineering Lead]: When two players match, both get removed from the pickable list immediately. No one else can click them in that window.\n\nTasha [DevOps SRE]: Idle detection: we need pragmatic rules. If someone is idle in the lobby, hide them from new selections. If they are absent an entire day, purge them so the list stays clean.\n\nCamille [Localization Manager]: The strings for idle hiding should be neutral. And any duration numbers need to adapt to locale formatting. But we can keep numerals consistent.\n\nI just remembered, there's another point I should mention: For tournaments, we don't want the match running indefinitely. After exactly 12 rounds, have the system stop handing out the next turn and pause the table until a moderator resumes it, even if nobody has won yet. That way we can keep the schedule tight between rounds.\n\nActually, one more thing I wanted to bring up — From a growth perspective, every extra step hurts conversion, so we want to keep first run super lean. On first access, don’t show a language picker at all—just auto-detect the device locale and take them straight in. If someone needs to change it, they can do that later in Settings.\n\nOwen [Audio and UX Designer]: Small thing: during placement, no ambient. Save it for the action to reinforce when the gunner is up. When the periscope is active for a shot, have the ocean swell in.\n\nRaj [Game Client Engineering Lead]: For match ending, we have two pathways. If the last ship goes down, we declare victory. Or if someone taps give up, we end it as a resignation. Both sides get a message about why it ended.\n\nMia [Product Owner]: Then they can choose to go back to the lobby as available again, or just leave. I want it to be low friction.\n\nLuis [Privacy Compliance]: When you say leave, just remove from the list. There is no persistent profile to worry about, right?\n\nRaj [Game Client Engineering Lead]: Correct. It is anonymous presence. The server tracks a session token and a state. No names.\n\nTasha [DevOps SRE]: Speaking of server, I know we said not to get into metrics, but we cannot ignore them. We need to support a lot of matches at once. If we get featured somewhere, the simultaneous games spike could be large.\n\nActually, one more thing I wanted to bring up — Just to confirm the end-of-match behavior: if the player who’s firing lands a hit that finishes off the opponent’s last surviving ship—the one that hadn’t already been marked as sunk—the game should wrap up on that shot. No extra turns or phases after that, it just ends and declares the result. That’s the cleanest experience for players.\n\nMia [Product Owner]: Definitely. Operate reliably at scale and be always on. But let us not derail. Back to the turn loop, we keep assigning turns until the game ends. There is no time limit round by default.\n\nOwen [Audio and UX Designer]: We can pace the feel with the sounds so it feels brisk. Short delays so the feedback lands quickly.\n\nCamille [Localization Manager]: Just flag every user-facing line you are thinking of so we can localize early. Turn prompts, lobby labels, results like Miss, Hit, Sunk, You win, Opponent left, etc.\n\nRaj [Game Client Engineering Lead]: Another detail: when marking the sunk ship on the defender’s board, we can outline the entire ship shape and show the class icon. On the attacker’s firing grid, maybe we use a badge indicating downed ship type at the last hit location.\n\nMia [Product Owner]: That is fine as long as it is unmistakable that the entire ship is gone. And systematic. No surprises.\n\nLuis [Privacy Compliance]: One more thing. Make sure the match notifications do not include any identifying string. No device model, no partial IP, nothing. We have to be strict.\n\nTasha [DevOps SRE]: That is fine. All user-facing events can be generated from server enums. Client just presents them.\n\nOwen [Audio and UX Designer]: Quick tangent. Scheduling. If we need ship art final by end of month, I need to know. Otherwise I am going to be behind on audio too.\n\nMia [Product Owner]: We can sync on that offline. Back to placements. If a user tries to place a ship partially off the board, obviously reject. And if they try to reposition after locking in all five, do we allow rearranging before both press ready?\n\nRaj [Game Client Engineering Lead]: I would allow moving ships around until the player hits Ready. After both hit Ready, placement is frozen. Then we pick who fires first and immediately notify both of their roles.\n\nCamille [Localization Manager]: The Ready label is different in languages. Keep it short. Also the phrase You are defending vs You are attacking needs to be consistent with whatever we call those roles.\n\nLuis [Privacy Compliance]: Sorry, a misunderstanding earlier. When you said offensive grid, I thought it meant offensive content. But we are good. It is just the grid where you mark your shots. All good.\n\nTasha [DevOps SRE]: I am more worried about the user waiting. If it takes more than a couple seconds to resolve a shot, they will think the app hung. We need to keep the vast majority under two seconds and worst cases not much above that. We can log the percentiles.\n\nRaj [Game Client Engineering Lead]: I can optimize path checks and the hit evaluation. It is just an array lookup. The heavier part will be sending events to both clients and updating both boards.\n\nOwen [Audio and UX Designer]: We can preload the miss and hit sounds so they play immediately when the response lands. Sinking we can start with a short stinger and then extend if the animation plays.\n\nMia [Product Owner]: This is all in service of making it intuitive. I want nine out of ten new players to be able to start and finish a game without any help. That is the bar.\n\nCamille [Localization Manager]: Which means our labels have to carry a lot of weight. If we hide anything important in tooltips, we might miss that target in Spanish and French.\n\nLuis [Privacy Compliance]: On the lobby again, what is the visual for availability? A green dot is fine, but avoid any personal details. No avatars that could be uploaded, for example.\n\nRaj [Game Client Engineering Lead]: It will be generic silhouettes or nothing, just a row of anonymous slots with an available indicator. Clicking one initiates the match. One click. They vanish from the list for everyone else.\n\nTasha [DevOps SRE]: Edge case. What if both users click each other at the same moment? We need a lock so only one pairing is created and both are removed from the pool atomically.\n\nMia [Product Owner]: Yes, please. That is invisible to the player though. From their perspective, it is just instant pairing and into placement.\n\nOwen [Audio and UX Designer]: Back to the periscope mask. The grids need to sit inside a circle. The rest of the screen can go darker with a subtle haze, maybe a metal rim. That sells the theme.\n\nRaj [Game Client Engineering Lead]: Agreed. The periscope mask is a composite layer. On small screens, we may need to scale the grid so it is legible without breaking the circle.\n\nCamille [Localization Manager]: French can be verbose. Make sure there is room in the masked view for longer labels or use icons with tooltips that are localized.\n\nLuis [Privacy Compliance]: Tooltips okay, but remember we do not let them hover over anything that would reveal the other player. No stats, no win streaks. Keep it anonymous.\n\nMia [Product Owner]: Understood. It is about the moment-to-moment duel, not profiles. After a game ends, we flash a simple message explaining why and then offer two big buttons: List me again or Exit lobby.\n\nRaj [Game Client Engineering Lead]: The reason string will either be You sank all enemy ships or Opponent ended the match or You ended the match. We will map the cause to the label.\n\nOwen [Audio and UX Designer]: I will add a short end-of-match sound. A bell or something nautical when the match ends. Not asked for, but it helps closure.\n\nLuis [Privacy Compliance]: Careful. Bells are fine. Just do not embed any third-party tracking beacons in the audio layer. Kidding, but not really.\n\nTasha [DevOps SRE]: I will keep third-party SDKs out of core. Also, we need to be up around the clock. We will design the backend so there is no planned downtime during peak hours, ideally zero.\n\nMia [Product Owner]: Okay, let us wrap. Summary: circular periscope view for both boards; ship classes look like ships; sounds for miss, hit, sink; five ships placed with straight lines including diagonals and no overlaps; shooter taps a cell, system checks defender board, we mark both boards; if you hit, shoot again, miss swaps roles; end when last ship is sunk or someone ends early; no identities; quick lobby with one-click select; you can delist any time, and inactive folks drop off.\n\nRaj [Game Client Engineering Lead]: I will document the state machine: lobby, match_placement, match_turn_offense, match_turn_defense, match_end. Role toggles on miss, stays on hit.\n\nCamille [Localization Manager]: And I will start compiling strings in three languages with placeholders for ship types and reasons for end-of-match.\n\nOwen [Audio and UX Designer]: I will cut the ambient loop, splash, impact, and sink sounds. And provide alternate versions in case we need shorter cues for slow devices.\n\nLuis [Privacy Compliance]: I will review the lobby for any identity leaks and sign off on the anonymous flow. No PII, ever.\n\nTasha [DevOps SRE]: And I will draft the non-functional targets we can live with so the client does not feel laggy.\n\nMia [Product Owner]: Great. Thanks all. If I missed anything, ping me."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "Gameplay flow and lobby ops working session (raw notes)",
+      "text": "Date: 2025-06-11\nCall link: https://meet.example.com/periscope-duel-ops\nAttendees: Mia PO, Raj Eng Lead, Tasha SRE, Luis Privacy, Camille Loc, Owen Audio UX, Felix QA [joined late]\n\n- Vision recap: fast, anonymous head-to-head. Periscope illusion. Ships look like actual classes (not blobs). Ocean feel.\n- UI mask: circle viewport for boards. Outside of circle dimmed, metal rim? Owen says yes. Raj: caution on small screens.\n- Two boards per player always shown (within circle): offense tracking grid and own defense grid. Opponent never sees either. No cross-board view.\n- Lobby basics:\n  - Maintain a list of players present. It is anonymous list, not names. [check empty state UI]\n  - Players opt in to be shown. Toggle to set self as available. Can toggle off at any time. Self removal instant.\n  - Inactive players should not be selectable. Hide them if no activity for some interval [?].\n  - After 24 hours of no heartbeat, remove from list entirely. Hard drop. Cron? [Tasha to confirm]\n  - One-click start: select an available opponent => system pairs them. Immediately both removed from lobby selection (not pickable). Lock until game end.\n  - Edge case: two people clicking same person. Need atomic lock. SRE to add compare-and-swap on availability flag.\n\n- Localization:\n  - Language selection must happen at first access. Only English, Spanish, French. Persist choice per session.\n  - All messages, including turn notices, sink notices, end-of-game reasons, must be localized.\n  - French strings longer; watch space in circle. Icons where possible. [TBD: truncation strategy]\n\n- Privacy:\n  - Strict anonymity: no PII, no usernames, no avatars. Only presence and state.\n  - Notifications must not include any identifiers. Just event-based language.\n  - Opponent boards must never be visible. No spectate. No hints about layouts.\n\n- Setup phase:\n  - Each player places five ships on defense grid. Classes: [Owen to list assets].\n  - Orientations allowed: horizontal, vertical, diagonal. Not zig-zag.\n  - No overlap across ships. Reject placement if any cell is already occupied.\n  - Off-grid placement should snap back or be blocked.\n  - Players can rearrange until pressing Ready.\n  - Both must press Ready; only then choose first shooter. Random assignment is fine.\n\n- Raised during discussion: In the lobby, we want it to be simple: if I want to play, I should be able to pick an available opponent from the player list and have that start a game. Basically, tap someone marked available in the roster to kick things off.\n\n- Turn engine:\n  - At start of each turn, clearly notify both players of status: shooter vs targeted. Copy must be simple. Consider colors too. [Felix: test colorblind]\n  - Maintain a status per player: offensive or defensive. Server is source of truth.\n  - Shooter defines a shot by selecting a coordinate on their firing grid.\n  - Server evaluates defender’s grid to determine hit or miss.\n  - System notifies both parties of outcome: hit or miss. Keep copy concise.\n  - Mark the result on both sides:\n    - On defender’s defensive grid: mark cell hit or miss.\n    - On shooter’s offensive grid: mirror the same hit/miss mark.\n  - Sinking logic:\n    - When hits result in all cells of a ship being struck, that ship is sunk.\n    - Notify both players that the ship is down. Include ship class in the defender’s context.\n    - On defender’s grid: show the sunk ship outline and type. On shooter’s grid: indicate that ship is sunk as well.\n  - Turn continuation:\n    - If hit: shooter immediately gets another shot. No status flip.\n    - If miss: change roles. Shooter becomes targeted, defender becomes shooter. Update UI and notify at turn start.\n  - Continue assigning turns until end-of-game condition met.\n\n- End-of-game conditions:\n  - Win condition: last remaining ship of target side sinks. Immediately end match.\n  - Early end: either player can end a game at any time (resign). [Check words: End vs Surrender vs Give up]\n  - On ending, notify both players that the game concluded. Include reason: victory by all ships sunk, or opponent ended, or you ended.\n  - Post-match options: present two actions: relist self as available OR remove self from the lobby. Keep it simple.\n\n- Audio plan:\n  - Ambient ocean loop during aim and firing sequence. Trigger when shooter status begins.\n  - Distinct sound for miss. Water splash suggestion.\n  - Distinct sound for hit. Impact or metallic thud.\n  - Distinct sound for sink. Longer, deeper audio cue.\n  - Optional end-of-match bell. NOT decided yet. [Owen leaning yes; Mia neutral]\n\n- Visual plan:\n  - Ship images reflect class types. Avoid generic tokens. Small silhouettes okay.\n  - Periscope circle for both grids. Outer rim effect, subtle blur outside. Performance check.\n  - When sunk: mark whole shape. Add ship class label on defender side. Shooter side gets a sunk indicator too.\n\n- Performance and ops:\n  - Target perceived responsiveness so turn flow feels snappy.\n  - Baseline: 95 percent of user actions should round-trip under 2 sec. Remaining tail should not exceed ~4 sec. [Tasha: confirm instrumentation]\n  - 24x7 availability. Plan zero downtime deploys. Maintenance windows must avoid peak. Prefer rolling.\n  - Must handle many simultaneous matches. Scale horizontally. [Numbers TBD; load test]\n\n- Compliance notes:\n  - Double down on identity protection. No fields or UI that can carry personal info. No cross-exposure of anything.\n  - Logging must not accidentally include identifiers in client-visible messages. Server logs ok with anonymized IDs. [Luis to review]\n\n- QA items:\n  - Verify that a miss swaps roles exactly once and that a hit does not. Race conditions under lag.\n  - Verify that sunk event marks both boards appropriately. Defender gets class name. Shooter gets sunk badge.\n  - Verify five ships only; sixth placement blocked.\n  - Diagonal placement acceptance test. Ensure contiguous straight cells. No L shapes.\n  - Overlap prevention tests. Try stacked diagonals crossing. Fail expected.\n  - First-turn assignment after both Ready. Notify correctly. No pre-turn shots.\n  - Inactivity rules: hide idle. Remove after 24 hr. Show time-driven change. [Simulation needed]\n\n- Contradictions or unclear:\n  - Ambient during aim vs only on shot: we wrote both. Decide: start ambient at shooter turn start. Keep on until resolve. [Resolved in call? maybe]\n  - Language selection persistence: per session vs device. TBD. Privacy says avoid tying to device profile. Lean session-only.\n  - End-of-match bell: struck through earlier then re-added. NOT decided yet.\n\n- Raised during discussion: Audio UX came up in today's review. For the ship-sunk event, marketing wants to avoid any \"sinking ship\" effect and have a brief neutral chime (two-tone, about 200 ms) play instead so it doesn’t sound melodramatic. Keep that chime as the only audio for that event.\n\n- Parking Lot / Open Issues:\n  - Need exact copy for end-of-game reasons in three languages. Camille to propose.\n  - Should we show a small summary of sunk classes on shooter’s grid? Space constraints.\n  - Color palette for status indicators. Accessibility check for colorblind.\n  - Atomic pairing lock approach. SRE to design CAS. Retry behavior if race detected.\n  - When a player removes self mid-lobby, do we soft hide or hard remove from list? The spec says allow removal at any time; implementation detail TBD.\n  - Placement timer? We did not want timers, but do we need one to prevent stalls? For now, no. If no, ensure players can end game at any time even pre-turn? [Mia says yes, players can end anytime]\n  - Copy for shooter prompt: Your shot vs Fire when ready. Choose one per locale.\n  - French class names for ships. Some may not translate 1:1. Check naval terminology.\n\n- Follow-up point: Quick clarification on gameplay flow: when we record a shot and it’s marked as a miss, the system should automatically switch the offensive player’s status to defensive. That keeps the next sequence accurate without anyone having to toggle roles manually. Let’s make sure this kicks in immediately once the miss is saved.\n\n- Follow-up point: To keep the pace up, we don’t want the shot picker popping up every turn. We’ll only prompt the offensive player once at the start of a possession to choose a single shot, and that choice stays locked for all turns until the possession ends. That should cut down on clicks and avoid delays between moves.\n\n- Action items:\n  - Raj: draft state machine doc with states: Lobby, Placement, Turn Offense, Turn Defense, End. Include role flips, hit streak rule, miss swap rule.\n  - Owen: deliver audio prototypes for ambient, miss, hit, sink by next Friday. Include short versions.\n  - Camille: provide first pass of UI strings for ENG, ESP, FRA, focusing on turn notifications, lobby buttons, sink messages, end-of-game reasons.\n  - Tasha: write ops SLOs for latency p95 under 2s, p100 under 4s, 24x7 availability. Define load test targets for concurrent match count. Propose atomic pairing pattern.\n  - Luis: review lobby and turn notifications for privacy leaks. Document no-PII guardrails. Confirm that identity is protected entirely.\n  - Felix: build test matrix for diagonal placement and overlap detection. Include off-grid attempts.\n\n- Random notes:\n  - Someone mentioned spectating. That is out of scope. Crossed out.\n  - If opponent leaves lobby after match, do we show a farewell toast? Probably not needed. Keep it simple.\n  - Sunk sound might scare headphones users if too loud. Normalize volume.\n  - Response times vary with network. Client should show spinner if wait exceeds 1.5s, but action must complete under 2s in most cases.\n  - Ambient loop should not loop click when muted. Also, consider mute per session. [Privacy: okay]\n\n- Recap of rules for quick reference:\n  - Five ships per player, placed on defensive grid. Horizontal, vertical, diagonal allowed. No overlaps, no off-grid.\n  - After both press Ready, random first shooter assigned. Notify both of role at start of turn.\n  - Offensive player selects target cell. Server computes hit or miss by checking defender’s grid.\n  - Notify both: hit or miss. Mark on both boards accordingly.\n  - When a ship is completely hit, it is sunk. Notify both. Defender sees class and sunk outline; attacker sees sunk indicator.\n  - Hit grants another shot. Miss swaps offense and defense roles.\n  - Keep alternating or continuing as per rules until end. End when all ships of one side are down, or when a player ends the match manually.\n  - On game end, show end-of-game notice with reason. Then offer relist self as available or leave lobby entirely.\n\n- Ops recap:\n  - Always-on service target. Many concurrent matches. Snappy interactions to keep flow. Internationalization at entry. Anonymity throughout.\n\n- End of notes. Some parts incomplete, see [?] and [TBD] tags."
+    },
+    {
+      "type": "email_thread",
+      "title": "Thread: Lobby availability, turn pacing, and 24x7 ops constraints",
+      "text": "From: Mia PO <mia@example.com>\nTo: Raj Eng Lead <raj@example.com>, Tasha SRE <tasha@example.com>\nCC: Luis Privacy <luis@example.com>, Camille Loc <camille@example.com>, Owen Audio UX <owen@example.com>\nSubject: Fast follow from today - lobby behavior and turn flow\n\nHey all,\n\nQuick recap based on a couple of questions I got after the call.\n\n- Lobby list: we keep a live roster of anonymous players who have opted in to be available. Clicking an available person is a one-click start. As soon as the match is created, both sides should be removed from the pickable list globally so no one else can grab them mid-handshake.\n- Self removal: players must be able to toggle off at any time, with immediate effect. No waiting for a cycle.\n- Inactivity: if someone is idle, do not show them as selectable. If they ghost for a day, go ahead and drop them from the list entirely.\n- Turn status: after both finish placing their five ships, system decides who fires first and lets both know clearly who is shooter and who is on the receiving end. At the start of each turn, repeat that status.\n- Turn loop: shooter taps a coordinate; system checks the defender board, returns miss or hit, marks both boards accordingly. On a hit, the shooter goes again. On a miss, swap roles.\n- Game end: either when the last ship is sunk or if a player ends the match manually. When that happens, tell both players the match is over and why. Then give them a choice to re-enter the lobby as available, or leave.\n\nLet me know if I missed something from your angles.\n\n— M\n\n---\nFrom: Raj Eng Lead <raj@example.com>\nTo: Mia PO <mia@example.com>\nCC: Tasha SRE <tasha@example.com>, Luis Privacy <luis@example.com>, Camille Loc <camille@example.com>, Owen Audio UX <owen@example.com>\nSubject: RE: Fast follow from today - lobby behavior and turn flow\n\nThanks Mia,\n\nTwo confirmations and one question:\n\n1) We will maintain the lobby roster in memory with a backing store. Availability flag changes immediate. When pairing starts, we will flip both players to unavailable so they disappear. There is a small race if two clients choose the same target at the same millisecond; SRE, I will coordinate with you on an atomic compare-and-set on an availability token.\n\n2) After both place five ships, I will randomize first shooter and send a start-of-turn status message to both. At each subsequent turn start, each client gets a clear status prompt.\n\n3) Question on orientations: horizontal and vertical are obvious. We agreed diagonals are allowed if straight line, correct? That is different from Battleship classic, so I want to make sure we do not walk it back later.\n\nAlso, minor: when we mark a sunk event, we will decorate the defender’s grid with the full ship outline and the ship class label. I can put a sunk glyph on the attacker’s firing grid as well so they know that class is done.\n\n— Raj\n\n---\nFrom: Owen Audio UX <owen@example.com>\nTo: Raj Eng Lead <raj@example.com>, Mia PO <mia@example.com>\nCC: Camille Loc <camille@example.com>, Tasha SRE <tasha@example.com>, Luis Privacy <luis@example.com>\nSubject: RE: Fast follow from today - lobby behavior and turn flow (sounds + periscope)\n\nJumping in on two fronts.\n\nPeriscope: Yes on masking both grids inside a circular viewport. I will add a subtle metal rim and glass glare. We need to make sure labels do not bleed outside the circle. On very small phones, we may need to scale the grids within the mask.\n\nAudio mapping: during the shooter’s turn, I will bring up an ambient sea layer lightly so it feels like you are peering through the scope. On miss, splash. On hit, a sharper impact sound. On sink, a distinct longer cue with a creak and water. I am not going to add anything when just idle or placing ships, to keep the action audio meaningful.\n\nTurn pacing: I will keep cues short so they do not drag. If the server response is late, we can show a small spinner but still hit our latency targets ideally.\n\n— Owen\n\n---\nFrom: Tasha SRE <tasha@example.com>\nTo: Raj Eng Lead <raj@example.com>, Mia PO <mia@example.com>\nCC: Luis Privacy <luis@example.com>, Camille Loc <camille@example.com>, Owen Audio UX <owen@example.com>\nSubject: RE: Lobby, turns, SLOs and concurrency\n\nOn pairing: I will implement a short-lived lock with a CAS on the availability token. That ensures once one request flips a player to in-match, others get rejected cleanly.\n\nOn another note, Quick note as we wrap up the privacy work: players need to stay anonymous to each other at all times. No one should ever see information—names, contact details, profile hints, or even metadata—that could help them figure out who another player is. Please double-check leaderboards and any messaging or notifications so we don’t leak identifying details.\n\nSLOs: For the action loop, we should set expectations. I propose we instrument so that 95 percent of turn actions round-trip under 2 seconds. And we keep the worst cases under 4 seconds end-to-end. If we are constantly above that, the duel will feel laggy.\n\nAvailability: The game has to be running 24x7. I will set up rolling deploys and redundancy so we can operate globally. No planned downtime if we can help it.\n\nScale: Assume lots of simultaneous matches. I am sizing for many concurrent games from the start and we will pressure test. We will design for horizontal scale.\n\nLobby idle handling: I will hide idle users from selection and drop users who have been inactive for 24 hours automatically. Define idle precisely in a separate doc.\n\n— Tasha\n\n---\nFrom: Luis Privacy <luis@example.com>\nTo: All\nSubject: RE: Privacy angle on this thread\n\nA few constraints from compliance:\n\nQuick follow-up: Quick note after today’s playtest: hits are registering fine, but players aren’t sure when a vessel is actually gone. If a shot finishes off a ship, the defending player’s board should immediately flag that ship as sunk on their grid. That way the defender gets a clear visual cue without having to infer it.\n\n- Anonymity is paramount. No user-entered names or profiles. The lobby is anonymous presence only. Do not show any info that could be tied back to a person. Avoid even cute identifiers that could cross-expose identities.\n- In the match, never reveal opponent grids. The only data the shooter sees is their own firing history. The defender sees impacts on their own grid. Do not leak any hints or patterns. No spectate mode either.\n- End-of-match notices must not include identifying info. Just the reason, e.g., all ships down or opponent ended.\n\nIf you stick to these, we should be good for strong identity protection. I will review strings for any accidental leaks.\n\n— Luis\n\n---\nFrom: Camille Loc <camille@example.com>\nTo: Mia PO <mia@example.com>, Raj Eng Lead <raj@example.com>\nCC: Owen Audio UX <owen@example.com>, Luis Privacy <luis@example.com>, Tasha SRE <tasha@example.com>\nSubject: RE: Language entry point and strings scope\n\nOn language: selection must be at entry. Do not bury it. We are supporting English, Spanish, and French from day one. Once chosen, every system prompt and button must reflect that. I will need the following strings from you as keys:\n\n- Lobby: available, unavailable, list me, remove me\n- Placement: place your five ships, ready, cannot overlap, out of bounds\n- Turn: your turn to fire, you are being targeted, hit, miss, sunk\n- End: match over, you won by sinking all ships, you ended the match, opponent ended the match, relist me, leave lobby\n- Misc: idle timeout hidden, removed after 24 hours\n\nNote: ship class names need careful translation. Also, French tends to be longer. In the circular mask, we may prefer icons with tooltips. But we must show ship type on the defender’s board when a ship is sunk, as product requested.\n\n— Camille\n\n---\nFrom: Mia PO <mia@example.com>\nTo: All\nSubject: RE: Consolidating decisions + one small tweak\n\nP.S. Given our current hosting budget, I want to keep concurrency tight for the first release. Let’s cap it at three active games total across the platform at any time and queue any additional game requests until a slot opens. This should keep resource usage predictable and avoid us over-provisioning for edge cases.\n\nThanks everyone. Consolidating and confirming a couple items, and one pushback.\n\n- Diagonal placement is allowed and must be straight, not wiggly. Five ships per player, no overlaps, and out-of-bounds blocked. Players can move ships until they hit Ready. Once both hit Ready, we randomize first shot and notify both of their roles.\n- Turn start: both players get a clear status message at the start of each turn. Shooter chooses a cell on their firing grid; server checks defender grid; result comes back as hit or miss. We mark both boards. If a ship goes down due to that hit, the system declares it sunk and we say which class on the defender’s side. Mark sunk on both boards.\n- Streaks: a hit grants another shot for the shooter. A miss flips roles: attacker to defender, defender to attacker. Keep that loop until the end condition.\n- Ending a match: we will end when the last enemy ship is sunk, or if someone ends the game early. The end notice includes the reason. After that, present two choices: list me again in the lobby or leave the lobby. Once either option is chosen, unlock them from the previous match.\n- Lobby behavior: anonymous list of people who opted to be available. Select an available person to start; both vanish from the list for others until the match finishes. Players can delist themselves any time. Hide idlers and auto-remove after 24 hours.\n- UX and audio: periscope circular mask for the boards. Visual ships that look like their classes. Ambient ocean during the shooter’s turn, distinct sounds for miss, hit, and sink.\n- Ops: Tasha will run this 24 by 7 and aim for most actions under two seconds, with the tail not exceeding four. Also plan for lots of concurrent games.\n\nPushback: I do not want to add any user identity even in a clever way. So no fun nicknames or randomized adjectives. Keep it strictly anonymous.\n\nIf anyone disagrees with any of the above, reply here. Otherwise assume this as a working baseline.\n\n— M"
+    }
+  ],
+  "gold_requirements": [
+    {
+      "id": "PROMISE_10_R001",
+      "text": "The product shall simulate the look of ships at sea.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R002",
+      "text": "The product shall display the grids within a circle as a view from a periscope.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R003",
+      "text": "The product shall display each type of ship in a grid using an image of the specific type of ship.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R004",
+      "text": "When the offensive player takes a shot the product shall simulate the sound of a ship at sea.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R005",
+      "text": "When a shot is marked as a miss the product shall simulate the sound of a shot missing its target.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R006",
+      "text": "When a shot is marked as a hit the product shall simulate the sound of a shot hitting its target.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R007",
+      "text": "When a ship is sunk the product shall simulate the sound of a sinking ship.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R008",
+      "text": "The product shall be available 24 hours per day seven days per week.",
+      "raw_label": "A",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R009",
+      "text": "The product shall able to handle a large number of games simultaneously.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R010",
+      "text": "The response time shall be fast enough to maintain the flow of the game. The response time shall be no more than 2 seconds for 95% of responses and no more than 4% for the remaining responses.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R011",
+      "text": "The product shall protect the identity of the players. The product shall provide players no access to information that might reveal the identity of another player.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R012",
+      "text": "The product shall be intuitive and self-explanatory. Nine out ten users shall be able to successfully complete a game with no training.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R013",
+      "text": "The product shall be available to players who understand English Spanish and French. The product shall allow the user to select the language upon accessing the product.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R014",
+      "text": "The product shall provide players no access to information that might reveal the identity of another player",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R015",
+      "text": "The product shall maintain a list of players.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R016",
+      "text": "The product shall allow a user to identify himself or herself as a player.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R017",
+      "text": "Once a game has been initiated the product shall make the players assigned to the game unavailable for selection from the list of players.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R018",
+      "text": "The product shall allow a user to remove himself or herself from the list of players at any time.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R019",
+      "text": "The product shall make inactive players unavailable for selection from the list of players.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R020",
+      "text": "The product shall remove players who have been inactive for 24 hours from the list of players.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R021",
+      "text": "The product shall allow a player to initiate a game by selecting another available player from the list of players.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R022",
+      "text": "Once a game is initiated the product shall display a defensive grid to each player",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R023",
+      "text": "Once a game is initiated the product shall display an offensive grid to each player.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R024",
+      "text": "The product shall prevent a player from viewing the offensive or defensive grids of the other player.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R025",
+      "text": "Once a game is initiated the product shall allow each player to position their 5 ships on their respective defensive grids.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R026",
+      "text": "The product shall allow a player to position ships horizontally on their grid.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R027",
+      "text": "The product shall allow the player to position ships vertically on their grid.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R028",
+      "text": "The product shall allow the player to position ships diagonally on their grid",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R029",
+      "text": "The product shall prevent the player from overlapping ships on their grid.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R030",
+      "text": "When both players have positioned their 5 ships on their defensive grids the product shall define the status of each player for the first turn.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R031",
+      "text": "For each turn the product shall identify one player as offensive status and one player as defensive status.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R032",
+      "text": "The product shall maintain the status of each player for a turn either offensive or defensive.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R033",
+      "text": "At the start of each turn the product shall notify each player of his or her status.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R034",
+      "text": "For each turn the product shall allow the offensive player to define a shot.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R035",
+      "text": "For each shot the product shall examine the defensive grid of the defensive player to determine whether the shot was a hit or miss.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R036",
+      "text": "For each shot the product shall notify the players whether the shot was a hit or miss.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R037",
+      "text": "For each shot the product shall mark the shot as a hit or miss on the defensive grid of the defensive player.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R038",
+      "text": "For each shot the product shall mark the shot as a hit or miss on the offensive grid of the offensive player.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R039",
+      "text": "When the hit results in sinking a ship the product shall notify the players that the ship was sunk.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R040",
+      "text": "When the hit results in sinking a ship the product shall mark the ship as sunk on the defensive grid of the defensive player.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R041",
+      "text": "When the hit results in sinking a ship the product shall indicate the type of ship sunk on the defensive grid of the defensive player.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R042",
+      "text": "When the hit results in sinking a ship the product shall mark the ship as sunk on the offensive grid of the offensive player.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R043",
+      "text": "If the shot was marked as a hit the product shall allow the offensive player to define a shot.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R044",
+      "text": "If the shot was marked as a miss the product shall change the status of the offensive player to defensive",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R045",
+      "text": "If the shot was marked as a miss the product shall change the status of the defensive player to offensive",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R046",
+      "text": "The product shall continue to assign turns until the game is ended.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R047",
+      "text": "The product shall end a game when a hit by the offensive player results in sinking the last of the defensive player s ships which had not been previously marked as sunk.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R048",
+      "text": "The product shall allow a player to end a game at any time during the game.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R049",
+      "text": "When a game is ended the product shall notify the players that the game is ended.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R050",
+      "text": "The notification of the game ending will include the reason the game is ended (i.e. a player has won the game or a player has ended the game).",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R051",
+      "text": "When a game is ended the product shall allow each player to identify himself or herself as an available player in the list of players.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_10_R052",
+      "text": "When a game is ended the product shall allow each player to remove himself or herself from the list of players.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    }
+  ],
+  "seed_registry": [
+    {
+      "seed_item_id": "T2S_92A6CC17",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "semantic_conflict",
+      "original_req_ids": [
+        "PROMISE_10_R013"
+      ],
+      "original_req_texts": [
+        "The product shall be available to players who understand English Spanish and French. The product shall allow the user to select the language upon accessing the product."
+      ],
+      "injected_text": "From a growth perspective, every extra step hurts conversion, so we want to keep first run super lean. On first access, don’t show a language picker at all—just auto-detect the device locale and take them straight in. If someone needs to change it, they can do that later in Settings.",
+      "injected_into_artifact_type": "interview_transcript",
+      "defect_description": "The stakeholder asks to skip the language picker on first access and rely on auto-detection, which conflicts with the requirement to let users select the language upon accessing the product.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_C85DC60F",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "value_conflict",
+      "original_req_ids": [
+        "PROMISE_10_R034"
+      ],
+      "original_req_texts": [
+        "For each turn the product shall allow the offensive player to define a shot."
+      ],
+      "injected_text": "To keep the pace up, we don’t want the shot picker popping up every turn. We’ll only prompt the offensive player once at the start of a possession to choose a single shot, and that choice stays locked for all turns until the possession ends. That should cut down on clicks and avoid delays between moves.",
+      "injected_into_artifact_type": "meeting_notes",
+      "defect_description": "The gold requirement allows the offensive player to define a shot on every turn, whereas the injected text restricts shot selection to once per possession with no re-selection on subsequent turns.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_200F812E",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "value_conflict",
+      "original_req_ids": [
+        "PROMISE_10_R009"
+      ],
+      "original_req_texts": [
+        "The product shall able to handle a large number of games simultaneously."
+      ],
+      "injected_text": "Given our current hosting budget, I want to keep concurrency tight for the first release. Let’s cap it at three active games total across the platform at any time and queue any additional game requests until a slot opens. This should keep resource usage predictable and avoid us over-provisioning for edge cases.",
+      "injected_into_artifact_type": "email_thread",
+      "defect_description": "The email caps the system at three concurrent games total with queuing, which conflicts with the requirement that the product handle a large number of games simultaneously.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_DB0E17E7",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "semantic_conflict",
+      "original_req_ids": [
+        "PROMISE_10_R046"
+      ],
+      "original_req_texts": [
+        "The product shall continue to assign turns until the game is ended."
+      ],
+      "injected_text": "For tournaments, we don't want the match running indefinitely. After exactly 12 rounds, have the system stop handing out the next turn and pause the table until a moderator resumes it, even if nobody has won yet. That way we can keep the schedule tight between rounds.",
+      "injected_into_artifact_type": "interview_transcript",
+      "defect_description": "This introduces a rule to stop assigning turns after 12 rounds and pause even if the game hasn’t ended, conflicting with the requirement to continue assigning turns until the game is ended.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_486FB071",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "semantic_conflict",
+      "original_req_ids": [
+        "PROMISE_10_R007"
+      ],
+      "original_req_texts": [
+        "When a ship is sunk the product shall simulate the sound of a sinking ship."
+      ],
+      "injected_text": "Audio UX came up in today's review. For the ship-sunk event, marketing wants to avoid any \"sinking ship\" effect and have a brief neutral chime (two-tone, about 200 ms) play instead so it doesn’t sound melodramatic. Keep that chime as the only audio for that event.",
+      "injected_into_artifact_type": "meeting_notes",
+      "defect_description": "The meeting notes specify using a short neutral chime when a ship is sunk instead of simulating a sinking ship sound as required by PROMISE_10_R007.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_416CD035",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PROMISE_10_R021"
+      ],
+      "original_req_texts": [
+        "The product shall allow a player to initiate a game by selecting another available player from the list of players."
+      ],
+      "injected_text": "In the lobby, we want it to be simple: if I want to play, I should be able to pick an available opponent from the player list and have that start a game. Basically, tap someone marked available in the roster to kick things off.",
+      "injected_into_artifact_type": "meeting_notes",
+      "defect_description": "Paraphrases PROMISE_10_R021 by stating that a player can start a game by picking another available player from the player list.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_DEAF9205",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PROMISE_10_R011"
+      ],
+      "original_req_texts": [
+        "The product shall protect the identity of the players. The product shall provide players no access to information that might reveal the identity of another player."
+      ],
+      "injected_text": "Quick note as we wrap up the privacy work: players need to stay anonymous to each other at all times. No one should ever see information—names, contact details, profile hints, or even metadata—that could help them figure out who another player is. Please double-check leaderboards and any messaging or notifications so we don’t leak identifying details.",
+      "injected_into_artifact_type": "email_thread",
+      "defect_description": "This restates requirement PROMISE_10_R011 by duplicating the need to keep player identities hidden and prevent access to any information that could reveal another player's identity.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_4216CA44",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PROMISE_10_R047"
+      ],
+      "original_req_texts": [
+        "The product shall end a game when a hit by the offensive player results in sinking the last of the defensive player s ships which had not been previously marked as sunk."
+      ],
+      "injected_text": "Just to confirm the end-of-match behavior: if the player who’s firing lands a hit that finishes off the opponent’s last surviving ship—the one that hadn’t already been marked as sunk—the game should wrap up on that shot. No extra turns or phases after that, it just ends and declares the result. That’s the cleanest experience for players.",
+      "injected_into_artifact_type": "interview_transcript",
+      "defect_description": "This paraphrases PROMISE_10_R047 by restating that the game should immediately end when an attacking hit sinks the defender’s last remaining unsunk ship.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_2D67B8D6",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PROMISE_10_R044"
+      ],
+      "original_req_texts": [
+        "If the shot was marked as a miss the product shall change the status of the offensive player to defensive"
+      ],
+      "injected_text": "Quick clarification on gameplay flow: when we record a shot and it’s marked as a miss, the system should automatically switch the offensive player’s status to defensive. That keeps the next sequence accurate without anyone having to toggle roles manually. Let’s make sure this kicks in immediately once the miss is saved.",
+      "injected_into_artifact_type": "meeting_notes",
+      "defect_description": "Paraphrases PROMISE_10_R044 by restating that after a missed shot, the system changes the offensive player's status to defensive.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_F550B59D",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PROMISE_10_R040"
+      ],
+      "original_req_texts": [
+        "When the hit results in sinking a ship the product shall mark the ship as sunk on the defensive grid of the defensive player."
+      ],
+      "injected_text": "Quick note after today’s playtest: hits are registering fine, but players aren’t sure when a vessel is actually gone. If a shot finishes off a ship, the defending player’s board should immediately flag that ship as sunk on their grid. That way the defender gets a clear visual cue without having to infer it.",
+      "injected_into_artifact_type": "email_thread",
+      "defect_description": "This restates PROMISE_10_R040 by requiring that when a hit sinks a ship, it be marked as sunk on the defending player's grid.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    }
+  ],
+  "brief": {
+    "project_name": "Periscope Duel",
+    "domain": "Online multiplayer strategy game",
+    "users": [
+      "Lobby player (listed as available/unavailable)",
+      "Offensive player (takes shots on their turn)",
+      "Defensive player (receives shots on their grid)"
+    ],
+    "stakeholders": [
+      "Product owner",
+      "Game client engineering lead",
+      "DevOps/SRE for 24x7 operations",
+      "Privacy/compliance officer",
+      "Localization manager",
+      "Audio/UX designer"
+    ],
+    "business_goals": [
+      "Offer a fast, anonymous head-to-head naval skirmish that new players can finish without help",
+      "Reach a broad audience with English, Spanish, and French support at entry",
+      "Keep players engaged with immersive visuals and sound design that evoke a periscope-at-sea experience",
+      "Operate reliably at scale with many simultaneous matches",
+      "Maintain smooth, responsive play to encourage repeat sessions"
+    ],
+    "core_features": [
+      "Player lobby with self-identification as available, ability to delist anytime, and automatic handling of inactivity",
+      "One-click matchmaking by selecting an available opponent; matched players are removed from the pickable list",
+      "Dual-board gameplay (offensive and defensive grids) shown through a circular periscope viewport with ship-class imagery; opponents cannot see each other’s boards",
+      "Fleet setup: each player places five ships on their defensive grid with horizontal, vertical, or diagonal orientation; no overlaps allowed",
+      "Turn engine: after both fleets are placed, assign first-turn roles; at each turn start, notify players of offensive/defensive status",
+      "Firing resolution: offensive player selects a target; system evaluates hit/miss, marks both boards accordingly, and announces results; hits grant another shot, misses swap roles",
+      "Sinking and game end: detect when a ship is sunk, show which class went down (on defender’s board), notify both players, and end the match when the last enemy ship is sunk or a player opts to end; on finish, allow players to relist or leave the lobby",
+      "Audio feedback: ambient sea during firing and distinct sounds for miss, hit, and sinking events"
+    ],
+    "quality_concerns": [
+      "Low latency interactions to keep turn flow snappy (most actions under a couple seconds)",
+      "Always-on availability for global play",
+      "Capacity to support a large number of concurrent games",
+      "Strong anonymity: no personal details or cross-exposure of identities",
+      "Intuitive UI so most first-timers can complete a match without training",
+      "Built-in language selection for English, Spanish, and French",
+      "Immersive naval theme with periscope visuals and ship/impact audio cues"
+    ],
+    "constraints": [
+      "No personally identifying information is shown; players interact via anonymous presence only",
+      "Opponents’ offensive/defensive grids are never visible to the other side",
+      "Once matched, players are locked from lobby selection until the game ends",
+      "Inactive players are hidden and removed from the lobby after 24 hours",
+      "Language choice is presented at access time and limited to English, Spanish, or French",
+      "Service must run 24x7 and handle many simultaneous matches while meeting response-time targets"
+    ],
+    "terminology": [
+      "Offensive turn (shooter) / Defensive turn (targeted player)",
+      "Offensive grid (shots taken) / Defensive grid (own fleet)",
+      "Hit / Miss markers",
+      "Sunk (ship destroyed) with ship class indicated",
+      "Five-ship fleet (standard set placed by each player)",
+      "Periscope view (circular viewport for the boards)"
+    ]
+  },
+  "metadata": {
+    "project_id": "10",
+    "req_count": 52,
+    "label_dist": {
+      "LF": 7,
+      "A": 1,
+      "PE": 3,
+      "US": 2,
+      "SE": 1,
+      "F": 38
+    },
+    "llm_usage": {
+      "total_calls": 160,
+      "total_input_tokens": 887868,
+      "total_output_tokens": 525039
+    }
+  }
+}

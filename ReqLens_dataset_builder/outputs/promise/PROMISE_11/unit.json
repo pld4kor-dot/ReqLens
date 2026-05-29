@@ -1,0 +1,339 @@
+{
+  "id": "PROMISE_11",
+  "origin": "PROMISE",
+  "created_at": "2026-05-23T15:13:24.571194+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Exploratory interview on TeleShift Portal expectations and constraints",
+      "text": "Maria [Supervisor]: Okay, so big picture, we need this TeleShift thing to not slow us down. I’ve got to enter and adjust caller schedules, and if a slot is empty, I need to put it out there for the team. I can’t be... I don’t want to be stuck in a screen for five minutes just to post an opening.\n\nPriya [IT Ops]: Right, speed is the headline. Can I clarify—when you say not five minutes, what feels acceptable to you? We have some internal targets in mind, but I want your gut reaction first.\n\nMaria [Supervisor]: Honestly, most of the time I’m juggling a call or two, instant messages, whatever. If I can click in, update a caller’s shift, and get out in under, I don’t know, two minutes? That’s, that’s the vibe. If anything takes longer, I’ll probably defer it.\n\nKen [Caller]: Yeah, and for us, like, I don’t want to hunt through some spaghetti of pages. If I can’t figure it out in like ten minutes tops the first day, I’m going to be asking Jen next to me to do it for me. And she’s new too. So... minimal training.\n\nLeo [UX]: So, we’re aiming for a ten-minute onboarding? That’s actually a great constraint for the design. We can do a quick walkthrough the first time someone logs in. Wait—sorry—actually, given the audience, maybe we do inline tips, not a walkthrough pop-up. Uh, anyway, I’m taking that as: quick learnability.\n\nPriya [IT Ops]: And, just to set expectations, at the DePaul TeleServices Center we’ve got to meet a pretty strict response profile. For the supervisor view where you look up a caller’s schedule—Maria, that’s the grid you like—we need that to come up very, very fast. Internally we’ve put—\n\nMaria [Supervisor]: Like, click and it shows. Not spinny-spinny.\n\nPriya [IT Ops]: Exactly. Our metric is that nine out of ten times, that page needs to land in around two seconds on the center’s network. The outliers should still be under five. We’ll monitor it.\n\nKen [Caller]: Two seconds sounds good, but half the time I’m at home on some junky connection. Like, is dial-up even a thing? My apartment Wi‑Fi drops down to something that feels like dial-up.\n\nPriya [IT Ops]: We still have folks on very slow lines. We’re planning for a baseline that’s like, let’s say, old-school modem speeds. On those, we’re budgeting—well, our target is that most interactions finish in about six seconds or less. If you’re on something twice as fast—a 112k-ish or higher line—then the same actions should usually finish closer to three seconds. Those are 90th percentile targets, not averages.\n\nKen [Caller]: Wait, 90th percentile… that’s like out of ten tries, nine are under those times? I always mix that up.\n\nPriya [IT Ops]: Yes, exactly: 9 out of 10 are at or under that mark. The remaining one isn’t allowed to be ridiculous; we have a separate ceiling in some cases, like for the supervisor schedule view, we said those rare ones still need to be under five seconds.\n\nLeo [UX]: We’ll design for that. Fewer heavy graphics, no giant tables loading all at once. Also means we need to keep the interface really, really clean. Fewer elements reduce download time and cognitive load. I’d like to validate simplicity with a beta round—if 9 out of 10 testers say “yeah, it’s simple enough,” then we know we didn’t overshoot. Appealing too—if most people find it visually pleasant, that helps adoption.\n\nMaria [Supervisor]: Appealing matters, sure, but don’t get cute. Just keep it obvious. Honestly, if 8 out of 10 of the team say it looks nice, that’s already a miracle.\n\nLeo [UX]: That’s a good bar. So, okay, we’ll aim for strong scores there—simplicity especially.\n\nKen [Caller]: Can I ask something dumb? Who gets to put up open slots? Because in the old portal, sometimes we, uh, callers would try to “claim” time by, like, creating a fake opening. It was a mess.\n\nMaria [Supervisor]: No way. Only supervisors should be pushing out those openings. And only we should be doing schedule edits for callers. That’s for compliance and fairness. I don’t need everybody peeking at everyone else’s time either. I need to see all schedules, but they shouldn’t.\n\nPriya [IT Ops]: Right, so role-based access. We’ll enforce that: supervisors can advertise empty slots, supervisors can create or change caller schedules, and supervisors can see the whole roster. Callers won’t have those abilities. We can lock it down.\n\nKen [Caller]: As long as I can… well, I don’t need to see everybody else. Just, y’know, see my own. And please don’t make me click eight times for one thing.\n\nLeo [UX]: The flows should be short. Let’s keep common tasks within a couple minutes end-to-end. That includes any loading time. We’ll time it.\n\nMaria [Supervisor]: Also, we need this thing up all the time. Like, we run campaigns overnight, weekends, holidays. When we say 24/7, we really mean all year.\n\nPriya [IT Ops]: Yes, the service is intended to be available every day. There’s some wording around hours that’s confusing—internally we’ve documented availability from just after midnight through late evening, and another block covering early morning through late night. The point is: it’s effectively always on. There might be a tiny maintenance wedge around 6 to 7 am—\n\nLeo [UX]: Wait, so is it truly always on or do we tell users “don’t use it at 6:30 am”?\n\nPriya [IT Ops]: The intent is continuous access throughout the day, every day. The two time spans we quoted overlap so heavily that it’s basically round-the-clock. We can refine messaging, but we’re committing to daily availability across the board.\n\nMaria [Supervisor]: Okay, but no surprise outages in the afternoon. That’s when I’m massaging schedules.\n\nKen [Caller]: Also, what are we building this on? Because the last time we tried, my roommate’s ancient laptop only had Internet Explorer. Like, the dinosaur version.\n\nPriya [IT Ops]: Legacy browser support is a hard requirement. We have to run on Internet Explorer and Netscape Navigator. I know, I know. We’ll avoid modern features that break them. We’ll also keep it browser-independent as much as we can.\n\nLeo [UX]: That will constrain our visual layer, but we can still make it clean and decent-looking. We’ll keep to simple CSS, lightweight layouts, and test with both. For appeal, I’ll still shoot for that “8 out of 10 say it’s attractive” threshold. Simplicity, I want a “9 out of 10 say it’s easy” score in a beta survey. If we don’t hit it, we iterate.\n\nMaria [Supervisor]: Good. And the learning thing—please, please—make it so a fresh hire can sit down and learn in, like, ten minutes. I don’t have time for hour-long trainings. Two screens, top to bottom, and you’re done.\n\nKen [Caller]: In the old system I got lost. Tabs within tabs. If this one keeps it to, like, one or two screens per task and keeps me under two minutes, I’m happy.\n\nPriya [IT Ops]: Performance on slow links is my biggest worry, so we’ll measure load times at 56k and at something like 112k and above. Our 90th percentile marks are what we’ll enforce. For the supervisor schedule view specifically, we’ll instrument it at the DePaul center. If we see it drifting over two seconds regularly, we’ll optimize. And no rare case should exceed about five seconds there.\n\nLeo [UX]: That means fewer big images, deferred loading, and reducing the number of clicks. Also, error messages need to be understandable, because we don’t want people stuck for ten minutes—uh, sorry, this is UX ranting.\n\nMaria [Supervisor]: It’s fine. Just don’t make me scroll horizontally.\n\nKen [Caller]: Can I, uh, can I bring up a complaint? The other vendor’s portal—we won’t name names—looked like it was made in the 90s, which is fine if it loads fast, but it also, like, lagged on every click. If you can beat that, we’ll love you. Also, the font was tiny.\n\nLeo [UX]: We can do simple without ugly. Clean typography works even on IE and Netscape. We just have to test. We’ll validate with a user survey. If nine in ten say it’s simple enough, and around eight in ten say it looks good, we’ve hit the mark.\n\nPriya [IT Ops]: Agree. And I’ll add monitor probes during the hours we run heavy campaigns. Even though the policy is “available every day,” we’ll make sure those windows—midnight through evening and early morning through midnight—are covered in our SLAs and alerts.\n\nMaria [Supervisor]: I’m going to push one more time on roles. There’s been confusion with “team leads” versus “supervisors.” I need it so that only actual supervisors, like me, can push out empty calling slots. Not team leads, not callers with tenure.\n\nPriya [IT Ops]: Noted. We’ll key off the supervisor role. Only that role can post the open slots and edit schedules. And the all-callers schedule view? Also supervisor-only.\n\nKen [Caller]: That’s fine. I don’t want to see everyone’s anyway. I just don’t want a lock that stops me from seeing my own changes. But—\n\nMaria [Supervisor]: You won’t be changing them. You’ll request changes through me. That’s the process.\n\nKen [Caller]: Right, right. Got it.\n\nLeo [UX]: We can make it clear in the UI. Buttons that only supervisors see. For callers, simpler menu, fewer options. Clarity helps the ten-minute learnability and the two-minute task completion.\n\nPriya [IT Ops]: One last technical question. The supervisor schedule view—we’ve got to be clear that when we measure “fast” at DePaul, it’s not just median. We’re reporting the 90th percentile at or under two seconds. And for the remaining tail, under five seconds. For the general operations across the portal, on a 56k link we’ll keep most under six seconds, and on 112k and above, most under three.\n\nMaria [Supervisor]: Sounds like you’ve got numbers posted on a wall. I just need it to feel snappy.\n\nKen [Caller]: Also—and this is my last thing—don’t make it so we need a manual. A quick sheet is fine. If in ten minutes I can’t figure it out, I’m going to pester someone.\n\nLeo [UX]: That’s our north star. We’ll test with new hires in beta. We’re going to collect feedback. If the scores for simplicity aren’t high—like nine out of ten—we keep tweaking. And for “do you like it?” we want at least eight out of ten yeses.\n\nPriya [IT Ops]: And we’ll keep the site up every day, round-the-clock coverage. If we need a maintenance sliver, we’ll plan it and communicate. Also, we’re stuck with IE and Netscape support, so no fancy frameworks. But the result can still be clean.\n\nMaria [Supervisor]: Great. Just keep me involved in testing the dashboard for updates, the open-slot advertise thing, and my all-schedule view. Those are my three.\n\nKen [Caller]: And I’ll volunteer to be a slow-connection guinea pig. My apartment is like a time machine.\n\nLeo [UX]: Perfect. I’ll book some sessions. And Priya, I’ll sync with you on performance instrumentation and the beta survey questions.\n\nPriya [IT Ops]: Works for me. Thanks everyone—this is helpful. We’ll translate this into a backlog and test plan.\n\nMaria [Supervisor]: Cool. I’ve got to hop—shift handoffs. Thanks.\n\nKen [Caller]: Later.\n\nLeo [UX]: Thanks all.\n\nPriya [IT Ops]: Bye."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "TeleShift Portal working session — role control, performance, and availability",
+      "text": "Date: 2025-03-17\nRoom/Link: DePaul TeleServices Center Conf Rm B / Teams link: https://dpts.example.com/meet/tele-ops-0317\nAttendees:\n- Maria (Supervisor)\n- Priya (IT Operations & Support)\n- Leo (UX Lead)\n- Sam (QA)\n- Note-taker: J. Collins (PM) [arrived late]\n\nNotes (raw):\n- Goal: speed up schedule admin, fill empty calling slots quickly. New portal must be straightforward.\n- Training time: Maria said \"10 mins max\" to get a caller or new supervisor up to speed. Keep onboarding light.\n- Task duration expectation: “in and out” — aim common flows < ~2 min end-to-end (incl load). Ken’s phrasing referenced 2 minutes; keep that.\n- Browsers: must run on legacy (Internet Explorer + Netscape Navigator). Avoid heavy JS features that break. Browser independent wherever possible.\n- Roles/permissions: Only supervisors can\n  - advertise/post empty time slots to staff\n  - enter/update caller schedules\n  - view all callers' schedules (full roster)\n  - Note: callers should not be allowed to do above. Team leads? [TBD] Maria says no (supervisors-only).\n- Contradiction captured: earlier someone suggested team leads could post slots (for coverage). Maria vetoed: keep it locked to supervisor role. Resolve in access control design.\n- Performance requirements (Priya):\n  - Supervisor schedule view at DePaul center: target p90 ≈ 2s, tail under 5s. Instrument and alert.\n  - All operations on slow link (~56k): p90 ≈ 6s.\n  - On faster link (~112k+): p90 ≈ 3s.\n  - Clarify definitions to users (p90 = 90th percentile) — avoid confusion w/ averages.\n- Availability:\n  - Service available every day (year-round). The phrasing in ops doc lists two windows: midnight→late afternoon and early morning→end-of-day; combined this is effectively full-day.\n  - Question from Maria: \"Is there a maintenance hour?\" Priya: If any, early morning around 6-7 am, kept minimal. But expectation is continuous access across days.\n  - Action: Priya to document hours in plain language (no ambiguity). Consider stating “available 12:00 AM–6:00 PM and 7:00 AM–11:59 PM daily”. Check with Ops Dir.\n- UX/Usability:\n  - Simplicity bar: beta survey must come back with very strong simplicity score. Leo suggested aim: 90%+ of testers say \"simple enough\" (wording to be set in survey).\n  - Appeal: also test “do you like how it looks?” Expectation: ~80% positive responses. If fall short, iterate.\n  - Keep UI minimal (no heavy images; layout works in IE/Netscape). Avoid horizontal scroll. Large fonts for readability (Ken feedback).\n- Task flow details (short notes):\n  - Enter caller schedule (supervisor-only): pre-fill fields to reduce clicks. Save and confirm in <2 min.\n  - Advertise empty slot (supervisor-only): one screen form; after post, visible to callers and staff list. Keep minimal data entry.\n  - View all callers schedule (supervisor-only): grid loads fast; no extraneous columns by default. Must hit the 2s p90 target at DePaul.\n- Beta plan:\n  - Recruit ~15-20 testers (mix of callers/supervisors). Measure time-to-first-success (learnability under ~10 min). Also time-to-completion for tasks (<= 2 min typical).\n  - Survey questions: simplicity (yes/no or 5-pt) and appeal (yes/no or 5-pt). Thresholds: simplicity >= 90% positive; appeal >= 80% positive. If below, plan redesign sprint.\n- Ops constraints:\n  - Monitor on 56k and 112k+ simulated links; gather p90 stats across main operations.\n  - Strict response target for supervisor schedule view at DePaul. SLA instrumented at edge.\n  - Browser matrix: IE and Netscape mandatory. Chrome/Firefox nice-to-have? [NOT decided yet] -> Maria: We have to support the legacy, anything extra is gravy.\n- Misc (sloppy):\n  - Ken volunteered to test on slow home connection.\n  - Maria wants zero surprise downtime during afternoons.\n  - Priya mentioned we’ll avoid huge payloads; use simple CSS.\n  - Someone asked about letting callers post their own swaps — tabled. [Parking Lot]\n\nAction Items:\n- [Priya] Write clear availability statement using exact hours (12:00 AM–6:00 PM and 7:00 AM–11:59 PM, daily). Confirm with Ops Director that this indeed implies full-day coverage. Due Fri.\n- [Leo] Draft beta survey with simplicity and appeal questions; include targets (>=90% for simplicity, >=80% for appeal). Due next UX sync.\n- [Sam] Define p90 measurement approach and test plan on 56k/112k networks and at DePaul. Include supervisor schedule view separate reporting (2s/5s bounds). Due next QA meeting.\n- [Maria] Provide list of common tasks to time (enter schedule, advertise slot, view all schedules). Annotate which should complete in under 2 min. Due Thu.\n- [J. Collins] Clarify role semantics (team lead vs supervisor). Right now: supervisor-only for the three restricted actions. Check with HR. Due Mon.\n\nOpen Issues / Parking Lot:\n- Which IE/Netscape versions are realistic to test? [TBD]. Risk: design tradeoffs.\n- Do we need a banner during maintenance (if 6–7 am)? [TBD]. Maria prefers no banner in afternoons.\n- Caller visibility: is viewing only their own schedule sufficient? (Scope says yes; confirm). [TBD]\n- ~Support Chrome-first themes~ (crossed out) — staying with legacy-first approach for now.\n- Whether to show roster with photos (performance risk) vs initials only. Leaning initials.\n- Enforcement of supervisor-only actions: UI hide vs hard authorization (answer should be both). Implementation detail awaiting Dev.\n\nContradictions/clarifications recorded:\n- Availability described both as “always on” and with an early-morning maintenance wedge. Resolution pending Ops doc; target is effectively 24h.\n- Someone said team leads can advertise slots (earlier email convo). Meeting agreed: no, supervisors only.\n- \"Average load time\" was mentioned in passing; corrected to p90 metric. Tail cap for supervisor schedule view under 5s.\n\nMisc numeric scribbles (from whiteboard):\n- 2m (tasks) / 10m (learn)\n- p90: 2s (sup view @ DePaul), pTail < 5s\n- 56k → 6s p90; 112k+ → 3s p90\n- Beta: 90% simple / 80% appeal\n\nEnd of notes."
+    },
+    {
+      "type": "email_thread",
+      "title": "Thread: Availability hours, legacy browsers, and role permissions for TeleShift",
+      "text": "Email 1\nFrom: Priya Shah <priya.shah@depaults.org>\nTo: Maria Alvarez <maria.alvarez@depaults.org>, Leo Park <leo.park@depaults.org>, Sam Patel <sam.patel@depaults.org>\nCC: Ops Team <ops@depaults.org>\nSubject: TeleShift: availability windows + legacy browsers + perf targets\nBody:\nHi all,\n\nQuick recap to lock a few things:\n- Availability: ops policy says the portal is available daily, with documented windows that together cover the full day. The wording in the internal SOP mentions midnight to late afternoon and early morning to midnight. We’ll rephrase plainly (see below).\n- Browsers: we must run on Internet Explorer and Netscape Navigator (legacy friendly). Assume no modern-only features. Browser independent as much as possible.\n- Performance: For the supervisor schedule view at the DePaul TeleServices Center, we intend p90 ~2s, with the remaining tail still under 5s. For general ops, on ~56k links p90 ~6s; on ~112k+ p90 ~3s.\n- Roles: Our understanding is that only supervisors are allowed to (a) advertise open time slots, (b) enter or update caller schedules, and (c) view the entire roster/schedule across callers.\n\nPlease confirm or correct. I’d like to publish this to the project wiki by tomorrow.\n\nThanks,\nPriya\n\n—\n\nEmail 2\nFrom: Maria Alvarez <maria.alvarez@depaults.org>\nTo: Priya Shah <priya.shah@depaults.org>\nCC: Leo Park <leo.park@depaults.org>, Sam Patel <sam.patel@depaults.org>, Ops Team <ops@depaults.org>\nSubject: RE: TeleShift: availability windows + legacy browsers + perf targets\nBody:\nHi Priya,\n\nLooks right to me on roles — please make it crystal clear: only supervisors touch schedules and blast out open slots. We’ve had issues before with people thinking “lead” == “supervisor.” It’s not.\n\nOn availability, I’m a bit confused by the windows. Do we have a dead hour at 6am? We do have staff checking shifts around that time. If there’s any maintenance, I need it super short and predictable.\n\nAlso, can we emphasize in the wiki that tasks are meant to be quick? I’m pushing my team to finish things in under 2 minutes when possible, and new folks should be able to figure the portal out in ~10 minutes on day one. If the design can’t support that, we’ll need to rethink.\n\nThx,\nMaria\n\n—\n\nEmail 3\nFrom: Sam Patel <sam.patel@depaults.org>\nTo: Priya Shah <priya.shah@depaults.org>, Maria Alvarez <maria.alvarez@depaults.org>\nCC: Leo Park <leo.park@depaults.org>, Ops Team <ops@depaults.org>\nSubject: RE: TeleShift: availability windows + legacy browsers + perf targets (QA concerns)\nBody:\nJumping in (sorry if late here).\n\nTwo QA points:\n1) For the supervisor schedule view timing: we need explicit wording that the 2s target is at the 90th percentile measured at the DePaul center, not a global median. And a tail cap under 5s for the remainder. I’ll set up synthetic probes + real-user monitoring.\n2) For “all operations” performance: I propose we state “on a 56k reference link, 90% of operations complete within ~6 seconds; on a 112k or faster link, 90% of operations complete within ~3 seconds.” If we deviate from those numbers we need sign-off. Also we should anchor the 56k/112k definitions so folks know what we’re simulating.\n\nBrowsers: I’ll spin a test matrix for IE and Netscape. Please don’t assume modern CSS. We’ll test with images off, too, for slow cases.\n\nCheers,\nSam\n\n—\n\nEmail 4\nFrom: Leo Park <leo.park@depaults.org>\nTo: Priya Shah <priya.shah@depaults.org>, Maria Alvarez <maria.alvarez@depaults.org>, Sam Patel <sam.patel@depaults.org>\nCC: Ops Team <ops@depaults.org>\nSubject: RE: TeleShift scope: UX trial + learnability\nBody:\nHey team,\n\nAdding UX color:\n- Learnability: I’m designing so that both callers and supervisors can get the gist within ~10 minutes. Plan to do a quick beta with new users and measure time-to-first-success.\n- Task time: Anchoring on “finish common tasks within a couple minutes,” including page loads. We’ll do dry runs entering a schedule, posting an open slot (supervisor only), and loading the full roster (supervisor only). If these exceed the 2-min mental budget, we’ll simplify.\n- UI tests: In the beta survey I want two checkpoints — simplicity and appeal. Targets: 90%+ say it’s simple enough, and 80%+ say it looks good. If we come in lower, we’ll adjust layout/visuals. Keep in mind IE/Netscape constraints, but we can still make it clean.\n- Minimal chrome (no pun intended) — but yes, to be explicit, we’re NOT designing for Chrome-first; we’re obligated to support IE and Netscape.\n\ntl;dr: clean, fast, low cognitive load.\n\n-L\n\n—\n\nEmail 5\nFrom: Jordan Miles <jordan.miles@depaults.org>\nTo: Priya Shah <priya.shah@depaults.org>\nCC: Maria Alvarez <maria.alvarez@depaults.org>, Leo Park <leo.park@depaults.org>, Sam Patel <sam.patel@depaults.org>, Ops Team <ops@depaults.org>\nSubject: RE: Availability windows language + ops SLA\nBody:\nPriya,\n\nMgmt hat on: I’m uneasy with ambiguous availability. Our outbound campaigns don’t sleep. If there’s a 6–7 am gap, we’ll get heat. The directive I’ve given in other projects is “system is available every day, round the clock.” If we MUST do maintenance, it should be invisible or exceedingly short.\n\nI’m okay with two overlapping windows if that’s how the SLA is written on paper, but let’s not accidentally allow a real blackout. Can we assert availability from 12:00 AM through 6:00 PM and also from 7:00 AM through 11:59 PM daily (as your doc suggests) and verify that in practice this equals full-day access? If not, we need to shore it up.\n\nAlso, role restriction is non-negotiable: only supervisors (not leads, not senior callers) can advertise empty time slots, make schedule entries, and view all schedules. Please ensure the portal enforces this both in UI and in back-end authorization.\n\nJM\n\n—\n\nEmail 6\nFrom: Priya Shah <priya.shah@depaults.org>\nTo: Jordan Miles <jordan.miles@depaults.org>\nCC: Maria Alvarez <maria.alvarez@depaults.org>, Leo Park <leo.park@depaults.org>, Sam Patel <sam.patel@depaults.org>, Ops Team <ops@depaults.org>\nSubject: RE: Availability windows language + ops SLA (next steps)\nBody:\nThanks Jordan — fair call.\n\nWe’ll publish a clear availability statement: “Accessible daily between 12:00 AM–6:00 PM and 7:00 AM–11:59 PM.” I realize that looks odd; the intent (as discussed) is continuous availability across the day. I’ll validate with Network Ops that there is no enforced blackout between 6–7 am and, if there is a maintenance slice, we’ll keep it extremely brief and communicated (ideally near-zero impact). I’ll update the SOP accordingly.\n\nOn roles: agreed and already captured in the requirements. Only the supervisor role will be able to (1) post empty slots to staff, (2) enter or update caller schedules, and (3) view the all-callers schedule. We’ll hide those controls for everyone else and also enforce authorization server-side.\n\nPerformance: confirming the benchmark language Sam suggested: p90 2s for supervisor schedule view at DePaul (with remaining requests under 5s); general ops p90 6s on ~56k and 3s on ~112k+. We’ll instrument for those. For learnability/task time, I’ll let Leo drive the beta; Maria, please confirm your team can spare a few folks. We’re aiming for the “under 10 minutes to learn” mark and “finish typical tasks in about 2 minutes.”\n\nOpen item: I’ll send a follow-up once I get definitive word on the early-morning window from Ops. If we can make it effectively 24/7 in practice, we will. If there’s a tiny maintenance wedge, we’ll state it plainly and schedule outside busy periods.\n\n– Priya (sent from mobile)"
+    }
+  ],
+  "gold_requirements": [
+    {
+      "id": "PROMISE_11_R001",
+      "text": "The system shall be easy to use by callers and supervisors. Callers and supervisors must be able to accomplish any system task within 2 minutes.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_11_R002",
+      "text": "The system shall be easy to learn by callers and supervisors. Callers and supervisors shall learn how to use the system within 10 minutes.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_11_R003",
+      "text": "The system shall be responsive. At the DePaul TeleServices Center when a supervisor uses the system to view a callers schedule the system response time must be no more than 2 seconds 90% of the time and no more than 5 seconds the rest of the time.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_11_R004",
+      "text": "On a 56k connection the system response time for all operations must be no more than 6 seconds 90% of the time.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_11_R005",
+      "text": "On a 112k connection or faster the system response time for all operations must be no more than 3 seconds 90% of the time.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_11_R006",
+      "text": "The system shall have high availability every day of the year.The system must be available for use between 12:00AM and 6:00PM all days of the year.",
+      "raw_label": "A",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_11_R007",
+      "text": "The system must be available for use between 7:00AM and 11:59PM all days of the year.",
+      "raw_label": "A",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_11_R008",
+      "text": "The product shall be internet browser independent.The product must run using Internet Explorer and Netscape Navigator.",
+      "raw_label": "MN",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_11_R009",
+      "text": "The product shall ensure that only supervisors can advertise empty time slots.The product must ensure that supervisors are allowed to access advertise empty time slots.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_11_R010",
+      "text": "The product shall ensure that only supervisors can enter a caller s schedule.The product must ensure that supervisors are allowed to access advertise empty time slots.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_11_R011",
+      "text": "The product shall ensure that only supervisors can view schedule of all callers.The product must ensure that supervisors are allowed to access advertise empty time slots.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_11_R012",
+      "text": "The interface shall have a simple look. In the interface and usability survey 90% of beta testers must report that the interface is adequately simple.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_11_R013",
+      "text": "The interface shall be appealing to callers and supervisors. In the interface and usability survey 80% of beta testers must report that the interface is appealing.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    }
+  ],
+  "validation": {
+    "coverage_rate": 1.0,
+    "missing_req_ids": [],
+    "unsupported_count": 2,
+    "repair_rounds_used": 0,
+    "coverage_entries": [
+      {
+        "req_id": "PROMISE_11_R001",
+        "supported": true,
+        "evidence_snippets": [
+          "aim common flows < ~2 min"
+        ],
+        "reason": "Stakeholders set 2-minute target for common tasks."
+      },
+      {
+        "req_id": "PROMISE_11_R002",
+        "supported": true,
+        "evidence_snippets": [
+          "10 mins max"
+        ],
+        "reason": "Participants repeatedly require ~10 minute learnability."
+      },
+      {
+        "req_id": "PROMISE_11_R003",
+        "supported": true,
+        "evidence_snippets": [
+          "p90: 2s (sup view @ DePaul), pTail < 5s"
+        ],
+        "reason": "DePaul supervisor view p90=2s and tail under 5s stated."
+      },
+      {
+        "req_id": "PROMISE_11_R004",
+        "supported": true,
+        "evidence_snippets": [
+          "56k → 6s p90"
+        ],
+        "reason": "56k reference link p90 ≈ 6s target documented."
+      },
+      {
+        "req_id": "PROMISE_11_R005",
+        "supported": true,
+        "evidence_snippets": [
+          "112k+ → 3s p90"
+        ],
+        "reason": "112k+ link p90 ≈ 3s target explicitly stated."
+      },
+      {
+        "req_id": "PROMISE_11_R006",
+        "supported": true,
+        "evidence_snippets": [
+          "12:00 AM–6:00 PM"
+        ],
+        "reason": "Meeting notes list 12:00AM–6:00PM as availability window."
+      },
+      {
+        "req_id": "PROMISE_11_R007",
+        "supported": true,
+        "evidence_snippets": [
+          "7:00 AM–11:59 PM"
+        ],
+        "reason": "Meeting notes list 7:00AM–11:59PM as availability window."
+      },
+      {
+        "req_id": "PROMISE_11_R008",
+        "supported": true,
+        "evidence_snippets": [
+          "Internet Explorer + Netscape Navigator"
+        ],
+        "reason": "Legacy browser support (IE and Netscape) required."
+      },
+      {
+        "req_id": "PROMISE_11_R009",
+        "supported": true,
+        "evidence_snippets": [
+          "Only supervisors can advertise/post"
+        ],
+        "reason": "Roles/permissions specify supervisors exclusively post slots."
+      },
+      {
+        "req_id": "PROMISE_11_R010",
+        "supported": true,
+        "evidence_snippets": [
+          "enter/update caller schedules"
+        ],
+        "reason": "Meeting notes and transcript require supervisors edit schedules."
+      },
+      {
+        "req_id": "PROMISE_11_R011",
+        "supported": true,
+        "evidence_snippets": [
+          "Only supervisors should be pushing out those openings",
+          "view all callers' schedules (full roster)"
+        ],
+        "reason": "Notes and transcript explicitly set supervisor-only permissions."
+      },
+      {
+        "req_id": "PROMISE_11_R012",
+        "supported": true,
+        "evidence_snippets": [
+          "simplicity >= 90% positive"
+        ],
+        "reason": "Beta survey target of 90%+ simplicity is specified in notes."
+      },
+      {
+        "req_id": "PROMISE_11_R013",
+        "supported": true,
+        "evidence_snippets": [
+          "appeal >= 80% positive"
+        ],
+        "reason": "Meeting notes and emails set 80% appeal target for beta."
+      }
+    ],
+    "unsupported_implied": [
+      {
+        "text": "The system must include performance instrumentation, synthetic probes and real-user monitoring for key views (especially the supervisor schedule view at DePaul), with alerting so operations can detect and respond when p90/ tail targets are missed.",
+        "source_snippet": "\"we’ll instrument it at the DePaul center. If we see it drifting over two seconds regularly, we’ll optimize.\" / \"I’ll set up synthetic probes + real-user monitoring.\"",
+        "source_type": "interview_transcript | email_thread",
+        "reason": "While the gold set specifies numerical performance targets (p90, tail bounds), it does not require the system to provide monitoring/probes, instrumentation, or alerting. The source explicitly requires synthetic probes, real-user monitoring, and alerts as operational capabilities to enforce and detect SLA violations, which is a significant system capability not covered by the gold requirements."
+      },
+      {
+        "text": "The system shall present understandable, user-friendly error messages to prevent users from being stuck and having to seek help.",
+        "source_snippet": "\"Also, error messages need to be understandable, because we don’t want people stuck for ten minutes\"",
+        "source_type": "interview_transcript",
+        "reason": "The gold requirements address learnability, task time, responsiveness, availability, browser support, roles, and survey thresholds, but none require the system to produce clear, actionable error messages. The source explicitly calls out understandable error messages as a usability requirement to avoid long user delays, which is a distinct and significant quality requirement absent from the gold set."
+      }
+    ],
+    "passed": true
+  },
+  "brief": {
+    "project_name": "TeleShift Portal",
+    "domain": "call center workforce scheduling",
+    "users": [
+      "Callers",
+      "Supervisors"
+    ],
+    "stakeholders": [
+      "DePaul TeleServices Center management",
+      "Supervisors",
+      "Callers",
+      "IT operations and support",
+      "UX and QA team"
+    ],
+    "business_goals": [
+      "Speed up schedule administration",
+      "Minimize training time for new staff",
+      "Maintain reliable access all year",
+      "Support low-bandwidth and legacy browsers",
+      "Fill empty calling slots quickly"
+    ],
+    "core_features": [
+      "Supervisor dashboard to enter and update caller schedules",
+      "Advertise open time slots to the calling staff",
+      "Supervisor view of all callers' schedules",
+      "Role-based enforcement restricting schedule actions to supervisors",
+      "Web portal accessible via Internet Explorer and Netscape"
+    ],
+    "quality_concerns": [
+      "Short learning curve for callers and supervisors (about 10 minutes)",
+      "Tasks should be finishable within a couple of minutes",
+      "Responsive interactions even on slow links; supervisor schedule view around 2s most of the time and under 5s otherwise",
+      "Service available every day, around the clock",
+      "Simple, clean, and appealing UI validated by strong beta tester feedback"
+    ],
+    "constraints": [
+      "Must meet a strict response target for the supervisor schedule view at the DePaul TeleServices Center",
+      "Daily availability spans 12:00 AM–6:00 PM and 7:00 AM–11:59 PM, effectively covering 24 hours",
+      "Must run on legacy browsers: Internet Explorer and Netscape Navigator",
+      "Only supervisors may advertise empty slots, enter caller schedules, or view all callers' schedules",
+      "Performance SLAs are defined at the 90th percentile with targets for 56k and 112k+ connections",
+      "Usability and visual appeal verified via a beta survey with high pass thresholds"
+    ],
+    "terminology": [
+      "Caller: outbound calling staff member",
+      "Supervisor: manages callers and schedules",
+      "Empty time slot: unfilled shift segment to advertise",
+      "Schedule: caller work-time assignments",
+      "DePaul TeleServices Center: deployment environment",
+      "Beta usability survey: measures simplicity and appeal",
+      "56k/112k connection: reference network speeds for performance targets"
+    ]
+  },
+  "metadata": {
+    "project_id": "11",
+    "req_count": 13,
+    "label_dist": {
+      "US": 2,
+      "PE": 3,
+      "A": 2,
+      "MN": 1,
+      "SE": 3,
+      "LF": 2
+    },
+    "llm_usage": {
+      "total_calls": 165,
+      "total_input_tokens": 909008,
+      "total_output_tokens": 543687
+    }
+  }
+}

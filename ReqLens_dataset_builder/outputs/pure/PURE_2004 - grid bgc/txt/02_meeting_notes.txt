@@ -1,0 +1,98 @@
+TYPE  : meeting_notes
+TITLE : Working Session Notes — Data Objects, Disturbance Modeling, and Portal UX
+UNIT  : PURE_2004 - grid bgc
+============================================================
+
+Date: 2025-03-18
+Room/Link: NCAR Boulder Bldg 18, Conf Rm 3B / Zoom https://ncar.zoom.us/j/9xxxxxx
+Attendees: Tom (Portal Admin), Maya (Scientist), Greg (Globus Integration), Priya (Security/NCAR), Elena (Data Curation), Rob (Dev Lead), Jess (UX), Nate (Compute Ops - Hemisphere)
+
+Note: messy notes, typed live; some gaps. Corrections welcome.
+
+Agenda (approx):
+- Review object model and CRUD checklist
+- Disturbance modeling details for Biome-BGC
+- Daymet workflow wiring incl. outputs
+- Security & Gatekeeper, user classes, session auth
+- Downloads & viz scope
+- Templates lifecycle
+
+Discussion — Objects and Projects
+- Projects vs objects: objects = reusable data elements; projects = grouping for runs/controls; keep three object categories.
+- CRUD coverage required for: Projection, Grid Registration, Surface Observation, Site Data, Daymet Parameterization, DEM, Analysis Mask, Daymet Project, Daymet Output, Plant Functional Type (PFT), BiomeBGC Site Data, Output Specification.
+- Rob: Implement create/read/update/delete for all above. Where delete is unsafe, restrict it; we’ll document the rules.
+- Sharing & collaboration: objects can be shared across projects; merge workflow for compatible types (e.g., Site Data + cleaned Surface Obs). Record provenance (lineage metadata + human note).
+- Data integrity: ensure runs record which inputs they used (retain relationships between projects/objects and outputs) to support reproducibility.
+- Data downloads: allowed on dataset-bearing objs: e.g., Grid Registration, Daymet Output; others too if they have files (DEM, masks, etc.). Elena: mark which ones are downloadable in the UI.
+- Low-bandwidth viz only: quick-look visualizations for Surface Observation coverage, basic DEM hillshade, Analysis Mask outline, Site Data geometry previews. Priority = low. Jess: keep it minimal; no heavy GIS.
+
+Daymet + Biome-BGC wiring
+- Daymet must ingest surface observations, interpolate to gridded weather (over target projection/grid). Maya: “that’s the key step.”
+- Support Daymet “project” concept: can define, run, and keep Daymet projects inside portal.
+- Outputs from Daymet become inputs to Biome-BGC runs; keep the linkage visible in the portal.
+- Compute: processing should run on remote nodes (Hemisphere cluster). Portal host remains lightweight.
+- Globus: all transfers + remote job interactions integrated with the Globus toolkit; security via GSI; aim for robust behavior across the grid.
+- NCAR storage: file-based storage lives in the Mass Storage System; scratch may be used for staging on compute side, but final outputs land in MSS. Priya: “Document this flow.”
+
+Disturbances for BGC
+- Need disturbance inputs used by Biome-BGC during simulation steps.
+- Event types covered for v1: fires, deforestation.
+- Disturbance project collects many events. Unlimited events — no hard coded max.
+- Each event = an instantaneous point in time. Represent by date/time stamp. No durations. Jess: UI should not show start/end fields.
+- Events included with the Biome-BGC input bundle; track which events went into a run.
+
+User Management / Security / Roles
+- Gatekeeper for login; portal prompts for credentials at session start; single sign-on style. No re-prompt on run submission or download (delegation behind the scenes).
+- Only approved accounts can access. Admins manage approvals and roles.
+- Scientists (favored): modeling features, create/run projects, create/edit domain objects (with rules above). Data Users (lowest priority): read-only to public/shared objects, can download permitted datasets, no run rights. Portal Admins: user lifecycle, unlock accounts, policy enforcement.
+- Comply with NCAR security policies (password rules, access controls, secure transport, account lifecycle). Priya will send checklist.
+
+Templates
+- Template objects: save expert setups. Access control on templates (private/shared/public). Lifecycle: create -> edit -> submit/publish -> delete (if not in use). Templates are intended for reuse to encourage consistent setups.
+
+Help & UX
+- Online help manual: plan for context-sensitive help — field-level tooltips or inline help. Keep the full manual linked.
+- Scientists want clarity > pretty. Data Users: minimal guidance to find and download.
+- Single credential prompt per session; Jess: show user role in header.
+
+Reliability & Compute
+- Use Globus to manage secure data movement and remote execution. Communicate job states in the portal as appropriate in later iterations.
+- Hemisphere nodes: Nate to provide endpoint names as they’re finalized.
+
+Downloads & Visualization Details
+- Downloadable: Grid Registration, Daymet Output, DEM, Analysis Mask, Projection (if file exists), and other dataset-bearing objects. Ensure secure download mechanism to/from MSS.
+- Low-priority visualizations list: Surface Observation, DEM, Analysis Mask, Site Data. No custom tileservers. Use static quick renders.
+
+Contradictions/Clarifications
+- Jess suggested adding time duration on disturbance UI for “future-proofing.” Maya says this contradicts model assumption (instantaneous). Team agrees: no durations in v1.
+- Elena asked if we cap disturbance events to 1000 to simplify UI. Team: no cap; performance testing needed; maybe lazy-load UI.
+
+Actions
+- Rob: implement CRUD for the full domain list. Be cautious with deletes; document safe-delete rules.
+- Jess: design disturbance event UI with single datetime picker; no duration fields.
+- Greg: confirm Globus endpoints for Hemisphere.
+- Priya: send NCAR security checklist.
+- Nate: share queue policy references and endpoint info; ensure portal jobs run on compute nodes only.
+- Elena: mark dataset-bearing objects to enable download; add provenance fields for merges.
+- Tom: finalize role definitions (Scientists, Admins, Data Users) and access behaviors; approve-only access.
+
+Open Issues (Parking Lot)
+- Whether to support disturbance types beyond fires/deforestation in v1 [later].
+- How to present Daymet outputs preview vs full download; quick plot ok?
+- Minor UX for job progress display [later].
+
+Notes from side chats
+- Priya emphasized all comms must be secure and policy-compliant; no plain HTTP. Use Globus for transfers.
+- Jess to include a small help icon on each form; context-sensitive help is required. Full help manual link in header.
+- Tom confirmed admin console needs unlock-user function, account creation/approval, and role assignments. He mentioned Gatekeeper integration for one login per session.
+- Maya reiterated need for sharing/merging objects and clear provenance to support collaboration.
+- Nate reminded: compute not on portal host; use nodes on Hemisphere.
+- Elena mentioned three object categories; keep exactly three for consistency.
+
+Numbers scribbled (may be off)
+- Disturbance events per project: unlimited (0..n). UI loads ~50 at a time (lazy).
+- Visualization budget: minimal; under 5 quick-look types in v1.
+- User roles count: 3 (Scientists, Admins, Data Users). Data Users lowest priority.
+
+End note
+- Team agrees portal is web-based, grid-backed, running Daymet then Biome-BGC on remote nodes, with object/project organization, downloads, minimal viz, templates, and strong security. Integrate with the NCAR DataPortal front-door as applicable.

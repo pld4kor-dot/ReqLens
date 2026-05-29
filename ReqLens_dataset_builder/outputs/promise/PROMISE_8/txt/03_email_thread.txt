@@ -1,0 +1,198 @@
+TYPE  : email_thread
+TITLE : RE: Checkout timing, prepaid flow, and weekly ops - AfriStream On-Demand
+UNIT  : PROMISE_8
+============================================================
+
+Email 1
+From: Kofi <kofi@izogn.com>
+To: Priya <priya@cybersource.com>
+CC: Amina <amina@izogn.com>, Chinedu <chinedu@velkat.io>, Ada <ada@izogn.com>, Blessing <support@izogn.com>
+Subject: Checkout timing + gateway fallback (AfriStream)
+Date: Tue, 2025-03-04 09:12:27 +0100
+
+Hi Priya,
+
+We’re tightening our checkout expectations for launch. Two asks:
+- End-to-end credit card authorization: we are setting user expectation at around 10s typical, but we need to cap at 15s worst-case. Can the API timeouts be tuned so our UI spinner and messaging don’t hang beyond that?
+- If your gateway is unavailable, we want to keep the site operational. We’ll let users browse and we’ll disable purchasing with a clear “temporarily unavailable” message so they can try again later. Do you have standard error codes we can catch for a clear message vs generic failure?
+
+Also confirming: we process all cards via CyberSource only (no other gateways), and we’ll not store full PANs—just tokens/last4. Anything stored is encrypted and accessible to our admins only.
+
+Thanks,
+Kofi
+
+---
+
+Email 2
+From: Priya <priya@cybersource.com>
+To: Kofi <kofi@izogn.com>
+CC: Amina <amina@izogn.com>, Chinedu <chinedu@velkat.io>, Ada <ada@izogn.com>, Blessing <support@izogn.com>
+Subject: RE: Checkout timing + gateway fallback (AfriStream)
+Date: Tue, 2025-03-04 12:01:10 +0100
+
+Hi Kofi,
+
+15 seconds as an upper-bound aligns with our typical SLA for auth; spikes are rare but possible. We’ll share sample code that sets your client timeout and retries gracefully.
+
+For outages, we emit specific codes (e.g., network vs issuer vs system). You can display a “temporarily unavailable” message and disable the final purchase button without crashing the session. Let users retry when service returns; do not queue a charge server-side without a new confirmation.
+
+Please also ensure your privacy policy is linked upfront at checkout, so you’re communicating info practices before capturing details. If the policy changes, notify users (banner/email). Standard compliance.
+
+Regards,
+Priya
+
+---
+
+Email 3
+From: Ada <ada@izogn.com>
+To: Team <all@izogn.com>
+CC: Priya <priya@cybersource.com>
+Subject: Re: Prepaid + Admin Console time targets (draft)
+Date: Wed, 2025-03-05 08:45:03 +0100
+
+Hi all,
+
+Here’s what I’m planning for prepaid and admin flows (feedback welcome):
+
+1) Admin-only prepaid activation: Button in Admin > Prepaid. Target action time under 5 seconds. 
+2) Generate PIN batches: Unique codes, export to Excel. Batch generation in under 2 minutes. Values: $5/$10/$20 only.
+3) Customer view: “Check your PIN status” box on prepaid page. Enter code, see balance/validity in ~5 sec. Rate limit to avoid abuse. 
+4) Distribution: If purchased online, we email the PIN. Also provide a printable version (PDF). For mail-in payments, we’ll mark as “verified” manually and then generate/send.
+5) Only registered users can purchase content. Guests can browse/search only. 
+6) Free trial: I’ll add a manager-config screen. Parameters TBD by Kofi (length, allowed titles). 
+7) Reporting: Sales logs visible to admins; daily usage stats logs under Reports. I want the “open report” action to load in under 2 minutes.
+8) Account management: My Account page for updating billing/contact info. Cancellation flow to be simple; under 2 minutes and marks account inactive (blocking login). Admins can deactivate users in under a minute. We keep customer records in the DB for reporting/licensing after cancel—no deletion.
+
+We’ll also keep the Friday auto-update of the “Latest 4” on the homepage. And yes, Flash animation remains on home.
+
+Ada
+
+---
+
+Email 4
+From: Chinedu <chinedu@velkat.io>
+To: Ada <ada@izogn.com>
+CC: Kofi <kofi@izogn.com>, Amina <amina@izogn.com>, Priya <priya@cybersource.com>, Blessing <support@izogn.com>
+Subject: RE: Prepaid + Admin Console time targets (draft)
+Date: Wed, 2025-03-05 10:22:51 +0100
+
+Ada,
+
+All sounds good. Adding technical confirmations and constraints:
+
+- We’ll keep general UI responses under ~5 seconds, except: credit card up to ~15 sec, streaming start buffer <=10 sec (beyond that it’s on the user’s network). 
+- Streaming uses WMP 9.0. We’ll encode 56k and 256k bitrates as planned. On-demand 24/7 (site target uptime 99.5%). 
+- If streaming server is down: site doesn’t die; we’ll hide/disable “Play” and show a message. If payment gateway is down: browsing unaffected; checkout disabled with clear messaging.
+- Capacity: streaming server 50 concurrent streams; 700 titles per streaming server. Web tier 1,000 simultaneous users. DB ok for 100k customers. Add servers to scale the catalog when needed.
+- Security: Customer records + sales data restricted to authorized admins only. Card data encrypted at rest (but we prefer tokens). Abuse protection for PIN and login attempts, with admin notifications.
+- Weekly DB integrity scripts to check for corruption/anomalies. Anti-virus on streaming servers (scans off-peak). 
+- We’ll deploy within one working day (scripted). Existing hardware only (reminder). Code will follow W3C and PEAR standards.
+- Search: title, actor, director. Movie detail pulls description + cast + director from DB. 
+- Reviews: Customers can add, but require admin approval before visible; others can read once approved.
+- Owner account: flagged to bypass payments and stream all titles; usage still logged.
+
+Minor: Please confirm the signup page count—max 4 screens—and the UX copy says clearly that the viewing window is 2 days after purchase. 
+
+Cheers,
+C.
+
+---
+
+Email 5
+From: Blessing <support@izogn.com>
+To: Team <all@izogn.com>
+CC: Amina <amina@izogn.com>, Kofi <kofi@izogn.com>, Ada <ada@izogn.com>, Chinedu <chinedu@velkat.io>, Priya <priya@cybersource.com>
+Subject: Re: Help content + phone support details
+Date: Wed, 2025-03-05 14:18:09 +0100
+
+Hi folks,
+
+Drafting the Help/FAQ now. I will include:
+- 24/7 toll-free 800 number on every page footer (above the fold if possible on Help page). 
+- How prepaid works: buying with credit card or mail-in, receiving via email or printing the card, checking PIN status. 
+- How to find a movie: search by title/actor/director, browse by categories. 
+- Viewing window explanation (2 days), and that only registered users can buy/stream. 
+- Basic troubleshooting for buffering (start under ~10 sec normally), and legacy browser notes (IE 5–6, Netscape 6–8, Firefox 1.0, MSN TV2 tips).
+- Privacy policy: where to find it (visible on all pages), and that we’ll notify users when it changes.
+
+Also, for novices we’ll keep language super simple and standard web conventions. I’ll add an anonymous short survey at 2 weeks post-launch to gauge comfort buying online; target ≥70% comfortable. Another anonymous one at 1 month focusing on prepaid; target ≥95% comfortable.
+
+Blessing
+
+---
+
+Email 6
+From: Amina <amina@izogn.com>
+To: Team <all@izogn.com>
+CC: Priya <priya@cybersource.com>
+Subject: RE: Branding and inclusivity (quick note)
+Date: Thu, 2025-03-06 08:12:44 +0100
+
+Morning all,
+
+Just a reminder: the visual direction must be bright, fun, and modern—but let’s avoid anything that could be offensive to any religious or ethnic group. The site should feel inclusive to all Africans (not only Nigerians) and also friendly to non-African visitors. Use plain language and recognizable icons so novices aren’t confused.
+
+Also, let’s ensure we retain user preferences (what they like to watch, how they prefer to pay) to smooth future purchases. And please keep the promo updates lightweight. If we need to change headline text or artwork, we should be able to push it within a day.
+
+On usability, our goal is that roughly 90% of novice internet users can complete core tasks without assistance; we’ll validate with the anonymous surveys Blessing mentioned.
+
+Thank you,
+Amina
+
+---
+
+Email 7
+From: Kofi <kofi@izogn.com>
+To: Ada <ada@izogn.com>, Chinedu <chinedu@velkat.io>
+CC: Amina <amina@izogn.com>, Priya <priya@cybersource.com>, Blessing <support@izogn.com>
+Subject: RE: Loose ends before pilot — signup, cancel, reporting
+Date: Thu, 2025-03-06 16:37:33 +0100
+
+Hey,
+
+Loose ends list (sorry for the brain dump):
+
+- Signup: confirm max 4 pages. Pay-as-you-go time under 5 min; unlimited sub under 10 min. Login in under 5 sec.
+- After login, users should hit their movies in under 2 clicks. Purchase-to-play under 3 min (we’ll measure). 
+- Sales logging: every streaming sale must hit the DB. Daily usage stats automatically captured. Reports accessible by admins (target: load a report in under 2 min). 
+- Data: prevent bad inputs from corrupting DB; weekly integrity scripts. Please set up admin email alerts for suspicious behavior.
+- Accounts: customer self-cancel in under 2 min; mark inactive, block login. Admin deactivation under 1 min. Keep all registered customer information in the database after cancel (for reporting/licensing) — do not purge. 
+- Licensing: ensure all constraints are met (2-day viewing, no stream without purchase/authorization). 
+- Platform: web-only; reusing existing hardware; standards (W3C, PEAR) compliance.
+- Streaming server: antivirus installed; capacity 50 streams; add servers if we exceed 700 titles on a node. 
+- Homepage: autopopulate newest 4 every Friday early AM; if less than 4 new, fill with most recent. 
+
+Open: gateway outage UX — disable purchases and show a clear message; users can retry later when the gateway is back (no background queuing).
+
+Kofi
+
+---
+
+Email 8
+From: Chinedu <chinedu@velkat.io>
+To: Kofi <kofi@izogn.com>
+CC: Ada <ada@izogn.com>, Amina <amina@izogn.com>, Priya <priya@cybersource.com>, Blessing <support@izogn.com>
+Subject: RE: Loose ends before pilot — signup, cancel, reporting
+Date: Fri, 2025-03-07 09:02:21 +0100
+
+Kofi,
+
+We’re aligned on most items. Answers and notes:
+
+- Signup/login timings: achievable. We’ll instrument timers to confirm real-world numbers.
+- “My Movies” direct path = 2 clicks after login — confirmed.
+- Sales/usage logs: admin can access; we’ll add role-based restrictions so only authorized personnel can see sales/customer records.
+- Data integrity + abuse: validation server-side; weekly scripts; email notifications on anomalies and aggressive PIN or login retries.
+- Cancellation/deactivation: both flows implemented as described. Records retained post-cancel in the DB.
+- Licensing & enforcement: 2-day window enforced; streaming only after CyberSource auth or valid prepaid PIN; no guest purchases.
+- Infra/standards: we remain web-only on existing hardware; W3C + PEAR compliance checklist done.
+- Streaming servers: AV will be installed; we’ll schedule nightly scans. Capacity targets in place.
+- Homepage: Friday 6am refresh to show latest 4. 
+
+Pending: Priya will confirm the exact codes we should trap for gateway outage. We’ll keep checkout disabled during outages and let users try again later.
+
+Side note: We’ll keep the privacy policy in the footer across all pages and add an in-app notification when it changes. We’ll also display the 24/7 toll-free number prominently in help.
+
+— C.
+
+(sent from mobile, forgive typos)

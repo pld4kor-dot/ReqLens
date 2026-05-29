@@ -1,0 +1,1394 @@
+{
+  "id": "PURE_2002 - evla corr",
+  "origin": "PURE",
+  "created_at": "2026-05-23T11:27:25.349145+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Kickoff Interview on EVLA Correlator Control System Requirements",
+      "text": "Alice [Project Scientist]: So, to start off, we really need the system to handle all the correlator configuration and real-time monitoring and control. It's crucial that it also supports hardware testing and servicing. Bob [Software Developer]: Right, so we're talking about a system that not only configures the correlator but also provides interfaces for hardware diagnostics? Alice [Project Scientist]: Exactly. And it should fit seamlessly into the overall EVLA Monitor and Control infrastructure. Carol [System Administrator]: When you say 'fit seamlessly,' do you mean it has to follow existing network protocols and standards? Alice [Project Scientist]: Yes, it must integrate fully with the EVLA M&C environment. Also, we want it to modularize the correlator system, so it's easier to manage within the EVLA setup. Bob [Software Developer]: That suggests we need some abstraction layer to separate correlator-specific functions from the rest of the system. Alice [Project Scientist]: Precisely. And for the interface, we want a Virtual Correlator Interface, or VCI, acting as a software gateway on the Master Correlator Control Computer, or MCCC. Dave [Hardware Engineer]: So the MCCC will translate those commands into hardware setup instructions? Alice [Project Scientist]: Yes, the VCI should translate configuration commands from the EVLA M&C system into specific hardware configuration tables. Carol [System Administrator]: What about the network architecture? Any preferences? Dave [Hardware Engineer]: We plan to implement a master-slave network. One master computer will coordinate multiple slave processors that handle the correlator hardware directly. Bob [Software Developer]: So the master handles most of the monitor/control interface with external systems, and slaves manage real-time computing for hardware control? Dave [Hardware Engineer]: Exactly. This separation will help with serviceability and programmability because the correlator hardware will be isolated from the EVLA M&C environment. Carol [System Administrator]: Isolation is good for security and maintenance. Speaking of which, do we need redundancy? Alice [Project Scientist]: Absolutely. Critical areas must be redundant to ensure high availability. Also, the system should be highly modular to facilitate maintenance. Bob [Software Developer]: For monitoring, the correlator monitor subsystem should provide system-wide access to all correlator states, including the M&C supervisor state. Alice [Project Scientist]: Yes, and some information must be available on a time-synchronous basis for other systems like the backend and archives, while other data can be provided on request. Carol [System Administrator]: Access to information will be limited by hardware, bandwidth, and security policies, right? Alice [Project Scientist]: Correct. Also, error and status messages need to be concise, time- and location-referenced, and controllable in content when reported to upper system levels. Dave [Hardware Engineer]: Regarding hardware control, the system should accept correlator configurations from EVLA M&C, translate them into goal-oriented hardware tables, and support a GUI for human operators using the same data structures. Bob [Software Developer]: That means the VCI will have both software and GUI interfaces for configuration. Alice [Project Scientist]: Exactly. And the system must provide specific data sets to the Backend Data Processing System over a secondary virtual network, ensuring timely and robust delivery. Carol [System Administrator]: What happens if the network connection to EVLA M&C is lost temporarily? Dave [Hardware Engineer]: The system will spool ancillary monitor data, including health and error messages, to prevent data loss during outages. Bob [Software Developer]: Also, data sample rates and contents should be fully controllable either via EVLA M&C or the backend processing controller. Alice [Project Scientist]: Right. And the system should automatically attempt recovery from hardware failures or hot-swapped devices. Dave [Hardware Engineer]: If a Correlator Monitor Interface Board (CMIB) fails and doesn't respond to reboot or self-healing, the system must alert for hardware repair and try to restart and reconfigure it automatically. Carol [System Administrator]: For system health, the MCCC will be monitored by internal watchdogs and external systems like the Correlator Power Control Computer (CPCC). Bob [Software Developer]: And if the MCCC fails beyond recovery, the backup MCCC should be activated automatically via CPCC or by human intervention. Alice [Project Scientist]: Both primary and secondary MCCC systems must maintain full CMCS state information so that communication can reroute to the backup if needed. Carol [System Administrator]: What about maintenance? We need tools to inspect and monitor individual CMIB devices remotely and trace faults to specific hot-swappable subsystems. Dave [Hardware Engineer]: Also, twisted pair copper cabling will be used unless noise or physical layout requires fiber optic or other low-RFI materials, especially for shielded room penetrations. Bob [Software Developer]: To reduce wiring complexity, network switches will be employed within correlator racks. Carol [System Administrator]: And at the MCCC interface level, routers and switches will help protect against unauthorized access and irrelevant traffic. Alice [Project Scientist]: The CMIBs should have unique IP addresses formed from a 16-bit identifier read from the host board, allowing IP addressing to carry over for hot-swap modules. Dave [Hardware Engineer]: For physical status, there should be visible indicators on the CMIB showing green for normal operation and red for faults. Bob [Software Developer]: The hardware platform should have at least 64 MB SDRAM, IDE hard disk interface, serial and parallel ports, support PCI and ISA buses, and a 100BaseT network interface. Carol [System Administrator]: The system will boot and run a commercial off-the-shelf OS in a near real-time environment from local storage, supporting real-time control, diagnostics, standalone test bench operation, and remote upgrades of hardware PLD/FPGA personalities. Alice [Project Scientist]: Multiple Ethernet interfaces and server/host services will be supported. The system should be a high-availability general-purpose computer, possibly hot-swappable or redundant, with self-healing capabilities where possible. Dave [Hardware Engineer]: It must accept many external hardware status signals directly or through interfaces. Carol [System Administrator]: The system should have local disk and file system facilities to boot and run standalone, allowing power monitoring and control during M&C network failures. Bob [Software Developer]: All messages between CMCS layers will include UTC and wall clock timestamps, with error messages stamped at discovery time and control messages at generation time. Alice [Project Scientist]: Authorized users should have full access to all messaging, monitoring, and control traffic for testing, debugging, or offline control. Carol [System Administrator]: The system will detect processor hardware failures, OS hangs, temperature or voltage deviations, performance below specs, error rates above limits, and internal communication failures. Dave [Hardware Engineer]: It will also detect external communication disruptions with EVLA M&C and report abnormal conditions. Bob [Software Developer]: The system should automatically take corrective actions to mitigate detected issues. Alice [Project Scientist]: Security is critical. Unauthorized users must be prevented from accessing the system. Only software and hardware development, testing, maintenance, and operations personnel should be authorized. Carol [System Administrator]: Users will be uniquely identified by username and password, with authentication and authorization before access is granted. Bob [Software Developer]: Access attempts will be logged for audit purposes. Systems operations personnel will have unrestricted access and can grant or revoke privileges per user. Alice [Project Scientist]: Development, testing, and maintenance staff will have restricted access appropriate to their job needs. Carol [System Administrator]: Specifications and configuration information must be readily available. Dave [Hardware Engineer]: The system will receive configuration info from EVLA M&C and translate it into physical hardware setups, processing and transferring dynamic control and monitor data. Bob [Software Developer]: It will monitor correlator health and autonomously recover from faults where possible. Alice [Project Scientist]: Limited real-time data processing and probing will be supported, including tools to collect and display auto-correlation products. Carol [System Administrator]: The system should allow easy access to aid testing and debugging without affecting hardware or software interfaces. Dave [Hardware Engineer]: That covers the main points. Any questions? Bob [Software Developer]: Just to confirm, the master computer handles most external monitor/control interfaces, and slaves handle real-time computing for hardware under their control? Alice [Project Scientist]: Yes, that's correct. Carol [System Administrator]: And isolation of correlator hardware from EVLA M&C environment is to ease serviceability and programmability? Alice [Project Scientist]: Exactly. Thanks everyone for the input. We'll document these points for the requirements specification."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "EVLA Correlator Control System Design Meeting",
+      "text": "Meeting Purpose: Discuss design considerations and integration for the EVLA Correlator Control System\nDate: February 12, 2025\nAttendees: Emily (Systems Operations), Frank (Hardware Maintenance), Gina (Software Development), Henry (Network Architect), Irene (Security Specialist)\n\nSummary:\n- Emily emphasized the need for continuous correlator operation to avoid data loss.\n- Gina outlined the requirement for a Virtual Correlator Interface (VCI) to support both software and GUI-based configuration.\n- Henry discussed the master-slave network architecture with one master computer coordinating multiple slave processors handling real-time hardware control.\n- Irene stressed strict user authentication and role-based access control to secure system functions.\n- Frank highlighted modularity and hot-swappable hardware modules to facilitate maintenance and fault recovery.\n\nKey Points:\n- Integration:\n  * The system must integrate within the overall EVLA Monitor and Control infrastructure.\n  * Network interfaces should be separated to ensure isolation between system components.\n- Network and Cabling:\n  * Twisted pair copper cables will be used unless RFI or physical layout requires fiber optic.\n  * Network switches will be employed inside correlator racks to reduce wiring complexity.\n  * Routers and switches at the MCCC interface will protect against unauthorized access and irrelevant traffic.\n- Redundancy and Availability:\n  * Critical areas require redundancy.\n  * Backup MCCC systems must be available and activated automatically or manually upon primary failure.\n- Monitoring and Control:\n  * Correlator monitor subsystem must provide system-wide access to all correlator states.\n  * Some data must be time-synchronous for backend and archive systems; other data on request.\n  * Error and status messages should be concise, time- and location-stamped, and controllable in content.\n  * The system will spool ancillary monitor data during network outages to prevent data loss.\n- Hardware and Software:\n  * CMIB devices will have unique IP addresses derived from a 16-bit identifier.\n  * Physical indicators on CMIBs will show operational status (green for OK, red for fault).\n  * Hardware specs include at least 64 MB SDRAM, IDE hard disk, serial and parallel interfaces, PCI/ISA bus support, and 100BaseT network.\n  * The system will run a COTS OS in a near real-time environment from local storage.\n  * Multiple Ethernet interfaces and server services will be supported.\n- Fault Detection and Recovery:\n  * The system will detect hardware failures, OS crashes, performance issues, and communication failures.\n  * Automatic corrective actions and self-healing where possible.\n  * Alerts issued if CMIB subsystems fail to recover.\n- Security:\n  * Access restricted to authorized personnel (software/hardware dev, testing, maintenance, operations).\n  * Unique user identification via username/password.\n  * Authentication and authorization required before access.\n  * All access attempts logged.\n  * Systems operations personnel have unrestricted access and can manage user privileges.\n- Maintenance:\n  * Remote inspection and fault tracing tools for CMIB layer devices.\n  * Support for hot-swappable modules.\n\nDecisions Made:\n1. Adopt master-slave network architecture with master handling external interfaces.\n2. Use twisted pair copper cabling by default; fiber optics for shielded room penetration.\n3. Implement VCI as software gateway on MCCC with GUI and software interfaces.\n4. Enforce strict security policies with role-based access and logging.\n5. Deploy network switches and routers for traffic management and security.\n\nAction Items:\n- Gina to draft detailed VCI interface specifications.\n- Henry to design network topology ensuring isolation and redundancy.\n- Irene to develop user authentication and authorization framework.\n- Frank to prepare hardware modularity and hot-swap procedures.\n\nOpen Questions:\n- How to best handle real-time data processing requirements on slave processors?\n- What are the exact performance thresholds for fault detection and recovery?\n- Should the system support additional external data feeds beyond models and time standards?\n\nNext Meeting: March 5, 2025, to review progress on action items and address open questions."
+    },
+    {
+      "type": "email_thread",
+      "title": "Clarifications and Finalization of EVLA Correlator Control System Requirements",
+      "text": "Email 1:\nFrom: Laura (Software Developer)\nTo: Mike (Project Scientist)\nSubject: Clarification on Correlator Control System Integration\n\nHi Mike,\n\nI'm reviewing the correlator control system specs and want to confirm the integration requirements. Should the system be fully embedded within the EVLA Monitor and Control infrastructure, or is some level of isolation preferred? Also, are there specific protocols or standards we must adhere to?\n\nThanks,\nLaura\n\n---\n\nEmail 2:\nFrom: Mike (Project Scientist)\nTo: Laura (Software Developer), Team\nSubject: RE: Clarification on Correlator Control System Integration\n\nHi Laura,\n\nGood questions. The system must integrate fully within the EVLA M&C infrastructure but maintain isolation of the correlator hardware to ease programmability and maintenance. We expect adherence to IEEE 802.3 Ethernet standards at 100 Mbits/sec or better. Network interfaces should be separated to ensure isolation between components.\n\nBest,\nMike\n\n---\n\nEmail 3:\nFrom: Sarah (Security Specialist)\nTo: Mike (Project Scientist), Laura (Software Developer)\nSubject: Security Concerns for Correlator Control System\n\nHi all,\n\nI want to highlight the importance of strict user authentication and authorization. We must prevent unauthorized access entirely and log all access attempts. Also, role-based access control is essential, with operations personnel having full privileges and other users restricted as appropriate.\n\nIs there a plan for how to implement this securely?\n\nRegards,\nSarah\n\n---\n\nEmail 4:\nFrom: Mike (Project Scientist)\nTo: Sarah (Security Specialist), Laura (Software Developer)\nSubject: RE: Security Concerns for Correlator Control System\n\nHi Sarah,\n\nYes, the system will uniquely identify users via username and password. Authentication and authorization will be enforced before granting any access. All attempts, successful or not, will be logged for auditing. Operations personnel will have unrestricted access and can manage user privileges.\n\nThanks for emphasizing this.\n\nMike\n\n---\n\nEmail 5:\nFrom: Laura (Software Developer)\nTo: Mike (Project Scientist), Sarah (Security Specialist), Team\nSubject: Data Handling and Fault Recovery Questions\n\nHi team,\n\nRegarding data handling, can the system spool monitor data during network outages to prevent loss? Also, how should the system respond if a CMIB subsystem fails and doesn't recover after reboot attempts?\n\nThanks,\nLaura\n\n---\n\nEmail 6:\nFrom: Mike (Project Scientist)\nTo: Laura (Software Developer), Sarah (Security Specialist), Team\nSubject: RE: Data Handling and Fault Recovery Questions\n\nHi Laura,\n\nYes, the system must spool ancillary monitor data including system health, error messages, and configuration echoes during temporary network communication loss. If a CMIB subsystem fails and does not respond to reboot or self-heal attempts, the system must issue an alert for hardware repair and automatically restart and reconfigure the subsystem.\n\nBest,\nMike"
+    }
+  ],
+  "gold_requirements": [
+    {
+      "id": "PURE_2002 - evla corr_R001",
+      "text": "The system shall provide correlator configuration, real-time monitor/control, and hardware testing/servicing.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "2.1 Product Perspective"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R002",
+      "text": "The system shall integrate as part of the overall EVLA Monitor and Control Structure.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "2.1 Product Perspective"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R003",
+      "text": "The system shall provide a level of abstraction to modularize the correlator system within the EVLA environment.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": "section",
+      "source_region": "2.1 Product Perspective"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R004",
+      "text": "The system shall provide the Virtual Correlator Interface (VCI) as a software gateway to the correlator on the MCCC and implement the translation interface as the VCI.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "2.1 Product Perspective; 2.2.2 Control"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R005",
+      "text": "The system shall implement a Master/Slave network with one master computer coordinating multiple intelligent hardware control processors as slaves.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "2.1 Product Perspective"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R006",
+      "text": "The master shall handle the majority of the monitor/control interface with the outside world.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "section",
+      "source_region": "2.1 Product Perspective"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R007",
+      "text": "The slave processors shall manage the correlator hardware systems under their direct control and handle real-time computing requirements.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "section",
+      "source_region": "2.1 Product Perspective"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R008",
+      "text": "The system shall isolate the correlator hardware from the EVLA Monitor and Control environment to ease serviceability and programmability.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": "section",
+      "source_region": "2.1 Product Perspective"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R009",
+      "text": "The system shall be redundant in critical areas.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": "section",
+      "source_region": "2.1 Product Perspective"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R010",
+      "text": "The system shall be highly modular.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": "section",
+      "source_region": "2.1 Product Perspective"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R011",
+      "text": "The Correlator monitor subsystem shall provide EVLA system-wide access to all correlator system states including the M&C supervisor system state.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "2.2.1 Monitoring"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R012",
+      "text": "The Correlator monitor subsystem shall provide some information on a time synchronous basis as required by other systems such as back end, monitor archive, and data archive, and provide other information on a request basis.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "section",
+      "source_region": "2.2.1 Monitoring"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R013",
+      "text": "The Correlator monitor subsystem shall be fully observable with information access limited only by hardware, bandwidth, and security restrictions.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "security",
+      "source_strategy": "section",
+      "source_region": "2.2.1 Monitoring"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R014",
+      "text": "The Correlator monitor subsystem shall provide error and status messages in a concise time and location referenced format to upper system levels and in a content controllable manner.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "section",
+      "source_region": "2.2.1 Monitoring"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R015",
+      "text": "The system shall receive correlator configurations and control instructions from the EVLA M&C system in a form suitable for translation by the MCCC and translate received configurations into specific goal-oriented hardware configuration tables to satisfy the configuration requested by the EVLA M&C.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "2.2.2 Control"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R016",
+      "text": "The system shall provide a second interface with a human GUI to allow configuration of the correlator hardware using the same table structures as those used for the translation of correlator configurations.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "section",
+      "source_region": "2.2.2 Control"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R017",
+      "text": "The system shall provide specific data sets required by the Backend Data Processing System over a secondary virtual network in a timely and robust fashion.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "section",
+      "source_region": "2.2.3 Data Output"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R018",
+      "text": "The system shall spool ancillary monitor data including system health, error messages, and configuration echoes to prevent loss of monitor data during temporary network communication loss with the EVLA M&C network.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": "section",
+      "source_region": "2.2.3 Data Output"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R019",
+      "text": "The system shall allow full control of data sample rates and contents via either the EVLA M&C or the Backend processing controller.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "section",
+      "source_region": "2.2.3 Data Output"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R020",
+      "text": "The system shall attempt recovery from failure or hot-swapped hardware devices.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": "section",
+      "source_region": "2.2.5 Recovery"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R021",
+      "text": "The system shall issue an alert notice if a CMIB subsystem fails and does not respond to reboot requests or other self-heal attempts.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": "section",
+      "source_region": "2.2.5 Recovery"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R022",
+      "text": "The system shall automatically restart and reconfigure the CMIB subsystem back into the current operational environment after failure recovery attempts.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "availability",
+      "source_strategy": "section",
+      "source_region": "2.2.5 Recovery"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R023",
+      "text": "The system shall monitor MCCC health using internal software watchdog processes and external systems (the CPCC).",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": "section",
+      "source_region": "2.2.5 Recovery"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R024",
+      "text": "The system shall automatically activate the backup MCCC system via the CPCC upon a non-recoverable MCCC system failure and allow external human intervention to activate the backup MCCC system upon such failure.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "availability",
+      "source_strategy": "section",
+      "source_region": "2.2.5 Recovery"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R025",
+      "text": "The system shall maintain full CMCS state information in both primary and secondary MCCC systems to enable rerouting of M&C communications to the secondary system upon primary node failure.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "availability",
+      "source_strategy": "section",
+      "source_region": "2.2.5 Recovery"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R026",
+      "text": "The system shall monitor CPCC health using watchdog processes and the MCCC.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": "section",
+      "source_region": "2.2.5 Recovery"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R027",
+      "text": "The system shall enable engineers and technicians to perform corrective and preventive maintenance and periodic performance tests and upgrades.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": "section",
+      "source_region": "2.3.2 Engineers and Technicians"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R028",
+      "text": "The system shall provide tools to inspect and monitor individual CMIB layer devices from remote locations and provide the ability to fault trace to a specific hot-swappable subsystem.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": "section",
+      "source_region": "2.3.2 Engineers and Technicians"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R029",
+      "text": "The system shall use twisted pair copper for the interface unless other materials are required due to noise (RFI), ground isolation, or physical layout constraints such as long distances.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "reliability",
+      "source_strategy": "section",
+      "source_region": "3.1.1.2 Network Topology"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R030",
+      "text": "The system shall employ network switches to distribute traffic within a correlator rack and significantly reduce overall network wiring complexity.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.1.1.3 Network Distribution"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R031",
+      "text": "The system shall use fiber optic or other low RFI material for pathways penetrating the correlator shielded room to meet RFI specifications.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "performance",
+      "source_strategy": "section",
+      "source_region": "3.1.2.2 Network Topology"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R032",
+      "text": "The system shall employ network routers and switches at the MCCC EVLA M&C interface level or higher to protect the MCCC from unauthorized access and irrelevant network traffic.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": "section",
+      "source_region": "3.1.2.3 Security"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R033",
+      "text": "The CMIB shall read a 16-bit identifier from the host correlator board and use it to form a unique IP address for CMIB network addressing, allowing carry over of IP addressing for hot swap modules.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.1.3.2 Hardware identification"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R034",
+      "text": "The system shall have an externally visible indicator that provides a physical indication of CMIB operational status, displaying a red indicator to signal a CMIB fault status and a green indicator to signal correct operation.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "section",
+      "source_region": "3.1.3.5 Hardware Visual Health Monitoring"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R035",
+      "text": "The system shall contain 64 Mbytes or greater of SDRAM and include an IDE hard disk interface, a minimum of one serial and one parallel interface, support PCI and ISA buses, and include a 100BaseT network interface.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.2.2.2 Module Features"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R036",
+      "text": "The system shall have the capacity to boot and run a generic COTS operating system in a near real-time environment from local non-volatile storage, supporting the real-time requirements of the correlator hardware, hardware monitor, control, diagnostics, standalone test bench operation with simulated control data generation, and the ability to access and upgrade correlator hardware PLD/FPGA personalities through its network connection.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "section",
+      "source_region": "3.2.2.3 Operating System"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R037",
+      "text": "The system shall support multiple Ethernet interfaces, COTS operating systems, and server/host services for the CMIB operating system.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.2.3.1 Form Factor"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R038",
+      "text": "The system shall be a high availability type general-purpose computer, may exist as a hot swappable or redundant CPU device, and be capable of self-healing where possible.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": "section",
+      "source_region": "3.2.3.1 Form Factor"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R039",
+      "text": "The system shall support a COTS operating system and accept a large number of external hardware status signals either directly or through external interface hardware.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.2.4.1 Form Factor"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R040",
+      "text": "The system shall have all required disk and file system facilities installed locally to enable booting and running in a stand-alone configuration and allow correlator power monitoring and control to continue during an M&C network failure.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "availability",
+      "source_strategy": "section",
+      "source_region": "3.2.4.2 System Isolation"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R041",
+      "text": "The system shall include both UTC and wall clock time stamp information in all messages passed between CMCS system layers, stamp error messages with their discovery time, stamp control messages with their generation time, and allow other message internal time stamps to be used as monitor/control parameters as necessary.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.3.2.3 Time Stamps"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R042",
+      "text": "The system shall provide software that allows an authorized user full access to all messaging, monitor, and control traffic throughout the CMCS and enables full system access for testing, debugging, and control while the correlator is offline or under the control of the EVLA M&C system.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "security",
+      "source_strategy": "section",
+      "source_region": "3.3.2.4 Test Software"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R043",
+      "text": "The CMCS shall detect processor hardware failures, operating system hangs or crashes, temperature or voltage deviations, computational performance below minimum specifications, computational error rates above maximum specification, and internal communications failures.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": "section",
+      "source_region": "3.4.1 Auto-correction"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R044",
+      "text": "The CMCS shall detect external communications disruptions with the EVLA M&C.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "availability",
+      "source_strategy": "section",
+      "source_region": "3.4.1 Auto -correction – the CMCS shall be self -monitoring.  It will be capable"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R045",
+      "text": "The CMCS shall report on detected abnormal conditions.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "other",
+      "source_strategy": "section",
+      "source_region": "3.4.1 Auto -correction – the CMCS shall be self -monitoring.  It will be capable"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R046",
+      "text": "The CMCS shall automatically take action to remedy or lessen the impact of detected abnormal conditions.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": "section",
+      "source_region": "3.4.1 Auto -correction – the CMCS shall be self -monitoring.  It will be capable"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R047",
+      "text": "The system shall accomplish the functionality described in section 3.7.1 seamlessly without affecting hardware modules or software functionality at interfaces.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "section",
+      "source_region": "3.7.3 Seamlessness – 3.7.1, above, shall be accomplished in a manner that is"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R048",
+      "text": "The system shall prevent unauthorized users from accessing the CMCS.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "security",
+      "source_strategy": "section",
+      "source_region": "3.8 Security"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R049",
+      "text": "The system shall restrict authorized users to software and hardware development, testing, maintenance, and operations personnel.",
+      "raw_label": null,
+      "requirement_kind": "business_rule",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.8 Security"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R050",
+      "text": "The system shall uniquely identify all users via a username and password scheme.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "security",
+      "source_strategy": "section",
+      "source_region": "3.8 Security"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R051",
+      "text": "The system shall authenticate and authorize users before granting access to the system or restricted parts of the system.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "security",
+      "source_strategy": "section",
+      "source_region": "3.8 Security"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R052",
+      "text": "The system shall deny access to users who cannot be identified.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "security",
+      "source_strategy": "section",
+      "source_region": "3.8 Security"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R053",
+      "text": "The system shall log all attempts to access the system to monitor past access.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "security",
+      "source_strategy": "section",
+      "source_region": "3.8 Security"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R054",
+      "text": "The system shall grant systems operations personnel unrestricted access to all aspects of the system.",
+      "raw_label": null,
+      "requirement_kind": "business_rule",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.8 Security"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R055",
+      "text": "The system shall allow systems operations personnel to grant and revoke privileges on a per-user basis.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "security",
+      "source_strategy": "section",
+      "source_region": "3.8 Security"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R056",
+      "text": "The system shall provide access levels that allow development, testing, and maintenance personnel to have restricted access based on their job needs.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "security",
+      "source_strategy": "section",
+      "source_region": "3.8 Security"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R057",
+      "text": "The system shall ensure that specifications and configuration information are readily available.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": "section",
+      "source_region": "3.10.1 Hardware – complete and comprehensible hardware systems"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R058",
+      "text": "The system shall receive configuration information from the EVLA M&C system and translate it into a physical correlator hardware configuration.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R059",
+      "text": "The system shall process and transfer dynamic control data and monitor data.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R060",
+      "text": "The system shall monitor correlator and correlator subsystem health and take autonomous corrective action where possible to recover from hardware and computing system faults.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R061",
+      "text": "The system shall perform limited real-time data processing and probing, including tools to collect and display auto correlation products.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R062",
+      "text": "The system shall allow easy access to aid testing and debugging.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R063",
+      "text": "The master computer shall handle the bulk of the monitor/control interface with the outside world.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R064",
+      "text": "The slave processors shall handle real-time computing requirements related to the correlator hardware under their direct control.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R065",
+      "text": "The system shall isolate the correlator hardware from the EVLA M&C environment to ease serviceability and programmability.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R066",
+      "text": "The system shall be redundant in critical areas and highly modular.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R067",
+      "text": "The correlator monitor subsystem shall provide EVLA system-wide access to all correlator system states.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R068",
+      "text": "The system shall provide some information on a time synchronous basis as required by other systems and other information on a request basis.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R069",
+      "text": "The system shall be fully observable with information access limited only by hardware, bandwidth, or security restrictions.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R070",
+      "text": "The system shall provide error and status messages in a concise time/location referenced format to upper system levels in a content controllable manner.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R071",
+      "text": "The system shall translate control instructions into specific goal-oriented hardware configuration tables to satisfy the requested configuration.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R072",
+      "text": "The system shall provide a Virtual Correlator Interface (VCI) to allow configuration of the correlator hardware through human GUI and software interfaces.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R073",
+      "text": "The system shall provide specific data sets required by the Backend Data Processing System in a timely and robust fashion over a secondary virtual network.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R074",
+      "text": "The system shall spool ancillary monitor data to prevent loss of monitor data during temporary network communication loss with the EVLA M&C network.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "availability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R075",
+      "text": "The system shall allow data sample rates and contents to be fully controllable via the EVLA M&C or Backend processing controller.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R076",
+      "text": "The MCCC shall accept external data feeds for models, time standards, fiber-link phase corrections, and other required data to be packaged with control data delivered to the correlator hardware.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R077",
+      "text": "If a CMIB subsystem fails and does not respond to reboot or self-heal attempts, the system shall issue an alert notice for hardware repair and automatically restart and reconfigure the subsystem.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "availability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R078",
+      "text": "The MCCC health shall be monitored by internal software watchdog processes and external systems such as the CPCC.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R079",
+      "text": "Upon non-recoverable MCCC system failure, the backup MCCC system shall be activated automatically via the CPCC or external human intervention.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "availability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2002 - evla corr_R080",
+      "text": "Both primary and secondary MCCC systems shall maintain full CMCS state information to allow correction of hard failures by rerouting M&C communications to the secondary.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "availability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    }
+  ],
+  "validation": {
+    "coverage_rate": 0.0,
+    "missing_req_ids": [
+      "PURE_2002 - evla corr_R001",
+      "PURE_2002 - evla corr_R002",
+      "PURE_2002 - evla corr_R003",
+      "PURE_2002 - evla corr_R004",
+      "PURE_2002 - evla corr_R005",
+      "PURE_2002 - evla corr_R006",
+      "PURE_2002 - evla corr_R007",
+      "PURE_2002 - evla corr_R008",
+      "PURE_2002 - evla corr_R009",
+      "PURE_2002 - evla corr_R010",
+      "PURE_2002 - evla corr_R011",
+      "PURE_2002 - evla corr_R012",
+      "PURE_2002 - evla corr_R013",
+      "PURE_2002 - evla corr_R014",
+      "PURE_2002 - evla corr_R015",
+      "PURE_2002 - evla corr_R016",
+      "PURE_2002 - evla corr_R017",
+      "PURE_2002 - evla corr_R018",
+      "PURE_2002 - evla corr_R019",
+      "PURE_2002 - evla corr_R020",
+      "PURE_2002 - evla corr_R021",
+      "PURE_2002 - evla corr_R022",
+      "PURE_2002 - evla corr_R023",
+      "PURE_2002 - evla corr_R024",
+      "PURE_2002 - evla corr_R025",
+      "PURE_2002 - evla corr_R026",
+      "PURE_2002 - evla corr_R027",
+      "PURE_2002 - evla corr_R028",
+      "PURE_2002 - evla corr_R029",
+      "PURE_2002 - evla corr_R030",
+      "PURE_2002 - evla corr_R031",
+      "PURE_2002 - evla corr_R032",
+      "PURE_2002 - evla corr_R033",
+      "PURE_2002 - evla corr_R034",
+      "PURE_2002 - evla corr_R035",
+      "PURE_2002 - evla corr_R036",
+      "PURE_2002 - evla corr_R037",
+      "PURE_2002 - evla corr_R038",
+      "PURE_2002 - evla corr_R039",
+      "PURE_2002 - evla corr_R040",
+      "PURE_2002 - evla corr_R041",
+      "PURE_2002 - evla corr_R042",
+      "PURE_2002 - evla corr_R043",
+      "PURE_2002 - evla corr_R044",
+      "PURE_2002 - evla corr_R045",
+      "PURE_2002 - evla corr_R046",
+      "PURE_2002 - evla corr_R047",
+      "PURE_2002 - evla corr_R048",
+      "PURE_2002 - evla corr_R049",
+      "PURE_2002 - evla corr_R050",
+      "PURE_2002 - evla corr_R051",
+      "PURE_2002 - evla corr_R052",
+      "PURE_2002 - evla corr_R053",
+      "PURE_2002 - evla corr_R054",
+      "PURE_2002 - evla corr_R055",
+      "PURE_2002 - evla corr_R056",
+      "PURE_2002 - evla corr_R057",
+      "PURE_2002 - evla corr_R058",
+      "PURE_2002 - evla corr_R059",
+      "PURE_2002 - evla corr_R060",
+      "PURE_2002 - evla corr_R061",
+      "PURE_2002 - evla corr_R062",
+      "PURE_2002 - evla corr_R063",
+      "PURE_2002 - evla corr_R064",
+      "PURE_2002 - evla corr_R065",
+      "PURE_2002 - evla corr_R066",
+      "PURE_2002 - evla corr_R067",
+      "PURE_2002 - evla corr_R068",
+      "PURE_2002 - evla corr_R069",
+      "PURE_2002 - evla corr_R070",
+      "PURE_2002 - evla corr_R071",
+      "PURE_2002 - evla corr_R072",
+      "PURE_2002 - evla corr_R073",
+      "PURE_2002 - evla corr_R074",
+      "PURE_2002 - evla corr_R075",
+      "PURE_2002 - evla corr_R076",
+      "PURE_2002 - evla corr_R077",
+      "PURE_2002 - evla corr_R078",
+      "PURE_2002 - evla corr_R079",
+      "PURE_2002 - evla corr_R080"
+    ],
+    "unsupported_count": 0,
+    "repair_rounds_used": 1,
+    "coverage_entries": [
+      {
+        "req_id": "PURE_2002 - evla corr_R001",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R002",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R003",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R004",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R005",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R006",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R007",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R008",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R009",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R010",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R011",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R012",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R013",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R014",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R015",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R016",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R017",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R018",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R019",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R020",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R021",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R022",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R023",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R024",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R025",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R026",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R027",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R028",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R029",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R030",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R031",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R032",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R033",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R034",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R035",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R036",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R037",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R038",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R039",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R040",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R041",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R042",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R043",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R044",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R045",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R046",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R047",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R048",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R049",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R050",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R051",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R052",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R053",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R054",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R055",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R056",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R057",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R058",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R059",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R060",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R061",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R062",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R063",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R064",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R065",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R066",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R067",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R068",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R069",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R070",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R071",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R072",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R073",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R074",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R075",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R076",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R077",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R078",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R079",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      },
+      {
+        "req_id": "PURE_2002 - evla corr_R080",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "LLM validation failed"
+      }
+    ],
+    "unsupported_implied": [],
+    "passed": false
+  },
+  "brief": {
+    "project_name": "EVLA Correlator Control",
+    "domain": "radio astronomy instrumentation",
+    "users": [
+      "array operator",
+      "software developer",
+      "system administrator",
+      "authorized web user"
+    ],
+    "stakeholders": [
+      "EVLA project scientists and engineers",
+      "systems operations personnel",
+      "hardware and software maintenance teams"
+    ],
+    "business_goals": [
+      "Ensure reliable and continuous correlator operation to prevent astronomical data loss",
+      "Provide comprehensive monitoring and control interfaces for correlator configuration and health",
+      "Enable remote troubleshooting and maintenance to minimize downtime",
+      "Maintain secure and role-based access to system functions"
+    ],
+    "core_features": [
+      "Translate EVLA M&C configuration commands into hardware setup and control correlator components",
+      "Implement a master-slave network architecture with real-time processing on slave processors",
+      "Provide a Virtual Correlator Interface (VCI) for software and GUI-based configuration and control",
+      "Deliver timely and robust data streams to backend processing and spool monitor data during network outages",
+      "Monitor subsystem health and autonomously recover from hardware and software faults where possible",
+      "Support remote inspection, fault tracing, and hot-swappable hardware modules",
+      "Include redundant communication paths and backup systems for high availability"
+    ],
+    "quality_concerns": [
+      "High availability and fault tolerance with self-healing capabilities",
+      "Security through strict user authentication, authorization, and access logging",
+      "Modularity and ease of serviceability to facilitate fault detection and repair",
+      "Performance meeting real-time control deadlines without data loss",
+      "Robust network isolation and protection from unauthorized or irrelevant traffic"
+    ],
+    "constraints": [
+      "Integration within the overall EVLA Monitor and Control infrastructure",
+      "Use of twisted pair copper or fiber optic cabling depending on RFI and physical layout requirements",
+      "Separation of network interfaces for different system components to ensure isolation",
+      "Compliance with IEEE 802.3 Ethernet standards at 100 Mbits/sec or better",
+      "Limited access to system information governed by hardware, bandwidth, and security policies"
+    ],
+    "terminology": [
+      "Correlator Monitor and Control System (CMCS)",
+      "Master Correlator Control Computer (MCCC)",
+      "Correlator Power Control Computer (CPCC)",
+      "Correlator Monitor Interface Board (CMIB)",
+      "Virtual Correlator Interface (VCI)",
+      "Real-time operations",
+      "Backend Data Processing System"
+    ]
+  },
+  "metadata": {
+    "file_path": "data/pure/2002 - evla corr.pdf",
+    "file_type": ".pdf",
+    "char_count": 36025,
+    "profile": {
+      "char_count": 36025,
+      "heading_density": 106,
+      "shall_count": 59,
+      "must_count": 1,
+      "will_count": 46,
+      "use_case_count": 0,
+      "stakeholder_count": 0,
+      "requirement_keyword_count": 28,
+      "structure_strength": "strong"
+    },
+    "section_count": 83,
+    "dense_sections": 29,
+    "gold_count": 80,
+    "section_candidates": 97,
+    "raw_candidates": 105,
+    "llm_usage": {
+      "total_calls": 154,
+      "total_input_tokens": 287193,
+      "total_output_tokens": 128268
+    }
+  }
+}

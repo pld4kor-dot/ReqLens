@@ -1,0 +1,151 @@
+TYPE  : meeting_notes
+TITLE : PHINTrace OM deep dive - entities beyond persons, restriction monitoring, and lab data
+UNIT  : PURE_2005 - phin
+============================================================
+
+Date: 2025-03-18
+Location: Teams call link tbd (audio cut out 2x)
+Attendees: 
+- Maya (Field Epi)
+- Tom (Contact Tracing Coord)
+- Elena (Lab Interface)
+- Raj (IT/SecOps)
+- Luis (Quarantine Officer)
+- Carla (Vocabulary Governance)
+- Ben (Data Architect)
+- Denise (Leadership)
+
+Notes (raw, fragmented):
+
+Scope today:
+- animal records, objects, conveyances, gatherings, other organisms
+- restriction monitoring (isolation/quarantine)
+- follow-up and progress for exposed/potentially exposed individuals
+- specimen and lab result capture (metadata, granularity)
+- inbound lab messaging and linkage to requests
+- mapping, data dictionaries, grouping observations by type
+- vocabularies (standard + configurable)
+- operational monitoring/alerts [?] and privacy/security considerations
+
+Animal data:
+- Need to create records for animals tied to investigations (zoonoses, vector-borne, etc.)
+- Required: species/type, age, gender (sex), owner name + address, color, weight
+- Use a Subject ID for animals too (distinct namespace?). Ben: We can prefix or use entity type to distinguish.
+- If tagged animals (ear tags, microchips etc.), record tag identifiers. Tom emphasized tag id is critical when multiple similar animals.
+- Optional: vaccination status [TBD], but we should avoid scope creep.
+- Luis asked if owner contact info same as person record: propose link to a person entity (owner) + store address snapshot.
+
+Object data:
+- Sometimes the vector is a product or a surface. Capture object name, type (device, food product, utensil, packaging), physical descriptors (size, color, material), associated address (warehouse, store, home), any identification numbers like serial numbers, invoice numbers.
+- Time stamps: date/time of invoice, shipping, packaging. Not all at once; store what we have.
+- Carla note: use consistent date fields; define a dictionary entry.
+- Ben: object type should be configurable list (food category etc.) but exchange mapping needed.
+
+Conveyances:
+- For conveyance entities: conveyance type (flight, train, bus, ship, rideshare). Capture route. If flight, store flight number and date.
+- Some pushback: Denise said do we legally store flight numbers? Raj: permitted if for public health investigation; ensure privacy guidance.
+- Tom: route details help trace exposures (e.g., specific bus line at specific time window). We need to connect persons to conveyance events.
+
+Gatherings:
+- For public/private gatherings (weddings, conferences, worship services, work shifts): capture at minimum time, location, nature of event.
+- Add optional fields: headcount estimate, indoor/outdoor flag [TBD], mask policy [NOT decided yet]. Keep basic required minimal.
+- Elena: link exposure records to gatherings to support later review of connections.
+
+Other living things:
+- Sometimes we log organisms that are not human or animal in the pet sense (e.g., vectors, environmental organism presence). Need a general entity for other living things with a type field (plant, insect, etc.).
+- Must allow users to define custom data collection questions for such entities. Example: for mosquito pools, fields like larval stage count. Do not hardcode; use the questionnaire tool with custom prompts.
+- Carla asks for rules on governance of custom questions. Action: Carla to propose governance doc. [Action]
+
+Travel history:
+- Capture an entity's travel relevant to investigation, but this overlaps with conveyance. Decision: travel history as an activity linked to person with route details; conveyance as an entity when the conveyance is itself modeled (e.g., airline flight). Both allowed.
+- Fields: dates, origin, destination, intermediate stops; free-text notes; tie to gathering if travel was to event.
+
+Agent data:
+- Track suspected agent (pathogen/toxin) for the investigation. Start as unknown, updated later.
+- Use standard vocabularies (SNOMED concepts for organisms) when possible; include local code mapping where necessary.
+
+Restriction monitoring and follow-up:
+- Need to capture data for isolation and quarantine monitoring.
+- Subjects (cases and contacts) may be placed under isolation or quarantine. Store start date, end date, instructions, check-in cadence.
+- Periodic checks: logs of phone calls, in-person visits, telehealth, subject-provided updates (via portal or phone line) and proxy-reported updates.
+- Track compliance status and notes. Do not implement punitive mechanisms; just record.
+- Integration with follow-up examinations (e.g., after prophylaxis) also logged. The requirement is to support monitoring and follow-up collection to track progress and treatment of those exposed or potentially exposed.
+- Luis: we should be able to filter who missed last check. Raj: operational alerts belong to separate monitoring; can display but not commit to automated enforcement. [Open debate]
+- Carla: ensure we can later aggregate counts of persons under isolation/quarantine for reporting; not necessarily part of this item but relevant to dashboards.
+
+Questionnaire designer reuse:
+- For other living things and for specific events, add custom questions; reuse common data elements for person demographics.
+- Accept digital signatures on electronic questionnaires; capture signature data with timestamp.
+- Structured input and validation for common fields to maintain data integrity, with custom agent-specific fields supported.
+
+Specimen and sample collection:
+- Capture clinical and environmental specimen collection info. Storage of collection date, collector, site, and assign a barcode at collection time.
+- Support barcoding: scanning in the field, mobile app or handheld scanners (Luis notes bluetooth scanners in use). Barcode must map to Specimen ID.
+- Specimen ID must be unique; if a later lab result comes in, link via this ID. If no collection record exists (e.g., external lab), fallback link to subject by Subject ID. Elena: call this the linkage rule. [Action: document this clearly]
+- For environmental samples, may be linked to locations or objects, not just persons. But still use Specimen ID.
+
+Laboratory results and metadata:
+- Store lab result records and associated metadata: Specimen ID (if available), Subject ID, test date and time, test type (use LOINC if available), result value (coded when applicable, preferably SNOMED), unit of measure, overall interpretation. Store free-text notes.
+- Multiple granularity: specimen-level and assay-level details. Some assays have components; we should support multiple results per specimen. Ben: model supports a parent specimen result with child analytes.
+- Interpretations: positive/negative/inconclusive with supporting details.
+
+Inbound lab messages:
+- Receive, parse, process inbound lab result messages. Link results to the corresponding test requests (orders) and to the subject (patient) named in the request. Elena: we need to map the OBR/OBX segments to our results model. Raj: specifics deferred to interface spec meeting, but requirement stands.
+- When specimen collection record exists, link results to that specimen by Specimen ID; otherwise link result to subject by Subject ID. This is the operational rule; do not attempt fuzzy match beyond what policy allows. [Rule restated]
+
+Mapping, data dictionaries, observation grouping:
+- For any data exchange, include mapping interfaces and data dictionaries. We must indicate which fields are standard and which are custom.
+- Group message components by observation type: lab, symptom, exposure, risk, treatment, etc., to help recipients process. Elena: grouping is essential for downstream parsers.
+- Support multiple import/export formats: databases, spreadsheets (CSV), messages (HL7 FHIR/HL7 v2), text files. May include JSON. [Note: verify format list with IT]
+- Contradiction noted: Ben prefers only HL7 + CSV to reduce maintenance; Denise says partners demand multiple. Resolve later. [Open]
+
+Vocabulary support:
+- Use established vocabulary standards when exchanging data (LOINC for tests, SNOMED for results where applicable, standard race/ethnicity codes). Accept and implement additional standards when defined by CDC or others.
+- Internally, support configurable domain-specific vocabulary for outbreak data (e.g., list of exposure types, object types). Carla will manage vocabulary governance process. [Action]
+
+Operational monitoring and alerts:
+- System should include monitoring that detects and reports operational issues affecting outbreak management (e.g., sync failures, inbound message backlog). Raj to define metrics and alerting thresholds. [Action]
+- Some dispute: Tom wants user-facing notifications; Raj warns of alert fatigue. Compromise: dashboard flags plus ops alerts to IT channels; user notifications limited. [NOT decided yet]
+
+Security and privacy:
+- Protect systems and data supporting outbreak management from sabotage, unauthorized access, and corruption. Also protect components from failure. Raj notes hardening + logging + redundancy. [TBD specifics]
+- Apply privacy controls across modules to safeguard patient, organizational, and personnel information from fraudulent/unauthorized use. Role-based access, minimum necessary.
+- Denise asks: Where do we draw the line on de-identification for exports? Carla: policy-driven; coordinate on role-based practices. [Action]
+
+Operations resilience (backups and continuity):
+- Acknowledge need to document and implement backup procedures for OM data and related operations. Define schedules, retention, and restore steps. [Action]
+- Establish and maintain a continuity of operations plan (COOP) for OM and related PHIN functions. The system must support continuity during disruptions and be available after catastrophic events. [Action]
+
+Misc:
+- Training for staff on procedures flagged for separate plan; ensure training enables public health partners to support OM and other PHIN functions. [Action]
+
+Contradictions/unclear items:
+- Should isolation status be visible to all investigators or limited to quarantine team? [TBD]
+- Do we store headcount for gatherings? earlier: yes optional, later: maybe no due to data quality. [Unresolved]
+- How many digits for tag id? earlier: record exact tag, later: someone said just type. Resolution: store string, length unconstrained but validated for disallowed chars. [Resolved]
+
+Action items:
+- Carla: propose governance doc for custom questions and vocabularies (due 2 weeks)
+- Elena: draft mapping for inbound lab messages and observation grouping (due next meeting)
+- Raj: write linkage rule doc for lab results to specimen/subject; outline ops monitoring metrics; propose privacy role matrix
+- Ben: finalize data model for specimen with assay-level granularity; confirm object and conveyance schema
+- Luis: list current bluetooth barcode scanners model numbers and test connectivity
+- Tom: define minimal data set for quarantine check log; report on portal feasibility (subject/proxy updates)
+- Denise/Raj: draft documented backup/restore procedures and COOP outline
+
+Open Issues / Parking Lot:
+- COOP specifics and failover testing plan
+- Backup schedule and retention for OM data
+- User-facing notifications scope (operational vs workflow)
+- Export privacy practices and approval workflow
+- Multiple import/export formats support vs maintenance cost
+- Who approves new custom fields mid-investigation (ops vs admin)
+- Role visibility for restriction status (legal review?)
+
+Numbers noted in margin:
+- 5 conveyance types listed
+- 12+ data points for specimen metadata
+- 3-5 check-ins per week typical for quarantine, but some did 2
+- 1-3 custom questionnaire fields per event initially, grows to 10 in long events
+
+End of notes. These are not polished; consult recordings for gaps.

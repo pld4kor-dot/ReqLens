@@ -1,0 +1,168 @@
+TYPE  : email_thread
+TITLE : Thread: Search filters, confirmations, adoption, duplicates, and audit/reporting alignment
+UNIT  : PROMISE_4
+============================================================
+
+Email 1
+From: Priya Shah <priya.shah@company.com>
+To: Nina Park <nina.park@company.com>, Ben Ortega <ben.ortega@company.com>
+CC: Gloria Chen <gloria.chen@company.com>, Mark Russo <mark.russo@company.com>, Luis Alvarez <luis.alvarez@company.com>, Dana Miller <dana.miller@company.com>, Ravi Patel <ravi.patel@company.com>, Asha Gupta <asha.gupta@company.com>
+Subject: Search + Case List + Confirmations + adoption — sanity check
+Date: Mon, Apr 7, 2025 8:12 AM
+
+Hi all,
+
+Catching up on a few threads:
+
+1) Search inputs/filters: in scope to look up by case number, merchant account number, cardmember account number, and issuer number (issuer can live under Advanced). Filters: date range, dispute type (ticket retrieval vs chargeback), case status (open/closed/all), and reason code.
+
+2) Case list readability: let’s implement a simple way to tell open vs closed at a glance (color accents are ok) but pair with a label/icon for accessibility. Please stick to our design system.
+
+3) Confirmations: after creating a retrieval, show the generated case number, which retrieval flavor (copy/original/portfolio), and the merchant response due date (derived). Same for chargebacks: case number, whether it’s pending or immediate, and the merchant response date. Reps shouldn’t have to guess whether the action “took.”
+
+4) Adoption: we’re sunsetting the legacy dispute tool at cutover. The expectation is that, after the two‑day training sessions, 100% of cardmember services and merchant services reps use Chargeback Compass for disputes as part of their regular workflow.
+
+Gloria/Mark — on audit: we’re still producing the weekly user admin report (new users + any role changes + reinstatements), correct? Also, confirm retention enforcement: closed cases older than six months should be purged from the online disputes database.
+
+Thanks,
+Priya
+
+—
+
+Email 2
+From: Luis Alvarez <luis.alvarez@company.com>
+To: Priya Shah <priya.shah@company.com>
+CC: Nina Park <nina.park@company.com>, Ben Ortega <ben.ortega@company.com>, Gloria Chen <gloria.chen@company.com>, Mark Russo <mark.russo@company.com>, Ravi Patel <ravi.patel@company.com>, Dana Miller <dana.miller@company.com>
+Subject: RE: Search + Case List + Confirmations + adoption — sanity check
+Date: Mon, Apr 7, 2025 9:02 AM
+
+Priya,
+
+Looks good. Issuer under Advanced is perfect—Ops can use it; our reps won’t trip over it. On the list, please include the word “Open”/“Closed” so we pass accessibility checks. And yes, the confirmation needs to show case number + due date or the floor will flood us with “did it go through?” calls.
+
+On adoption, understood—we’ll plan for everyone to be in Compass daily once they’ve gone through the two‑day training. One more request: make sure the case history shows who did what and when, for everything that changes the record. We get audited on that regularly.
+
+Thanks,
+Luis
+
+—
+
+Email 3
+From: Gloria Chen <gloria.chen@company.com>
+To: Priya Shah <priya.shah@company.com>, Asha Gupta <asha.gupta@company.com>
+CC: Mark Russo <mark.russo@company.com>, Ben Ortega <ben.ortega@company.com>, Nina Park <nina.park@company.com>, Ravi Patel <ravi.patel@company.com>, Dana Miller <dana.miller@company.com>, Luis Alvarez <luis.alvarez@company.com>
+Subject: RE: Search + Case List + Confirmations + adoption — compliance notes
+Date: Mon, Apr 7, 2025 9:45 AM
+
+A few points from Compliance:
+
+- Reason codes must be context‑sensitive. The UI should not present a global list; it must reference transaction type AND merchant industry (MCC).
+
+- Duplicate prevention: we cannot allow a duplicate dispute to be created when an open case already exists that matches the cardmember/merchant/transaction(s) pattern. This needs to be blocked 100% of the time.
+
+- External users: reiterating — external‑facing roles must not be able to request the “original receipt” in the retrieval flow. Copy/portfolio are fine.
+
+- Letters: any request sent to the print pipeline must match the Print Letter Utility’s format exactly (we had rejections due to formatting last year).
+
+- Reg E/Z and network rules are non‑negotiable. Response windows and acceptable reasons must follow those rules precisely.
+
+Also confirming Priya’s note on retention: closed cases older than six months must be purged from the online disputes database per policy.
+
+—G
+
+Sent from my mobile, pls excuse typos
+
+—
+
+Email 4
+From: Mark Russo <mark.russo@company.com>
+To: Priya Shah <priya.shah@company.com>
+CC: Asha Gupta <asha.gupta@company.com>, Gloria Chen <gloria.chen@company.com>, Ben Ortega <ben.ortega@company.com>
+Subject: RE: Search + Case List + Confirmations + adoption — user report + reinstatement
+Date: Mon, Apr 7, 2025 10:18 AM
+
+Priya,
+
+Yes, the system will output a weekly “User Access Changes” report. It includes new users and any role/access modifications (who changed what and when). We’ll also include reinstatement events. A&R is the primary consumer; Compliance can be CC’d.
+
+Separately, reinstatement is limited to System Admin. No business admins will have that control. And reinforcing our guardrails: end users have no direct DB or file access—everything goes through the app so we maintain a trail.
+
+—Mark
+
+—
+
+Email 5
+From: Nina Park <nina.park@company.com>
+To: Priya Shah <priya.shah@company.com>, Luis Alvarez <luis.alvarez@company.com>
+CC: Ben Ortega <ben.ortega@company.com>, Gloria Chen <gloria.chen@company.com>, Ravi Patel <ravi.patel@company.com>, Dana Miller <dana.miller@company.com>
+Subject: RE: Search + Case List + Confirmations + adoption — design take + a couple Qs
+Date: Mon, Apr 7, 2025 11:06 AM
+
+Hi,
+
+Design approach:
+- Search: fields for case #, merchant acct #, cardmember acct #, with issuer # under an Advanced panel. Filters for date range, dispute type (TRR vs chargeback), status (open/closed/all), and reason code. Reason code dropdown will be context‑aware once a transaction + industry are known (pending Gloria’s mapping).
+
+- List view: subtle color accents paired with a text label and small icon (e.g., “Open”/“Closed”). All components from the design system.
+
+- Confirmations: full‑screen confirmation for both flows with case number, subtype (“pending” vs “immediate” for chargeback; “copy”/“original”/“portfolio” for TRR), and merchant response due date.
+
+Questions:
+1) Case history—confirm we show actor + timestamp for every create/modify event. Any concerns about volume?
+2) Follow‑up actions—plan is to hide non‑applicable actions based on status and access level. Any exceptions I should know about?
+3) Letters—can we assume the Print Letter Utility schema is stable enough to validate before submitting?
+
+Thanks!
+
+Nina
+
+—
+
+Email 6
+From: Ben Ortega <ben.ortega@company.com>
+To: Nina Park <nina.park@company.com>, Priya Shah <priya.shah@company.com>
+CC: Gloria Chen <gloria.chen@company.com>, Mark Russo <mark.russo@company.com>, Ravi Patel <ravi.patel@company.com>, Luis Alvarez <luis.alvarez@company.com>, Dana Miller <dana.miller@company.com>
+Subject: RE: Search + Case List + Confirmations + adoption — infra + flow clarifications
+Date: Mon, Apr 7, 2025 12:02 PM
+
+Quick answers + plumbing notes:
+
+- History: yes, we’ll capture user + datetime for any create/modify, and we’ll add “system” entries when background jobs touch a case. Users can view the full history on the case details screen.
+
+- Follow‑up: hiding actions that don’t fit the current status or the user’s role is the plan. View‑only users won’t see initiate/escalate.
+
+- Letters: per Ravi, the Print Letter Utility schema is quirky but stable. We’ll validate before sending to avoid rejections.
+
+- Duplicates: engineering will define the composite key (cardmember + merchant + transaction(s) [+ reason if required]) and block creation if there’s an existing open case that matches. The goal is to prevent duplicates entirely.
+
+- Reason codes: we’ll wire to a service that computes the eligible set from transaction type + MCC so we avoid a global dump.
+
+- Viewing existing cases: search results will deep link into case details with history and follow‑ups visible.
+
+- Performance/availability tracked elsewhere: navigation around ~5 seconds; maintenance windows as agreed; concurrency target 350 concurrent sessions.
+
+- Adjustments: when chargebacks trigger adjustments, we’ll route requests to Posting & Billing via API. Downstream posting may be asynchronous.
+
+Open items:
+- Need Compliance to finalize the transaction‑age gate for eligibility so we can enforce it in the UI.
+- Nina — we may need to tweak color accents to meet contrast ratios while keeping the label/icon visible.
+
+-Ben
+
+—
+
+Email 7
+From: Asha Gupta <asha.gupta@company.com>
+To: Mark Russo <mark.russo@company.com>, Priya Shah <priya.shah@company.com>
+CC: Gloria Chen <gloria.chen@company.com>, Ben Ortega <ben.ortega@company.com>, Nina Park <nina.park@company.com>
+Subject: RE: User report + history details (audit POV)
+Date: Mon, Apr 7, 2025 1:20 PM
+
+Confirming audit asks:
+- Weekly User Access Changes report: include new users (username, role(s), timestamp, admin who added), role changes (old vs new, who changed, timestamp), and reinstatement events (who requested, who approved, timestamp).
+- Case‑level history must show actor + date/time for all create/modify actions. We will review this periodically.
+- Letters must be submitted in the exact Print Letter Utility format to avoid gaps.
+- Retention: per policy, purge cases closed more than six months from the online disputes database.
+
+Thanks,
+Asha

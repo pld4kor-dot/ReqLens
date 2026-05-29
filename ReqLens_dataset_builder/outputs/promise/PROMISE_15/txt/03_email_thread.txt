@@ -1,0 +1,138 @@
+TYPE  : email_thread
+TITLE : Thread: BDW load window, UAS access, and pre-release approvals (revised)
+UNIT  : PROMISE_15
+============================================================
+
+Email 1
+From: Aly Patel <aly.pcg@corp>
+To: Sam Ortega <sam.ops@corp>, Dev Ionescu <dev.arch@corp>
+CC: Maria Santos <maria.finance@corp>, Priya Rao <priya.bdw@corp>, Ken Li <ken.uas@corp>, Jordan Hale <helpdesk@corp>
+Subject: RFS budgeting kickoff — BDW files + access + training
+
+Hi team,
+
+Kicking off the prep list so we don’t miss anything this year:
+- BDW files: we’re expecting seven files again. We want to run the load one business day before kickoff and finish within about three hours. That load should be from the October month-end snapshot, right?
+- We’ll need a few test cycles: up to five across the year, if BDW can accommodate.
+- Access: absolutely no local logins in RFS. Please confirm all sign-on and roles are from UAS. We need roles for branch/complex/district/region and the app should limit functions by role.
+- Training: we plan 1 week of sessions just before go-live. Our internal target is that 98% of users complete their budgets on time with that training.
+- Availability/performance: during budgeting we need the intranet to be stable, minimal downtime, and the UI shouldn’t lag. Dev mentioned 2s for most actions with some allowance for heavier ones — that is fine with Finance.
+- UI/standards: ENET look-and-feel pre-approval — can we aim for almost all signoff before release and the stragglers fixed in the first month after?
+- Also, pages need to render fine at 800x600 and up. Last year a few popups misaligned at 1024. Let’s fix those earlier.
+
+Anything I’m missing?
+
+Thanks,
+Aly
+
+---
+
+Email 2
+From: Sam Ortega <sam.ops@corp>
+To: Aly Patel <aly.pcg@corp>
+CC: Dev Ionescu <dev.arch@corp>, Priya Rao <priya.bdw@corp>, Maria Santos <maria.finance@corp>, Ken Li <ken.uas@corp>, Jordan Hale <helpdesk@corp>
+Subject: RE: RFS budgeting kickoff — BDW files + access + training
+
+Aly,
+
+This mostly matches Ops’ plans. The 3-hour ingest window is tight but doable if no competing changes. We’ll request a quiet period the business day before budgeting starts. If change control conflicts, we might have to slide by a day — hoping not.
+
+On availability — we’ll treat the budgeting window as high priority, aiming for the higher uptime. If there is an outage (should be rare), our process gets the system back up within about an hour once the helpdesk ticket hits us. Please make sure users actually call it in.
+
+Workstations: please remind branches that machines need to pass readiness: around 400MB free disk and the standard stack (IE + .NET 1.1 + IE Web Controls). We’ll try to get 98% compliance before go-live. Jordan is prepping a mailer.
+
+Thanks,
+Sam
+
+---
+
+Email 3
+From: Dev Ionescu <dev.arch@corp>
+To: Aly Patel <aly.pcg@corp>, Sam Ortega <sam.ops@corp>
+CC: Maria Santos <maria.finance@corp>, ENET Architecture <arch.review@corp>
+Subject: RE: RFS budgeting kickoff — UI/Perf details
+
+All,
+
+On UI standards, we will submit to the Architecture group for pre-release approval. Expect approximately 95% approved at the design review. We’ll keep a small tail of items to fix in the first month post-release.
+
+Display: we are obligated to support intranet standard resolutions from 800x600 upwards. We’ll test common sizes and aim to have most of them correct before rollout. If a missed layout issue is reported, we will correct it within a week.
+
+Performance: Our target is 2 seconds or less for about 90% of interactions. For the remaining 10%, upper bound of ~10 seconds. We will review performance stats in QA.
+
+Access: We only integrate with UAS. No local accounts. Roles map to PCG hierarchy. The app will limit access by role (hide or disable actions out of scope).
+
+Dev
+
+---
+
+Email 4
+From: Ken Li <ken.uas@corp>
+To: Dev Ionescu <dev.arch@corp>, Aly Patel <aly.pcg@corp>
+CC: Maria Santos <maria.finance@corp>, Sam Ortega <sam.ops@corp>
+Subject: RE: Access clarifications (was: RFS budgeting kickoff...)
+
+Jumping in late — caught this on CC.
+
+- UAS will be the sole source for authentication and authorization. No exceptions. We can establish app roles (branch, complex, district, region) tied to UAS groups.
+- Mixed-role handling: let’s keep that open until Finance confirms what they want. We’ll stick to the standard mappings in the meantime.
+- Please do not add in-app notification features for access changes; not in scope.
+
+Ken
+
+---
+
+Email 5
+From: Maria Santos <maria.finance@corp>
+To: Aly Patel <aly.pcg@corp>, Dev Ionescu <dev.arch@corp>, Sam Ortega <sam.ops@corp>
+CC: Priya Rao <priya.bdw@corp>, Ken Li <ken.uas@corp>
+Subject: RE: RFS budgeting kickoff — formulas and testing window
+
+Adding the formulas timing to this thread so it’s captured:
+
+Finance will provide the annual revenue and expense formula changes before budgeting. After we deliver the doc, we need RFS to implement within one week. Then we’ll do two weeks of joint testing (Finance + dev) of the calculations. We will provide example scenarios (Aly can gather) to validate branch, complex, and region roll-ups. We need this done before the budget opens.
+
+Also echoing the training plan: one week of sessions immediately before go-live. Finance expects 98% of users to finish their budgets on time — the UI needs to be usable enough that this is realistic.
+
+Thanks,
+Maria
+
+---
+
+Email 6
+From: Priya Rao <priya.bdw@corp>
+To: Sam Ortega <sam.ops@corp>, Aly Patel <aly.pcg@corp>
+CC: Dev Ionescu <dev.arch@corp>, Maria Santos <maria.finance@corp>
+Subject: RE: BDW specifics — files and snapshot
+
+Confirming BDW details:
+
+- We will deliver seven files for RFS (same schemas as last year). Target delivery is one business day before the budgeting kickoff. Please plan for a 3-hour processing window on your side; we’ll coordinate to avoid overlap with other jobs.
+- The data is as of the October month-end snapshot. That includes all organizational units (branch/complex/district/region) and all revenue/expense accounts that exist as of that date. Expectation is RFS ingests the full set so everything needed is present when you open budgeting.
+- Test loads: we can accommodate up to 5 test deliveries per calendar year. Please give us at least 3 business days’ notice.
+
+Regards,
+Priya
+
+---
+
+Email 7
+From: Jordan Hale <helpdesk@corp>
+To: All above
+Subject: RE: Thread round-up — readiness + pending actions
+
+Quick wrap (and a couple loose ends):
+
+- Desktop readiness: Helpdesk sending a comms to branches this week. Requirements: ~400MB free disk, IE environment with IE Web Controls, .NET Framework 1.1. Goal: 98% of machines verified before go-live. We’ll track exceptions.
+- Availability during budgeting: Users should call the helpdesk if they experience an outage. We escalate to Ops immediately. Target is to restore within an hour once recorded. Outside budgeting, lower baseline applies.
+- UI approvals: Dev to book ENET Architecture review. Aim for ~95% signoff pre-release; fix remaining items within 1 month post.
+- Display/res: Support 800x600 and higher. If we miss a specific screen, file a ticket; we’ll push to get it fixed within a week.
+- UAS only, no local creds. Roles match branch/complex/district/region; permissions limited accordingly.
+- BDW: 7 files, ~3-hour load window, one business day pre-kickoff, October snapshot. Up to 5 test runs. Please let us know when the load completes.
+- Performance target: 2 sec for most interactions; heavier ones may take longer (upper bound 10 sec). We’ll note any outliers observed in UAT.
+
+Open action items: Dev/Sam — schedule the load day quiet period; Ken — confirm mixed-role approach after Finance weighs in; Aly — send test scenarios for formulas. Also need confirmation on change window approval for the load day.
+
+—J
+
+(sent from mobile, excuse typos)

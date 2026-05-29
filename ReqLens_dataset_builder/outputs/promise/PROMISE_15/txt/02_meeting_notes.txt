@@ -1,0 +1,56 @@
+TYPE  : meeting_notes
+TITLE : RFS BudgetPulse working session — data loads, access, and UX standards (revised)
+UNIT  : PROMISE_15
+============================================================
+
+Date: 2025-06-12
+Location: ENET Teams call — link internal (see invite)
+Attendees: Maria (PCG Finance lead), Dev (ENET Architecture), Sam (IT Ops), Priya (BDW team), Ken (InfoSec/UAS), Lila (Regional Controller), Jordan (Helpdesk), Aly (PCG Finance analyst)
+
+Notes — raw, not final
+
+- Availability targets — intranet access 24/7. Year-round baseline lower than budget period.
+- During budgeting: tighter uptime. Numbers: 98% during the critical window (Sam said), 90% off-peak across the year (Dev said). Maria OK with that IF: outage recovery within ~1 hour once reported to helpdesk.
+- Sam mentioned rare maintenance windows; helpdesk to escalate to on-call during budgeting.
+- Performance: “fast UI.” Dev proposed 2 sec response for 90% of interactions, up to 10 sec acceptable for the rest (10%). Lila: roll-ups must not feel sluggish.
+- Usability/training: plan for one week of training just prior to go-live. Target: 98% of users finish budgets within the deadline with that training. (Jordan: record sessions.)
+- UX Standards: Must conform to ENET intranet look & feel. Architecture pre-approval target: ~95% of screens before release. Remaining small items to be fixed within one month post-release. [Maria: do not slip longer than 1 mo.]
+- Display/resolutions: support from 800x600 and higher. Goal: most common resolutions verified correct pre-go-live. Any remaining display issues fixed within 1 week of being reported. (Note: business asked about dropping 800x600 — NOT decided; assume support remains.)
+- Access/authorization: Only authorized users allowed. Integrate with UAS — no standalone accounts. No local admin backdoors. ALL roles assigned through UAS.
+- Roles/permissions: Map to PCG hierarchy levels (branch, complex, district, region). Access to features should be limited to what the user’s role allows. Hide actions users cannot perform.
+- Data loads from BDW: 7 files delivered for the annual budgeting run. Load within ~3 hours. One business day before budgeting starts. Data snapshot is October month-end. Priya to send file list again (she has last year’s).
+- Test loads: allowed up to 5 times across the year for testing/training. Coordinate windows with BDW. [Action: Sam to submit change tickets for each test run — combine if possible?]
+- Entities: Ensure branches/complexes/districts/regions + revenue/expense accounts that exist in BDW at October month-end appear in RFS before budget start. Goal: everything from that snapshot is present when we open.
+- Revenue/expense formula changes: Applied annually prior to budget. Timeline: within 1 week of Finance delivering changes, then 2 weeks of joint testing of calculations (project dev + PCG Finance). Aly to provide sample scenarios for testing.
+- Workstation readiness: Aim for 98% of user workstations passing checks prior to go-live. Min hardware: ~400MB free disk space. Software: IE browser (legacy), .NET Framework 1.1, and IE Web Controls on machines. [Question: do we enforce via SCCM? Sam: will push checks.] Some branch desktops are low on disk — schedule cleanup.
+- Browser support beyond IE: not in scope; stick to corporate standard compatibility (no Chrome-specific code).
+- Helpdesk runbook: include outage triage, reminder of 1-hour recovery expectation during budgeting, and escalation contacts.
+- Scheduling: load window — request a 3-hour quiet period on ENET the business day before kick-off. No conflicting changes.
+- Architecture review: schedule design walkthrough 3 weeks before target release. Expect high pre-approval at that review. Remaining minor items handled within one month post-release.
+- Communications: If the seven-file load encounters issues, Ops/Helpdesk will use existing channels to inform the team. No new in-app notification features.
+- UI behavior: keep pages stable (no jumping). Keep round-trips low. Page caching allowed if consistent with security.
+- Security: Strict role enforcement. Do not display data a user is not entitled to. UAS group membership determines app role (branch vs region etc.). Questions around mixed-role users — check with Ken. [TBD]
+- Contradiction flagged: Lila asked if a regional user can edit branch line items directly. Dev: depends on permissions; for now limit by role. Maria: prefer review-only at region level, not edit. [Open]
+- Timeline: Formula receipt date [TBD], but commit to 1-week dev turnaround and 2 weeks testing afterwards. Training scheduled the week immediately prior to go-live.
+- Compliance: Pages render at 800x600 and up. Accessibility — not in current scope; follow ENET standard only. [Parking lot]
+
+Action Items
+- Sam — draft desktop readiness checklist (400MB free; IE; .NET 1.1; IE Web Controls), distribution to branches by 6/20.
+- Priya — resend BDW file list and confirm constraints (7 files; ~3 hours; one business day before; October month-end snapshot; up to 5 test loads). Due 6/14.
+- Dev — prepare architecture review deck; seek pre-approval from ENET Architecture. Include resolution tests plan. Due 7/01.
+- Aly — compile sample revenue/expense scenarios for calculation testing. Due ASAP after formula doc arrives.
+- Ken — confirm UAS role mappings for PCG hierarchy and guidance on mixed-role handling. Due 6/25.
+- Jordan — draft helpdesk runbook including 1-hour recovery process for the budgeting window.
+
+Open Issues / Parking Lot
+- Mixed-role behavior (branch+region) — read-only vs edit — decision pending; need Finance guidance.
+- Stop supporting 800x600? Architecture says keep for now; business wants to revisit next quarter. For RFS, assume support remains.
+- Outage communications — confirm distro lists. [TBD]
+- Local admin exception for Helpdesk — removed, per InfoSec. Use UAS controls only.
+- Whether to allow minor cosmetic fixes to slip post-release beyond 1 month — Maria strongly against. Keep within one month. [Hold firm]
+- Potential conflict with change windows the day before kickoff — Ops to negotiate. Worst case shift kickoff by 1 day? [Finance prefers not to; resolve later]
+
+Misc Notes
+- Someone said “we can do 99% uptime all year” — later corrected: target is 90% baseline annually, 98% during budgeting. Keep doc consistent.
+- Reminder: no new feature creep (notifications, dashboards, etc.) — focus on core: budget entry/review, data loads, role-based access.
+- Response times — log performance stats in QA to ensure 90% under 2 sec, 10% under 10 sec. If outliers, backlog for tuning.

@@ -1,0 +1,109 @@
+TYPE  : meeting_notes
+TITLE : UX and Ops Working Session Notes — Navigation, Roster Actions, and Release Cadence
+UNIT  : PROMISE_14
+============================================================
+
+Date: 2025-03-11
+Location: Zoom call link: https://zoom.example.com/j/123456789
+Attendees: Maya (PM), Jorge (DevOps), Priya (DBA), Tom (Commissioner), Riley (Owner), Alex (Design), Chen (FE Eng), Sahana (BE Eng)
+
+Agenda (loosely):
+- Nav consistency + breadcrumbs
+- Owner dashboard quick actions (add/drop/trade)
+- Message wall content limits
+- Onboarding path for first-timers
+- Performance targets + downtime budget
+- Data tiers (primary vs. secondary DB)
+- Maintenance window + season release plan
+
+Notes (raw):
+- Nav: maintain a consistent scaffold across pages. Action items grouped separate from nav controls. Alex: action area right rail? Chen: left rail nav w/ breadcrumb top. Maya: yes to breadcrumb on every page. Riley: wants to see Home > League > Team names in the trail.
+- Contradiction? Alex suggested actions top-right; Chen suggested bottom-fixed actions on mobile. [TBD] unify. Consistency is the key, not exact placement; but action vs nav separation is required.
+- Breadcrumb index bar across all pages. Include league name and team name. Tom: helpful when deep in player list.
+- Owner auth: username + password gate to reach owner dashboard. No bypass. Riley ok with sessions but keep it straightforward.
+- Commissioner-only changes: Only 1 person per league (the commissioner) can change league settings. RBAC. No co-comm edits. Auditing at launch? [Out of scope]
+- Onboarding: new users should be able to land and reach league page and then team page in ~30s from start page. Big Join League / Find Team buttons. Alex: reduce friction. Jorge: perf helps too.
+- Message wall: limit to 5 most recent posts on league page. Show teaser snippet ~150 chars. Tom does not want long threads on landing. Archive link optional [later].
+- Riley: please keep the wall light-weight. Just the latest five, not everything.
+- Quick actions: From owner dashboard, link to add, drop, and trade flows should be one click away. No hunting through menus.
+- Confirmations: Before drop or trade is final, show a confirmation prompt. Extra safety. Sahana: server requires explicit confirm before committing.
+- Stats per page: Show at least 25 NFL player stats plus fantasy points on any page where players are listed or referenced. Alex worried about density on mobile. Chen: can collapse groupings but still present. Note: ensure points always visible.
+- Performance: Target network-side transaction completion ~0.25s (250 ms). Jorge: need caching strategy, avoid chatty calls. Chen: batch requests.
+- Availability: extremely high. Downtime minutes per year. Jorge wrote 10 min/yr as budget. Tom says Sunday outages unacceptable.
+- Hosting: Application runs on a web application server. No native app in scope right now.
+- Databases: Primary DB holds hot/active user data (also acts as cached store for active sessions), e.g., current week stats, rosters, pending transactions. Secondary DB holds historical stats and long-term records. Movement: nightly jobs to push older data to secondary. Priya: index latest wall posts in primary.
+- Updates: In-season updates only in Wednesday early morning window 3–6 AM CST. Plan low-impact deploys. Alex: can we do A/B? Jorge: not in season, keep it simple.
+- Season release: Major version rollouts aligned with beginning of each NFL season. Staging previews ok earlier.
+- UI consistency: explicit separation of action buttons vs navigation tabs. Avoid mixing them. Alex: create a pattern library. Riley: don’t move the trade button page-to-page.
+- Breadcrumb examples: Home > League > Riley’s Runners. Home > League > Free Agents. Home > League > Team > Player detail. [Check with content for exact labels.]
+- Owner dashboard: should have add, drop, trade entry points with clear labels. One click to enter those flows. After confirm, do the mutation.
+- Confirm risk: accidental taps on mobile. Use confirm yes/no for drop/trade. For add, do we confirm? [Not required, but maybe]. Decision: confirm drop and trade only for now.
+- Message wall content limits: show only the first ~150 characters as teaser. Don’t show images in teaser. [TBD] whether to count by chars or graphemes. Keep to approx 150.
+- New users path: After sign-up or sign-in (username/password), show find/join league. Then link to team. Riley: can get to team in 20–30s if clear.
+- Priya: Stats provider feed volume: >25 fields per player per week. We must select at least 25 for display baseline. Points computed field included.
+- Jorge: To hit 250 ms, precompute stat lines for active players in primary DB. Avoid aggregating on the fly.
+- Availability again: 10 minutes/year total downtime. That includes unplanned only or total including planned? [Clarify]. Prefer to count unplanned. But commit to minutes only overall.
+- Maintenance exceptions: If emergency fix outside window? Tom: only if critical and not game day Sunday. Jorge: will avoid; if necessary, announce.
+- Constraint scribbles: Runs on web application server, primary DB ~cached layer for active users, secondary for historical. No native app deliverable now.
+- DevOps: Deploy during Wed 3–6 AM. Database schema changes only in that window in-season.
+- Riley raised UI confusion on prior app: trade button moved around. Emphasize consistent placement. Use breadcrumb to avoid dead ends.
+- Alex proposed a sticky footer with actions on mobile. Chen: okay if consistent across pages. Maya: the main rule is action vs nav separation; exact position is flexible if uniform.
+- Chen: owner dashboard must expose one-click entry points to add/drop/trade. Avoid nested menus. Make it obviously a single tap/click to start.
+- Sahana: server will only commit after explicit confirm for drop/trade.
+- Priya: message wall in primary for current season; archive to secondary at season end. Retrieve last 5 posts quickly via index. Keep payload small.
+- Tom: Breadcrumb shows where you are; also show league name. Helps me backtrack.
+- Riley: Stats everywhere. Even on trade propose screen, show 25+ metrics + points so I can compare quickly.
+- Alex: Might need a show more toggle to avoid overwhelming. But the requirement is that data is there. We can collapse sections.
+- Jorge: Monitoring to meet uptime and fast issue detection.
+- Maya: Confirm again major release timing: season start. Minor updates go to Wed window only in-season.
+- Chen: search? [Out of scope now.] Keep it simple.
+- Tom: notifications? [Out of scope.] Just make confirms work.
+- Priya: Keep the points calculation consistent on every page; don’t compute differently.
+- Jorge: 0.25 s target is for server network roundtrip excluding client rendering. Might feel slower on bad wifi. Still aim for it.
+- Riley: I don’t care about the millisecond number; I just want it to feel instant.
+- Maya: Put both: objective 250 ms, user perception: snappy.
+
+Contradictions/unclear bits to resolve:
+- Action placement conflict (top-right vs sticky footer). Both agree on consistent separation. [Resolve in design doc]
+- Count downtime (planned + unplanned?) vs just unplanned. [Clarify with Ops policy]
+- Confirm add? Currently no. Might be asked later. [NOT decided yet]
+- Teaser length: about 150 chars vs exactly 150 chars. [Use approx; cap at 150]
+
+Action Items:
+- Alex to draft a pattern showing action area and navigation separated, include breadcrumb. Due Fri.
+- Chen to prototype owner dashboard with one-click entry to add/drop/trade. Due next Wed.
+- Sahana + Priya to design staged confirmation flow for drop and trade. Due Thu.
+- Jorge to draft uptime policy and define downtime counting. Include ten minutes/year budget. Due next Mon.
+- Priya to diagram primary vs secondary DB: what lives where (active cached vs historical), include message wall lifecycle. Due Tue.
+- Maya to write onboarding success metric: first-time user can reach league and team in 30 seconds from landing. Due Fri.
+- Alex to spec message wall teaser truncation at ~150 chars; show last 5 posts only. Due Fri.
+- Jorge to formalize maintenance window docs: in-season updates only Wed 3–6 AM CST. Major version at NFL season start. Due next Mon.
+
+Open Issues / Parking Lot:
+- Breadcrumb labeling formatting (team name vs team ID) [TBD]
+- Whether points should be bold everywhere; accessibility concerns [check with UX]
+- What happens if confirm modal is blocked by popup blockers? [Dev to handle in-app confirm]
+- Define what constitutes a user transaction for the 0.25 s target. Is browsing the wall included? [Probably not, focus on add/drop/trade, page loads]
+- Pros/cons of showing exactly 25 stats vs at least 25 stats. Decision: at least 25, not fewer.
+- Impact of heavy stat payload on mobile data; prefetch vs lazy load [investigate]
+
+Misc scribbles:
+- Runs on web app server
+- Primary DB = hot cache for active users, Secondary = historical stats/records
+- Update window: Wed 3–6 AM CST; No deploys on Sunday
+- Availability = minutes/yr, target 10
+- Owner auth = username/password
+- Commissioner-only settings edits per league
+- One-click access to add/drop/trade from owner dashboard
+- Confirm before drop/trade
+- Message wall last 5 posts; teaser length ~150
+- Breadcrumb nav on every page, consistent format
+- Show 25+ stats + points on each player view
+- Network tx ~0.25 s
+- Major release at beginning of NFL season
+
+Struck ideas:
+- ~~Add email notifications for trades at launch~~ [scope creep]
+- ~~Infinite-scroll league wall~~ [against perf + clarity]
+
+End of notes.

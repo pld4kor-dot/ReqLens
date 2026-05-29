@@ -1,0 +1,1080 @@
+{
+  "id": "PROMISE_4",
+  "origin": "PROMISE",
+  "created_at": "2026-05-23T14:24:46.999371+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Chargeback Compass stakeholder interview — cross‑team discovery session (reconvene)",
+      "text": "Priya [Product Owner]: Thanks for joining again. Big picture hasn’t changed: Chargeback Compass needs to be the single place for disputes for both our internal cardmember teams and external merchant folks. Also, to avoid confusion, we are retiring the legacy dispute tools as we roll this out. After the two‑day training, all cardmember service reps and all merchant service reps will be using Compass for their day‑to‑day dispute work—no side processes.\n\nLuis [Cardmember Services Rep]: Music to my ears, as long as the ramp‑up is short. Two days of training and then people should be able to open their first real case without stumbling. And since we’ll be in it daily, it can’t be one of those apps where week three people are still lost.\n\nDana [Merchant Services Rep]: From our side, we mostly respond and do follow‑ups. So we need clean visibility into the case, what’s pending, and the system should keep us from changing things we shouldn’t. And please don’t show our external reps any buttons that would start a dispute—we don’t want that capability.\n\nGloria [Compliance/Legal Officer]: We have to align to Regulation E or Z, depending on account type, and the card network operating rules. The business rules must match those—reason codes, response windows, disclosures. Also: duplicate disputes are a serious issue. We need a zero‑tolerance posture—if the system detects the same cardmember/merchant/transaction scenario, it must block it every time.\n\nMark [System Administrator]: On access, we’ll enforce view versus update at the role level. Only users with the Update privilege will even see initiation controls. Others get view only and a clear “not permitted” message if they try to initiate. Login is locked down—authorized users only, no guest access. Also, governance: if a user is revoked, only my team can reinstate, and we’ll record that.\n\nBen [IT Operations]: On non‑functional stuff: let’s set expectations—around five seconds max to move between screens, and handle roughly 350 concurrent users without the app feeling sluggish. Availability is 24/7 with planned maintenance windows: Monday through Saturday, 3–4 a.m. Eastern, and Sunday, 1–5 a.m. Eastern. For sign‑in, once people are authenticated and their permissions are validated, the app shouldn’t randomly bounce them. We’ll follow security policy for session timeouts.\n\nLuis [Cardmember Services Rep]: Guardrails are big for us. Our folks shouldn’t see cases for other issuers. If I’m in issuer 4827, I shouldn’t see 1234, period.\n\nPriya [Product Owner]: Agreed. We’ll restrict data scope so each user only sees their own book of business by issuer.\n\nGloria [Compliance/Legal Officer]: And an audit trail for every touch on a case—who did what and when. System activity should be labeled as such.\n\nBen [IT Operations]: Noted. We’ll capture user and timestamp on any create/modify and flag system‑generated entries.\n\nDana [Merchant Services Rep]: Also, please stick to our design system. Merchants notice when the external portal looks off‑brand. Internal folks want consistency too.\n\nPriya [Product Owner]: We’ll use the corporate UI standards for both internal and external apps. Color cues are fine for status, but they’ll be paired with labels/icons for accessibility.\n\nMark [System Administrator]: One more admin thing: we produce a weekly user access report—new users, role changes, and reinstatements—so Audit & Risk can review. We’ll make sure it’s automated.\n\nGloria [Compliance/Legal Officer]: Yes, and on governance, no direct database or file access for end users. All updates go through the application so we have a complete trail.\n\nLuis [Cardmember Services Rep]: Quick terminology thing—“issuer number” isn’t the card prefix, right? We just need it for filtering sometimes.\n\nBen [IT Operations]: Right, issuer number is our internal bank identifier. We’ll keep it visible where it helps, likely under Advanced search.\n\nPriya [Product Owner]: Back to flows. We have two initiation flows: Ticket Retrieval Requests and chargebacks. Only users with Update can initiate, as we said. For retrievals, we’ll guide users through required fields and compute a merchant response due date. External roles must not be able to select the “original receipt” type.\n\nDana [Merchant Services Rep]: That’s correct—external shouldn’t be able to request originals. Copy and portfolio are fine for them.\n\nGloria [Compliance/Legal Officer]: And reason codes must be context‑sensitive: based on the transaction type and the merchant’s MCC. No global dump of codes.\n\nMark [System Administrator]: For follow‑ups, show actions that apply to the case’s current status and the user’s role. If the case is closed, don’t show actions that only make sense for open cases.\n\nLuis [Cardmember Services Rep]: Please. People click the wrong thing when they see it. Hiding non‑applicable actions prevents errors.\n\nBen [IT Operations]: When the system updates a case automatically—aging, deadlines—we’ll put a new entry in the history and show a notification to the case’s creator the next time they sign in. No emails, just an in‑app alert.\n\nPriya [Product Owner]: Good. On confirmations: after creating a retrieval or a chargeback (pending or immediate), we’ll show a full confirmation—case number, the type/subtype, and the merchant response due date—so there’s no guessing.\n\nGloria [Compliance/Legal Officer]: One more on retention: six months after a case is closed, it should be removed from the online disputes database. Don’t just hide it in the UI—purge it from the online system per policy.\n\nPriya [Product Owner]: We’ll enforce the six‑month online purge. Also, a reminder: all transaction, cardmember, and merchant details come from their source systems—no manual overrides—so we stay consistent with the systems of record.\n\nLuis [Cardmember Services Rep]: On search—when we do that session, we need simple lookups by case number and by cardmember account, and filters for date, type, status, reason code. Color cues for status help, but please keep text labels too.\n\nPriya [Product Owner]: Noted. We’ll cover search in a separate meeting.\n\nPriya [Product Owner]: To recap: design adheres to corporate standards; two‑day training with first‑attempt success for key tasks, and we’re mandating adoption—after training, all cardmember and merchant reps will use Compass for disputes; performance around five seconds and scale to ~350 concurrent; availability with defined maintenance windows; strict role‑based access with initiation limited to Update roles; strong authentication; full audit trail and weekly user access reporting; no direct DB/file access; users see only their own issuer’s cases; follow‑ups filtered by status and role; in‑app notification to the case creator on next sign‑in for system‑driven changes; compute due dates and show confirmations; reason codes are contextual; external users cannot request original receipts on retrievals; and closed cases are purged from the online database after six months.\n\nGloria [Compliance/Legal Officer]: And all of that within Regulation E/Z and the network operating rules. If there’s a conflict, compliance wins.\n\nDana [Merchant Services Rep]: Works for me.\n\nBen [IT Operations]: Sounds good.\n\nMark [System Administrator]: All aligned here.\n\nLuis [Cardmember Services Rep]: Same. Let’s make it simple and fast."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "Functional deep dive notes — Dispute initiation, retrievals, chargebacks, and integrations (updated)",
+      "text": "Date: 2025-03-18\nLocation: 12F East Conf Rm / Teams link: https://teams.example.com/l/chargeback-compass-deepdive\nAttendees: Priya (PO - Disputes), Ben (IT Ops), Asha (Audit & Risk), Gloria (Compliance/Legal), Luis (Cardmember Services Rep), Dana (Merchant Services Rep), Mark (SysAdmin), Ravi (Integration Lead), Nina (UX), Tom (Merchant Relations)\n\nNote: Raw notes, incomplete, some shorthand. Action items inline. [TBD] indicates follow up.\n\nAgenda\n- Dispute initiation flows (TRR and chargeback)\n- Search and case listing behavior\n- Integrations + source data\n- Compliance mapping overview\n- Case history & auditability\n- Letters/Adjustments\n\nGeneral\n- Dual‑audience app (internal + external) with role‑based permissions; enforce view vs update separation.\n- Guardrails: users access only their assigned cardholder base (issuer partitioning). [Confirmed]\n- Adoption: legacy dispute tools to be sunset; after two‑day training, 100% of cardmember and merchant servicing reps will use Compass for dispute work. [Priya]\n- Training goal: two days of onboarding; first‑try success for (a) case creation by cardmember reps and (b) follow‑up by merchant reps. [L&D to align]\n\nInitiation — Ticket Retrieval Requests (TRR)\n- Start a retrieval from an eligible transaction view (real‑time). Guided fields (wizard/stepper) collect required info; due date is computed from business rules (read‑only).\n- TRR types: original receipt, copy, portfolio (portfolio = supplemental documents like a rental agreement). Tooltips to clarify. [Nina]\n- Restriction: external users must NOT be able to request the “original” receipt type (internal‑only). Copy and portfolio allowed externally. [Policy]\n- Confirmation after creation: display case number, TRR type (copy/original/portfolio), and merchant response due date.\n- Letters: generate letter requests formatted to Letters app spec -> Print Letter Utility. [Ravi]\n- Reason codes: context‑driven by transaction type + merchant MCC; do not show irrelevant codes.\n\nInitiation — Chargeback\n- Chargeback can be “pending” or “immediate.” Required prompts block submission until completed; collect reasons and document links as needed.\n- Confirmation after submission: case number, subtype (pending vs immediate), and merchant response due date; also logged in the case timeline.\n- Letters: send chargeback notification via Letters app -> Print Letter Utility (use exact schema/format).\n- Adjustments: if an account credit/debit is needed, route the request to Cardmember Posting & Billing via API (no manual files).\n\nSelecting transactions\n- Only eligible transactions (age window per Reg/network). UI must block too‑old transactions. [Gloria to confirm exact day limit]\n- Direct entry from transaction list or statement detail; prefill from Statement DB (no re‑keying).\n- Multi‑transaction case: allow combining multiple transactions from the same merchant; enforce same‑merchant constraint.\n- Duplicate prevention: the system must prevent duplicate case creation for an already‑open matching pattern (cardmember + merchant + transaction(s) [+ reason as needed]). Zero tolerance—block 100% of duplicates. [Define key signature]\n\nSearch & listing\n- Search by: case number, merchant account number, cardmember account number, issuer number. Filters: date range, dispute type (TRR vs chargeback), case status (open/closed/all), reason code.\n- Results: clearly distinguish type and status; provide color cues paired with labels/icons (accessibility). Pagination as needed.\n- From results, open case details with history and follow‑ups.\n\nCase history & follow‑up\n- Maintain a full audit trail: each create/modify stamped with user + timestamp; system‑generated actions labeled “system.”\n- Users can view the complete timeline/history on the case.\n- Follow‑up actions menu filtered by case status and user access (e.g., hide actions that don’t apply to closed cases; view‑only users see fewer actions).\n- System events (aging, auto updates) create activity entries and trigger an in‑app notification for the case creator upon next sign‑in. [Ben to confirm infra]\n\nIntegrations\n- Source‑of‑truth: transaction details from Statement Database; cardmember details from Cardmember Information DB; merchant details from Merchant Information DB. Reference by IDs; no manual overrides.\n- Letters app integration: submit TRR/chargeback requests in Letters app schema, handed to Print Letter Utility for printing. [Validate before submit]\n- Posting & Billing: send adjustment requests via API; downstream posting may be asynchronous.\n\nCompliance\n- Map business rules to card network Merchant Operating Regulations and to Regulation E/Z as applicable (deadlines, reason eligibility, disclosures). [Gloria owns sign‑off]\n- No “efficiency” shortcuts that violate rules.\n\nSecurity + Access (recap)\n- Only authorized users can log in (internal SSO + external IdP). App should not bounce authenticated users unpredictably; adhere to security standards for session behavior.\n- Access model: View vs Update. Only Update role can initiate TRR/chargeback. External default = View.\n- Scope restriction: enforce issuer/cardholder‑base scoping in services and queries.\n\nOps/Non‑func\n- Availability target: 24×7 with maintenance windows (Mon–Sat 3–4 a.m. ET; Sun 1–5 a.m. ET). [Ben to publish calendar]\n- Navigation responsiveness target ~5s between screens. Scale target ~350 concurrent users without noticeable slowdown.\n- Retention: purge dispute cases from the online disputes database when they have been closed for more than 6 months. [Policy]\n- No direct DB or file access for end users. All updates happen through the application.\n\nUser Admin & Audit\n- Weekly “User Access Changes” report for A&R: includes new users and any access/role changes; include reinstatement events; timestamps; actor/admin recorded. [Asha to specify fields]\n- Revoked accounts: only System Administrator can reinstate. Log the event. [Mark]\n\nUX/Design\n- Follow corporate UI standards for internal and external portals. External palette differences OK; components from same library.\n- Lists: color cues paired with labels/icons for status/type. [Nina]\n- Stepper/wizard for initiation with clear required fields; plain‑language errors.\n\nContradictions/unclear [left as‑is]\n- External users “cannot request original receipt” — confirmed per Compliance. [Doc rationale]\n- Case search by issuer number: Luis says rarely used; Ops wants it. Decision: keep under Advanced.\n- Due date editable? No—derived from rules. Read‑only.\n- Color codes: example colors need accessibility check. [TBD final palette]\n\nAction items\n- [Gloria] Provide mapping of reason codes by transaction type + merchant MCC.\n- [Ravi] Confirm Letters app schema for TRR + chargeback; ensure Print Letter Utility formatting is followed.\n- [Ben] Document maintenance windows in app banner + status page; confirm in‑app notification mechanism.\n- [Priya] Finalize training objectives and adoption plan (two‑day training; all reps move to Compass at cutover).\n- [Nina] Prototype search with filters and accessible status cues; expose issuer number under Advanced.\n- [Asha] Define user access report fields (new users, role changes, reinstatements, timestamps, actors).\n- [Mark] Lock admin console so only SysAdmin can reinstate; log reinstatement.\n- [Team] Define duplicate detection signature and block logic; enforce at creation.\n\nOpen Issues / Parking Lot\n- Exact transaction age limits for eligibility (Reg/network). [Gloria]\n- Portfolio examples for UI help (car rental, hotel folio). [Nina]\n- Accessibility/contrast for status color accents. [Design]\n- Policy on whether closed cases can be reopened and by whom (role + status gating). [Policy]\n- Whether follow‑up action sets differ by internal sub‑roles beyond view/update. [Role matrix]\n- Letters app SLA for print handoff — confirm expectations. [Ravi]\n\nRandom notes\n- “No direct DB access” to be reinforced in all documentation and training.\n- Search: quick toggles (Open, Closed, All) in header.\n- History view: show actor + timestamp for all create/modify; system events labeled “system.”\n- Training materials to include checklists aligned to first‑attempt success goals."
+    },
+    {
+      "type": "email_thread",
+      "title": "Thread: Search filters, confirmations, adoption, duplicates, and audit/reporting alignment",
+      "text": "Email 1\nFrom: Priya Shah <priya.shah@company.com>\nTo: Nina Park <nina.park@company.com>, Ben Ortega <ben.ortega@company.com>\nCC: Gloria Chen <gloria.chen@company.com>, Mark Russo <mark.russo@company.com>, Luis Alvarez <luis.alvarez@company.com>, Dana Miller <dana.miller@company.com>, Ravi Patel <ravi.patel@company.com>, Asha Gupta <asha.gupta@company.com>\nSubject: Search + Case List + Confirmations + adoption — sanity check\nDate: Mon, Apr 7, 2025 8:12 AM\n\nHi all,\n\nCatching up on a few threads:\n\n1) Search inputs/filters: in scope to look up by case number, merchant account number, cardmember account number, and issuer number (issuer can live under Advanced). Filters: date range, dispute type (ticket retrieval vs chargeback), case status (open/closed/all), and reason code.\n\n2) Case list readability: let’s implement a simple way to tell open vs closed at a glance (color accents are ok) but pair with a label/icon for accessibility. Please stick to our design system.\n\n3) Confirmations: after creating a retrieval, show the generated case number, which retrieval flavor (copy/original/portfolio), and the merchant response due date (derived). Same for chargebacks: case number, whether it’s pending or immediate, and the merchant response date. Reps shouldn’t have to guess whether the action “took.”\n\n4) Adoption: we’re sunsetting the legacy dispute tool at cutover. The expectation is that, after the two‑day training sessions, 100% of cardmember services and merchant services reps use Chargeback Compass for disputes as part of their regular workflow.\n\nGloria/Mark — on audit: we’re still producing the weekly user admin report (new users + any role changes + reinstatements), correct? Also, confirm retention enforcement: closed cases older than six months should be purged from the online disputes database.\n\nThanks,\nPriya\n\n—\n\nEmail 2\nFrom: Luis Alvarez <luis.alvarez@company.com>\nTo: Priya Shah <priya.shah@company.com>\nCC: Nina Park <nina.park@company.com>, Ben Ortega <ben.ortega@company.com>, Gloria Chen <gloria.chen@company.com>, Mark Russo <mark.russo@company.com>, Ravi Patel <ravi.patel@company.com>, Dana Miller <dana.miller@company.com>\nSubject: RE: Search + Case List + Confirmations + adoption — sanity check\nDate: Mon, Apr 7, 2025 9:02 AM\n\nPriya,\n\nLooks good. Issuer under Advanced is perfect—Ops can use it; our reps won’t trip over it. On the list, please include the word “Open”/“Closed” so we pass accessibility checks. And yes, the confirmation needs to show case number + due date or the floor will flood us with “did it go through?” calls.\n\nOn adoption, understood—we’ll plan for everyone to be in Compass daily once they’ve gone through the two‑day training. One more request: make sure the case history shows who did what and when, for everything that changes the record. We get audited on that regularly.\n\nThanks,\nLuis\n\n—\n\nEmail 3\nFrom: Gloria Chen <gloria.chen@company.com>\nTo: Priya Shah <priya.shah@company.com>, Asha Gupta <asha.gupta@company.com>\nCC: Mark Russo <mark.russo@company.com>, Ben Ortega <ben.ortega@company.com>, Nina Park <nina.park@company.com>, Ravi Patel <ravi.patel@company.com>, Dana Miller <dana.miller@company.com>, Luis Alvarez <luis.alvarez@company.com>\nSubject: RE: Search + Case List + Confirmations + adoption — compliance notes\nDate: Mon, Apr 7, 2025 9:45 AM\n\nA few points from Compliance:\n\n- Reason codes must be context‑sensitive. The UI should not present a global list; it must reference transaction type AND merchant industry (MCC).\n\n- Duplicate prevention: we cannot allow a duplicate dispute to be created when an open case already exists that matches the cardmember/merchant/transaction(s) pattern. This needs to be blocked 100% of the time.\n\n- External users: reiterating — external‑facing roles must not be able to request the “original receipt” in the retrieval flow. Copy/portfolio are fine.\n\n- Letters: any request sent to the print pipeline must match the Print Letter Utility’s format exactly (we had rejections due to formatting last year).\n\n- Reg E/Z and network rules are non‑negotiable. Response windows and acceptable reasons must follow those rules precisely.\n\nAlso confirming Priya’s note on retention: closed cases older than six months must be purged from the online disputes database per policy.\n\n—G\n\nSent from my mobile, pls excuse typos\n\n—\n\nEmail 4\nFrom: Mark Russo <mark.russo@company.com>\nTo: Priya Shah <priya.shah@company.com>\nCC: Asha Gupta <asha.gupta@company.com>, Gloria Chen <gloria.chen@company.com>, Ben Ortega <ben.ortega@company.com>\nSubject: RE: Search + Case List + Confirmations + adoption — user report + reinstatement\nDate: Mon, Apr 7, 2025 10:18 AM\n\nPriya,\n\nYes, the system will output a weekly “User Access Changes” report. It includes new users and any role/access modifications (who changed what and when). We’ll also include reinstatement events. A&R is the primary consumer; Compliance can be CC’d.\n\nSeparately, reinstatement is limited to System Admin. No business admins will have that control. And reinforcing our guardrails: end users have no direct DB or file access—everything goes through the app so we maintain a trail.\n\n—Mark\n\n—\n\nEmail 5\nFrom: Nina Park <nina.park@company.com>\nTo: Priya Shah <priya.shah@company.com>, Luis Alvarez <luis.alvarez@company.com>\nCC: Ben Ortega <ben.ortega@company.com>, Gloria Chen <gloria.chen@company.com>, Ravi Patel <ravi.patel@company.com>, Dana Miller <dana.miller@company.com>\nSubject: RE: Search + Case List + Confirmations + adoption — design take + a couple Qs\nDate: Mon, Apr 7, 2025 11:06 AM\n\nHi,\n\nDesign approach:\n- Search: fields for case #, merchant acct #, cardmember acct #, with issuer # under an Advanced panel. Filters for date range, dispute type (TRR vs chargeback), status (open/closed/all), and reason code. Reason code dropdown will be context‑aware once a transaction + industry are known (pending Gloria’s mapping).\n\n- List view: subtle color accents paired with a text label and small icon (e.g., “Open”/“Closed”). All components from the design system.\n\n- Confirmations: full‑screen confirmation for both flows with case number, subtype (“pending” vs “immediate” for chargeback; “copy”/“original”/“portfolio” for TRR), and merchant response due date.\n\nQuestions:\n1) Case history—confirm we show actor + timestamp for every create/modify event. Any concerns about volume?\n2) Follow‑up actions—plan is to hide non‑applicable actions based on status and access level. Any exceptions I should know about?\n3) Letters—can we assume the Print Letter Utility schema is stable enough to validate before submitting?\n\nThanks!\n\nNina\n\n—\n\nEmail 6\nFrom: Ben Ortega <ben.ortega@company.com>\nTo: Nina Park <nina.park@company.com>, Priya Shah <priya.shah@company.com>\nCC: Gloria Chen <gloria.chen@company.com>, Mark Russo <mark.russo@company.com>, Ravi Patel <ravi.patel@company.com>, Luis Alvarez <luis.alvarez@company.com>, Dana Miller <dana.miller@company.com>\nSubject: RE: Search + Case List + Confirmations + adoption — infra + flow clarifications\nDate: Mon, Apr 7, 2025 12:02 PM\n\nQuick answers + plumbing notes:\n\n- History: yes, we’ll capture user + datetime for any create/modify, and we’ll add “system” entries when background jobs touch a case. Users can view the full history on the case details screen.\n\n- Follow‑up: hiding actions that don’t fit the current status or the user’s role is the plan. View‑only users won’t see initiate/escalate.\n\n- Letters: per Ravi, the Print Letter Utility schema is quirky but stable. We’ll validate before sending to avoid rejections.\n\n- Duplicates: engineering will define the composite key (cardmember + merchant + transaction(s) [+ reason if required]) and block creation if there’s an existing open case that matches. The goal is to prevent duplicates entirely.\n\n- Reason codes: we’ll wire to a service that computes the eligible set from transaction type + MCC so we avoid a global dump.\n\n- Viewing existing cases: search results will deep link into case details with history and follow‑ups visible.\n\n- Performance/availability tracked elsewhere: navigation around ~5 seconds; maintenance windows as agreed; concurrency target 350 concurrent sessions.\n\n- Adjustments: when chargebacks trigger adjustments, we’ll route requests to Posting & Billing via API. Downstream posting may be asynchronous.\n\nOpen items:\n- Need Compliance to finalize the transaction‑age gate for eligibility so we can enforce it in the UI.\n- Nina — we may need to tweak color accents to meet contrast ratios while keeping the label/icon visible.\n\n-Ben\n\n—\n\nEmail 7\nFrom: Asha Gupta <asha.gupta@company.com>\nTo: Mark Russo <mark.russo@company.com>, Priya Shah <priya.shah@company.com>\nCC: Gloria Chen <gloria.chen@company.com>, Ben Ortega <ben.ortega@company.com>, Nina Park <nina.park@company.com>\nSubject: RE: User report + history details (audit POV)\nDate: Mon, Apr 7, 2025 1:20 PM\n\nConfirming audit asks:\n- Weekly User Access Changes report: include new users (username, role(s), timestamp, admin who added), role changes (old vs new, who changed, timestamp), and reinstatement events (who requested, who approved, timestamp).\n- Case‑level history must show actor + date/time for all create/modify actions. We will review this periodically.\n- Letters must be submitted in the exact Print Letter Utility format to avoid gaps.\n- Retention: per policy, purge cases closed more than six months from the online disputes database.\n\nThanks,\nAsha"
+    }
+  ],
+  "gold_requirements": [
+    {
+      "id": "PROMISE_4_R001",
+      "text": "The Disputes application shall comply with the corporate standards for user interface creation for internally and externally used applications.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R002",
+      "text": "All screens created as part of the Disputes application must comply with corporate standards for interface creation.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R003",
+      "text": "The list of dispute cases that are displayed after a search is performed must be color coded for easy identification of dispute cases based upon the dispute case status.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R004",
+      "text": "100% of the cardmember and merchant services representatives shall use the Disputes application regularly after a 2-day training course.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R005",
+      "text": "100% of cardmember services representatives shall be able to successfully create a dispute case on the first encounter after completing the training course.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R006",
+      "text": "100% of merchant services representatives shall be able to successfully perform a follow up action on a dispute case on the first encounter after completing the training course.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R007",
+      "text": "The maximum wait time for a user navigating from one screen to another within the Disputes application shall be no more than 5 seconds.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R008",
+      "text": "The Disputes application shall support 350 concurrent users without any degradation of performance in the application.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R009",
+      "text": "The Disputes application shall be available 24x7x365 with the exception of the following scheduled maintenance windows. Monday Saturday 3:00am to 4:00am EST Sunday 1:00amd to 5:00am EST",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R010",
+      "text": "The Disputes application shall interface with the Statement Database. The Statement Database provides the transaction details to the Disputes System. All transaction details must be obtained from the Statement Database",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R011",
+      "text": "The Disputes application shall interface with the Cardmember Information Database. The Cardmember Information Database provides detailed information with regard to a cardmember. All cardmember detail information must be obtained from the Cardmember Information Database.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R012",
+      "text": "The Disputes applications shall interface with the Merchant Information Database. The Merchant Information Database provides detailed information with regard to the merchant. All merchant detail information shall be obtained from the Merchant Information Database.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R013",
+      "text": "The Disputes application shall interface with the Letters application. This will allow the Disputes application to request letters as part of the dispute initiation and dispute follow up process. All letter requests must be sent to the Print Letter Utility application.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R014",
+      "text": "The Disputes application shall interface with the Cardmember Posting and Billing System. This will allow the Disputes application to request adjustments to cardmember and merchant s accounts. All adjustment requests must be sent to the Cardmember Posting and Billing System.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R015",
+      "text": "The Disputes application shall ensure that only users with the appropriate access level are allowed to initiate dispute requests.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R016",
+      "text": "Only users with Update access must be able to initiate dispute requests.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R017",
+      "text": "The Disputes application shall ensure that only authorized users are allowed to logon to the application.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R018",
+      "text": "All authorized users once authenticated must be able to logon to the Disputes System",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R019",
+      "text": "The Disputes System shall generate a User Report that details any new users that have been added and any changes to an existing user s access level. The report will be reviewed for auditing purposes.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R020",
+      "text": "All additions of new users and modifications to user s access shall be recorded on the User Report.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R021",
+      "text": "If a user account is revoked it can only be re-instantiated by the System Administrator.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R022",
+      "text": "Only the System Administrator shall be able to reset a revoked user logon account",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R023",
+      "text": "The Disputes application shall manipulate and view business data. Users will not have direct access to data files or databases.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R024",
+      "text": "All updates to data files or database must be initiated from the Disputes System.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R025",
+      "text": "The Disputes application must conform to the legal requirements as specified by the Merchant Operating Regulations.",
+      "raw_label": "L",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "compliance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R026",
+      "text": "All business rules specified in the Disputes System shall be in compliance with the Merchant Operating Regulations.",
+      "raw_label": "L",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "compliance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R027",
+      "text": "The Disputes application must conform to the legal requirements as specified by Regulation E and Regulation Z that govern credit card disputes processing.",
+      "raw_label": "L",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "compliance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R028",
+      "text": "All business rules specified in the Disputes System shall be in compliance to the guidelines of Regulation E and Regulation Z.",
+      "raw_label": "L",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "compliance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R029",
+      "text": "The Disputes application must maintain a detailed history of every action that a user takes on a dispute case. This ensures a complete audit trail if questions arise later on with regard to a particular dispute case.",
+      "raw_label": "L",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "compliance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R030",
+      "text": "All actions that modify an existing dispute case must be recorded in the case history.",
+      "raw_label": "L",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "compliance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R031",
+      "text": "The Disputes System must be accessible by both internal and external users.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R032",
+      "text": "The Disputes System must prevent users from accessing any dispute cases that do not belong to their cardholder base.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R033",
+      "text": "The Disputes System will facilitate direct data entry of a dispute case via a user interface that supports real time responses to the users.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R034",
+      "text": "The Disputes System must provide different levels of access with regard to disputes case initiation and follow-up actions.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R035",
+      "text": "The Disputes System shall provide view access capability for authorized users of the application.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R036",
+      "text": "The Disputes System shall provide update access capability for authorized users of the application.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R037",
+      "text": "The Disputes System must allow the users to select disputable transactions (based on the age of the transaction) from a user interface and initiate a dispute (ticket retrieval request or chargeback notification) on the selected transaction.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R038",
+      "text": "The Disputes System must provide the user the ability to initiate a single dispute case on multiple transactions that belong to a single merchant.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R039",
+      "text": "The Disputes System will provide the user the ability to create or initiate a ticket retrieval request. As part of ticket retrieval creation process the system must prompt the user to enter all the required information to create the ticket retrieval request. The ticket retrieval request is a document that is sent to merchant inquiring the validity of a transaction.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R040",
+      "text": "The Disputes System must allow the user to create three unique types of ticket retrieval requests. The three types of ticket retrieval requests are (1) Request for original receipt (2) Request for a copy of the receipt or (3) Request for a portfolio. A portfolio consists of documentation that would provide proof of a purchase such as the documentation that is received from a car rental agency that is more than a sales receipt.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R041",
+      "text": "The Disputes System must prevent external users from requesting original receipts. Requests for original receipts are restricted to internal users.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R042",
+      "text": "The Disputes System must provide a confirmation to the user upon the creation of ticket retrieval request that contains the following information; the dispute case number the type of retrieval requested (copy original or portfolio) and the date that the merchant response is due.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R043",
+      "text": "The Disputes System shall allow the user to create or initiate a chargeback request. The system must prompt the user to enter the required information to initiate a chargeback request. The chargeback request results in a printed chargeback notification that is sent to merchant indicating that their account will be charged back if no proof is provided that the disputed transaction is valid.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R044",
+      "text": "The Disputes System must provide a confirmation to the user upon the creation of a chargeback request. The confirmation must contain the following information; the dispute case number the type of chargeback requested (pending or immediate) and the date that the merchant response is due.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R045",
+      "text": "The Disputes System shall prevent the creation of duplicate dispute requests 100% of the time.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R046",
+      "text": "The Disputes System shall accurately provide a list of possible reason codes for a given transaction. The list of possible reason codes must be derived based on the type of transaction and the industry that the merchant belongs to according to the business rules defined for the Disputes System.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R047",
+      "text": "The Disputes System must provide the ability to view existing dispute cases.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R048",
+      "text": "The Disputes System must provide Search functionality. The search method must include the ability to search by (1) the dispute case number (2) the merchant account number (3) the cardmember account number and (4) the issuer number. In addition to the above criteria the search functionality must further allow the user to limit the results of the search by a date range the type of dispute (ticket retrieval request or chargeback notification) the case status (open closed or all) and the dispute reason code.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R049",
+      "text": "A list of all disputes cases that meet the entered search criteria must be provided to the user. The list of cases must differentiate the type and/or status of the case by color -coding the line item in the list. For example all open cases will be yellow and all closed cases will be gray.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R050",
+      "text": "The Disputes System shall provide the users the ability to view the history of all activities that have occurred on the dispute case.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R051",
+      "text": "The Dispute System shall provide the users with the ability to follow up on a dispute case via follow-up actions. The list of available follow up actions for a given dispute case must be filtered by the status of the case and the access level of the user.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R052",
+      "text": "The Disputes System shall record the name of the user and the date for any activity that creates or modifies the disputes case in the system. A detailed history of the actions taken on the case including the date and the user that performed the action must be maintained for auditing purposes.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R053",
+      "text": "For any systematic (non-user initiated) action that occurs on a case such as the disputes aging process a case activity will be generated. Upon the next logon the user that initiated the dispute case must be notified that a systematic action has occurred on the dispute case.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R054",
+      "text": "All letter requests must be formatted according to guidelines specified by the Print Letter Utility system.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_4_R055",
+      "text": "Any disputes cases that have been closed for over 6 months must be purged from the online disputes database.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    }
+  ],
+  "validation": {
+    "coverage_rate": 1.0,
+    "missing_req_ids": [],
+    "unsupported_count": 3,
+    "repair_rounds_used": 1,
+    "coverage_entries": [
+      {
+        "req_id": "PROMISE_4_R001",
+        "supported": true,
+        "evidence_snippets": [
+          "use the corporate UI standards"
+        ],
+        "reason": "Source explicitly mandates corporate UI standards for internal/external apps."
+      },
+      {
+        "req_id": "PROMISE_4_R002",
+        "supported": true,
+        "evidence_snippets": [
+          "Please stick to our design system"
+        ],
+        "reason": "Design system/corporate standards cited for UI consistency across screens."
+      },
+      {
+        "req_id": "PROMISE_4_R003",
+        "supported": true,
+        "evidence_snippets": [
+          "Color cues are fine for status"
+        ],
+        "reason": "Meetings/emails require color cues paired with labels/icons for status."
+      },
+      {
+        "req_id": "PROMISE_4_R004",
+        "supported": true,
+        "evidence_snippets": [
+          "after the two‑day training, all will use Compass"
+        ],
+        "reason": "PO and notes state 100% of reps will use Compass after training."
+      },
+      {
+        "req_id": "PROMISE_4_R005",
+        "supported": true,
+        "evidence_snippets": [
+          "first‑try success for case creation by cardmember"
+        ],
+        "reason": "Training goal explicitly includes first‑try success for case creation."
+      },
+      {
+        "req_id": "PROMISE_4_R006",
+        "supported": true,
+        "evidence_snippets": [
+          "first‑try success for follow‑up by merchant reps"
+        ],
+        "reason": "Notes specify first‑try success for merchant reps performing follow‑ups."
+      },
+      {
+        "req_id": "PROMISE_4_R007",
+        "supported": true,
+        "evidence_snippets": [
+          "around five seconds max to move between screens"
+        ],
+        "reason": "Performance target of ~5 seconds between screens appears in sources."
+      },
+      {
+        "req_id": "PROMISE_4_R008",
+        "supported": true,
+        "evidence_snippets": [
+          "handle roughly 350 concurrent users"
+        ],
+        "reason": "Scale target of 350 concurrent users without slowdown is stated."
+      },
+      {
+        "req_id": "PROMISE_4_R009",
+        "supported": true,
+        "evidence_snippets": [
+          "Availability 24/7; Mon–Sat 3–4am; Sun 1–5am ET"
+        ],
+        "reason": "Availability and explicit maintenance windows are documented in sources."
+      },
+      {
+        "req_id": "PROMISE_4_R010",
+        "supported": true,
+        "evidence_snippets": [
+          "transaction details from Statement Database"
+        ],
+        "reason": "Sources require transaction details come from the Statement Database."
+      },
+      {
+        "req_id": "PROMISE_4_R011",
+        "supported": true,
+        "evidence_snippets": [
+          "cardmember details from Cardmember Information DB"
+        ],
+        "reason": "Source-of-truth mapping explicitly names that DB."
+      },
+      {
+        "req_id": "PROMISE_4_R012",
+        "supported": true,
+        "evidence_snippets": [
+          "merchant details from Merchant Information DB"
+        ],
+        "reason": "Meeting notes specify merchant details come from that DB."
+      },
+      {
+        "req_id": "PROMISE_4_R013",
+        "supported": true,
+        "evidence_snippets": [
+          "handed to Print Letter Utility",
+          "Letters app integration"
+        ],
+        "reason": "Notes/emails describe Letters app + Print Letter Utility integration."
+      },
+      {
+        "req_id": "PROMISE_4_R014",
+        "supported": true,
+        "evidence_snippets": [
+          "Cardmember Posting & Billing: send adjustment requests via API"
+        ],
+        "reason": "Meeting notes require adjustment requests sent to Posting & Billing."
+      },
+      {
+        "req_id": "PROMISE_4_R015",
+        "supported": true,
+        "evidence_snippets": [
+          "enforce view vs update separation",
+          "view vs update access model"
+        ],
+        "reason": "Documents require role-based view vs update gating."
+      },
+      {
+        "req_id": "PROMISE_4_R016",
+        "supported": true,
+        "evidence_snippets": [
+          "Only Update role can initiate TRR/chargeback",
+          "Only users with Update can initiate"
+        ],
+        "reason": "Several artifacts state only Update users may initiate."
+      },
+      {
+        "req_id": "PROMISE_4_R017",
+        "supported": true,
+        "evidence_snippets": [
+          "authorized users only, no guest access",
+          "Only authorized users can log in"
+        ],
+        "reason": "Login restrictions for authorized users are expressly required."
+      },
+      {
+        "req_id": "PROMISE_4_R018",
+        "supported": true,
+        "evidence_snippets": [
+          "app should not bounce authenticated users unpredictably",
+          "once people are authenticated the app shouldn’t bounce them"
+        ],
+        "reason": "Sources require authenticated users remain logged in reliably."
+      },
+      {
+        "req_id": "PROMISE_4_R019",
+        "supported": true,
+        "evidence_snippets": [
+          "weekly 'User Access Changes' report",
+          "User Access Changes report for A&R"
+        ],
+        "reason": "Weekly user-access report is specified for auditing purposes."
+      },
+      {
+        "req_id": "PROMISE_4_R020",
+        "supported": true,
+        "evidence_snippets": [
+          "includes new users and any role/access modifications",
+          "report includes reinstatement events"
+        ],
+        "reason": "Report must record new users and access modifications explicitly."
+      },
+      {
+        "req_id": "PROMISE_4_R021",
+        "supported": true,
+        "evidence_snippets": [
+          "only System Administrator can reinstate"
+        ],
+        "reason": "Reinstatement limited to system admin asserted multiple times."
+      },
+      {
+        "req_id": "PROMISE_4_R022",
+        "supported": true,
+        "evidence_snippets": [
+          "reinstatement is limited to System Admin"
+        ],
+        "reason": "System Admin is defined as sole reinstatement authority."
+      },
+      {
+        "req_id": "PROMISE_4_R023",
+        "supported": true,
+        "evidence_snippets": [
+          "No direct DB or file access for end users."
+        ],
+        "reason": "Documents state end users have no direct DB/file access."
+      },
+      {
+        "req_id": "PROMISE_4_R024",
+        "supported": true,
+        "evidence_snippets": [
+          "All updates go through the application."
+        ],
+        "reason": "Updates must be performed via the application, not directly."
+      },
+      {
+        "req_id": "PROMISE_4_R025",
+        "supported": true,
+        "evidence_snippets": [
+          "Merchant Operating Regulations"
+        ],
+        "reason": "Business must map to and conform with network operating rules."
+      },
+      {
+        "req_id": "PROMISE_4_R026",
+        "supported": true,
+        "evidence_snippets": [
+          "Map business rules to Merchant Operating Regulations"
+        ],
+        "reason": "Meeting notes require business rules align to those regulations."
+      },
+      {
+        "req_id": "PROMISE_4_R027",
+        "supported": true,
+        "evidence_snippets": [
+          "align to Regulation E or Z"
+        ],
+        "reason": "Compliance requires alignment to Regulation E and Z."
+      },
+      {
+        "req_id": "PROMISE_4_R028",
+        "supported": true,
+        "evidence_snippets": [
+          "Map business rules to Regulation E/Z"
+        ],
+        "reason": "Business rules must comply with Reg E/Z per notes."
+      },
+      {
+        "req_id": "PROMISE_4_R029",
+        "supported": true,
+        "evidence_snippets": [
+          "full audit trail: each create/modify stamped"
+        ],
+        "reason": "Sources mandate detailed audit trail for every case touch."
+      },
+      {
+        "req_id": "PROMISE_4_R030",
+        "supported": true,
+        "evidence_snippets": [
+          "capture user and timestamp on any create/modify"
+        ],
+        "reason": "All modifying actions are recorded in the case history."
+      },
+      {
+        "req_id": "PROMISE_4_R031",
+        "supported": true,
+        "evidence_snippets": [
+          "Dual‑audience app (internal + external)"
+        ],
+        "reason": "Spec explicitly targets internal and external users."
+      },
+      {
+        "req_id": "PROMISE_4_R032",
+        "supported": true,
+        "evidence_snippets": [
+          "users access only their assigned cardholder base"
+        ],
+        "reason": "Documents require issuer partitioning and guardrails."
+      },
+      {
+        "req_id": "PROMISE_4_R033",
+        "supported": true,
+        "evidence_snippets": [
+          "Start a retrieval from an eligible transaction view"
+        ],
+        "reason": "UI supports direct entry and real‑time transaction views."
+      },
+      {
+        "req_id": "PROMISE_4_R034",
+        "supported": true,
+        "evidence_snippets": [
+          "View vs Update. Only Update role can initiate"
+        ],
+        "reason": "Role‑based permissions control initiation and follow‑ups."
+      },
+      {
+        "req_id": "PROMISE_4_R035",
+        "supported": true,
+        "evidence_snippets": [
+          "view‑only users see fewer actions"
+        ],
+        "reason": "Spec defines view‑only access for authorized users."
+      },
+      {
+        "req_id": "PROMISE_4_R036",
+        "supported": true,
+        "evidence_snippets": [
+          "Only Update role can initiate TRR/chargeback"
+        ],
+        "reason": "Update privilege grants initiation and update capabilities."
+      },
+      {
+        "req_id": "PROMISE_4_R037",
+        "supported": true,
+        "evidence_snippets": [
+          "Only eligible transactions (age window per Reg/network)"
+        ],
+        "reason": "UI must block too‑old transactions and allow dispute initiation."
+      },
+      {
+        "req_id": "PROMISE_4_R038",
+        "supported": true,
+        "evidence_snippets": [
+          "allow combining multiple transactions from the same merchant"
+        ],
+        "reason": "Multi‑transaction cases allowed if same‑merchant constraint met."
+      },
+      {
+        "req_id": "PROMISE_4_R039",
+        "supported": true,
+        "evidence_snippets": [
+          "Guided fields (wizard/stepper) collect required info"
+        ],
+        "reason": "TRR creation is a guided UI and produces a merchant letter."
+      },
+      {
+        "req_id": "PROMISE_4_R040",
+        "supported": true,
+        "evidence_snippets": [
+          "TRR types: original receipt, copy, portfolio"
+        ],
+        "reason": "Three TRR types specified; portfolio defined in notes."
+      },
+      {
+        "req_id": "PROMISE_4_R041",
+        "supported": true,
+        "evidence_snippets": [
+          "external users must NOT request 'original'"
+        ],
+        "reason": "Meeting and transcript state original receipt is internal‑only."
+      },
+      {
+        "req_id": "PROMISE_4_R042",
+        "supported": true,
+        "evidence_snippets": [
+          "show a full confirmation—case number, type, due date"
+        ],
+        "reason": "Notes and emails require confirmation with case, type, due date."
+      },
+      {
+        "req_id": "PROMISE_4_R043",
+        "supported": true,
+        "evidence_snippets": [
+          "Chargeback can be 'pending' or 'immediate.'",
+          "send chargeback notification via Letters app"
+        ],
+        "reason": "Chargeback flow, required prompts, and printed notification specified."
+      },
+      {
+        "req_id": "PROMISE_4_R044",
+        "supported": true,
+        "evidence_snippets": [
+          "confirmation: case number, pending/immediate, due date"
+        ],
+        "reason": "Documentation mandates confirmations with case, type, and due date."
+      },
+      {
+        "req_id": "PROMISE_4_R045",
+        "supported": true,
+        "evidence_snippets": [
+          "Zero tolerance—block 100% of duplicates."
+        ],
+        "reason": "Compliance and notes explicitly require blocking duplicates 100%."
+      },
+      {
+        "req_id": "PROMISE_4_R046",
+        "supported": true,
+        "evidence_snippets": [
+          "Reason codes context‑sensitive by txn type and MCC"
+        ],
+        "reason": "Multiple sources require reason codes derived from type and MCC."
+      },
+      {
+        "req_id": "PROMISE_4_R047",
+        "supported": true,
+        "evidence_snippets": [
+          "open case details with history and follow‑ups"
+        ],
+        "reason": "Search/listing and UI notes describe viewing existing cases."
+      },
+      {
+        "req_id": "PROMISE_4_R048",
+        "supported": true,
+        "evidence_snippets": [
+          "Search by case#, merchant acct#, cardmember#, issuer#",
+          "Filters: date range, dispute type, status, reason code"
+        ],
+        "reason": "Meeting notes and emails list these search fields and filters."
+      },
+      {
+        "req_id": "PROMISE_4_R049",
+        "supported": true,
+        "evidence_snippets": [
+          "color cues paired with labels/icons",
+          "color accents paired with a text label"
+        ],
+        "reason": "List view must distinguish type/status with color and labels."
+      },
+      {
+        "req_id": "PROMISE_4_R050",
+        "supported": true,
+        "evidence_snippets": [
+          "full audit trail: user + timestamp on create/modify",
+          "view the complete timeline/history on the case"
+        ],
+        "reason": "Audit trail and full case history viewing are repeatedly required."
+      },
+      {
+        "req_id": "PROMISE_4_R051",
+        "supported": true,
+        "evidence_snippets": [
+          "show actions that apply to the case’s current status",
+          "Follow‑up actions menu filtered by case status and user access"
+        ],
+        "reason": "Source explicitly requires filtered follow‑up actions"
+      },
+      {
+        "req_id": "PROMISE_4_R052",
+        "supported": true,
+        "evidence_snippets": [
+          "who did what and when",
+          "each create/modify stamped with user + timestamp"
+        ],
+        "reason": "Source mandates full audit trail with user and timestamp"
+      },
+      {
+        "req_id": "PROMISE_4_R053",
+        "supported": true,
+        "evidence_snippets": [
+          "system updates ... put a new entry in the history",
+          "trigger an in‑app notification for the case creator"
+        ],
+        "reason": "Source requires system events create activity and notify creator"
+      },
+      {
+        "req_id": "PROMISE_4_R054",
+        "supported": true,
+        "evidence_snippets": [
+          "formatted to Letters app spec -> Print Letter Utility",
+          "must match the Print Letter Utility’s format exactly"
+        ],
+        "reason": "Source requires letters follow Print Letter Utility format"
+      },
+      {
+        "req_id": "PROMISE_4_R055",
+        "supported": true,
+        "evidence_snippets": [
+          "purge dispute cases from the online disputes database",
+          "closed cases older than six months must be purged"
+        ],
+        "reason": "Source specifies six‑month online purge of closed cases"
+      }
+    ],
+    "unsupported_implied": [
+      {
+        "text": "System notifications for system-driven case updates must be delivered only as in‑app alerts on next sign‑in; email notifications must not be used for these notifications.",
+        "source_snippet": "When the system updates a case automatically—aging, deadlines—we’ll put a new entry in the history and show a notification to the case’s creator the next time they sign in. No emails, just an in‑app alert.",
+        "source_type": "interview_transcript",
+        "reason": "The gold set requires notification on next logon for system actions but does not prohibit or restrict alternate channels; the source explicitly mandates in‑app‑only notifications and forbids email, which is a distinct constraint on notification delivery not present in the gold requirements."
+      },
+      {
+        "text": "The weekly User Access Changes report must include audit fields: timestamps and the actor/admin (who performed the add/change/reinstatement) for new users, role changes, and reinstatements.",
+        "source_snippet": "Weekly “User Access Changes” report for A&R: includes new users and any access/role changes; include reinstatement events; timestamps; actor/admin recorded. [Asha to specify fields]",
+        "source_type": "meeting_notes",
+        "reason": "While the gold set requires a User Report of new users and access changes, it does not mandate specific audit fields; the source explicitly requires timestamps and the acting admin/actor be recorded on the weekly report, which is a specific reporting capability not specified in the gold requirements."
+      },
+      {
+        "text": "Once authenticated and authorization validated, the application must preserve user session continuity and must not unexpectedly sign users out (session stability behavior aligned to security policy).",
+        "source_snippet": "For sign‑in, once people are authenticated and their permissions are validated, the app shouldn’t randomly bounce them. We’ll follow security policy for session timeouts.",
+        "source_type": "interview_transcript",
+        "reason": "The gold requirements mandate authorized login but do not specify session stability or prohibiting unexpected sign‑outs; the source introduces a behavioral requirement that authenticated users should not be unpredictably logged out and that session handling must follow policy, which is a significant operational/session management capability not covered by the gold set."
+      }
+    ],
+    "passed": false
+  },
+  "brief": {
+    "project_name": "Chargeback Compass",
+    "domain": "Financial services — credit card disputes management",
+    "users": [
+      "Cardmember Services Representative",
+      "Merchant Services Representative"
+    ],
+    "stakeholders": [
+      "System Administrator",
+      "Compliance/Legal Officer",
+      "Audit & Risk Team",
+      "IT Operations",
+      "Product Owner — Disputes",
+      "Merchant Relations Manager"
+    ],
+    "business_goals": [
+      "Resolve disputes quickly and consistently across internal and external teams",
+      "Maintain airtight regulatory compliance and end‑to‑end auditability",
+      "Protect cardholders and merchants by preventing errors and duplicate cases",
+      "Provide a single, always‑available tool that integrates with systems of record",
+      "Improve first‑day productivity with short training and intuitive UI"
+    ],
+    "core_features": [
+      "Dual‑audience access (internal/external) with role‑based permissions for view vs. update and guardrails that restrict users to their own cardholder base",
+      "Powerful search by case, merchant, cardmember, or issuer, with filters for date range, dispute type, status, and reason code; results use color cues by type/status",
+      "Direct entry to start disputes from eligible transactions; one case can cover multiple transactions for a single merchant; duplicate detection; contextual reason codes based on transaction type and merchant industry",
+      "Ticket Retrieval Requests (original, copy, portfolio) with guided fields and due‑date confirmation; external users are not allowed to request originals",
+      "Chargeback initiation (pending or immediate) with required prompts and a confirmation showing case number, type, and merchant response due date",
+      "Comprehensive case history with user/time stamps; follow‑up actions filtered by case status and user access; system‑generated events notify the case creator on next sign‑in",
+      "Integrated letters and account adjustments: requests formatted for the Print Letter Utility and adjustments routed to the Posting & Billing system"
+    ],
+    "quality_concerns": [
+      "UI adheres to corporate design standards for both internal and external applications",
+      "Easy to learn: 2‑day training target with first‑attempt success for key tasks",
+      "Responsive navigation between screens (around 5 seconds or faster)",
+      "Scales to roughly 350 concurrent users without noticeable slowdown",
+      "Strong authentication and authorization; only appropriately privileged users can initiate disputes",
+      "Data integrity and auditability: no direct database access by users, full action history, and user access change reporting for audits"
+    ],
+    "constraints": [
+      "24×7 availability with scheduled maintenance windows (Mon–Sat 3–4am ET; Sun 1–5am ET)",
+      "Mandatory integrations: Statement DB, Cardmember Information DB, Merchant Information DB, Letters app/Print Letter Utility, and Cardmember Posting & Billing",
+      "Source‑of‑truth policy: transaction, cardmember, and merchant details must come from their respective databases",
+      "Must align with Merchant Operating Regulations and with Regulation E/Z; business rules follow these guidelines",
+      "Online retention policy: purge dispute cases closed for more than 6 months",
+      "Account governance: only the System Administrator may reinstate revoked user accounts",
+      "All data updates occur through the application; no direct file or database access by end users"
+    ],
+    "terminology": [
+      "Dispute case",
+      "Ticket Retrieval Request (original, copy, portfolio)",
+      "Chargeback (pending, immediate)",
+      "Reason code",
+      "Issuer number",
+      "Case status (open, closed)",
+      "Print Letter Utility"
+    ]
+  },
+  "metadata": {
+    "project_id": "4",
+    "req_count": 55,
+    "label_dist": {
+      "LF": 2,
+      "US": 4,
+      "PE": 2,
+      "O": 6,
+      "SE": 10,
+      "L": 6,
+      "F": 25
+    },
+    "llm_usage": {
+      "total_calls": 62,
+      "total_input_tokens": 374277,
+      "total_output_tokens": 220502
+    }
+  }
+}

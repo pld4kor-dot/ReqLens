@@ -1,0 +1,664 @@
+{
+  "coverage_rate": 0.8481,
+  "missing_req_ids": [
+    "PROMISE_3_R004",
+    "PROMISE_3_R006",
+    "PROMISE_3_R060",
+    "PROMISE_3_R057",
+    "PROMISE_3_R053",
+    "PROMISE_3_R058",
+    "PROMISE_3_R055",
+    "PROMISE_3_R059",
+    "PROMISE_3_R051",
+    "PROMISE_3_R056",
+    "PROMISE_3_R052",
+    "PROMISE_3_R054"
+  ],
+  "unsupported_count": 3,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PROMISE_3_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "Easy/intuitive; 1-day training -> staff productive"
+      ],
+      "reason": "Sources repeatedly demand ease for program staff."
+    },
+    {
+      "req_id": "PROMISE_3_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "One day of training and maybe a quick reference"
+      ],
+      "reason": "Stakeholders explicitly expect one day training to be sufficient."
+    },
+    {
+      "req_id": "PROMISE_3_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "conflict-aware so you can’t place same cohort"
+      ],
+      "reason": "Requirements call for conflict blocks and input validation to avoid errors."
+    },
+    {
+      "req_id": "PROMISE_3_R004",
+      "supported": false,
+      "evidence_snippets": [
+        "No mention of 50% reduction goal"
+      ],
+      "reason": "No numeric student-complaint reduction target appears in sources."
+    },
+    {
+      "req_id": "PROMISE_3_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "Keep it straightforward. I don’t want staff fiddling"
+      ],
+      "reason": "Documents explicitly require an intuitive, straightforward UI for staff."
+    },
+    {
+      "req_id": "PROMISE_3_R006",
+      "supported": false,
+      "evidence_snippets": [
+        "No quantified success rate specified"
+      ],
+      "reason": "No explicit 2-in-3 success metric or acceptance threshold is given."
+    },
+    {
+      "req_id": "PROMISE_3_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "standard nursing language in clear English"
+      ],
+      "reason": "Sources require use of natural, familiar nursing terminology and labels."
+    },
+    {
+      "req_id": "PROMISE_3_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "standard nursing terminology + clear English"
+      ],
+      "reason": "Documents request Standard English and standard nursing terminology."
+    },
+    {
+      "req_id": "PROMISE_3_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "Timely task completion (no waiting around)"
+      ],
+      "reason": "Performance and timely completion expectations are stated for staff tasks."
+    },
+    {
+      "req_id": "PROMISE_3_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "typical actions ~5s or faster; generation <=30s"
+      ],
+      "reason": "Sources specify ~5s for common actions and <=30s for generation."
+    },
+    {
+      "req_id": "PROMISE_3_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "Official window is eight to six."
+      ],
+      "reason": "Specifies 8am–6pm availability window."
+    },
+    {
+      "req_id": "PROMISE_3_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "Target about ninety-five percent uptime"
+      ],
+      "reason": "95% uptime target stated explicitly."
+    },
+    {
+      "req_id": "PROMISE_3_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "Handle usage during business hours."
+      ],
+      "reason": "Documents require handling business-hours activity."
+    },
+    {
+      "req_id": "PROMISE_3_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "ten concurrent staff is our reality."
+      ],
+      "reason": "Concurrency of ~10 users during workday specified."
+    },
+    {
+      "req_id": "PROMISE_3_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "handle all nursing students/classes now + growth"
+      ],
+      "reason": "Requirement to support all students/classes over next 10 years."
+    },
+    {
+      "req_id": "PROMISE_3_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "we want at least five years out of this."
+      ],
+      "reason": "Five-year useful life expectation is explicitly stated."
+    },
+    {
+      "req_id": "PROMISE_3_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "Office environment: Win XP Pro desktops; no heavy"
+      ],
+      "reason": "Office environment constraints and expectations are described."
+    },
+    {
+      "req_id": "PROMISE_3_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "building for XP Pro desktops, browser-based"
+      ],
+      "reason": "System must run per staff computers' specifications."
+    },
+    {
+      "req_id": "PROMISE_3_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "Windows XP Pro. Yes, ancient."
+      ],
+      "reason": "Windows XP Pro explicitly named as target OS."
+    },
+    {
+      "req_id": "PROMISE_3_R020",
+      "supported": true,
+      "evidence_snippets": [
+        "publish finalized sections to CampusConnect"
+      ],
+      "reason": "Integration with CampusConnect central server specified."
+    },
+    {
+      "req_id": "PROMISE_3_R021",
+      "supported": true,
+      "evidence_snippets": [
+        "read faculty roster/IDs from faculty central"
+      ],
+      "reason": "Transcript/notes state integration with faculty central server."
+    },
+    {
+      "req_id": "PROMISE_3_R022",
+      "supported": true,
+      "evidence_snippets": [
+        "student IDs/admission data from student master"
+      ],
+      "reason": "Documents explicitly require reading student master server data."
+    },
+    {
+      "req_id": "PROMISE_3_R023",
+      "supported": true,
+      "evidence_snippets": [
+        "standards-compliant HTML browser"
+      ],
+      "reason": "Multiple artifacts require browser-based, standards-compliant HTML support."
+    },
+    {
+      "req_id": "PROMISE_3_R024",
+      "supported": true,
+      "evidence_snippets": [
+        "Clinical site details visible only to admins"
+      ],
+      "reason": "Meeting notes and emails restrict clinical site details to authorized staff."
+    },
+    {
+      "req_id": "PROMISE_3_R025",
+      "supported": true,
+      "evidence_snippets": [
+        "Program Admins / Nursing Staff only"
+      ],
+      "reason": "Sources name Program Admins/Nursing Staff as the authorized viewers."
+    },
+    {
+      "req_id": "PROMISE_3_R026",
+      "supported": true,
+      "evidence_snippets": [
+        "Student PII viewable only to authorized users"
+      ],
+      "reason": "Documents mandate restricting student personal data to authorized roles."
+    },
+    {
+      "req_id": "PROMISE_3_R027",
+      "supported": true,
+      "evidence_snippets": [
+        "Student PII visible only to Susan and Julie"
+      ],
+      "reason": "Meeting notes and emails explicitly name Susan and Julie for PII access."
+    },
+    {
+      "req_id": "PROMISE_3_R028",
+      "supported": true,
+      "evidence_snippets": [
+        "CampusConnect access limited to authorized users"
+      ],
+      "reason": "Alex and notes require limiting CampusConnect interface to authorized accounts."
+    },
+    {
+      "req_id": "PROMISE_3_R029",
+      "supported": true,
+      "evidence_snippets": [
+        "Only Susan and Karen can finalize/publish"
+      ],
+      "reason": "Emails and transcript state final publish limited to Susan and Karen."
+    },
+    {
+      "req_id": "PROMISE_3_R030",
+      "supported": true,
+      "evidence_snippets": [
+        "Validate inputs: IDs, email format, time ranges"
+      ],
+      "reason": "Sources specify basic validation and integrity checks across forms."
+    },
+    {
+      "req_id": "PROMISE_3_R031",
+      "supported": true,
+      "evidence_snippets": [
+        "Information policy: protect private info per policy."
+      ],
+      "reason": "Explicit mandate to protect private info per policy."
+    },
+    {
+      "req_id": "PROMISE_3_R032",
+      "supported": true,
+      "evidence_snippets": [
+        "harden the app against malicious input/attacks."
+      ],
+      "reason": "Stakeholders require hardening against malicious input/attacks."
+    },
+    {
+      "req_id": "PROMISE_3_R033",
+      "supported": true,
+      "evidence_snippets": [
+        "Use the University standard (already on desktops)."
+      ],
+      "reason": "Mandated use of university standard antivirus on desktops."
+    },
+    {
+      "req_id": "PROMISE_3_R034",
+      "supported": true,
+      "evidence_snippets": [
+        "cohort associated with exactly one PoS; no mixing."
+      ],
+      "reason": "Sources state cohorts tie to a single Program of Study."
+    },
+    {
+      "req_id": "PROMISE_3_R035",
+      "supported": true,
+      "evidence_snippets": [
+        "assign them to cohorts, often in bulk."
+      ],
+      "reason": "Staff describe adding student lists to cohorts in bulk."
+    },
+    {
+      "req_id": "PROMISE_3_R036",
+      "supported": true,
+      "evidence_snippets": [
+        "Assign students to cohorts (bulk upload OR single)."
+      ],
+      "reason": "Documentation explicitly allows single student assignment."
+    },
+    {
+      "req_id": "PROMISE_3_R037",
+      "supported": true,
+      "evidence_snippets": [
+        "Validate eligibility (PoS match) before assignment;"
+      ],
+      "reason": "Eligibility (PoS match) validation required for assignments."
+    },
+    {
+      "req_id": "PROMISE_3_R038",
+      "supported": true,
+      "evidence_snippets": [
+        "set preferred sequence of classes for cohort."
+      ],
+      "reason": "Sources require staff set preferred class sequence per cohort."
+    },
+    {
+      "req_id": "PROMISE_3_R039",
+      "supported": true,
+      "evidence_snippets": [
+        "assign which quarter each course is offered."
+      ],
+      "reason": "Requirement to specify quarter per class is documented."
+    },
+    {
+      "req_id": "PROMISE_3_R040",
+      "supported": true,
+      "evidence_snippets": [
+        "Add new classes to system; later link to PoS + cohort"
+      ],
+      "reason": "Sources state staff can add new classes to the system."
+    },
+    {
+      "req_id": "PROMISE_3_R041",
+      "supported": true,
+      "evidence_snippets": [
+        "Add lab section for a clinical class"
+      ],
+      "reason": "meeting notes specify adding clinical lab sections"
+    },
+    {
+      "req_id": "PROMISE_3_R042",
+      "supported": true,
+      "evidence_snippets": [
+        "Add new cohort by start month + year"
+      ],
+      "reason": "notes explicitly require cohort start month/year"
+    },
+    {
+      "req_id": "PROMISE_3_R043",
+      "supported": true,
+      "evidence_snippets": [
+        "We also add new classes—lecture and clinical."
+      ],
+      "reason": "transcript and notes state adding new classes"
+    },
+    {
+      "req_id": "PROMISE_3_R044",
+      "supported": true,
+      "evidence_snippets": [
+        "Classes are either non-clinical OR clinical."
+      ],
+      "reason": "notes explicitly define class types"
+    },
+    {
+      "req_id": "PROMISE_3_R045",
+      "supported": true,
+      "evidence_snippets": [
+        "Non-clinical: course name, room, instructor needs"
+      ],
+      "reason": "notes list required non-clinical class fields"
+    },
+    {
+      "req_id": "PROMISE_3_R046",
+      "supported": true,
+      "evidence_snippets": [
+        "clinical site needs, lecture and lab instructors"
+      ],
+      "reason": "notes enumerate clinical class site and instructor needs"
+    },
+    {
+      "req_id": "PROMISE_3_R047",
+      "supported": true,
+      "evidence_snippets": [
+        "Create PoS: name + list of required classes",
+        "Program of Study screen where we name the program"
+      ],
+      "reason": "sources require creating Programs of Study"
+    },
+    {
+      "req_id": "PROMISE_3_R048",
+      "supported": true,
+      "evidence_snippets": [
+        "Create PoS: name + list of required classes",
+        "required classes (clinical + non-clinical)"
+      ],
+      "reason": "PoS defined as name plus required clinical/nonclinical classes"
+    },
+    {
+      "req_id": "PROMISE_3_R049",
+      "supported": true,
+      "evidence_snippets": [
+        "choose required classes from a catalog"
+      ],
+      "reason": "PoS screen allows selecting which classes are required"
+    },
+    {
+      "req_id": "PROMISE_3_R050",
+      "supported": true,
+      "evidence_snippets": [
+        "Planning report by quarter: classes to offer"
+      ],
+      "reason": "notes and email request quarterly planning report per cohort"
+    },
+    {
+      "req_id": "PROMISE_3_R060",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "Not mentioned in LLM batch coverage report"
+    },
+    {
+      "req_id": "PROMISE_3_R057",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "Not mentioned in LLM batch coverage report"
+    },
+    {
+      "req_id": "PROMISE_3_R053",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "Not mentioned in LLM batch coverage report"
+    },
+    {
+      "req_id": "PROMISE_3_R058",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "Not mentioned in LLM batch coverage report"
+    },
+    {
+      "req_id": "PROMISE_3_R055",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "Not mentioned in LLM batch coverage report"
+    },
+    {
+      "req_id": "PROMISE_3_R059",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "Not mentioned in LLM batch coverage report"
+    },
+    {
+      "req_id": "PROMISE_3_R051",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "Not mentioned in LLM batch coverage report"
+    },
+    {
+      "req_id": "PROMISE_3_R056",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "Not mentioned in LLM batch coverage report"
+    },
+    {
+      "req_id": "PROMISE_3_R052",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "Not mentioned in LLM batch coverage report"
+    },
+    {
+      "req_id": "PROMISE_3_R054",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "Not mentioned in LLM batch coverage report"
+    },
+    {
+      "req_id": "PROMISE_3_R061",
+      "supported": true,
+      "evidence_snippets": [
+        "Add new nursing students."
+      ],
+      "reason": "Meeting notes explicitly state adding new students."
+    },
+    {
+      "req_id": "PROMISE_3_R062",
+      "supported": true,
+      "evidence_snippets": [
+        "Manage part-time plans: adjust sequence + timelines per student"
+      ],
+      "reason": "Notes require adjusting sequences and timelines for part-time students."
+    },
+    {
+      "req_id": "PROMISE_3_R063",
+      "supported": true,
+      "evidence_snippets": [
+        "Cohort snapshot printable: students, PoS, sequence, cohort progress"
+      ],
+      "reason": "Meeting notes specify cohort printable with progress and timeline."
+    },
+    {
+      "req_id": "PROMISE_3_R064",
+      "supported": true,
+      "evidence_snippets": [
+        "Clinical site overview (by quarter) printable: site info + labs"
+      ],
+      "reason": "Notes require site printable listing labs and dates/times by quarter."
+    },
+    {
+      "req_id": "PROMISE_3_R065",
+      "supported": true,
+      "evidence_snippets": [
+        "Clinical lab roster printable: class name + number",
+        "instructor, day(s)/time, location"
+      ],
+      "reason": "Meeting notes list full lab roster printable fields."
+    },
+    {
+      "req_id": "PROMISE_3_R066",
+      "supported": true,
+      "evidence_snippets": [
+        "Individual student summary printable: name, ID",
+        "admission date, classes, credits, GPA, cohort"
+      ],
+      "reason": "Notes explicitly enumerate student summary printable contents."
+    },
+    {
+      "req_id": "PROMISE_3_R067",
+      "supported": true,
+      "evidence_snippets": [
+        "System log printable (for audit, troubleshooting)."
+      ],
+      "reason": "Meeting notes and emails require a printable system log."
+    },
+    {
+      "req_id": "PROMISE_3_R068",
+      "supported": true,
+      "evidence_snippets": [
+        "directory—emails and phones—for students, faculty",
+        "contact info (email/phone)"
+      ],
+      "reason": "Sources require stored emails/phones for staff, students, and sites."
+    },
+    {
+      "req_id": "PROMISE_3_R069",
+      "supported": true,
+      "evidence_snippets": [
+        "Email is primary channel; no SMS."
+      ],
+      "reason": "Multiple artifacts state email is the primary communication channel."
+    },
+    {
+      "req_id": "PROMISE_3_R070",
+      "supported": true,
+      "evidence_snippets": [
+        "Routine comms: inform students of upcoming classes/timeline"
+      ],
+      "reason": "Notes require routine notifications informing students of upcoming classes."
+    },
+    {
+      "req_id": "PROMISE_3_R071",
+      "supported": true,
+      "evidence_snippets": [
+        "Clinicals: capacity changes; lab cancellations"
+      ],
+      "reason": "Notes explicitly require clinical change notifications."
+    },
+    {
+      "req_id": "PROMISE_3_R072",
+      "supported": true,
+      "evidence_snippets": [
+        "Classes: cancellations; section detail changes"
+      ],
+      "reason": "Meeting notes list class change alerts and notifications."
+    },
+    {
+      "req_id": "PROMISE_3_R073",
+      "supported": true,
+      "evidence_snippets": [
+        "Cohorts: sequence changes; weekly schedule",
+        "week-specific issues (instructor out sick)"
+      ],
+      "reason": "Notes call for cohort change and week-specific notifications."
+    },
+    {
+      "req_id": "PROMISE_3_R074",
+      "supported": true,
+      "evidence_snippets": [
+        "status change FT->PT; moved to different lab"
+      ],
+      "reason": "Notes explicitly require student-specific change notifications."
+    },
+    {
+      "req_id": "PROMISE_3_R075",
+      "supported": true,
+      "evidence_snippets": [
+        "When I create a cohort, I want to pick start",
+        "Modify cohort info: identifier, PoS assignment"
+      ],
+      "reason": "Program admins mention creating and editing cohort details."
+    },
+    {
+      "req_id": "PROMISE_3_R076",
+      "supported": true,
+      "evidence_snippets": [
+        "Modify PoS: rename program; update required"
+      ],
+      "reason": "Notes require editing Program of Study name and classes."
+    },
+    {
+      "req_id": "PROMISE_3_R077",
+      "supported": true,
+      "evidence_snippets": [
+        "Add new site records; site name, contact info",
+        "Modify site info as contacts change"
+      ],
+      "reason": "Notes specify site fields and ability to modify them."
+    },
+    {
+      "req_id": "PROMISE_3_R078",
+      "supported": true,
+      "evidence_snippets": [
+        "Modify lab section: site, dept label, instructor",
+        "day/time, contact info"
+      ],
+      "reason": "Notes list editable lab section fields and edits."
+    },
+    {
+      "req_id": "PROMISE_3_R079",
+      "supported": true,
+      "evidence_snippets": [
+        "Modify student info: ID, name, phone, email",
+        "status (FT/PT) and Program of Study"
+      ],
+      "reason": "Notes enumerate editable student fields including status and PoS."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "Error messages and batch validation feedback shall be human-readable and actionable (no opaque codes); bulk operations that partially fail must present clear, user-friendly warnings and guidance to fix issues.",
+      "source_snippet": "Yes—make the error messages human-readable. No mystery codes.",
+      "source_type": "interview_transcript",
+      "reason": "The source explicitly demands human-readable error messages and clear feedback for bulk uploads/partial failures. The gold set requires basic data integrity checking but does not require the user-facing quality of messages or explicit handling/clear reporting of partial failures in batch operations."
+    },
+    {
+      "text": "The system shall record and retain an audit trail that captures not only who changed data but why a change was made (e.g., reason/justification for moving a student or adjusting a part-time sequence).",
+      "source_snippet": "Part-time students complicate everything. We need to manage their progress by adjusting sequence and timelines, and keep an audit trail so we know why we moved them.",
+      "source_type": "interview_transcript",
+      "reason": "While the gold set requires a printable system log and general logging, the source explicitly requests capturing the reason/justification for changes (the 'why'). The gold requirements do not specify that log entries must include the rationale for edits, so this is a new, significant audit/capture requirement."
+    },
+    {
+      "text": "Provide short training artifacts (e.g., a quick reference guide) as part of deliverables so staff become productive within one day of training.",
+      "source_snippet": "One day of training and maybe a quick reference, then productive.",
+      "source_type": "interview_transcript",
+      "reason": "The gold set includes training time and usability targets but does not mandate producing concise training materials or a quick reference guide as an explicit deliverable. The source requests a quick reference to support the one-day training goal, which is a distinct documentation/delivery requirement."
+    }
+  ],
+  "passed": false
+}

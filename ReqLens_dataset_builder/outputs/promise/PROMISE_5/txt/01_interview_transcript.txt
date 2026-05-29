@@ -1,0 +1,89 @@
+TYPE  : interview_transcript
+TITLE : Stakeholder discovery interview – EcoClaim Parts Navigator
+UNIT  : PROMISE_5
+============================================================
+
+Date: 2026-02-18
+Participants: 
+- Nina (Business Analyst)
+- Jorge (Claims Operations lead)
+- Tara (Senior Adjuster)
+- Malik (Collision Estimator)
+- Priya (Corporate IT Architecture)
+- Sam (IT Security)
+- Dana (Middleware/Deployment)
+- Rob (Corporate Support Center)
+- Ellen (Legal & Compliance)
+- Vince (ChoiceParts partner liaison)
+
+Nina: Let’s walk the day-in-the-life. Tara, when you’re assigning a claim, what do you need to see?
+
+Tara (Adjuster): I start with the vehicle details—year, make, model—and where the car is. We go by the street address, city, state, and ideally ZIP. If the ZIP’s missing, don’t make me look it up—have the system figure it out from the address. Then I set a distance—usually something like 15 or 20 miles. It should support a small range all the way up to around thirty miles max.
+
+Nina: And what do you expect back?
+
+Tara: One shop recommendation, the best match—close and with the strongest performance ratings. If we can’t pick a single standout, give me a list of shops within that radius, and I’ll choose. I have to be able to put the selected facility onto the estimate assignment and, in special cases, override the top pick.
+
+Jorge (Claims Ops): Exactly. We want a clear “preferred” facility surfaced, but the adjuster still needs the final say.
+
+Nina: Ratings—how are those handled?
+
+Jorge: Supervisors score shops. We look at how often a shop attempts to use recycled parts and how often they actually do. Scores are on a simple 1 through 10 scale. Sometimes a new shop has no scores yet—so show blank entries until we add them. Only supervisor-level adjusters should be able to change those ratings, but anyone who needs to can view them.
+
+Priya (Architecture): And let’s stay consistent with our corporate UI standards and color palette. It has to look like our other apps—clean, professional, on-brand—and follow enterprise architecture guidelines. No bespoke wild-west tech choices.
+
+Nina: Browsers and devices?
+
+Priya: We still have legacy workstations. This needs to run on the machines we already have in the field—no hardware refresh. The browser baseline hasn’t changed: we still support Internet Explorer 5.5 or newer and Firefox 1.0 or newer. I know that’s ancient, but that’s our environment.
+
+Malik (Estimator): Out in the shop, conditions aren’t pristine. It’s noisy and dirty. I’m bouncing between a bay and a workstation. I need to be able to operate the app reliably in that environment; fiddly screens won’t cut it.
+
+Nina: Let’s talk the estimator flow for recycled parts.
+
+Malik: When I build an estimate, I pick the damaged parts. I also have a list of suppliers our shop prefers. The search should use those inputs first—part types plus our preferred list. If that comes up empty, don’t make me start over—just fall back to searching by the vehicle’s ZIP with about a thirty-mile radius. Return the list of available recycled parts and which supplier each comes from. Keep those results tied to the estimate so later, when the adjuster runs the audit, it references exactly what I saw. And if there are no viable recycled parts, I shouldn’t be able to “pretend apply” anything—only apply parts that are actually available.
+
+Tara: When I check the estimate, I’ll request an audit against the parts that were available, not just what Malik chose. That audit needs to show me totals—how many recycled parts were used, how many were available, and the percentage used. We also want an overall score that sums the line items. I’ll need to look at the audit right away, and other adjusters might need to access the same report later.
+
+Nina: Performance-wise, what’s acceptable?
+
+Jorge: People won’t wait all day. The parts search can take a few seconds, but if it’s pushing past a quarter minute we’ll get calls. For the facility lookup, we expect it to be snappier—under ten seconds; eight seconds is a good ceiling. The audit should pop up quickly too—call it around ten seconds. When a supervisor saves ratings, that should complete in just a few seconds; five seconds feels like the upper bound for a save spinner.
+
+Sam (Security): And roles matter. Estimators do the parts searching. Adjusters request audits. Only supervisors on the adjusting side can change shop ratings. Everyone else should be blocked from actions outside their role. Also, we need strong input validation—we shouldn’t accept junk data. And don’t forget data isolation: carrier A should never be able to see carrier B’s claim information. From a threat standpoint, we need the standard protections—keep the app free of malware and build in defenses to prevent denial-of-service type disruptions.
+
+Ellen (Legal & Compliance): We’re subject to the usual insurance claims regulations, and there are state-by-state estimatics rules about using recycled parts. Build the workflow so it honors those constraints. Also, SOX controls still apply—auditing, access controls, change management—make sure the design lines up with those.
+
+Priya: On integration: we’ll keep using ChoiceParts for the recycled parts catalog. The feed is a nightly drop—around one in the morning is when we typically pull and refresh data. The app needs to interface with that process cleanly.
+
+Vince (ChoiceParts): Correct. We publish the updated inventory once per day; your window around 1:00 AM is what we’ve been doing with your existing systems.
+
+Dana (Middleware): Deployments and upgrades go through us. We only push during approved launch windows. The application must respect the enterprise maintenance schedule; if it has to go down, it goes down when the availability calendar says so, not randomly in the middle of the day.
+
+Rob (Support Center): My team is first-line support. Users will call the Corporate Support Center, not the devs. So, make it easy enough that most folks don’t need to call. In-product help should be everywhere they’d expect it—ideally almost every screen. Tooltips, help icons—whatever fits the standards—so that nine times out of ten, they can find guidance without leaving the app.
+
+Jorge: On usability targets: we’ve struggled with clunky tools. We want this to be straightforward enough that almost all adjusters and estimators—say mid-90s percent—say it’s easy to use in our surveys. We’ll run a training roadshow, but keep it short. Two days of onsite training should be enough to get people productive. And we expect estimators to feel more efficient quickly; within the first month, at least four out of five should report their productivity improved.
+
+Nina: Availability and scale—what are we planning for?
+
+Dana: Operations will hold us to the published online availability schedule. Outside scheduled windows, we need solid uptime—ninety-eight percent or better. No surprise outages. During the nightly data refresh, we still expect the app to be up, unless the schedule says otherwise.
+
+Priya: On capacity, day one we should comfortably handle around fifteen hundred users logged in at once. The roadmap has aggressive growth—we want a path to an order of magnitude more concurrency, roughly ten thousand simultaneous users within two years. For data, expect on the order of fifty thousand parts records to land in our warehouse per day from the feed.
+
+Nina: Anything else on look-and-feel or help?
+
+Priya: Just reiterating: follow the corporate UI and color guidelines. It should look professional—like our other apps—not a prototype. And keep in-app help discoverable per our standards.
+
+Nina: To recap actions: 
+- Facility finder uses Y/M/M plus address; resolves missing ZIP; user-set radius up to 30 miles; returns best-rated or a nearby list; adjuster can assign or override.
+- Estimator searches recycled parts by damaged parts and preferred suppliers; if none, auto-fallback to ZIP + 30 miles; results are retained and only available parts can be applied.
+- Adjuster requests audit; audit shows counts, percentages, and a summed score; view immediately and later.
+- Ratings viewer shows current or blanks; supervisors enter 1–10 scores for attempted vs actual recycled usage; save quickly.
+- Role restrictions enforced; input validation; cross-carrier data isolation; protections against malware and DoS.
+- ChoiceParts nightly integration around 1 AM.
+- Works on existing hardware; supports IE 5.5+ and Firefox 1.0+.
+- Adheres to enterprise architecture, UI, color, SOX, insurance and estimatics rules.
+- In-app help on almost all screens; two-day training; high ease-of-use and satisfaction targets; estimator productivity improvement.
+- Performance budgets: parts search ~15s max; facility lookup <=8s; audit ~10s; rating saves <=5s.
+- Availability per schedule; ~98% uptime outside planned outages.
+- Capacity now ~1,500 concurrent; plan to ~10,000 in two years; ~50k parts records/day.
+
+Everyone: Agreed.

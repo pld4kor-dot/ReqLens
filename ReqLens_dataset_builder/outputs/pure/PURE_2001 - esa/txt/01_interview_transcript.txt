@@ -1,0 +1,88 @@
+TYPE  : interview_transcript
+TITLE : Initial Stakeholder Interview on ASPERA-3 Data System Requirements
+UNIT  : PURE_2001 - esa
+============================================================
+
+Alice [Project Manager]: Thanks everyone for joining. Let's start with the overall scope. We need to ensure the system handles all data processing and archiving for the Mars Express mission, specifically for ASPERA-3. Bob, can you elaborate on telemetry acquisition?
+
+Bob [Data Engineer]: Sure, Alice. We have to pull telemetry data from both NISN and ESOC. That includes not just the instrument data but also spacecraft orbit and attitude telemetry. It's critical for the analysis.
+
+Clara [Science Analyst]: Right, and once we get that raw telemetry, the system should convert it into those Instrument Data File Sets, or IDFS. These sets need to include all science data plus any engineering or ancillary info needed for calibration and validation.
+
+Alice: So, the IDFS should be organized logically?
+
+Bob: Exactly. We divide the physical components of ASPERA-3 into virtual instruments, each represented as its own IDFS data set. This helps the science team focus on specific parts.
+
+David [Archive Specialist]: What if ESOC doesn't provide cleaned-up telemetry?
+
+Bob: Then the system has to generate intermediate cleaned-up files ourselves for both ASPERA-3 and orbit/attitude data.
+
+Clara: And all these files—raw telemetry, IDFS, intermediate cleaned files—need to be stored locally at SwRI's archive.
+
+David: Plus, after calibration and validation, the IDFS data sets must be submitted to the Planetary Data System within six months.
+
+Alice: That timeline is tight. How about data distribution?
+
+Clara: The system should distribute all relevant data and intermediate files electronically to all Co-Investigators within 24 hours of telemetry acquisition, assuming no errors in transmission or processing.
+
+Bob: Also, we want web-based displays for the latest data, but access should be password protected until the data is publicly released.
+
+David: The ASPERA-3 team defines these displays, right?
+
+Clara: Yes, and the web server itself should have password protection where needed to restrict access to authorized team members.
+
+Alice: What about system reliability?
+
+Bob: We'll build in error handling mechanisms to ensure the system stays dependable.
+
+David: On the hardware side, we need UNIX-based development and production machines with archival capabilities, plus a web server.
+
+Alice: Network connectivity?
+
+Bob: There must be a reliable network link between SwRI and NISN for data transfers.
+
+Clara: We also need to provide Co-Investigators with access to IDFS data and the analysis software developed by SwRI.
+
+Alice: Can we use the www.ASPERA-3.org site for data review?
+
+Bob: That's the plan.
+
+David: Regarding documentation, the APAF Operations Procedures Document should clearly define distribution mechanisms, installation-dependent requirements, and provide detailed instructions so users don't need extra training.
+
+Alice: And the Software Design Document?
+
+Bob: It must fully describe all data products within each virtual instrument, including parameters and internal interfaces.
+
+Clara: Also, every requirement should be clear, testable, and feasible within schedule and budget.
+
+David: We need unique IDs for each requirement, annotated with verification methods and traceability.
+
+Alice: Verification methods should include demonstrations without special equipment and analysis using calibration data.
+
+Bob: We can simulate instrument data sets from calibration data, process them into IDFS, and analyze outputs with the Southwest Data Display and Analysis System.
+
+Clara: The entire integrated ASPERA-3 data set must be provided to Co-Investigators and archived in the NASA PDS.
+
+David: Don't forget the energy range of measurements—0.1 to 100 keV.
+
+Alice: SwRI is responsible for developing the data reduction system and coordinating with sensor teams on data packetization.
+
+Bob: The processing software must meet IRF delivery requirements to support the Mars Express launch and operations schedule.
+
+Clara: SwRI will also provide processing algorithms to IRF on an agreed timeline.
+
+David: The MO PI will collect engineering and ancillary info needed to validate and calibrate scientific data before PDS deposit.
+
+Alice: Validation and calibration time should be minimized but must not exceed six months after acquisition.
+
+Clara: We want to integrate science analysis software developed by the MO PI team into the NASA-approved data repository, providing equal online access to the PI team and the wider science community.
+
+David: The project data management plan must cover planning, acquisition, processing, validation, archiving, and preservation, defining roles and interfaces.
+
+Alice: System operation should be restricted to a single mode for simplicity.
+
+Bob: And safety is paramount—the system can't pose hazards to personnel, property, or environment.
+
+Clara: That covers most points. Any questions?
+
+Alice: None from me. Thanks all for the input.

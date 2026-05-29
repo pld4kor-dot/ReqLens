@@ -1,0 +1,185 @@
+TYPE  : email_thread
+TITLE : Thread: Vendor invalid lead credits, XML intake, and timing windows
+UNIT  : PROMISE_9
+============================================================
+
+Email 1
+From: Sam Patel <sam.patel@partnerco.com>
+To: Priya Rao <prao@university.edu>
+CC: Asha Gupta <agupta@university.edu>, Maria Flores <mflores@university.edu>
+Date: Mon, Apr 7, 2025 at 8:12 AM CST
+Subject: New flow for returns + credits (a few Qs)
+
+Hi Priya,
+
+We’ve been testing against your sandbox. A couple of things we need to nail down:
+- When you bounce a lead back (low score or validation fail), can you include (a) the reason and (b) the payload we sent? Makes it much easier for us to reconcile. Right now I only see a generic “rejected” in the stub.
+- For invalids that we accept as on us (bad phone, duplicate, etc.), what’s the expected path to get the credit posted? We have an existing interface to your finance/billing. Do we send a “credit validation” record there or is there a new endpoint?
+- Separate topic: one of our newer subs only speaks JSON. Any chance your intake can take JSON as well as XML? If not, we’ll translate, but just asking.
+- Lastly, our ops are nervous about the timing. Do you expect leads at night to fly through faster than daytime? Someone mentioned a tighter off-hours target.
+
+Thanks!
+Sam
+
+—
+
+Email 2
+From: Priya Rao <prao@university.edu>
+To: Sam Patel <sam.patel@partnerco.com>
+CC: Asha Gupta <agupta@university.edu>, Maria Flores <mflores@university.edu>, Owen Lee <olee@university.edu>
+Date: Mon, Apr 7, 2025 at 9:03 AM CST
+Subject: RE: New flow for returns + credits (a few Qs)
+
+Hi Sam,
+
+Quick answers inline:
+
+- Return package: yes, our real-time response on a rejection will include a specific reason (e.g., invalid email format, out-of-range program code, etc.) and an echo of the lead data you submitted for match-back. We’re aligning reason text with Finance codes.
+
+- Invalid leads and credits: you (the vendor) should first verify on your side that it was indeed invalid. Once you mark it as accepted invalid, you’ll submit a credit validation record via the same enterprise billing interface you already use. No new endpoint planned. Finance applies after their checks.
+
+- Intake format: we are XML-only on the public intake. I know JSON is popular, but our current web services and security stack are set that way. We’ll share the XSD shortly.
+
+- Timing: Yes, the expectation is that during off-hours leads complete end-to-end very fast (automation), with a stricter target than daytime. Daytime has a generous but still bounded window because humans can intervene on mediums.
+
+Also FYI, we’ll be monitoring wash time per lead; most should complete well under ~25s. Any outliers past that will be recorded.
+
+Priya
+
+Sent from my phone, pls excuse typos.
+
+—
+
+Email 3
+From: Maria Flores <mflores@university.edu>
+To: Priya Rao <prao@university.edu>
+CC: Sam Patel <sam.patel@partnerco.com>, Asha Gupta <agupta@university.edu>, Jason Cole <jcole@university.edu>
+Date: Mon, Apr 7, 2025 at 10:02 AM CST
+Subject: RE: New flow for returns + credits (a few Qs)
+
+Jumping in—when Sam’s team gets a rejection because of duplicate, can we make sure it says “potential dup flagged by CRM” vs “hard dup”? In the middle cases I still need to see it in eLeads for review, not lose it. We’ve had “poof” issues before. If CRM sends us a maybe-duplicate later, I still want that stored on our side so I can see the flag and notes.
+
+Also, for the medium bucket, once I click verify in eLeads, the system is going to assign a rep (using the current list from CRM) and then push it along without me having to email anyone, right? Timing matters—we’re aiming to be within whatever that 3 min window is so ARA doesn’t choke.
+
+Maria
+
+—
+
+Email 4
+From: Asha Gupta <agupta@university.edu>
+To: Maria Flores <mflores@university.edu>
+CC: Priya Rao <prao@university.edu>, Sam Patel <sam.patel@partnerco.com>
+Date: Mon, Apr 7, 2025 at 11:17 AM CST
+Subject: RE: New flow for returns + credits (a few Qs)
+
+Maria, yes: potential duplicates must be stored and visible. We’ll ensure the label differentiates between “potential” and “confirmed duplicate.” The thresholds around when to return to vendor for duplicate vs when to allow EC review will be in the parameters I maintain (corporate + school variants). Those parameters are only adjusted during scheduled maintenance windows; no ad hoc day-of changes.
+
+Re: verify button: when you approve a medium, the flow will (a) assign to an admissions rep based on the list of reps currently marked available from CRM (we’re syncing that on a schedule) and (b) submit to the enterprise system. The score will be included in the handoff. For highs, that assignment happens automatically before it’s sent. Lows never get into eLeads; those go right back to Sam’s side with the reason.
+
+Asha
+
+—
+
+Email 5
+From: Owen Lee <olee@university.edu>
+To: Priya Rao <prao@university.edu>
+CC: Asha Gupta <agupta@university.edu>, Sam Patel <sam.patel@partnerco.com>, Maria Flores <mflores@university.edu>
+Date: Mon, Apr 7, 2025 at 12:41 PM CST
+Subject: RE: New flow for returns + credits (a few Qs) — logging + support
+
+Adding ops perspective:
+
+- We will log any lead that takes longer than 25s in the wash step. Need event + duration, plus step where time was spent. This is for troubleshooting and SLA reporting.
+- Defect/issue reports: available 24x7 for tech teams. I don’t have cycles for bespoke vendor dashboards, but we can share weekly summaries.
+- Please do not ask for JSON in v1; platform constraints are real. XML per XSD only.
+- Everything that hits the intake gets stored (even the rejects). We’ve had too many cases where later we need the record for credits. Persist first, decide next.
+- Reminder: we must stay inside existing web svc infra. No new queues, no surprise brokers. Change windows apply.
+
+Owen
+
+—
+
+Email 6
+From: Priya Rao <prao@university.edu>
+To: Sam Patel <sam.patel@partnerco.com>
+CC: Asha Gupta <agupta@university.edu>, Maria Flores <mflores@university.edu>, Owen Lee <olee@university.edu>, Finance Billing <billing@university.edu>
+Date: Mon, Apr 7, 2025 at 3:09 PM CST
+Subject: RE: New flow for returns + credits (a few Qs) — billing + hours
+
+Sam,
+
+Looping in Billing for the credit application piece. To recap the flow (sorry for the long note):
+
+1) You POST a lead to our intake (XML). We validate the required fields and formats, compute a combined score (contact + academic) using parameters that Corporate and the schools maintain. Those parameters won’t change mid-day; updates happen in maintenance windows with access control.
+
+2) Based on the total score: high -> we assign to a rep (using the latest available list we pull from CRM on a schedule) and immediately send to the Enterprise CRM, including the score. medium -> it lands in eLeads for Enrollment Coordinator review. When Maria clicks verify, we assign a rep then submit to CRM. low -> we return it to you right away with a specific reason, plus the data you sent for reconciliation.
+
+3) If the CRM flags a potential duplicate either synchronously or later, we store that ‘potential duplicate’ marker with the lead on our side. That’s visible internally; for returns to you, if duplicate is the rejection reason, we label it accordingly. Not every potential duplicate causes a rejection, just noting.
+
+4) Regarding timing: during 8 AM–8 PM Central, our overall end-to-end target allows up to about 5 minutes for the majority of traffic. Outside those hours, we’re aiming for almost all leads to complete in around 3 minutes. Within that, the washing step itself should usually finish in under ~25 seconds. If it doesn’t, we log it as a slow event.
+
+5) When you agree a lead is invalid on your side, you submit a credit record to the enterprise billing interface you already have. Finance (cc’d) will make sure it gets applied properly. We don’t have a new API for that.
+
+There’s still an open action on our side to confirm whether CRM’s ARA will honor our pre-assigned rep or re-evaluate; either way, the lead will have a rep before we hand it over.
+
+Let us know if any of that conflicts with your expectations. Also, we’ve had a couple of partners ask for JSON—just to reiterate, we can’t accept that in v1 due to platform constraints.
+
+Thanks,
+Priya
+
+—
+
+Email 7
+From: Finance Billing <billing@university.edu>
+To: Priya Rao <prao@university.edu>
+CC: Sam Patel <sam.patel@partnerco.com>, Asha Gupta <agupta@university.edu>, Maria Flores <mflores@university.edu>
+Date: Tue, Apr 8, 2025 at 8:18 AM CST
+Subject: RE: New flow for returns + credits (a few Qs) — billing + hours
+
+Hi all,
+
+Confirming from Finance side: the vendor credit validation records should come through the existing enterprise billing interface (same as today). Please ensure the rejection reason maps to our credit categories. We’ll post credits after review on our schedule. We won’t be available to troubleshoot after-hours submissions, so if you push overnight, make sure tech has 24/7 access to defect logs—sounds like Owen has that covered.
+
+Open items:
+- We need the final list of reasons + mapping (Asha). Our team can’t apply credits if the reason is unclear.
+- If a lead was returned for “duplicate” but later EC processed it as medium, make sure we’re not double-counting. Might require a state flag.
+
+Thanks,
+Lydia
+Finance/Accounts
+
+—
+
+Email 8
+From: Sam Patel <sam.patel@partnerco.com>
+To: Finance Billing <billing@university.edu>
+CC: Priya Rao <prao@university.edu>, Asha Gupta <agupta@university.edu>, Maria Flores <mflores@university.edu>
+Date: Tue, Apr 8, 2025 at 9:01 AM CST
+Subject: RE: New flow for returns + credits (a few Qs) — billing + hours
+
+Thanks Lydia + team.
+
+This aligns with what we expected. Two small things from our side:
+- Please don’t change reason codes mid-week. We batch reconcile nightly and then post credit files next morning. If the codes shift, our automation breaks.
+- If your maintenance window is when you update parameters or reason text, just notify us ahead. We’ll hold off pushing bursts during that time.
+
+We’ll stick to XML. If you can send that XSD ASAP, we can finish mapping this week. And yes, on our end, ops will explicitly verify each invalid before we submit the credit record, so Finance isn’t flooded with disputes.
+
+Sam
+
+—
+
+Email 9
+From: Priya Rao <prao@university.edu>
+To: Sam Patel <sam.patel@partnerco.com>
+CC: Finance Billing <billing@university.edu>, Asha Gupta <agupta@university.edu>, Maria Flores <mflores@university.edu>, Owen Lee <olee@university.edu>
+Date: Tue, Apr 8, 2025 at 9:37 AM CST
+Subject: RE: New flow for returns + credits (a few Qs) — billing + hours
+
+All sounds good. We’ll send the XSD by EOD. Parameter changes are only during scheduled windows—no surprise code changes midstream. For the day vs night timing, we’ll monitor closely and log any slow wash events with duration and step, accessible to ops 24/7.
+
+Remaining open item: CRM team to confirm if our pre-assigned rep stands or if ARA re-evaluates. In any case, our process will assign a rep before submitting. Also still deciding how frequently we pull the available reps list (likely every 15–60 min). We’ll confirm.
+
+Priya
+
+— End of thread —

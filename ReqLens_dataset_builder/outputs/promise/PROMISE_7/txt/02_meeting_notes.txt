@@ -1,0 +1,63 @@
+TYPE  : meeting_notes
+TITLE : RMS Working Session Notes — Auto IQA, PFE/PME, Security, Backups, Performance
+UNIT  : PROMISE_7
+============================================================
+
+Date: 2025-03-18
+Room/Link: Conf Rm 2B + Teams
+Attendees: Olivia (Ops), Priya (Menu/Catalog), Carlos (Inventory), Dan (IT), Nina (BA), Victor (Finance) [joined late]
+
+Inventory / IQA
+- Daily POS sales arrive ~7:15a. Expectation: IQA docs generated automatically upon import (no manual start needed for daily flow).
+- Manual controls needed: (a) Run for a selected day, and (b) Regenerate from a chosen start date through current day.
+- Performance: Rebuild of roughly the last 30 days should complete in about 30 minutes on store PCs. Treat as a target in testing.
+- IQA output: format must be acceptable to accounting; avoid hand edits. Tie-back to relevant product/formula context (details on version handling to be covered in a later session).
+- Adjustment logic: consult on-hand stock; apply substitution lists per saved priority; avoid consuming from out-of-stock primary when allowed substitutes exist. Substitutions are inventory-side only; they do not change POS display names.
+
+PFE (Product Formula Editor)
+- Maintain formulas, including semi-finished items (semi-products) that are used inside other formulas.
+- Each ingredient can have an allowed substitution list. The order is meaningful and must persist across sessions and runs.
+- Convenience: propose common alternates automatically when adding ingredients; users can adjust and set the final sequence.
+- If no allowed substitute is available or in stock: flag for review vs other handling to be discussed later (policy TBD).
+
+PME (Product Menu Editor)
+- Source items directly from the accounting product catalog; no duplicate product masters in RMS.
+- Support nested menus and submenus; allow explicit ordering of submenus and of products within submenus; do not auto-reorder after sync/publish.
+- A single product may be placed in more than one submenu.
+- Publishing/integration details with POS are out of scope for today; structure export to be defined.
+
+Security / Permissions
+- Centralized user accounts; a password change or permission update should apply consistently across IQA, PFE, PME, and Admin areas.
+- Role-based access per subsystem with at least: Inventory (run/view IQA), Formula Editor (edit formulas), Menu Editor (PME), Admin (user/role management). Read-only vs edit distinctions to support separation of duties.
+- Deactivation/lockout should take effect across the application.
+
+Audit / Accounting
+- Outputs must align with accounting practices acceptable to external auditors; ensure traceability from adjustments to underlying products/formulas as applicable.
+- Audit-readiness includes demonstrating successful restoration from a backup and reconciling posted entries without manual massaging.
+- Build menus from the accounting catalog to keep product identity consistent for reconciliation.
+
+Backups / Restore
+- Provide scheduled automated backups of RMS business data (nightly acceptable); also allow an in-app on-demand restore when needed (e.g., menu changes made in error).
+- Keep a basic log/trail of backup and restore actions to support audit checks.
+
+Constraints / Environment
+- Must run on existing in-store Windows PCs; no new hardware expected.
+- No third-party components that create per-user or royalty fees. Keep the footprint light.
+- UI should follow a familiar Windows desktop style (menus/toolbars/standard dialogs), not a browser app that times out on users.
+
+Concurrency / Usability
+- Support at least six concurrent users across modules without issues (common scenario: two in PME, two in PFE, one in IQA, one in Admin).
+- Ensure menu ordering persists through any sync or bulk operation; previous tools alphabetized unexpectedly.
+
+Action Items
+- [Nina] Draft feature spec: auto IQA on import; manual Day Run; Rebuild From Date; substitution logic; PME/PFE requirements; security/permissions; backups/restore; performance target; concurrency assumption.
+- [Victor] Provide accounting import constraints and auditor expectations for IQA output fields.
+- [Dan] Confirm backup storage location/rotation and available disk on a representative store PC for pilot testing.
+- [Priya] Send a sample menu tree with intended ordering and a couple of items placed in multiple submenus.
+- [Carlos] Share sample formulas including a semi-product referenced by multiple finished items and an example substitution sequence.
+
+Open Topics
+- Formula/version treatment during historical rebuilds (align with audit expectations) — TBD.
+- Behavior when all allowed substitutes are unavailable (flagging/reporting specifics) — TBD.
+- Timing of permission/password propagation (immediate vs next login) — TBD.
+- Backup scope (full RMS vs targeted areas) trade-offs — TBD.

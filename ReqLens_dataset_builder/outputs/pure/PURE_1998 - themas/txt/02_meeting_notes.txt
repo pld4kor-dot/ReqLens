@@ -1,0 +1,115 @@
+TYPE  : meeting_notes
+TITLE : Notes — SRS Scope/Structure and Interfaces Working Session (revised)
+UNIT  : PURE_1998 - themas
+============================================================
+
+Date: 2025-02-11
+Location: Teams call (link: https://meet.example.com/THEMAS-SRS)
+Attendees:
+- Barry Scott — Project Manager
+- Priya N. — Principal Software Architect
+- Leo P. — Design Requirements Team
+- Carla J. — QA/Verification Engineer
+- Nina V. — Building HVAC Supervisor
+- Jen L. — IT/Infrastructure Ops
+- Omar H. — Facilities Maintenance Tech [joined late]
+
+Agenda: SRS structure (IEEE 830), scope (software-only), interfaces summary, module breakdown, assumptions, and qualification/traceability expectations. Reporting overview brief.
+
+Raw notes (unpolished):
+
+- Barry: keep the SRS strictly software. Hardware reqs go to system-level spec. We will not lock to any specific HVAC model. [scope reminder]
+- Priya: runtime target is Windows NT environment. IPC also NT. Device interfaces on NT stack. [Jen nodded]
+- Carla: we also need to lay out how we will qualify reliability—simulated thermostat prototype mentioned in SoW. SRS must call for that prototype so we can V&V control logic. (proto deliverable)
+- Leo: the doc must be useful to Design Req team and Principal Architect; provide tech description (functional + perf). Audience includes QA and other stakeholders.
+- Jen: external interfaces — only high-level overview. Don’t try to define the exact third-party or wiring. Keep to “we talk to thermostats via input interface (T + TSET)” and “we emit H/C requests.” Not a hardware interface manual.
+- Barry: Yes: SRS includes ext interfaces at a high level. No exhaustive external system definition. (consistent with scope)
+- Nina: On a practical note, I need the console simple. Don’t clutter the display. That can be a usability constraint in SRS. [usability note]
+- Carla: Logging/eventing: auditability required. ASCII reports later. Include references section as part of the spec. If there’s a conflict, SoW wins. Otherwise SRS wins over refs.
+- Barry: Put the full references list in the SRS. IEEE 830 formatting required.
+- Leo: Section structure:
+  - Section 2: product perspective; product functions; user characteristics; general constraints; assumptions/dependencies.
+  - Section 3: functional and performance reqs; design constraints; attributes; external interface reqs (what we need for the design phase).
+- Priya: Architecture modules: four sections — Monitor Temperature, Determine Utilization, Initialize System, System Reports. Each as a software CI.
+- Omar: (joined) Wait, Reports has hardware too?
+- Priya: No. Reports is software-only CI. The other three pair with hardware CIs (field-side components). Hardware requirements still live in the system spec, not here.
+- Jen: Platform consistency — internal processes talk over Windows NT mechanisms. Interfaces to thermostats/units also on NT.
+- Barry: Reiterate: THEMAS receives only temp values + setpoints from thermostats; not expecting feedback from the units themselves. All device comms via the defined interfaces.
+- Carla: We should list assumptions explicitly. Two we’ve heard:
+  1) a unit can’t report its on/off state (incapable).
+  2) units send on/off status updates promptly (no real-time delay).
+  Those conflict. Mark the second as [TBD] to reconcile with system spec; base SRS text assumes (1).
+- Leo: Agreed—keep (2) under Assumptions with a [TBD] tag so we don’t imply capability in requirements.
+- Nina: Operationally I don’t rely on hardware telling me anything. Assume no device feedback.
+- Carla: Qualification — the thermostat simulator must be spelled out: we need to show we can verify the decision logic without physical hardware. Include in SRS as a requirement, not just a test note.
+- Leo: For control logic decisions, the rules are in sections 3.1.4.1 and 3.1.4.2 (our outline). The SRS should pin the system to follow those rules exactly. “Adhere to documented utilization/control rules.”
+- Priya: Monitor Temperature as a primary function. Determine Utilization as a module that enforces max concurrent units and manages queue semantics. Initialize System—initialization file read; ensure known state by turning everything off first. Reports—outputs to ASCII; high-level content only in SRS.
+- Jen: IPC across modules must be robust but we aren’t stating implementation details—only that it runs consistently on NT.
+- Barry: Binding language: Only “shall” is binding. Everything else descriptive.
+- Carla: Traceability: we need to tie requirements back to specific SoW IDs. Also forward trace to tests/design. Include a Traceability subsection or matrix.
+- Leo: The doc will be the basis of the software design; Design Requirements team consumes Section 3.
+- Nina: Keep the supervisor display non-cluttered. Repeating for emphasis.
+
+— Additional detail bullets —
+
+- External Interface Overview:
+  - thermostat input: current temperature + desired setpoint only.
+  - outputs to equipment: H/C ON/OFF request signals.
+  - no guarantee of execution confirmation from hardware.
+  - all traffic through designated interfaces; no direct device manipulation.
+- Utilization: max number of units enforced; a waiting queue for excess requests; semantics LIFO. [Rules in §3.1.4.*]
+- Events/Alarms: log alarms and operational events. Future reports rely on event database.
+- Reporting overview (brief per agenda):
+  - Two kinds: historical (12 months) vs monthly statistical summary.
+  - Operator chooses which.
+  - Output as plain text files; operator picks path/name. [No UI mockups here]
+  - Don’t go deep into file schemas; plain ASCII is enough at req level.
+- SRS compliance: Prepared per ANSI/IEEE 830-1984. Sections as above.
+- References: Include technical references as part of the spec. Public standards are generally available via libraries. Copies of non-public refs via Barry.
+- Precedence: If a ref conflicts with SRS, SRS governs, except SoW overrides SRS.
+
+— Discussion fragments —
+
+- Carla: “Shall” is binding — please ensure reviewers don’t mark “should” items as mandatory.
+- Priya: We must write with consistent terms: TSET, LO/UO (OD), LT/UT (TD). Valid range defined in init.
+- Nina: The product functions list in Section 2 should mention the supervisor’s ability to manually request ON/OFF and change thermostat settings within valid ranges.
+- Leo: Yes: put that in product functions summary.
+- Jen: Windows NT only; no cross-platform obligations in this version.
+- Barry: The interface identification should name the types—thermostat input, equipment command output, supervisor console—without binding to vendor protocols.
+- Omar: One more: Hardware reqs are completely out of SRS, right? The system spec covers that.
+- Barry: Correct. Keep SRS software-only.
+- Carla: For verification: the simulator—thermostat simulator—must be documented so QA can qualify reliability. Decision logic must be testable in isolation. [qualification criteria tie-in]
+
+— Contradictions / [TBD] / parking —
+
+- Conflicting domain assumptions about unit status reporting: mark “prompt status updates” as [TBD]; base SRS assumes no status feedback.
+- Maximum concurrent units — what number? [TBD] from Facilities; parameter in the initialization file.
+- Event taxonomy — “Unit Unavailable” cause codes: capacity vs maintenance. For now limit to capacity. Maintenance flagged as a separate feature (NOT decided yet).
+- Report generation cadence — on-demand only vs scheduled. For SRS v1: on-demand. Scheduled [Parking Lot].
+- IPC detail — pipes vs sockets [Parking Lot], not in SRS, only platform constraint.
+- Historical report window — fixed 12 months rolling; confirm if inclusive of current partial month. [check with Barry]
+
+— Action items —
+
+- Leo: Draft Section 2 and Section 3 per IEEE 830 outline; include product perspective, user characteristics (HVAC Supervisor, Facilities Tech), constraints, assumptions.
+- Carla: Provide qualification criteria outline and thermostat simulator V&V plan bullets to integrate into SRS.
+- Barry: Provide SoW reference IDs for traceability matrix; confirm precedence statement text.
+- Jen: Confirm Windows NT versioning and IPC constraints language.
+- Priya: Provide module breakdown descriptions (Monitor Temperature, Determine Utilization, Initialize System, System Reports), including which ones map to hardware CIs.
+- Omar: Provide example initialization file entries (anonymized) for illustrative purposes, not normative.
+- Nina: Provide brief on supervisor console usability constraints (concise list, manual ON/OFF, setpoint choosing).
+
+— More notes —
+
+- Monitor Temperature: primary function — read T and TSET; validate; produce status; compute LO/UO and LT/UT for alarms/decisions.
+- Determine Utilization: enforce cap; maintain ON/OFF software status; queue LIFO; re-check thermostat need when capacity frees.
+- Initialize System: read init file; assign thermostat unique IDs; turn all units OFF to known state before reading values.
+- System Reports: produce ASCII file reports; operator selects path/name; modes: 12-month operational history vs monthly statistical.
+- External Interfaces identification (overview level): thermostat inputs (T, TSET), unit outputs (H/C ON/OFF Request), supervisor console (human operator). No detailed vendor specs in SRS.
+
+— Reminders —
+
+- Only “shall” language is binding; use consistently in the SRS.
+- SRS is the basis for software design; Design Requirements team will consume Section 3.
+- Include references inside the SRS document; note that public tech specs assumed accessible via libraries; other copies available via Barry.
+- Precedence: SoW > SRS > referenced docs.

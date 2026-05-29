@@ -1,0 +1,120 @@
+TYPE  : email_thread
+TITLE : Email thread: Rebuild timing, licensing, backups/restore, and menu sourcing/order
+UNIT  : PROMISE_7
+============================================================
+
+Email 1
+From: Olivia Gomez <olivia@prepco.local>
+To: Nina Patel <nina.ba@vendor.example>
+CC: Dan Cho <dan.it@prepco.local>
+Date: 2025-04-02 08:12
+Subject: Re: Monthly regenerate + daily rerun
+
+Hi Nina,
+
+Can you please confirm two things from our call? We need to be able to re-run adjustments for a single day when a file or formula is off, and we need a bulk regenerate from the 1st of the month through today that finishes in roughly 30 minutes on our store PCs. If it runs much longer, the team stalls.
+
+Thanks,
+Olivia
+
+—
+
+Email 2
+From: Nina Patel <nina.ba@vendor.example>
+To: Olivia Gomez <olivia@prepco.local>
+CC: Dan Cho <dan.it@prepco.local>, Priya Shah <priya.menu@prepco.local>, Victor Ramos <victor.finance@prepco.local>
+Date: 2025-04-02 09:47
+Subject: RE: Monthly regenerate + daily rerun
+
+Hi Olivia,
+
+Yes, we will support:
+- A manual “Run IQA for Day” action for a chosen date; and
+- A “Rebuild From Date” that regenerates all adjustments from the selected start date through the current day.
+
+We’ll treat approximately 30 minutes for the last 30 days as the performance target on a representative in-store PC. Daily imports will still auto-generate IQAs when the POS sales file arrives.
+
+Regards,
+Nina
+
+—
+
+Email 3
+From: Dan Cho <dan.it@prepco.local>
+To: Nina Patel <nina.ba@vendor.example>
+CC: Olivia Gomez <olivia@prepco.local>, Priya Shah <priya.menu@prepco.local>
+Date: 2025-04-02 12:22
+Subject: RE: Environment + backups/restore + concurrent users
+
+Nina,
+
+Just to underline constraints:
+1) Please avoid any components that charge per user or have royalty fees. We’ll deploy on our existing Windows PCs and can’t take on new license costs.
+2) We need backup/restore in the application itself—scheduled backups we can set and a simple restore workflow if someone breaks a menu or similar. I don’t want to rely on command-line tools.
+3) We routinely have six people in the system at the same time across modules, so plan and test for that.
+4) Keep the UI classic Windows—menus, toolbars, Save/Undo. Our staff are comfortable with that.
+
+Thanks,
+Dan
+
+—
+
+Email 4
+From: Victor Ramos <victor.finance@prepco.local>
+To: Nina Patel <nina.ba@vendor.example>
+CC: Olivia Gomez <olivia@prepco.local>, External Audit <audit@rutherfordcpa.com>
+Date: 2025-04-02 13:40
+Subject: RE: Accounting/audit expectations for IQAs and backups
+
+Nina,
+
+Two audit points from Finance:
+- The inventory adjustment outputs must be acceptable to our accounting standards—no manual reformatting—and should provide traceability so the auditor can follow how quantities were derived based on products and formulas for the relevant dates.
+- We will be asked to demonstrate automated backups and perform an on-demand restore during audit. Last year’s vendor failed the restore; we can’t repeat that. An in-app schedule and a straightforward restore with some basic logging would help.
+
+Regards,
+Victor
+
+—
+
+Email 5
+From: Priya Shah <priya.menu@prepco.local>
+To: Nina Patel <nina.ba@vendor.example>
+CC: Olivia Gomez <olivia@prepco.local>, Dan Cho <dan.it@prepco.local>
+Date: 2025-04-02 15:03
+Subject: RE: Menu editor requirements
+
+Hi Nina,
+
+On the menu editor, please make sure:
+- It pulls directly from the accounting product catalog so I’m placing real items (no duplicate masters).
+- We can build menus with submenus and set the order at each level, and that order stays as is after any sync or publish.
+- The same product can appear in multiple submenus when needed.
+
+Thanks,
+Priya
+
+—
+
+Email 6
+From: Nina Patel <nina.ba@vendor.example>
+To: Olivia Gomez <olivia@prepco.local>, Dan Cho <dan.it@prepco.local>, Priya Shah <priya.menu@prepco.local>, Victor Ramos <victor.finance@prepco.local>
+Date: 2025-04-02 17:18
+Subject: RE: Summary — auto IQA, on-demand runs, menus, security, backups
+
+Team,
+
+Quick summary of what we’re proceeding with:
+- IQA generation will auto-trigger when POS sales arrive; plus on-demand run for a selected day and a regenerate-from-date option.
+- Target performance: last ~30 days rebuild in about 30 minutes on your current Windows PCs.
+- No added per-user/royalty components; classic Windows desktop UI.
+- Backups: in-app scheduled backups and on-demand restore with basic logs.
+- Accounting/audit: IQA outputs aligned with your standards and traceable for external review.
+- Menus: source from accounting catalog; support nested menus/submenus; persistent ordering; and products can sit in multiple submenus.
+- Security: centralized accounts and role-based permissions per subsystem; password/permission changes apply consistently across modules.
+- Concurrency: plan to support at least six simultaneous users across modules in testing.
+
+I’ll circulate a draft spec with these items and call out any open questions (e.g., formula/version handling in historical runs).
+
+Best,
+Nina

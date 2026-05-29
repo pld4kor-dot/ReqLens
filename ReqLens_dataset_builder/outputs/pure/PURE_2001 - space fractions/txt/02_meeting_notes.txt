@@ -1,0 +1,89 @@
+TYPE  : meeting_notes
+TITLE : Requirements Working Session — structure, platform, and flow (revised)
+UNIT  : PURE_2001 - space fractions
+============================================================
+
+Date: 2025-02-18
+Call link: https://meet.s2s.local/space-fractions-work
+Attendees:
+- Andrea Brooks (Teacher, Pecan Springs Elementary — requester)
+- Leo (S2S student dev)
+- Priya (S2S student dev)
+- Mark (Mentor)
+- Jenna (Site/hosting)
+
+Notes (raw):
+
+- SRS will cover the Space Fractions product end-to-end; use one document as the formal spec with requester info in the header (Andrea Brooks, Pecan Springs Elementary).
+- SRS structure: Use the component template: Purpose, Inputs, Processing, Outputs for each module (Intro movie, Menu, Game sequence, End screen, Updater tool).
+  - Inputs: user clicks, browser environment; question data comes from a server text file (format TBD); fractions shown as a/b.
+  - Processing: advance on correct; allow retry on incorrect; branch ending based on flagged critical questions; ignore keyboard during intro; basic validation in updater.
+  - Outputs: visual screens, sound cues, immediate feedback; display exact score on end screen with a story message; offer Try Again/Main Menu/Exit.
+  - Storage: score maintained only in session; no permanent files on student machines.
+
+Platform/constraints:
+- Web-based delivery. Runs in a browser; no installs on lab PCs.
+- Implementation: Macromedia Flash (v5) + HTML. UI composed of linked Flash movies (intro, menu, main game, endings). Light JavaScript only to host.
+- Browser requirements: needs JavaScript and the Flash plug-in available on lab image (Jenna to confirm supported versions).
+- Runs on any Internet-capable computer; no new hardware; no direct device access (no mic/camera).
+- Standalone in browser — NOT embedded in other software. Umbrella interface unifies intro/menu/game/end; links to other S2S projects are external.
+- Consistent behavior across supported browsers: visuals may differ slightly; program logic must behave the same.
+
+Gameplay/story:
+- Audience: sixth-graders and teachers in classroom setting.
+- Interaction: mouse-only across gameplay. During intro, only mouse clicks are honored; other inputs ignored. No text-entry answers.
+- Correct answer: show clear “correct” indicator (text + small animation/sound) then advance to next question automatically.
+- Incorrect answer: show message and a hint; allow another attempt. First attempt wrong does not count as full correct in scoring; scoring counts first-try corrects.
+- Robot sidekick: provides context-sensitive hints tied to particular answer choices or concepts.
+- Branching narrative: designate “critical questions.” Performance at those points determines the final scene. Non-critical questions affect score but not the ending.
+- After N questions (N configurable in data), route to ending scene. End screen displays exact overall score and a customized message tied to the branch.
+
+Intro/menu/help/links:
+- Startup shows brief intro movie (skippable): If user clicks, skip immediately to main menu. While intro active, ignore all inputs except mouse click. If no click, movie finishes then goes to main title screen.
+- Main title screen provides: Begin Game, Help, team blurb (with link to team site), link to Denominators page. Wait state: do nothing until user chooses.
+- Begin Game takes the user directly into the game sequence.
+- Help: basic instructions (how to click answers, hints, score and ending). Single page is sufficient.
+- End screen: shows exact score + plot-based conclusion message; options to Exit, Main Menu, Try Again.
+- Related S2S projects: include links (fractions, decimals, percents) opening in a separate window; placed unobtrusively on menu.
+
+Score/Storage:
+- Scoring maintained only within the session. No permanent storage on the client. Replay resets score.
+
+Updater tool (admin/content):
+- Web-accessible question updater: allows an admin to create/edit game content and modify any question.
+- Input via forms (pulldowns + text fields), page-by-page navigation per question with Next/Prev and a Submit button.
+- Validation: check required fields (prompt, choices, one marked correct) and format (fractions as a/b). If invalid, prompt and do not write.
+- On submit, generate a text file on the game server with updated question data. Game sequence loads this dynamically at run time.
+- Admin can customize per-question feedback outputs (per-choice hints/feedback).
+- Access: protect the updater with a password so only designated editors can change content (Jenna to coordinate setup).
+
+Maintainability/Design:
+- Flash game modularized into scenes/sub-scenes for intro/menu/game/end; separate assets where feasible so incremental changes don’t require a full rebuild.
+- Reliability: thorough testing by team members; mentors to review before classroom tryout. Test branching correctness and updater validation.
+
+Security/Hosting (brief):
+- Security model matches standard browser/hosting context. Updater page will be password-protected per hosting policy.
+- Availability: Hosted on the S2S website for broad access; acceptable for multiple students to use at the same time.
+
+Discussion fragments:
+- Keyboard shortcuts were proposed but rejected; stick to mouse-only for consistency.
+- Number of endings: more than one; exact count TBD with content.
+- Data format for question file: CSV vs custom text — TBD.
+
+Action items:
+- Leo: Draft SRS component sections using Purpose/Inputs/Processing/Outputs for Intro, Menu, Game, End, Updater.
+- Priya: Prototype intro movie with click-to-skip and ignore other inputs during it. Prepare Help screen text (one page).
+- Jenna: Provide list of supported browsers with Flash 5 plug-in status; confirm hosting wrapper; set up password protection for updater access.
+- Andrea: Provide 10–12 fraction problems with cartoon scenario notes + indicate the “critical questions.” Include per-choice feedback ideas.
+- Mark: Create testing checklist (browser consistency, branching coverage, updater validation). Review modular scene plan.
+
+Open Issues / Parking Lot:
+- [TBD] Number of endings — 2 vs 3 vs more. Content-dependent.
+- [TBD] Data file format specifics (delimiters/encoding) and server storage path.
+- [TBD] Team site link URL — confirm final path.
+
+Misc notes:
+- Keep behavior consistent even if fonts differ slightly between browsers.
+- Top-level “Space Fractions” interface unifies linked Flash movies; do not embed into external platforms.
+- Sounds/animations should be short to suit classroom use.
+- Denominators link on main screen; small section for related S2S projects; all open in a separate window.

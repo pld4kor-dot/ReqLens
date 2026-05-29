@@ -1,0 +1,1473 @@
+{
+  "id": "PROMISE_3",
+  "origin": "PROMISE",
+  "created_at": "2026-05-23T14:15:52.862463+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Discovery Interview: NurseTrack Scheduler — Scheduling, Access, and Planning Deep Dive (Revised)",
+      "text": "Susan [Program Director]: Thanks for making the time. Sections start next quarter and I want to be crystal on what this tool must do day-to-day, not brochure-speak.\n\nKaren [Operations Coordinator]: Schedule building and keeping cohorts straight are the big time sinks. And the errors… I get too many complaints when we accidentally put students in two things at the same hour. The system has to stop us from doing that.\n\nMia [Program Administrator]: Last winter, two labs for the same cohort landed on Tuesday morning. I didn’t catch the overlap until rosters went out. We need the tool to block conflicts or at least shout loudly before we post anything.\n\nBen [Systems Integration Engineer]: We can make the builder conflict-aware so you can’t place the same cohort in overlapping lecture, lab, or clinical slots. That’s a hard block.\n\nJulie [Associate Dean]: Keep it straightforward. I don’t want staff fiddling for weeks to learn it. One day of training and maybe a quick reference, then productive.\n\nAlex [IT/Security]: And use the terms you already use—standard nursing language in clear English. No weird labels.\n\nSusan [Program Director]: Right. We talk about Programs of Study, cohorts by start term, clinical labs, site contacts. Also, performance can’t be sluggish. I don’t want to stare at a spinner when enrolling students.\n\nBen [Systems Integration Engineer]: For common actions—pull up student, update cohort sequence, add a lab section—we’ll aim for responses within a few seconds. Generating the schedule across classes and labs is heavier, but we’ll target under half a minute.\n\nKaren [Operations Coordinator]: If basic clicks take longer than five seconds, my phone will ring nonstop. And if the generation takes longer than thirty seconds, we’ll assume it’s stuck.\n\nMia [Program Administrator]: We do most work nine to five. How often is it down? The old site went offline at lunch every day.\n\nAlex [IT/Security]: Official window is eight to six. Target about ninety-five percent uptime in that window. And it should handle roughly ten of you doing real work at once.\n\nJulie [Associate Dean]: Ten concurrent staff is our reality. Also plan for growth—we’re not shrinking. Handle all students and classes now and over the next decade. We want at least five years out of this.\n\nBen [Systems Integration Engineer]: Understood. Environment check—you’re on Windows desktops in the nursing office?\n\nKaren [Operations Coordinator]: Windows XP Pro. Yes, ancient. That’s what we have.\n\nAlex [IT/Security]: Not negotiable right now. It needs to run in a standards-compliant browser on that OS. We already deploy the university antivirus on those machines—don’t bring your own.\n\nMia [Program Administrator]: And don’t make it IE-only. Many of us use Firefox. Just work in a normal HTML browser.\n\nBen [Systems Integration Engineer]: Got it—browser-based UI, standards-compliant HTML, compatible with XP Pro boxes.\n\nJulie [Associate Dean]: Integrations: we publish finalized section schedules to CampusConnect, and we pull faculty from the faculty server and student basics from the student master. Still the plan?\n\nBen [Systems Integration Engineer]: Yes. We’ll publish to CampusConnect and read faculty roster/IDs from the faculty central server, and student IDs/admission data from the student master server when needed.\n\nSusan [Program Director]: Only Karen and I should be able to push final sections to CampusConnect. No one else should even see that option.\n\nAlex [IT/Security]: That’s role-based access. Publishing area visible only to certain roles, and the finalization step limited to those two accounts.\n\nKaren [Operations Coordinator]: Clinical site details are sensitive—contacts and addresses. Only our program admins and nursing staff should see full details.\n\nJulie [Associate Dean]: And student personal data—PII—should only be visible to Susan and me. Others can see name and ID for rosters, and directory contact where policy allows, but not deeper personal info.\n\nMia [Program Administrator]: That’s fine. I don’t need addresses. Name, ID, and a way to contact them is enough for my tasks. Still want a directory—emails and phones—for students, faculty, and site contacts so we’re not hunting.\n\nAlex [IT/Security]: Directory is fine within policy. Protect private info and add basic integrity checks—we don’t want bad data creeping in.\n\nBen [Systems Integration Engineer]: We’ll validate inputs: required IDs present, email format checked, time ranges sane so you can’t create a zero-minute lab.\n\nSusan [Program Director]: Setup-wise, we need to create Programs of Study with required classes—clinical and non-clinical—and attach cohorts to a single program. Each cohort is tied to one curriculum and a start month/year.\n\nMia [Program Administrator]: When I create a cohort, I want to pick start month and year so labels are consistent, and then set the preferred order of classes across quarters.\n\nKaren [Operations Coordinator]: We also add new classes—lecture and clinical. For lectures, we capture room needs and instructor needs. For clinicals, we record site needs and both lecture and lab instructor needs.\n\nBen [Systems Integration Engineer]: We’ll model classes as non-clinical or clinical. Non-clinical stores course name, lecture room requirements, and instructor needs. Clinical stores course name, lecture room requirements, clinical site needs, plus lecture instructor needs and clinical lab instructor needs.\n\nJulie [Associate Dean]: I want a Program of Study screen where we name the program and choose required classes from a catalog. And we can edit the program later—rename or update the required list.\n\nMia [Program Administrator]: For each cohort, I want to assign which quarter each class happens—“NUR 210 in Q2, NUR 315 clinical in Q3,” and sometimes insert a new class or clinical section as things change.\n\nSusan [Program Director]: Scheduling must be conflict-aware. No double-booking a cohort for the same day/time. Prefer a hard prevention.\n\nAlex [IT/Security]: Prevention over override. That aligns with reducing errors.\n\nJulie [Associate Dean]: Cutting student-reported scheduling mistakes by half in year one is our bar. The tool needs to help us avoid mistakes.\n\nMia [Program Administrator]: Student side—we add new students and assign them to cohorts. Sometimes in a batch for the incoming group, other times individually for transfers. The system should handle either and check they belong to that program.\n\nKaren [Operations Coordinator]: Right. Only students eligible for that Program of Study should go into that cohort. If I try to add someone from a different track, it should warn me clearly so I can fix it.\n\nBen [Systems Integration Engineer]: So, add nursing students; assign to cohorts in bulk or one by one; enforce eligibility based on the cohort’s program.\n\nSusan [Program Director]: Part-time students complicate everything. We need to manage their progress by adjusting sequence and timelines, and keep an audit trail so we know why we moved them.\n\nMia [Program Administrator]: For clinical labs, we create lab sections for a clinical class: choose the site, the instructor, and the day/time. Then we enroll students registered for that clinical into lab sections. Sometimes we move a student to a different lab section for the same clinical.\n\nKaren [Operations Coordinator]: And we remove a student from a lab section if they drop. If a lab section is empty, we should be able to cancel it. But if there’s even one student, don’t allow cancellation.\n\nBen [Systems Integration Engineer]: Understood: add lab sections with site, instructor, day/time; add students to lab sections if they’re registered for that clinical; allow moves between lab sections for the same clinical; allow removal; and only allow cancellation when the roster is empty.\n\nJulie [Associate Dean]: We rely on printed summaries: a cohort snapshot (students in the cohort, the program, the ordered sequence, progress, and estimated completion timeline); site summaries per quarter (what labs run at a particular site and when).\n\nMia [Program Administrator]: I also print lab rosters—class name and number, lab section code, list of enrolled students, instructor, days/times, and location. For advising, an individual student summary: name, ID, admission date, classes taken, credits, GPA, and cohort.\n\nKaren [Operations Coordinator]: And a printable system log. When something goes wrong, I need to see what changed and by whom.\n\nAlex [IT/Security]: Logging helps audit. Make the log printable. Also, make sure the app plays nicely with our antivirus and is hardened against malicious input.\n\nBen [Systems Integration Engineer]: We’ll follow secure coding and validation. We’ll also provide a contacts directory—emails and phones—for staff, students, lecture instructors, clinical lab instructors, and clinical site admins to support notifications.\n\nSusan [Program Director]: Email is fine as the primary channel. When we confirm classes and timelines, notify students about upcoming schedules. If we change a class detail or cancel, email the right group automatically.\n\nMia [Program Administrator]: For clinical changes—capacity shifts or a lab cancellation—the affected folks need to know quickly. Same with cohort-level tweaks—sequence changes or a one-week lab cancellation due to instructor illness. And if we change a specific student’s status or lab section, that individual should get a note.\n\nJulie [Associate Dean]: Are we doing phone calls too?\n\nMia [Program Administrator]: We’ll still call for emergencies. In the system, email is enough. No texting needed.\n\nAlex [IT/Security]: Email is within policy; text is a can of worms.\n\nBen [Systems Integration Engineer]: Understood: email as primary. We’ll wire up events for routine communications and changes to classes, clinicals, cohorts, and individual student status, and we’ll target only the affected recipients.\n\nSusan [Program Director]: Planning: each quarter we need a report that tells us what classes we need to offer for all cohorts, how many sections and lab sections, and what room types are needed. That’s our room/site planning tool.\n\nMia [Program Administrator]: Yes—a quarterly planning report, rolling up counts. If it shows room types like “tiered lecture hall” or “skills lab,” that’s perfect. And all reports should be printable.\n\nBen [Systems Integration Engineer]: We’ll do a printable planning report by quarter that includes classes to offer, number of sections, number of labs, and room type needs.\n\nJulie [Associate Dean]: Data changes happen: we might rename a cohort identifier, adjust which Program of Study is assigned, change the preferred sequence, or update which quarter a class falls into.\n\nMia [Program Administrator]: Same for Programs of Study: rename programs; redefine required classes. For clinical sites, we need to edit the site’s name, contact person, address, and contact details if they change.\n\nKaren [Operations Coordinator]: Lab sections too—update site if we move, fix the department/section label, change the instructor, adjust day/time, and tweak contact info for the lab lead. And students—names, phones, emails change; status flips full-time/part-time; occasionally we switch their Program of Study.\n\nAlex [IT/Security]: Editing is fine with permissions and logs. If someone changes student status, record it and send the right notification. And keep PII invisible to those without access even when they edit other fields.\n\nBen [Systems Integration Engineer]: We’ll separate fields by permission. Most staff can update contact and status fields; only certain roles can view sensitive personal data; and only the authorized users can finalize and publish schedules.\n\nSusan [Program Director]: To be explicit: Julie and I are the only ones who can view PII. Karen can manage cohorts and labs without seeing everything in the student file.\n\nKaren [Operations Coordinator]: That’s fine. Give me rosters with names and IDs. I don’t need addresses. I do need their email for occasional notes.\n\nAlex [IT/Security]: Emails and phone numbers are directory info under policy, so that fits. We’ll align with the information policy.\n\nMia [Program Administrator]: Just to confirm—cohorts are tied to a single Program of Study. No mixing.\n\nSusan [Program Director]: Correct. One cohort, one program. Enforce that.\n\nBen [Systems Integration Engineer]: We’ll enforce that a cohort is associated with one Program of Study. When adding students to a cohort, we’ll check they match that program.\n\nJulie [Associate Dean]: And the cohort start—can the system capture month and year like “Start: September 2026”?\n\nBen [Systems Integration Engineer]: Yes. When you add a cohort, you tag it with start month and year.\n\nKaren [Operations Coordinator]: Please make sure labels match nursing conventions—say “Clinical Lab Section,” not “practicum event.”\n\nAlex [IT/Security]: Natural terms and consistent English—got it.\n\nMia [Program Administrator]: Don’t bury options in ten screens. It should feel intuitive so most of us can pick it up quickly. We don’t have bandwidth for long trainings.\n\nBen [Systems Integration Engineer]: Usability is a priority. Guardrails to prevent conflicts and invalid inputs should help reduce student-reported mistakes.\n\nSusan [Program Director]: We’re aiming to cut student-reported scheduling errors by about half in the first year. If the tool blocks double-booking and enforces clinical rules, we might get there.\n\nJulie [Associate Dean]: Stability matters. During business hours, it should be up and not crashy. The previous system struggled when more than a few people used it.\n\nAlex [IT/Security]: We’ll plan for roughly ten simultaneous users during nine to five, with availability eight to six and a ninety-five percent uptime target.\n\nMia [Program Administrator]: On schedule generation—you said under thirty seconds. Is that realistic?\n\nBen [Systems Integration Engineer]: That’s the target. Everyday tasks should be around five seconds or less. If generation threatens to exceed thirty seconds, we’ll revisit the approach.\n\nKaren [Operations Coordinator]: For the planning report—can it aggregate for all cohorts and programs for a given quarter?\n\nBen [Systems Integration Engineer]: Yes, it will roll up across all cohorts and programs for the selected quarter.\n\nSusan [Program Director]: Notifications should include routine “your classes coming next quarter,” and changes like class cancellations, section time/room changes, clinical capacity changes, lab cancellations, cohort sequence changes, and single-student moves or status changes. Hit only the affected people.\n\nAlex [IT/Security]: We’ll define triggers and recipients carefully. Email only; keep content in clear English.\n\nKaren [Operations Coordinator]: The old system used to fall over if more than a few of us were active. Please ensure this one supports our typical load without getting in our way.\n\nBen [Systems Integration Engineer]: We’ll size it for around ten active staff during business hours.\n\nMia [Program Administrator]: Clinical site records need fields for site name, contact person, their phone and email, and the address. We use the address often.\n\nAlex [IT/Security]: Address is fine. Keep it in the clinical site record and restrict details to authorized staff.\n\nSusan [Program Director]: Quick recap: model programs with required classes; cohorts tied to one program with a start month/year; classes as clinical or non-clinical with needs captured; conflict-free scheduling; manage clinical sites and lab sections; enroll/move/remove students in labs; handle part-time sequencing; print the summaries; plan per quarter across cohorts; email notifications for routine info and changes; and lock down access—PII only to me and Julie, publishing only for me and Karen.\n\nBen [Systems Integration Engineer]: That’s the scope.\n\nKaren [Operations Coordinator]: One more thing—when I upload a list of students into a cohort, if some don’t qualify, don’t just fail silently. Give me a clear message so I know there are issues to fix before we move on.\n\nMia [Program Administrator]: Yes—make the error messages human-readable. No mystery codes.\n\nAlex [IT/Security]: We’ll keep templates and messages in standard language.\n\nSusan [Program Director]: If we get this right, students will report fewer issues—ideally half as many.\n\nBen [Systems Integration Engineer]: We’ll aim for that by preventing scheduling mistakes up front and making changes transparent via notifications.\n\nJulie [Associate Dean]: All right. Let’s move forward with a prototype we can pilot next quarter.\n\nSusan [Program Director]: Thanks all. Let’s keep it simple, fast, and safe—and speak our language."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "Working Session Notes — NurseTrack Scheduler: Planning, Access, and Reporting (Revised)",
+      "text": "Date: 2025-03-18\nLocation: Nursing Admin Conf Rm B / Teams link: https://teams.univ.edu/meet/NT-Scheduler-Planning\nAttendees:\n- Dr. Susan Poslusny — Program Director\n- Dr. Julie Donalek — Associate Dean\n- Karen Sysol — Operations Coordinator\n- Mia Torres — Program Administrator\n- Alex Kim — University IT/Security\n- Ben Patel — Systems Integration Engineer\n\nNote-taker: Mia (incomplete; some items from memory)\n\nSession goals: clarify specific needs for cohorts/programs, clinicals/labs, reports/printables, notifications, security roles.\n\nGeneral expectations / constraints\n- Office environment: Win XP Pro desktops; no heavy client installs. [Alex]\n- Must work in any standards-compliant HTML browser (Firefox OK; IE legacy present). Avoid browser-specific hacks.\n- Availability target: 8a–6p with ~95% uptime. Concurrency: ~10 staff working 9–5 most days. Handle usage during business hours.\n- Performance: typical actions ~5s or faster; heavy schedule generation <= 30s (target). If slower, revisit approach.\n- Longevity/scale: handle all nursing students/classes now + growth over next 10 yrs. Platform expected to remain viable for at least 5 years.\n- Integrations: publish finalized sections to CampusConnect central; pull faculty from faculty central; student data from student master.\n- Security posture: follow University information policy; harden app; play nicely with Univ standard antivirus.\n\nUsability / language\n- Easy/intuitive; 1-day training -> staff productive. Majority should complete tasks without hand-holding.\n- Use standard nursing terminology + clear English labels (no invented jargon).\n- Timely task completion (no waiting around for common operations).\n\nRoles / access restrictions\n- Clinical site details visible only to authorized staff (Program Admins/Nursing Staff). Others minimal access.\n- Student PII viewable only by Dr. Susan + Dr. Julie. Others see name/ID and directory contact where policy allows.\n- CampusConnect publishing area visible only to authorized roles; final publish limited to Susan + Karen.\n- All edits should be logged (system log printable).\n\nData validation / integrity\n- Basic checks: valid emails, required IDs present, time sanity (no zero-duration items), non-negative numbers, etc.\n- Cohort cannot be linked to more than one Program of Study. Enrollment eligibility check vs cohort’s PoS.\n\nProgram of Study (PoS)\n- Create PoS: name + list of required classes (clinical + non-clinical).\n- Modify PoS: rename program; update required class list as curriculum changes.\n\nClasses\n- Classes are either non-clinical OR clinical.\n- Non-clinical: capture course name, lecture room needs (e.g., projector, seating), instructor needs.\n- Clinical: capture course name, lecture room needs, clinical site needs, lecture instructor needs, clinical lab instructor needs.\n- Add new classes to system; later link to PoS + cohort sequences.\n\nCohorts\n- Add new cohort by start month + year (e.g., Sep 2026).\n- Cohort associated with exactly one PoS; no mixing.\n- Staff set preferred sequence of classes for cohort and assign which quarter each course is offered.\n- Modify cohort info: identifier, PoS assignment, preferred sequence, per-class quarter mapping.\n\nScheduling / conflict handling\n- For a given cohort, classes/sections must not overlap in day/time; hard prevention preferred.\n- Build class timelines; generate sections/labs without time/day conflicts for that cohort.\n\nClinical sites\n- Add new site records; fields: site name, contact person, contact info (email/phone), address. Print site info as needed.\n- Modify site info as contacts change. Restrict details to authorized staff.\n\nClinical lab sections\n- Add lab section for a clinical class; include site name, class instructor, day/time; track department/section label.\n- Modify lab section info: site, department label, instructor, day/time, contact info.\n- Cancel lab section only if 0 students enrolled (disable cancel otherwise).\n\nStudent management\n- Add new nursing students.\n- Assign students to cohorts (bulk upload OR single). Validate eligibility (PoS match) before assignment; provide clear warning if there are issues.\n- Manage lab enrollment: add student registered for a clinical class to a lab section; move student to another lab section (same clinical only); remove from lab if dropped.\n- Manage part-time plans: adjust sequence + timelines per student; reflect in their summary; record changes in logs.\n- Modify student info: ID, name, phone, email, status (FT/PT), Program of Study (if switching track), with permissions.\n\nReports + printables\n- Cohort snapshot printable: students, PoS, sequence, cohort progress, estimated completion timeline.\n- Clinical site overview (by quarter) printable: site info + labs at that site (dates/times).\n- Clinical lab roster printable: class name + number, lab section id, list of enrolled students, instructor, day(s)/time, location.\n- Individual student summary printable: name, ID, admission date, classes, credits, GPA, cohort.\n- System log printable (for audit, troubleshooting).\n- Planning report (quarterly) across all cohorts/programs: classes to offer, number of sections, number of labs, room types needed.\n\nNotifications / communications\n- Email is primary channel; no SMS. Templates in clear English.\n- Routine comms: inform students of upcoming classes/timeline.\n- Change alerts:\n  - Clinicals: capacity changes; lab cancellations (global or week-specific).\n  - Classes: cancellations; section detail changes (time/room/instructor); changes to offerings for a quarter.\n  - Cohorts: sequence changes; weekly schedule changes (e.g., instructor illness).\n  - Individual students: status change FT->PT; moved to a different clinical lab section.\n- Recipients: only affected parties (cohort-level vs section-level vs individual).\n\nAvailability + concurrency\n- Business hours 8–6; aim 95% availability. Handle expected user activity during these hours.\n- Expect ~10 simultaneous staff active 9–5.\n\nIntegrations (detail)\n- CampusConnect: publish finalized section schedules (not drafts). Access to workflow restricted; final publish only Dr. Susan + Karen.\n- Faculty central server: instructor roster/IDs.\n- Student master server: admission date, student ID, enrollment status for verification/eligibility.\n\nSecurity specifics\n- Role-based access—PII view: Dr. Susan + Dr. Julie only; clinical site details restricted; publish area locked down.\n- Data protection: adhere to University Info Policy; app hardened (input validation, secure sessions, etc.).\n- Antivirus: app must not conflict with Univ standard AV.\n\nEdge cases / misc\n- Batch cohort assignment: validate eligibility; if issues detected, clearly warn the user so they can correct and retry.\n- Labs overlapping across cohorts (not same cohort) are allowed; same cohort overlaps blocked.\n- Printables should be simple, clean; no fancy formatting required.\n- Language: consistent nursing terms (e.g., “Clinical Lab Section,” not “practicum event”).\n\nOpen items\n- Eligibility rule details beyond PoS (e.g., GPA) — defer; PoS-only for now.\n- Browser test matrix: Firefox ESR + IE8 on XP; confirm any others with IT.\n- Integration endpoint details for CampusConnect — Ben to confirm.\n\nRandom notes / fragments\n- “We need to see who changed what” — logging printable.\n- Part-time management: adjust sequence + timeline; email the student when status toggles.\n- Planning report example counts discussed (for illustration only).\n- Training: 1 day. Goal: majority proficient by Day 2.\n- Availability: focus on business hours; outside that window is not a priority for operations."
+    },
+    {
+      "type": "email_thread",
+      "title": "Email Thread: Access Controls, Publishing, and Environment Constraints for NurseTrack Scheduler (Revised)",
+      "text": "Email 1\nFrom: Susan Poslusny <sposlusny@univ.edu>\nTo: Ben Patel <bpatel@it.univ.edu>\nCC: Julie Donalek <jdonalek@univ.edu>, Karen Sysol <ksysol@univ.edu>, Alex Kim <akim@it.univ.edu>, Mia Torres <mtorres@univ.edu>\nDate: Mon, Apr 7, 2025 at 8:14 AM\nSubject: Access + publishing + some must-haves\n\nHi Ben,\n\nQuick recap to make sure we’re aligned before you lock the build:\n\n1) Only Karen and I can finalize/publish section schedules to CampusConnect. Please make sure no one else even sees that button.\n\n2) Student personal info (beyond directory basics) should be visible only to me and Julie. Others can work with cohorts/labs and see names/IDs and university emails as needed.\n\n3) Clinical site details (contact names, phone, email, address) should be limited to our program administrators/nursing staff.\n\n4) We need friendly error checks (validation) so staff don’t enter garbage (bad emails, zero-minute labs, etc.). Goal is to reduce mistakes that trigger student complaints.\n\n5) Responsiveness: normal tasks within a few seconds (~5). The full “build sections” pass should complete around 30 seconds.\n\n6) We work 8am–6pm; please treat that as the window where it must be up (~95%+ during those hours). We see about 10 of us in there at once most afternoons.\n\n7) Still on Windows XP Pro in the office. Browser-based, standards-compliant HTML (we use Firefox and some IE). We cannot install anything heavyweight.\n\n8) Planning report by quarter across all cohorts/programs showing classes to offer, section/lab counts, and room types. And the usual printables (cohorts, sites, labs, students, log).\n\nThanks,\n\nSusan\n\n—\n\nEmail 2\nFrom: Ben Patel <bpatel@it.univ.edu>\nTo: Susan Poslusny <sposlusny@univ.edu>\nCC: Julie Donalek <jdonalek@univ.edu>, Karen Sysol <ksysol@univ.edu>, Alex Kim <akim@it.univ.edu>, Mia Torres <mtorres@univ.edu>\nDate: Mon, Apr 7, 2025 at 9:02 AM\nSubject: RE: Access + publishing + some must-haves\n\nHi Susan,\n\nThanks — helpful checklist. Confirmations/clarifiers inline:\n\n1) Finalize/Publish: We’ll restrict the CampusConnect publishing interface to authorized users only, and the finalization action to just you + Karen. Others won’t see that module.\n\n2) Student PII: We’ll partition fields so only you + Julie can view sensitive elements. Staff will see name/ID and directory contact where permissible.\n\n3) Clinical site info: Details (contact person, phone, email, address) visible to Program Admins/Nursing Staff only.\n\n4) Validation: We’re adding checks across forms (email format, time ranges, required IDs, etc.) to keep data clean.\n\n5) Performance: Targeting <=5s for standard tasks; schedule generation optimized to finish under 30s.\n\n6) Availability: We’ll aim for ~95% uptime within 8–6 and size for ~10 concurrent active users.\n\n7) Environment: Building for XP Pro desktops, browser-based, standards-compliant HTML. Testing on Firefox ESR and IE8 per Alex’s matrix.\n\n8) Reports/printables: In scope—cohort snapshot, site overview (by quarter), lab roster, student summary (with admission date/classes/credits/GPA/cohort), system log. Planning report will roll up classes to be offered, section/lab counts, and room type needs per quarter.\n\nWe’re also covering: creating Programs of Study (name + required classes), cohorts tied to a single PoS and tagged by start month/year, class modeling (non-clinical vs clinical with respective needs), conflict prevention for cohort schedules, lab enrollment (add/move/remove within same clinical), part-time adjustments to sequences/timelines, and email notifications for routine and change events (classes, clinicals, cohorts, student-specific changes).\n\nBest,\nBen\n\n—\n\nEmail 3\nFrom: Alex Kim <akim@it.univ.edu>\nTo: Ben Patel <bpatel@it.univ.edu>\nCC: Susan Poslusny <sposlusny@univ.edu>, Julie Donalek <jdonalek@univ.edu>, Karen Sysol <ksysol@univ.edu>, Mia Torres <mtorres@univ.edu>\nDate: Mon, Apr 7, 2025 at 9:24 AM\nSubject: RE: Access + publishing + some must-haves (security notes)\n\nTeam,\n\nTwo quick security notes:\n\n- Information policy: protect private info per policy. We have audit requirements; the printable system log will help.\n\n- Antivirus: Use the University standard (already on desktops). Don’t ship anything separate. Please harden the app against malicious input/attacks (we’ll run our scans).\n\nOn browsers: Support for standards-compliant HTML browsers. Practical test set includes Firefox ESR and IE8 on XP Pro.\n\nAlso, limit CampusConnect interface access to authorized accounts only (in addition to the finalization limit).\n\nAlex\n\n—\n\nEmail 4\nFrom: Karen Sysol <ksysol@univ.edu>\nTo: Ben Patel <bpatel@it.univ.edu>\nCC: Susan Poslusny <sposlusny@univ.edu>, Julie Donalek <jdonalek@univ.edu>, Alex Kim <akim@it.univ.edu>, Mia Torres <mtorres@univ.edu>\nDate: Mon, Apr 7, 2025 at 10:03 AM\nSubject: RE: Access + publishing + some must-haves — practical reminders\n\nHi Ben,\n\nA few practicals from the scheduling trenches:\n\n- When I add a clinical lab section, I need: the clinical site name, the class instructor, and the day/time. We also track a department/section label sometimes (please include an editable field for that). If we later move the lab to a different site or change the instructor/time, we have to be able to edit those.\n\n- Cancel lab rule: do not let me cancel if even one student is enrolled. Only when enrollment is zero should it allow cancel.\n\n- Students: we add new nursing students all the time. Then we assign them to cohorts, often in bulk. Please validate eligibility (PoS match). If a few don’t pass, don’t let it slip through—warn me clearly so I can correct the list.\n\n- Conflict guardrails: The system should block putting the same cohort in two places at the same time/day.\n\n- Email notices: keep it email-only. Use notifications for routine messages (upcoming classes/schedules) and for changes—class cancellations, section detail changes, changes to offerings, clinical capacity changes, lab cancellations, cohort sequence changes, week-specific issues (instructor out sick), and individual changes (FT->PT, moved lab section). Aim messages only at the affected people.\n\nThanks!\n\nKaren\n\n—\n\nEmail 5\nFrom: Mia Torres <mtorres@univ.edu>\nTo: Ben Patel <bpatel@it.univ.edu>\nCC: Susan Poslusny <sposlusny@univ.edu>, Julie Donalek <jdonalek@univ.edu>, Karen Sysol <ksysol@univ.edu>, Alex Kim <akim@it.univ.edu>\nDate: Mon, Apr 7, 2025 at 10:41 AM\nSubject: RE: Access + publishing + must-haves (PoS, cohorts, reports)\n\nHi Ben,\n\nAdding a few PoS/cohort/report points I noted while prepping curriculum lists:\n\n- Program of Study creation/edit: create a PoS with program name and pick the required classes (clinical and non-clinical). Sometimes we rename a program or change the required list—editing should be straightforward.\n\n- Class modeling: when we add new classes, mark them as either non-clinical or clinical. For non-clinical, capture lecture room requirements + instructor needs. For clinical, include clinical site needs and separate fields for lecture instructor needs vs clinical lab instructor needs.\n\n- Cohorts: when adding a cohort, identify it by start month/year (e.g., Sep 2026). Tie the cohort to ONE PoS only. For each class in the sequence, set which quarter it will be offered. We occasionally insert a new class or clinical section midstream.\n\n- Reports/printables we rely on: cohort snapshot (students, PoS, sequence, progress, completion timeline); clinical site summary per quarter (site info + labs, dates/times); clinical lab roster (class name/number, lab section id, list of enrolled students, instructor, days/times, location); individual student summary (name, ID, admission date, classes, credits, GPA, cohort); system log (printable); planning report by quarter (classes, number of sections, number of labs, and room types needed) across all programs/cohorts.\n\n- Directory: please store email + phone for staff, students, lecture instructors, clinical lab instructors, and clinical site admins. This helps notifications and quick outreach.\n\nLet me know if you need examples — I have spreadsheets with sequences and room type notes.\n\nMia\n\n—\n\nEmail 6\nFrom: Julie Donalek <jdonalek@univ.edu>\nTo: Ben Patel <bpatel@it.univ.edu>\nCC: Susan Poslusny <sposlusny@univ.edu>, Karen Sysol <ksysol@univ.edu>, Alex Kim <akim@it.univ.edu>, Mia Torres <mtorres@univ.edu>\nDate: Mon, Apr 7, 2025 at 11:23 AM\nSubject: RE: Access + publishing + must-haves (training/perf/availability)\n\nHi all,\n\nSmall additions:\n\n- Usability: design so most staff get up to speed after a single day of training. A quick reference guide would help, but the interface should be intuitive—two out of three admins should manage their tasks without leaning on Karen.\n\n- Language: keep labels in standard English and nursing terminology. Icons/labels must be naturally understandable.\n\n- Timeliness: staff need to complete tasks quickly—holding the ~5 second mark for most actions is good.\n\n- Availability: reiterating the 8am–6pm window and ~95% uptime; the system should handle our workload during those hours without choking.\n\n- Growth: handle all our students/classes now and in coming years (10-year horizon). We want minimum 5-year viability.\n\nThanks,\n\nJulie\n\n—\n\nEmail 7\nFrom: Ben Patel <bpatel@it.univ.edu>\nTo: All recipients above\nDate: Mon, Apr 7, 2025 at 12:07 PM\nSubject: RE: Access + publishing + must-haves (consolidated + next steps)\n\nThanks everyone—consolidating and calling out two questions:\n\n- Environment/compatibility: XP Pro desktops, standards-compliant HTML browser (Firefox ESR / IE8 in test set). No client installs beyond browser. University standard antivirus in place; we’ll ensure compatibility.\n\n- Integrations: publish finalized section schedules to CampusConnect (restricted access); read from faculty central server and student master server for instructor/student data. CampusConnect area hidden for non-authorized roles; final publish limited to Susan + Karen.\n\n- Security model: Only Julie + Susan can view student PII. Clinical site details visible to Program Admins/Nursing Staff. Data protected per info policy. App hardened.\n\n- Core features: create Programs of Study (name + required classes), add cohorts (start month/year) tied to exactly one PoS, set preferred sequence and per-class quarter, add new classes (mark clinical vs non-clinical with their respective needs), add clinical sites (name, contact person, contact info, address), create clinical lab sections (site, instructor, day/time; plus dept label), enroll students into labs (registered for that clinical), move student between lab sections of the same clinical, remove from lab, cancel lab only if zero enrolled, manage part-time students by adjusting sequence/timelines.\n\n- Reports/printables: cohort snapshot, site-overview (by quarter), lab roster, individual student summary (incl. admission date/classes/credits/GPA/cohort), system log, planning report by quarter (classes, section counts, lab counts, room types).\n\n- Notifications (email-only): routine schedule/timeline info; change alerts for class cancellations/section changes/offering changes; clinical capacity changes/lab cancellations; cohort sequence changes/weekly issues (e.g., instructor illness); individual changes (FT->PT, moved lab section). Target only affected recipients; keep content clear.\n\n- Performance/availability: normal tasks ~<=5s; schedule generation ~<=30s; availability 8–6 with ~95% uptime; handle ~10 simultaneous active users; scale for all nursing students/classes now and into the next decade; expected to support operations for at least 5 years.\n\nTwo questions:\n\n1) Eligibility: we plan to enforce PoS match for cohort assignment. Any other constraints (GPA/credits)? If not, we’ll keep it PoS-only for now.\n\n2) After-hours: our support window is 8–6. Do you want any commitments outside that, or is the focus strictly business hours? We can keep focus on 8–6 if that’s sufficient.\n\nMia—if you can send your PoS/class room type notes, that’ll help with the planning report.\n\nBest,\nBen\n\n—\n\nEmail 8\nFrom: Susan Poslusny <sposlusny@univ.edu>\nTo: Ben Patel <bpatel@it.univ.edu>\nCC: Julie Donalek <jdonalek@univ.edu>, Karen Sysol <ksysol@univ.edu>, Alex Kim <akim@it.univ.edu>, Mia Torres <mtorres@univ.edu>\nDate: Mon, Apr 7, 2025 at 1:02 PM (sent from mobile)\nSubject: RE: Access + publishing + must-haves (answers)\n\nBen,\n\n1) Eligibility: Keep it simple—PoS match only. No GPA/credit rules for now.\n\n2) After-hours: Our priority is 8–6. No need to spend cycles outside that window.\n\nEverything else in your list looks right. Thanks for corralling this.\n\n—Susan\n\n(sent from my phone, pls excuse typos)"
+    }
+  ],
+  "gold_requirements": [
+    {
+      "id": "PROMISE_3_R001",
+      "text": "The system shall be easy to use by the Program Administrators/Nursing Staff Members.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R002",
+      "text": "All of the users shall be able to use the system after one day of training.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R003",
+      "text": "The system shall help the user avoid making mistakes while scheduling classes and clinicals for the nursing students.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R004",
+      "text": "The number of mistakes noted by the students shall be decreased by 50% in the first year.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R005",
+      "text": "The system shall be intuitive to the Program Administrators/Nursing Staff Members.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R006",
+      "text": "2 out of 3 Program Administrators/Nursing Staff Members shall successfully be able to use the system to manage the scheduling of classes and clinicals.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R007",
+      "text": "The system shall use symbols and words that are naturally understandable by the user community.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R008",
+      "text": "The verbiage used within the system shall be consistent with Standard English and the terminology of the national Nursing Community.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R009",
+      "text": "Staff members shall be able to complete a set of tasks in a timely manner.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R010",
+      "text": "The response time of general student management tasks shall take no longer than 5 seconds and the response time of schedule generation shall take no longer than 30 seconds.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R011",
+      "text": "The system shall be available for use between the hours of 8am and 6pm.",
+      "raw_label": "A",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R012",
+      "text": "The system shall achieve 95% up time.",
+      "raw_label": "A",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R013",
+      "text": "system shall be able to handle all of the user requests/usage during business hours.",
+      "raw_label": "SC",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R014",
+      "text": "The system shall cater to 10 simultaneous users from 9am to 5pm.",
+      "raw_label": "SC",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R015",
+      "text": "The system shall be capable of processing 100% of nursing students and their classes for the next 10 years.",
+      "raw_label": "SC",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R016",
+      "text": "The system shall be expected to manage the nursing program curriculum and class/clinical scheduling for a minimum of 5 years.",
+      "raw_label": "SC",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R017",
+      "text": "The system shall able to operate within a business office environment typical of the Nursing Department at DePaul University.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R018",
+      "text": "The system shall be used within the specifications defined by the computers used by the Program Administrators/Nursing Staff Members.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R019",
+      "text": "The system shall operate within the Windows XP Professional operating system.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R020",
+      "text": "The system shall interface with CampusConnect s central server",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R021",
+      "text": "The system shall interface with the faculty central server.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R022",
+      "text": "The system shall interface with the student master server.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R023",
+      "text": "We must be able to interface with any HTML browser.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R024",
+      "text": "Only authorized users shall have access to clinical site information.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R025",
+      "text": "Program Administrators/Nursing Staff Members are the only people who shall have access to clinical site details.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R026",
+      "text": "Only authorized users shall have access to students personal information.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R027",
+      "text": "Dr Susan Poslusny and Dr Julie Donalek are the only people who shall have access to students personal information.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R028",
+      "text": "Only authorized users shall have access to the portion of the system that interfaces with CampusConnect.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R029",
+      "text": "Fit Criterion: Dr Susan Poslusny and Karen Sysol are the only people who shall have access to the final class section scheduling for the system that interfaces with CampusConnect.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R030",
+      "text": "The system shall have basic data integrity checking to reduce the possibility of incorrect or invalid data being introduced.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R031",
+      "text": "The system shall protect private information in accordance with the organization s information policy.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R032",
+      "text": "The system shall be built such that it is as secure as possible from malicious interference.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R033",
+      "text": "The system shall use the organization s standard virus protection software to help monitor threats to itself.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R034",
+      "text": "A cohort shall be associated to one Program of Study offered by the department.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R035",
+      "text": "Program Administrators and Nursing Staff Members shall be able to add a listing of students to a cohort.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R036",
+      "text": "Program Administrators and Nursing Staff Members shall be able to add a single student to a cohort",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R037",
+      "text": "Students added to a cohort shall be eligible for the cohort s Program of Study.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R038",
+      "text": "Program Administrators and Nursing Staff Members shall be able to specify the preferred sequence of classes for a given cohort.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R039",
+      "text": "For each class within a sequence for a cohort Program Administrators and Nursing Staff Members shall be able to specify which quarter that class will be offered.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R040",
+      "text": "Program Administrators and Nursing Staff Members shall be able to add new classes to a sequence of classes",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R041",
+      "text": "Program Administrators and Nursing Staff Members shall be able to add clinical classes or sections to a sequence of classes",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R042",
+      "text": "Program Administrators and Nursing Staff Members shall be able to add a new cohort to the system identified by start month and year.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R043",
+      "text": "Program Administrators and Nursing Staff Members shall be able to add new classes for the nursing department into the system.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R044",
+      "text": "A class shall be either a non-clinical class or a clinical class.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R045",
+      "text": "A non-clinical class shall specify the course name lecture room requirements and instructor needs.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R046",
+      "text": "A clinical class shall specify the course name lecture room requirements clinical site needs lecture instructor needs and clinical lab instructor needs.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R047",
+      "text": "Program Administrators/Nursing Staff Members shall be able to create a new Program of Study.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R048",
+      "text": "A Program of Study shall consist of a program name and listing of required classes (both clinical and non-clinical) that must be completed.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R049",
+      "text": "Program Administrators and Nursing Staff Members shall have the ability to specify which classes are required for a Program of Study",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R050",
+      "text": "The system shall be able to display a report of needed classes for a given quarter for all cohorts of all programs for Program Administrators/Nursing Staff Members planning purposes.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R051",
+      "text": "The report of needed classes shall include (but not be limited to) classes to be offered number of sections needed number of labs needed and room types needed.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R052",
+      "text": "Classes for a given cohort shall not conflict with regards to the time and day that they are offered.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R053",
+      "text": "Program Administrators and Nursing Staff Members shall be able to add a new clinical site into the system.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R054",
+      "text": "Clinical site information shall include (but not be limited to) the name of the site contact person and contact information.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R055",
+      "text": "Program Administrators and Nursing Staff Members shall be able to add a new clinical lab section for an existing clinical class into the System.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R056",
+      "text": "A clinical lab section shall include the clinical site name the class instructor day and time of the lab.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R057",
+      "text": "Program Administrators and Nursing Staff Members shall be able to add a student who has registered for a clinical class to a clinical lab section for that class.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R058",
+      "text": "The system shall allow a Program Administrator or Nursing staff member to remove a student from a clinical lab section.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R059",
+      "text": "The system shall allow a Program Administrator/Nursing Staff Member to move a student from one clinical lab section to another clinical lab section corresponding to the same clinical class.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R060",
+      "text": "Program Administrators/Nursing Staff Members shall be able to cancel a clinical lab section only if there are no students registered for that clinical lab section.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R061",
+      "text": "A Program Administrator/Nursing Staff Member shall be able to add a new nursing student to the system.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R062",
+      "text": "A staff member shall have the ability to manage the progress of a part time student which includes modifying their sequence of classes and timeline of classes.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R063",
+      "text": "The system shall be able to display a printable summary for individual cohorts which will include the students enlisted the Program of study sequence of classes cohort progress through the program and timeline of completion.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R064",
+      "text": "The system shall be able to display a printable summary for individual clinical sites which will include information on labs being held at that site for the given quarter (Clinical site general information on labs held at that location dates and times of all labs held there).",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R065",
+      "text": "The system shall be able to display a printable summary for individual clinical labs which will include (but not be limited to) class name class number lab section listing of students enrolled instructor day(s) time and location.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R066",
+      "text": "The system shall be able to display a printable summary for individual nursing students which will include (but not be limited to) student name student ID admission date classes credits GPA and the cohort that the student is enrolled in.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R067",
+      "text": "The system shall be able to display a printable summary of the system log.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R068",
+      "text": "The system shall contain contact information (e-mail and phone number) for all people relevant to the system including (but not limited to) staff members students lecture instructors clinical lab instructors and clinical site administrators.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R069",
+      "text": "The system will use the stored e-mail addresses as a primary means of communicating information to affected parties.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R070",
+      "text": "The system will notify affected parties for routine communication purposes including but not limited to informing students of upcoming offered classes (timeline) and what their schedule will be/shall be.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R071",
+      "text": "The system will notify affected parties when changes occur affecting clinicals including but not limited to clinical section capacity changes and clinical section cancellations.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R072",
+      "text": "The system will notify affected parties when changes occur affecting classes including but not limited to class cancellations class section detail changes and changes to class offerings for a given quarter.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R073",
+      "text": "The system will notify affected parties when changes occur affecting cohorts including but not limited to changes to the sequence for a cohort s program of study and changes to a given week s schedule (lab cancelled this week due to instructor illness).",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R074",
+      "text": "The system will notify affected parties when changes occur affecting specific students including but not limited to changing a student s status from full time to part time and moving a student to a different clinical section.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R075",
+      "text": "Program Administrators/Nursing Staff Members shall have the ability to modify information relating to cohorts including cohort identifier program of study preferred sequence of classes and quarters that a cohort will be taking specific classes.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R076",
+      "text": "Program Administrators/Nursing Staff Members shall have the ability to modify information relating to a Program of Study within the Nursing Department including the Program of study name and required classes for that Program of Study.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R077",
+      "text": "Program Administrators/Nursing Staff Members shall have the ability to modify information relating to a Clinical Site including the clinical site name site contact person contact information and address.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R078",
+      "text": "Program Administrators/Nursing Staff Members shall have the ability to modify information relating to a Clinical Lab Section including the clinical site name the department/section for the lab the class instructor day and time of lab and contact information.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_3_R079",
+      "text": "Program Administrators/Nursing Staff Members shall have the ability to modify information relating to a Nursing Student including student ID student name phone number e-mail status (full time or part time) and program of study.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    }
+  ],
+  "validation": {
+    "coverage_rate": 0.8481,
+    "missing_req_ids": [
+      "PROMISE_3_R004",
+      "PROMISE_3_R006",
+      "PROMISE_3_R060",
+      "PROMISE_3_R057",
+      "PROMISE_3_R053",
+      "PROMISE_3_R058",
+      "PROMISE_3_R055",
+      "PROMISE_3_R059",
+      "PROMISE_3_R051",
+      "PROMISE_3_R056",
+      "PROMISE_3_R052",
+      "PROMISE_3_R054"
+    ],
+    "unsupported_count": 3,
+    "repair_rounds_used": 1,
+    "coverage_entries": [
+      {
+        "req_id": "PROMISE_3_R001",
+        "supported": true,
+        "evidence_snippets": [
+          "Easy/intuitive; 1-day training -> staff productive"
+        ],
+        "reason": "Sources repeatedly demand ease for program staff."
+      },
+      {
+        "req_id": "PROMISE_3_R002",
+        "supported": true,
+        "evidence_snippets": [
+          "One day of training and maybe a quick reference"
+        ],
+        "reason": "Stakeholders explicitly expect one day training to be sufficient."
+      },
+      {
+        "req_id": "PROMISE_3_R003",
+        "supported": true,
+        "evidence_snippets": [
+          "conflict-aware so you can’t place same cohort"
+        ],
+        "reason": "Requirements call for conflict blocks and input validation to avoid errors."
+      },
+      {
+        "req_id": "PROMISE_3_R004",
+        "supported": false,
+        "evidence_snippets": [
+          "No mention of 50% reduction goal"
+        ],
+        "reason": "No numeric student-complaint reduction target appears in sources."
+      },
+      {
+        "req_id": "PROMISE_3_R005",
+        "supported": true,
+        "evidence_snippets": [
+          "Keep it straightforward. I don’t want staff fiddling"
+        ],
+        "reason": "Documents explicitly require an intuitive, straightforward UI for staff."
+      },
+      {
+        "req_id": "PROMISE_3_R006",
+        "supported": false,
+        "evidence_snippets": [
+          "No quantified success rate specified"
+        ],
+        "reason": "No explicit 2-in-3 success metric or acceptance threshold is given."
+      },
+      {
+        "req_id": "PROMISE_3_R007",
+        "supported": true,
+        "evidence_snippets": [
+          "standard nursing language in clear English"
+        ],
+        "reason": "Sources require use of natural, familiar nursing terminology and labels."
+      },
+      {
+        "req_id": "PROMISE_3_R008",
+        "supported": true,
+        "evidence_snippets": [
+          "standard nursing terminology + clear English"
+        ],
+        "reason": "Documents request Standard English and standard nursing terminology."
+      },
+      {
+        "req_id": "PROMISE_3_R009",
+        "supported": true,
+        "evidence_snippets": [
+          "Timely task completion (no waiting around)"
+        ],
+        "reason": "Performance and timely completion expectations are stated for staff tasks."
+      },
+      {
+        "req_id": "PROMISE_3_R010",
+        "supported": true,
+        "evidence_snippets": [
+          "typical actions ~5s or faster; generation <=30s"
+        ],
+        "reason": "Sources specify ~5s for common actions and <=30s for generation."
+      },
+      {
+        "req_id": "PROMISE_3_R011",
+        "supported": true,
+        "evidence_snippets": [
+          "Official window is eight to six."
+        ],
+        "reason": "Specifies 8am–6pm availability window."
+      },
+      {
+        "req_id": "PROMISE_3_R012",
+        "supported": true,
+        "evidence_snippets": [
+          "Target about ninety-five percent uptime"
+        ],
+        "reason": "95% uptime target stated explicitly."
+      },
+      {
+        "req_id": "PROMISE_3_R013",
+        "supported": true,
+        "evidence_snippets": [
+          "Handle usage during business hours."
+        ],
+        "reason": "Documents require handling business-hours activity."
+      },
+      {
+        "req_id": "PROMISE_3_R014",
+        "supported": true,
+        "evidence_snippets": [
+          "ten concurrent staff is our reality."
+        ],
+        "reason": "Concurrency of ~10 users during workday specified."
+      },
+      {
+        "req_id": "PROMISE_3_R015",
+        "supported": true,
+        "evidence_snippets": [
+          "handle all nursing students/classes now + growth"
+        ],
+        "reason": "Requirement to support all students/classes over next 10 years."
+      },
+      {
+        "req_id": "PROMISE_3_R016",
+        "supported": true,
+        "evidence_snippets": [
+          "we want at least five years out of this."
+        ],
+        "reason": "Five-year useful life expectation is explicitly stated."
+      },
+      {
+        "req_id": "PROMISE_3_R017",
+        "supported": true,
+        "evidence_snippets": [
+          "Office environment: Win XP Pro desktops; no heavy"
+        ],
+        "reason": "Office environment constraints and expectations are described."
+      },
+      {
+        "req_id": "PROMISE_3_R018",
+        "supported": true,
+        "evidence_snippets": [
+          "building for XP Pro desktops, browser-based"
+        ],
+        "reason": "System must run per staff computers' specifications."
+      },
+      {
+        "req_id": "PROMISE_3_R019",
+        "supported": true,
+        "evidence_snippets": [
+          "Windows XP Pro. Yes, ancient."
+        ],
+        "reason": "Windows XP Pro explicitly named as target OS."
+      },
+      {
+        "req_id": "PROMISE_3_R020",
+        "supported": true,
+        "evidence_snippets": [
+          "publish finalized sections to CampusConnect"
+        ],
+        "reason": "Integration with CampusConnect central server specified."
+      },
+      {
+        "req_id": "PROMISE_3_R021",
+        "supported": true,
+        "evidence_snippets": [
+          "read faculty roster/IDs from faculty central"
+        ],
+        "reason": "Transcript/notes state integration with faculty central server."
+      },
+      {
+        "req_id": "PROMISE_3_R022",
+        "supported": true,
+        "evidence_snippets": [
+          "student IDs/admission data from student master"
+        ],
+        "reason": "Documents explicitly require reading student master server data."
+      },
+      {
+        "req_id": "PROMISE_3_R023",
+        "supported": true,
+        "evidence_snippets": [
+          "standards-compliant HTML browser"
+        ],
+        "reason": "Multiple artifacts require browser-based, standards-compliant HTML support."
+      },
+      {
+        "req_id": "PROMISE_3_R024",
+        "supported": true,
+        "evidence_snippets": [
+          "Clinical site details visible only to admins"
+        ],
+        "reason": "Meeting notes and emails restrict clinical site details to authorized staff."
+      },
+      {
+        "req_id": "PROMISE_3_R025",
+        "supported": true,
+        "evidence_snippets": [
+          "Program Admins / Nursing Staff only"
+        ],
+        "reason": "Sources name Program Admins/Nursing Staff as the authorized viewers."
+      },
+      {
+        "req_id": "PROMISE_3_R026",
+        "supported": true,
+        "evidence_snippets": [
+          "Student PII viewable only to authorized users"
+        ],
+        "reason": "Documents mandate restricting student personal data to authorized roles."
+      },
+      {
+        "req_id": "PROMISE_3_R027",
+        "supported": true,
+        "evidence_snippets": [
+          "Student PII visible only to Susan and Julie"
+        ],
+        "reason": "Meeting notes and emails explicitly name Susan and Julie for PII access."
+      },
+      {
+        "req_id": "PROMISE_3_R028",
+        "supported": true,
+        "evidence_snippets": [
+          "CampusConnect access limited to authorized users"
+        ],
+        "reason": "Alex and notes require limiting CampusConnect interface to authorized accounts."
+      },
+      {
+        "req_id": "PROMISE_3_R029",
+        "supported": true,
+        "evidence_snippets": [
+          "Only Susan and Karen can finalize/publish"
+        ],
+        "reason": "Emails and transcript state final publish limited to Susan and Karen."
+      },
+      {
+        "req_id": "PROMISE_3_R030",
+        "supported": true,
+        "evidence_snippets": [
+          "Validate inputs: IDs, email format, time ranges"
+        ],
+        "reason": "Sources specify basic validation and integrity checks across forms."
+      },
+      {
+        "req_id": "PROMISE_3_R031",
+        "supported": true,
+        "evidence_snippets": [
+          "Information policy: protect private info per policy."
+        ],
+        "reason": "Explicit mandate to protect private info per policy."
+      },
+      {
+        "req_id": "PROMISE_3_R032",
+        "supported": true,
+        "evidence_snippets": [
+          "harden the app against malicious input/attacks."
+        ],
+        "reason": "Stakeholders require hardening against malicious input/attacks."
+      },
+      {
+        "req_id": "PROMISE_3_R033",
+        "supported": true,
+        "evidence_snippets": [
+          "Use the University standard (already on desktops)."
+        ],
+        "reason": "Mandated use of university standard antivirus on desktops."
+      },
+      {
+        "req_id": "PROMISE_3_R034",
+        "supported": true,
+        "evidence_snippets": [
+          "cohort associated with exactly one PoS; no mixing."
+        ],
+        "reason": "Sources state cohorts tie to a single Program of Study."
+      },
+      {
+        "req_id": "PROMISE_3_R035",
+        "supported": true,
+        "evidence_snippets": [
+          "assign them to cohorts, often in bulk."
+        ],
+        "reason": "Staff describe adding student lists to cohorts in bulk."
+      },
+      {
+        "req_id": "PROMISE_3_R036",
+        "supported": true,
+        "evidence_snippets": [
+          "Assign students to cohorts (bulk upload OR single)."
+        ],
+        "reason": "Documentation explicitly allows single student assignment."
+      },
+      {
+        "req_id": "PROMISE_3_R037",
+        "supported": true,
+        "evidence_snippets": [
+          "Validate eligibility (PoS match) before assignment;"
+        ],
+        "reason": "Eligibility (PoS match) validation required for assignments."
+      },
+      {
+        "req_id": "PROMISE_3_R038",
+        "supported": true,
+        "evidence_snippets": [
+          "set preferred sequence of classes for cohort."
+        ],
+        "reason": "Sources require staff set preferred class sequence per cohort."
+      },
+      {
+        "req_id": "PROMISE_3_R039",
+        "supported": true,
+        "evidence_snippets": [
+          "assign which quarter each course is offered."
+        ],
+        "reason": "Requirement to specify quarter per class is documented."
+      },
+      {
+        "req_id": "PROMISE_3_R040",
+        "supported": true,
+        "evidence_snippets": [
+          "Add new classes to system; later link to PoS + cohort"
+        ],
+        "reason": "Sources state staff can add new classes to the system."
+      },
+      {
+        "req_id": "PROMISE_3_R041",
+        "supported": true,
+        "evidence_snippets": [
+          "Add lab section for a clinical class"
+        ],
+        "reason": "meeting notes specify adding clinical lab sections"
+      },
+      {
+        "req_id": "PROMISE_3_R042",
+        "supported": true,
+        "evidence_snippets": [
+          "Add new cohort by start month + year"
+        ],
+        "reason": "notes explicitly require cohort start month/year"
+      },
+      {
+        "req_id": "PROMISE_3_R043",
+        "supported": true,
+        "evidence_snippets": [
+          "We also add new classes—lecture and clinical."
+        ],
+        "reason": "transcript and notes state adding new classes"
+      },
+      {
+        "req_id": "PROMISE_3_R044",
+        "supported": true,
+        "evidence_snippets": [
+          "Classes are either non-clinical OR clinical."
+        ],
+        "reason": "notes explicitly define class types"
+      },
+      {
+        "req_id": "PROMISE_3_R045",
+        "supported": true,
+        "evidence_snippets": [
+          "Non-clinical: course name, room, instructor needs"
+        ],
+        "reason": "notes list required non-clinical class fields"
+      },
+      {
+        "req_id": "PROMISE_3_R046",
+        "supported": true,
+        "evidence_snippets": [
+          "clinical site needs, lecture and lab instructors"
+        ],
+        "reason": "notes enumerate clinical class site and instructor needs"
+      },
+      {
+        "req_id": "PROMISE_3_R047",
+        "supported": true,
+        "evidence_snippets": [
+          "Create PoS: name + list of required classes",
+          "Program of Study screen where we name the program"
+        ],
+        "reason": "sources require creating Programs of Study"
+      },
+      {
+        "req_id": "PROMISE_3_R048",
+        "supported": true,
+        "evidence_snippets": [
+          "Create PoS: name + list of required classes",
+          "required classes (clinical + non-clinical)"
+        ],
+        "reason": "PoS defined as name plus required clinical/nonclinical classes"
+      },
+      {
+        "req_id": "PROMISE_3_R049",
+        "supported": true,
+        "evidence_snippets": [
+          "choose required classes from a catalog"
+        ],
+        "reason": "PoS screen allows selecting which classes are required"
+      },
+      {
+        "req_id": "PROMISE_3_R050",
+        "supported": true,
+        "evidence_snippets": [
+          "Planning report by quarter: classes to offer"
+        ],
+        "reason": "notes and email request quarterly planning report per cohort"
+      },
+      {
+        "req_id": "PROMISE_3_R060",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "Not mentioned in LLM batch coverage report"
+      },
+      {
+        "req_id": "PROMISE_3_R057",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "Not mentioned in LLM batch coverage report"
+      },
+      {
+        "req_id": "PROMISE_3_R053",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "Not mentioned in LLM batch coverage report"
+      },
+      {
+        "req_id": "PROMISE_3_R058",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "Not mentioned in LLM batch coverage report"
+      },
+      {
+        "req_id": "PROMISE_3_R055",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "Not mentioned in LLM batch coverage report"
+      },
+      {
+        "req_id": "PROMISE_3_R059",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "Not mentioned in LLM batch coverage report"
+      },
+      {
+        "req_id": "PROMISE_3_R051",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "Not mentioned in LLM batch coverage report"
+      },
+      {
+        "req_id": "PROMISE_3_R056",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "Not mentioned in LLM batch coverage report"
+      },
+      {
+        "req_id": "PROMISE_3_R052",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "Not mentioned in LLM batch coverage report"
+      },
+      {
+        "req_id": "PROMISE_3_R054",
+        "supported": false,
+        "evidence_snippets": [],
+        "reason": "Not mentioned in LLM batch coverage report"
+      },
+      {
+        "req_id": "PROMISE_3_R061",
+        "supported": true,
+        "evidence_snippets": [
+          "Add new nursing students."
+        ],
+        "reason": "Meeting notes explicitly state adding new students."
+      },
+      {
+        "req_id": "PROMISE_3_R062",
+        "supported": true,
+        "evidence_snippets": [
+          "Manage part-time plans: adjust sequence + timelines per student"
+        ],
+        "reason": "Notes require adjusting sequences and timelines for part-time students."
+      },
+      {
+        "req_id": "PROMISE_3_R063",
+        "supported": true,
+        "evidence_snippets": [
+          "Cohort snapshot printable: students, PoS, sequence, cohort progress"
+        ],
+        "reason": "Meeting notes specify cohort printable with progress and timeline."
+      },
+      {
+        "req_id": "PROMISE_3_R064",
+        "supported": true,
+        "evidence_snippets": [
+          "Clinical site overview (by quarter) printable: site info + labs"
+        ],
+        "reason": "Notes require site printable listing labs and dates/times by quarter."
+      },
+      {
+        "req_id": "PROMISE_3_R065",
+        "supported": true,
+        "evidence_snippets": [
+          "Clinical lab roster printable: class name + number",
+          "instructor, day(s)/time, location"
+        ],
+        "reason": "Meeting notes list full lab roster printable fields."
+      },
+      {
+        "req_id": "PROMISE_3_R066",
+        "supported": true,
+        "evidence_snippets": [
+          "Individual student summary printable: name, ID",
+          "admission date, classes, credits, GPA, cohort"
+        ],
+        "reason": "Notes explicitly enumerate student summary printable contents."
+      },
+      {
+        "req_id": "PROMISE_3_R067",
+        "supported": true,
+        "evidence_snippets": [
+          "System log printable (for audit, troubleshooting)."
+        ],
+        "reason": "Meeting notes and emails require a printable system log."
+      },
+      {
+        "req_id": "PROMISE_3_R068",
+        "supported": true,
+        "evidence_snippets": [
+          "directory—emails and phones—for students, faculty",
+          "contact info (email/phone)"
+        ],
+        "reason": "Sources require stored emails/phones for staff, students, and sites."
+      },
+      {
+        "req_id": "PROMISE_3_R069",
+        "supported": true,
+        "evidence_snippets": [
+          "Email is primary channel; no SMS."
+        ],
+        "reason": "Multiple artifacts state email is the primary communication channel."
+      },
+      {
+        "req_id": "PROMISE_3_R070",
+        "supported": true,
+        "evidence_snippets": [
+          "Routine comms: inform students of upcoming classes/timeline"
+        ],
+        "reason": "Notes require routine notifications informing students of upcoming classes."
+      },
+      {
+        "req_id": "PROMISE_3_R071",
+        "supported": true,
+        "evidence_snippets": [
+          "Clinicals: capacity changes; lab cancellations"
+        ],
+        "reason": "Notes explicitly require clinical change notifications."
+      },
+      {
+        "req_id": "PROMISE_3_R072",
+        "supported": true,
+        "evidence_snippets": [
+          "Classes: cancellations; section detail changes"
+        ],
+        "reason": "Meeting notes list class change alerts and notifications."
+      },
+      {
+        "req_id": "PROMISE_3_R073",
+        "supported": true,
+        "evidence_snippets": [
+          "Cohorts: sequence changes; weekly schedule",
+          "week-specific issues (instructor out sick)"
+        ],
+        "reason": "Notes call for cohort change and week-specific notifications."
+      },
+      {
+        "req_id": "PROMISE_3_R074",
+        "supported": true,
+        "evidence_snippets": [
+          "status change FT->PT; moved to different lab"
+        ],
+        "reason": "Notes explicitly require student-specific change notifications."
+      },
+      {
+        "req_id": "PROMISE_3_R075",
+        "supported": true,
+        "evidence_snippets": [
+          "When I create a cohort, I want to pick start",
+          "Modify cohort info: identifier, PoS assignment"
+        ],
+        "reason": "Program admins mention creating and editing cohort details."
+      },
+      {
+        "req_id": "PROMISE_3_R076",
+        "supported": true,
+        "evidence_snippets": [
+          "Modify PoS: rename program; update required"
+        ],
+        "reason": "Notes require editing Program of Study name and classes."
+      },
+      {
+        "req_id": "PROMISE_3_R077",
+        "supported": true,
+        "evidence_snippets": [
+          "Add new site records; site name, contact info",
+          "Modify site info as contacts change"
+        ],
+        "reason": "Notes specify site fields and ability to modify them."
+      },
+      {
+        "req_id": "PROMISE_3_R078",
+        "supported": true,
+        "evidence_snippets": [
+          "Modify lab section: site, dept label, instructor",
+          "day/time, contact info"
+        ],
+        "reason": "Notes list editable lab section fields and edits."
+      },
+      {
+        "req_id": "PROMISE_3_R079",
+        "supported": true,
+        "evidence_snippets": [
+          "Modify student info: ID, name, phone, email",
+          "status (FT/PT) and Program of Study"
+        ],
+        "reason": "Notes enumerate editable student fields including status and PoS."
+      }
+    ],
+    "unsupported_implied": [
+      {
+        "text": "Error messages and batch validation feedback shall be human-readable and actionable (no opaque codes); bulk operations that partially fail must present clear, user-friendly warnings and guidance to fix issues.",
+        "source_snippet": "Yes—make the error messages human-readable. No mystery codes.",
+        "source_type": "interview_transcript",
+        "reason": "The source explicitly demands human-readable error messages and clear feedback for bulk uploads/partial failures. The gold set requires basic data integrity checking but does not require the user-facing quality of messages or explicit handling/clear reporting of partial failures in batch operations."
+      },
+      {
+        "text": "The system shall record and retain an audit trail that captures not only who changed data but why a change was made (e.g., reason/justification for moving a student or adjusting a part-time sequence).",
+        "source_snippet": "Part-time students complicate everything. We need to manage their progress by adjusting sequence and timelines, and keep an audit trail so we know why we moved them.",
+        "source_type": "interview_transcript",
+        "reason": "While the gold set requires a printable system log and general logging, the source explicitly requests capturing the reason/justification for changes (the 'why'). The gold requirements do not specify that log entries must include the rationale for edits, so this is a new, significant audit/capture requirement."
+      },
+      {
+        "text": "Provide short training artifacts (e.g., a quick reference guide) as part of deliverables so staff become productive within one day of training.",
+        "source_snippet": "One day of training and maybe a quick reference, then productive.",
+        "source_type": "interview_transcript",
+        "reason": "The gold set includes training time and usability targets but does not mandate producing concise training materials or a quick reference guide as an explicit deliverable. The source requests a quick reference to support the one-day training goal, which is a distinct documentation/delivery requirement."
+      }
+    ],
+    "passed": false
+  },
+  "brief": {
+    "project_name": "NurseTrack Scheduler",
+    "domain": "higher-education — nursing program administration",
+    "users": [
+      "Program Administrators",
+      "Nursing Staff Members"
+    ],
+    "stakeholders": [
+      "Program Director — Dr. Susan Poslusny",
+      "Associate Dean — Dr. Julie Donalek",
+      "Operations Coordinator — Karen Sysol",
+      "Lecture and Clinical Instructors",
+      "Clinical Site Administrators",
+      "University IT/Security and Systems Integration"
+    ],
+    "business_goals": [
+      "Streamline creation and maintenance of class and clinical schedules for all nursing cohorts",
+      "Cut student-reported scheduling errors by roughly half within the first year",
+      "Provide timely, targeted communications to students, instructors, and site contacts about schedules and changes",
+      "Enable forward planning with clear reports of classes, sections, labs, and room/site needs each quarter",
+      "Publish finalized section schedules to campus systems while staying compliant with privacy and access policies",
+      "Sustain operations reliably during business hours and support program growth over the coming years"
+    ],
+    "core_features": [
+      "Cohort and Program of Study setup: create programs, define required classes (clinical and non-clinical), and create cohorts tied to a single program with a preferred class sequence by quarter",
+      "Course and clinical modeling: add new classes; capture room needs and instructor needs for lectures; for clinicals, capture site needs plus lecture and lab instructor needs",
+      "Conflict-aware scheduling: build class timelines and generate sections/labs without time/day conflicts for a cohort",
+      "Clinical sites and lab sections: add sites with contacts; create lab sections with site, instructor, day/time; cancel a lab only if no students are enrolled",
+      "Student management: add new students; assign students to cohorts (bulk or single); enroll, move, or remove students within lab sections of the same clinical; manage part-time plans by adjusting sequence and timelines",
+      "Reports and printables: cohort snapshots; clinical site overviews by quarter; clinical lab rosters; individual student summaries; system log; and a planning report of needed classes, sections, labs, and room types",
+      "Directory and notifications: store emails/phones for staff, students, instructors, and site contacts; use email as the primary channel for routine updates and for changes to classes, clinicals, cohorts, or individual student status"
+    ],
+    "quality_concerns": [
+      "High usability and short learning curve — most staff should be productive after a single day of training; use clear nursing terminology and standard English",
+      "Error prevention — guardrails to avoid scheduling mistakes and reduce student-reported issues significantly",
+      "Performance — everyday tasks respond in about 5 seconds; schedule generation completes in under half a minute",
+      "Availability and reliability — available 8am–6pm with roughly 95% uptime and able to handle about 10 concurrent staff during core hours",
+      "Scalability and longevity — handle all nursing students/classes now and over the next decade; remain viable for at least 5 years",
+      "Security, privacy, and integrity — strict role-based access (e.g., only Dr. Poslusny and Dr. Donalek may view student PII; only Dr. Poslusny and Karen Sysol can finalize/publish to CampusConnect); data validation, adherence to information policy, and standard antivirus in place"
+    ],
+    "constraints": [
+      "Operates on Nursing Department office desktops running Windows XP Professional and within staff hardware specs",
+      "Browser-based UI compatible with standards-compliant HTML browsers",
+      "Integrates with CampusConnect central server, the faculty central server, and the student master server",
+      "Primary operational window is business hours (8am–6pm)",
+      "Must follow university information security and privacy policies"
+    ],
+    "terminology": [
+      "Cohort — a group of students tied to one Program of Study and start term",
+      "Program of Study — named curriculum with required clinical and non-clinical classes",
+      "Clinical Site — external location hosting clinical labs, with a site contact",
+      "Clinical Lab Section — a specific lab instance with site, instructor, day/time, and roster",
+      "Quarter — academic term used to place classes in the cohort sequence",
+      "CampusConnect — university system where finalized section schedules are published"
+    ]
+  },
+  "metadata": {
+    "project_id": "3",
+    "req_count": 79,
+    "label_dist": {
+      "US": 8,
+      "PE": 2,
+      "A": 2,
+      "SC": 4,
+      "O": 7,
+      "SE": 10,
+      "F": 46
+    },
+    "llm_usage": {
+      "total_calls": 45,
+      "total_input_tokens": 273307,
+      "total_output_tokens": 163109
+    }
+  }
+}

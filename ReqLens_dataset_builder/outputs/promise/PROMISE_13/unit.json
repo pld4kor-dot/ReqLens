@@ -1,0 +1,448 @@
+{
+  "id": "PROMISE_13",
+  "origin": "PROMISE",
+  "created_at": "2026-05-23T15:24:13.939152+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Stakeholder Interview: CCR WCS Insight Portal kickoff with CCR, IT Security, WCS DBA, and UX",
+      "text": "Mia [CCR Analyst]: Thanks everyone. I’ll just jump in. Right now, when I need a grants summary, I go into the old WCS reports, pick my filters, and then it’s like five clicks and a wait, and then exporting is another dance. For the new insight portal, we need it to be simpler—like, I pick my report, hit one button to run it, and then one button to export. I don’t want to hunt for it.\n\nRaj [CCR Manager]: Yeah, and I’ll add: executives don’t have patience. They like to see the top-line numbers first—total grants, amounts by region, maybe a quick trend arrow—before they drill into anything. So when I open the report, the first thing I want is that summary on the results dashboard. At least one strong summary for each kind of report, right up front.\n\nNoel [UX Lead]: Okay, two things there. One, the interaction model: point and click, but also fully keyboard operable, so you can tab through, hit Enter, spacebar—everything works even without the mouse. Two, the dashboard summary—I’m hearing you say per report type, there’s at least one high-level card or tile. We can do that in a way that conforms to our design system and IBM’s usability standards.\n\nLinda [IBM IT Security]: And don’t forget security posture. Access on W3 only, authenticated with IBM intranet credentials. No auto-logins. No caching of passwords. We’ve had issues when apps store credential cookies—that’s a hard no.\n\nTom [WCS DBA]: On the data side, the weekly refresh—I thought we were targeting Monday nights? Actually, wait—there was a proposal for Friday, or is that for the other system? I can run scheduled queries from the external WCS databases once a week, but we need a set day. And we can add connections to additional WCS databases later… with the right approval from data owners, of course.\n\nMia [CCR Analyst]: Monday night would be good actually, that way Tuesday morning we get a fresh cut. If Friday, people forget by Monday. But um, either way weekly is fine. Just don’t make it random.\n\nRaj [CCR Manager]: On the look-and-feel, we’ve had feedback from the CCR leadership—they want IBM branding aligned with corporate guidelines, but also the CCR identity visible. So yes to IBM logo, yes to CCR logo. If it’s just blue stripes and IBM only, we’ll hear about it.\n\nNoel [UX Lead]: That’s straightforward. We’ll place both marks per the brand spec. Also, we need to talk about screen resolution. Some CCR offices still have ancient monitors that only do 800 by 600 reliably. It’s… retro, but it’s real. We can design to that, but it constrains layout.\n\nMia [CCR Analyst]: Yeah, I’m one of those people sometimes when I work remote on a loaner. Please make the interface readable and usable at that resolution without horizontal scrolling. And no tiny text.\n\nLinda [IBM IT Security]: On environment: just to put it on the record, this is for Windows machines, IBM-issued. Windows 2000 or above. It’s intranet-only, no external exposure. Availability is tied to W3. If W3 is up, we aim to be up—within reason. We usually say 95% of W3’s uptime as a target. Don’t quote me on the exact number—actually, yes, write it down. 95% of W3’s availability is the internal target for dependent apps like this.\n\nTom [WCS DBA]: For terminology, can someone confirm we’re sticking to the CCR terms already used in the existing WCS reports? Because we get requests to rename “Regional Program” to “Area” or “Zone,” and that creates a mess.\n\nRaj [CCR Manager]: Use CCR nomenclature, absolutely, the same terms as in current WCS reports. If we change labels, training goes out the window, and the execs say “this isn’t what I recognize.” We’ll test that with CCR users, right?\n\nNoel [UX Lead]: Yes, we’ll do usability tests with CCR users, and we’ll validate labels and flows. Also, for first-time use, what’s the success metric? I recall we were aiming that nine out of ten users can generate a report without needing help on their first try.\n\nMia [CCR Analyst]: That sounds right. Most of us don’t want to read a manual to run a simple report. If I can find it, click once to run, and then hit export—Excel or, hm, do we still do Lotus 1-2-3—then I’m good.\n\nLinda [IBM IT Security]: We still have some regions using Lotus 1-2-3 for legacy processes. Don’t ask me why. The Brio module should provide buttons to export to .xls and .123 file formats. It’s a requirement we’ve had to keep for a while.\n\nTom [WCS DBA]: That’s Brio, not “Breo,” right? I’ve heard people say it wrong.\n\nMia [CCR Analyst]: Guilty. Brio. Got it. As long as the export is literally a button, not hidden under three menus.\n\nNoel [UX Lead]: Button-driven exports are fine. And again, keyboard equivalent—Alt or tab focus, spacebar activates. We’ll ensure 100% of actions are accessible via mouse or keyboard.\n\nRaj [CCR Manager]: Good. Now, about training. Do we really need a full session for everyone before it goes live? I mean, if we nail usability, people can figure it out, right?\n\nMia [CCR Analyst]: I kind of agree, but then we always get someone in the field who misses an email and then can’t log in. Maybe a single training session that everyone’s invited to, recorded, and docs updated. Just one.\n\nLinda [IBM IT Security]: Training is also an opportunity to remind people how to log in properly—using their intranet username and password—and to reinforce there’s no automatic login. We need to be explicit that the system won’t store credentials in cookies. That comes up every time.\n\nTom [WCS DBA]: On the connectivity to other WCS databases—there’s a push to eventually include the volunteer hours DB, but that’s not in scope at day one. However, we should be able to add designated sources later once approved. I don’t want surprises then.\n\nNoel [UX Lead]: Understood. We’ll plan for later additions as designated by governance. But just to be clear, we’re not promising any new kinds of analytics, just the ability to hook in approved WCS sources later when cleared.\n\nRaj [CCR Manager]: Yes, just expansion capability, governed. And about international—we need support for non-US data. Also, some of our colleagues in EMEA and APAC have asked if they can log in, and that’s fine as long as they’re approved CCR staff. So access should allow that, not US-only.\n\nLinda [IBM IT Security]: International access is okay on W3, but approvals must be in place. We’ll check the access groups. Data for non-US regions, fine, as long as we treat it the same governance-wise.\n\nMia [CCR Analyst]: On learnability, I want the flow to be so obvious that after the first use, if I come back a week later, I still remember how to run it. If we say 90% remember the steps after one session, I think that’s the intent.\n\nNoel [UX Lead]: That’s achievable. Clear navigation, consistent placement of actions, nothing buried. And we stick to IBM usability guidelines. We’ll measure task completion and recall during testing with CCR users.\n\nTom [WCS DBA]: Let me circle back on the weekly refresh. If it’s Monday night, it can finish by early Tuesday. Queries go out to the external WCS sources, bring in changes. But if W3 hiccups, availability may fluctuate. Our target is tied to W3 anyway, right?\n\nLinda [IBM IT Security]: Right. If W3 is down, we’re down. If W3 is up, you aim for 95% of that window. That’s the internal SLA vernacular we use. Some folks confuse it with overall 95% uptime, but it’s specifically a fraction of the intranet availability.\n\nRaj [CCR Manager]: Also, we need to show that our terminology matches “Corporate Community Grants” standards. Like, we’re not renaming things just to be cute. If a field says “Grant Recipient” in WCS, it should say that here too.\n\nMia [CCR Analyst]: And please, no inconsistencies like Capitalization in one place and not in another. It’s the little things that trip people.\n\nNoel [UX Lead]: Noted. CCR nomenclature, consistent capitalization, alignment with existing WCS reports. We’ll put those specifics in the style guide.\n\nLinda [IBM IT Security]: Just to be annoying for a second: auto-login is not happening. Also, no storing sensitive info in cookies, including login names. We’ve had apps try to save convenience tokens. Not here.\n\nTom [WCS DBA]: What about performance? Sorry, tangent. I know we’re not defining a performance metric today, but if the queries hit bigger datasets once we add global, that weekly refresh needs to be efficient. I’ll optimize, but just saying.\n\nRaj [CCR Manager]: It just needs to be fast enough that by Tuesday morning it’s done. And in the UI, I don’t want spinners spinning forever.\n\nNoel [UX Lead]: We’ll keep the UI straightforward and indicate when results are ready without adding extra steps. For now, the weekly refresh happens on a set day, and the UI displays current data.\n\nMia [CCR Analyst]: Another small one: make all actions doable with keyboard, including opening the export dialog. I know you said 100%, but I’m repeating it because sometimes developers forget the last 10%.\n\nLinda [IBM IT Security]: And please do not let the browser remember passwords. I know that’s a user setting, but our app shouldn’t encourage it. Logins are via intranet username and password each session.\n\nTom [WCS DBA]: On export formats, I’m a little skeptical about Lotus 1-2-3 continuing forever. But if the Brio module already can output .123, we just keep the button. Excel .xls is the main one.\n\nRaj [CCR Manager]: Execs typically send me Excel. But for compliance with existing processes, we keep both. We can review later but not now.\n\nNoel [UX Lead]: So, export buttons labeled clearly—“Export to Excel (.xls)” and “Export to Lotus 1-2-3 (.123)”. And “Run Report” as a single primary action after selection. That satisfies the “one click to run, one click to export” after the selection step.\n\nMia [CCR Analyst]: Good. And selection should be dead simple—pick a report type, pick filters if any, done. No wizard that goes on forever.\n\nLinda [IBM IT Security]: Also, keep this entirely on W3. Don’t even think about exposing an external endpoint. Authentication must go through standard intranet username/password prompts. Not SSO for this—no automatic sign-in.\n\nTom [WCS DBA]: Yeah, I thought SSO was on the table.\n\nLinda [IBM IT Security]: For this one, because of the governance constraints, we’re not enabling pass-through. Users will authenticate so we can be sure they’re currently authorized CCR staff at the time they access.\n\nRaj [CCR Manager]: Got it. And for docs, when we change something—like a report name or a filter—we need to update the developer and user guides. We’ve had outdated documentation before, and it undermines adoption.\n\nNoel [UX Lead]: The training and documentation team will mirror changes. We’ll log every change and push it to both guides. Maybe we gate releases on documentation being updated.\n\nMia [CCR Analyst]: That would be great. Also, we need a pre-deployment training session. I can help schedule a 90-minute session. Everyone’s invited; we’ll record it. Not two or three sessions—just one before launch, with a recording for those who can’t attend.\n\nTom [WCS DBA]: About international datasets: We might need to map fields differently for EMEA. But as far as the system is concerned, the capability to include those regions is a must. And access for non-US CCR staff when approved.\n\nLinda [IBM IT Security]: Yes. Access groups will include approved international CCR users. We’ll verify with HRIS and CCR management. The system should not block by geography as long as the user is authorized.\n\nNoel [UX Lead]: From a design standpoint, that means date formats and currency might appear in the data, but we’re not doing locale-specific formatting today—just ensuring the data’s there. The requirement is access and data inclusion, not localization, right?\n\nRaj [CCR Manager]: Correct. Don’t overcomplicate. We just need the data and access. Presentation is executive-friendly, with clear summaries on the results dashboard.\n\nMia [CCR Analyst]: And please don’t bury the dashboard. When the report loads, I want the summary tiles first, then the detailed rows.\n\nTom [WCS DBA]: On connectors to additional WCS data sources, I’ll make sure we can add designated sources later with the proper approvals. We won’t go rogue.\n\nLinda [IBM IT Security]: Make sure that adding a data source doesn’t change the authentication. Same access control—authorized CCR users only.\n\nNoel [UX Lead]: We’ll keep access consistent. Also, I want to reiterate: all navigation must be doable point-and-click and also via keyboard. No hover-only menus. And the interface must be operable at low resolution—800 by 600. We’ll design for that constraint.\n\nRaj [CCR Manager]: Sounds like we’re aligned. One small disagreement: I still think if it’s intuitive, we can skip the training. But I hear you, we’ll do one session pre-deployment to keep everyone happy.\n\nMia [CCR Analyst]: Thank you. Some folks only learn by being shown once, then they’re fine. After that, they can recall the steps. That’s part of the goal—high learnability.\n\nLinda [IBM IT Security]: Last thing: availability messaging. Don’t claim 24/7. Tie it explicitly to W3. If W3 is up, we target being up—95% relative. If W3 is down, we’re down. Keep it simple.\n\nTom [WCS DBA]: What about the name “Insight Portal”? Does that conflict with anything in W3 naming conventions?\n\nNoel [UX Lead]: I think the name is fine. What matters more is that we use CCR standard terms in the UI and reports. And the branding with both IBM and CCR is clear.\n\nMia [CCR Analyst]: Also, can we avoid that weird teal color? Sorry, off-topic. It’s just not flattering for an executive dashboard.\n\nRaj [CCR Manager]: Ha, design by committee—dangerous. But yes, we’ll stick to IBM and CCR visual guidelines. If teal isn’t allowed, it won’t appear.\n\nNoel [UX Lead]: We’ll conform to the brand palette. And we’ll run a quick validation session with CCR users before we finalize, to check usability and nomenclature.\n\nLinda [IBM IT Security]: Are we all clear on no cookies saving login info?\n\nMia [CCR Analyst]: Yes. Annoying for me, but fine.\n\nTom [WCS DBA]: And I’ll schedule the weekly refresh for Monday night, pending final confirmation. The queries will go against external WCS sources, bring in updates. That meets the “once a week” requirement. If we need to change the day, it’s a config on my side.\n\nRaj [CCR Manager]: Great. So: point-and-click UI, but keyboard-friendly. Summaries first on the results dashboard for each report type. Fast run, one click. Export by buttons to Excel and the older Lotus format if we must. IBM and CCR logos. 800-by-600 friendly. Use the same CCR terms as WCS. Usability tested with our users. Training session before go-live. Availability tied to W3 at, what, 95% of its uptime—yes. Weekly refresh on a set day. Ability to add more WCS databases later (with approvals). Include global data and allow approved non-US staff. Windows machines, intranet. Auth is IBM username and password, no auto sign-in, no cookie storing. Documentation updated every time we change something. Did I miss anything?\n\nNoel [UX Lead]: That’s quite the recap. I’d only add: we’ll measure first-time success with a target around 90% and aim for high learnability—users remember how to do it after a single session. That’s part of our usability goals.\n\nLinda [IBM IT Security]: Perfect. I’ll circulate the security notes. Keep me looped on the refresh schedule and any new data sources you want to connect, so we can approve access groups.\n\nTom [WCS DBA]: Will do. And I’ll check with the WCS data owners/DBAs about the additional databases. Designated only, we won’t go rogue.\n\nMia [CCR Analyst]: Thank you all. I’ll volunteer to be a pilot user for the usability test. If I can run a report on the first try without instructions, we’re in a good place.\n\nRaj [CCR Manager]: Let’s do it. And please, no hover-over-only menus. I hate those.\n\nNoel [UX Lead]: Agreed. Everything will be accessible via mouse and keyboard. No hidden actions. We’ll keep the interface clean at 800 by 600.\n\nLinda [IBM IT Security]: And locked down to authorized CCR users. On W3. With real logins. No cookies. I’m done.\n\nTom [WCS DBA]: Meeting adjourned? I’ll send an email with the proposed Monday refresh and an alternative if operations prefers another night.\n\nMia [CCR Analyst]: Works for me.\n\nRaj [CCR Manager]: Done. Thanks, everyone."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "CCR WCS Insight Portal Design Working Session — Raw Notes",
+      "text": "Date: 2025-03-18\nLocation: Building 12, Room 4C + WebEx link (W3 only)\nAttendees: Raj (CCR Mgr), Mia (CCR Analyst), Noel (UX Lead), Linda (IT Sec), Tom (WCS DBA), Carla (CCR Training/Docs), Jason (W3 Ops) [joined late]\n\n– Kickoff / objectives\n  - mgmt-ready dashboards; quick to run/export; align w/ IBM & CCR standards\n  - W3-only access; Windows env; global datasets later; training plan pre-go-live\n\n– UI/Branding/Usability\n  - Use IBM+CCR branding standards; include both logos (placement top-left or footer?)\n  - Color palette per IBM/CCR (avoid teal? debate). Fonts: IBM Plex [check]\n  - Display must work at 800x600. No horiz scroll at that res. Text readable.\n  - Point-and-click model. Also full keyboard operability: tab order, focus rings, Enter/Space triggers ALL actions.\n  - Hover-only interactions discouraged; 100% features must be accessible via keyboard. (Noel to review components)\n  - Results dashboard: show high-level summary for EACH report type (at least one metric/tile). Exec-friendly presentation. Clear summaries.\n  - First-use success target ~90% able to run a report without help.\n  - Learnability goal: after one session, users should remember flow (target 90% recall of steps). [Mia/Carla to define simple flow cheat sheet]\n  - Use CCR nomenclature consistent w/ existing WCS reports. No ad hoc renames. Validate through CCR user testing.\n  - All interfaces/reports undergo usability tests by CCR users before rollout. (Recruit 8–10 CCR users) [Carla]\n  - Contradiction noted: Raj said maybe no training. Group decided YES one session pre-deploy. [NOT decided yet] → later resolved as YES, 1 session.\n\n– Access/Security/Availability\n  - IBM W3 intranet only. No external exposure. Availability tied to W3 (target 95% of W3 uptime). Avoid advertising 24/7.\n  - Authentication: IBM intranet username/password. No automatic login. No cookies storing credentials (no saved login).\n  - Authorized CCR users only (include approved non‑US CCR staff). Access group config req’d. HRIS sync? [Jason to confirm]\n  - Platform: IBM-issued Windows machines (Windows 2000+). Older workstations must function.\n  - Reminder: Browser password saving discouraged; app should not encourage it. (Note: policy doc link [?])\n\n– Data/Refresh/Connectivity\n  - Weekly refresh of data from WCS sources. Scheduled queries to external WCS databases on a set day. Proposed: Monday night 11pm ET (finish by Tue 6am). Alt: Fri night (Tom to check ops window). [TBD]\n  - Connectivity to additional designated WCS databases not in initial scope. Should be able to add later when approved (WCS data owners sign-off required). No new analytics promised—just additional sources when okayed.\n  - Include regions outside US (datasets). Ensure capability to ingest global data fields. (Localization out of scope now.)\n  - Access for approved non-US CCR staff. Same auth flow on W3.\n\n– Reporting/Exports (Brio)\n  - One-click to generate a report once selection made. One-click to export. No extra confirmation screens.\n  - Exports provided via Brio module. Buttons in UI produce spreadsheet files:\n    • Excel (.xls)\n    • Lotus 1-2-3 (.123) [legacy—still required in some regions]\n  - Button labels should be explicit. Keyboard access to export buttons required. No buried menus.\n  - Reminder: Data exports reflect latest weekly refresh. (Consider showing last refresh date/time on dashboard? [discussion; not mandatory])\n\n– Documentation/Training/Adoption\n  - All changes/updates/additions must be reflected in WCS Developer Guide and WCS User Guide. Every change tracked. Release gated on docs updated? [Carla to propose process]\n  - Pre-deployment training: 1 session covering entire CCR user base (recorded). Aim for broad coverage (attend or watch recording). Scheduling: 90 min. [Carla + Raj]\n  - Usability aligned with IBM standards; CCR users validate nomenclature match w/ WCS. Target: high adoption, reduced time from selection to export.\n\n– Availability / Ops\n  - Service availability depends on W3 network status. Target: 95% of W3 availability window (Jason notes to confirm phrasing). If W3 down → portal down.\n  - No external endpoints. Intranet-only.\n  - Incident comms: [TBD—out of scope?]\n\n– Keyboard/mouse operability details\n  - Ensure all selection & navigation functions activatable by mouse or keyboard (100%).\n  - Avoid mixed controls that break at 800x600.\n\n– Nomenclature specifics\n  - Terms to lock: “Corporate Community Grants (CCR)”, “Workplace Community System (WCS)”, “Grant Recipient”, “Regional Program Coordinator”, etc. Check against current WCS reports [Mia].\n  - If label mismatch found, fix UI to match WCS. Do not change WCS for UI preference.\n\n– Branding specifics\n  - Both IBM and CCR logos required somewhere visible in the interface (header/footer). Not both in the same corner? [Noel to mock].\n  - Visual identity consistent across outputs (dashboards, exports header if any). (Note: exports are raw spreadsheets; brand not embedded beyond filename? [TBD])\n\n– Contradictions / Clarifications\n  - Raj initially: skip training; later group: do 1 session pre-go-live. Resolution: YES training (1 session). Strike-through earlier idea of skipping training.\n  - Availability phrasing: “available at all times as long as W3 accessible” vs “95% of W3 uptime” → Use latter as realistic target; both imply dependency on W3. Keep both ideas in comms carefully.\n  - Export formats: some push to drop Lotus 1-2-3; decision: keep .123 for now. Revisit in Q4. [Parking Lot]\n\n– Timelines / Next steps\n  - Tom: propose weekly refresh day (Mon vs Fri) by end of week. Include run window.\n  - Noel: produce low-res (800x600) wireframes w/ dual logos, dashboard summaries per report type, clear one-click Run/Export. Include keyboard nav plan.\n  - Carla: draft training outline; plan 1 session pre-deploy; ensure docs update checklist in release process.\n  - Jason: confirm W3 availability statement template; check access group setup for non‑US CCR users.\n  - Mia: collect CCR nomenclature examples from current WCS reports; flag discrepancies.\n  - Raj: circulate exec summary expectations (what metrics on dashboard per report type). Number of summary tiles: at least 1 per type; could be 2–3. Keep it “executive friendly”.\n\nOpen Issues / Parking Lot\n  - Export: keep Lotus 1-2-3 forever? Many regions still rely on it; but desire to sunset. No decision. Revisit Q4 2025.\n  - Show “last refreshed” timestamp on dashboard? Might help clarity; ensure not a new step. [TBD]\n  - Training attendance metric—100% of CCR users? What about new hires? Will recording suffice to claim coverage? [Carla to propose policy]\n  - Global dataset fields variations (e.g., currency display) — out of current scope, but data inclusion is required. Revisit if execs ask for localization.\n  - Availability wording: “at all times when W3 is accessible” vs “95% of W3 availability”. Choose one in external comms. [Jason]\n  - Authentication: any chance of SSO? Linda says no automatic login; must prompt. Document rationale to preempt user complaints.\n\nRandom notes (as captured)\n  - “Make it fast”: No formal perf req captured today. Implicit: one-click run should not feel sluggish. Manage expectations.\n  - “Mouse-only users vs keyboard-only users”: support both equally. No hidden hover actions. Default buttons reachable via tab.\n  - “Windows 2000+” still a thing for a few machines. Ensure no modern dependency that breaks them. [Check IE version? -> left blank, avoid scope creep]\n  - “Consistent CCR terms” — some folks call “Area” instead of “Region”. Use “Region” per WCS. Training to highlight glossary.\n  - Branding: keep both IBM + CCR logos visible. Don’t stack them if space too tight at 800x600; consider footer placement.\n  - Service exposure: intranet-only; do not publish outside W3.\n\nAction Items (mixed in)\n  - Tom: draft refresh schedule (Mon night 23:00 ET; alt Fri) + operations note. Due: 03/21.\n  - Noel: wireframes (low-res variant) + keyboard nav checklist. Due: 03/25.\n  - Carla: training session calendar invite to all CCR users (recorded) + doc process. Due: 04/02.\n  - Jason: confirm 95% target phrasing and access for approved international CCR staff; check with W3 ops. Due: 03/22.\n  - Mia: compile CCR nomenclature list by 03/20; share with Noel.\n  - Raj: send exec summary content examples (what “high-level” means per report). Due: 03/19.\n\nEnd of notes (raw; may contain errors)."
+    },
+    {
+      "type": "email_thread",
+      "title": "Email: Exports, Security, Resolution, and Training — CCR WCS Insight Portal",
+      "text": "Email 1\nFrom: Mia Patel <mpatel@ibm.com>\nTo: Noel Chen <nchen@ibm.com>, Tom Alvarez <talvarez@ibm.com>\nCC: Raj Desai <rdesai@ibm.com>, Linda Vargas <lvargas@ibm.com>, Carla Soto <csoto@ibm.com>\nSubject: Export buttons + one-click run (CCR WCS Insight Portal)\n\nHi all,\n\nQuick follow-up from the workshop. We need to make sure the new portal does what folks expect:\n- After I choose the report type and any filters, I hit “Run” once, it executes. No wizard pages. One click.\n- Then there should be explicit export buttons. I heard Brio supports Excel and (sigh) Lotus 1-2-3. So, two buttons: Export to Excel (.xls) and Export to Lotus (.123). Please don’t hide these in a dropdown.\n- Keyboard equivalents too — I tab there, press Space/Enter, it works.\n\nAlso, Noel, can you confirm the results dashboard shows at least one high-level summary per report type? Our execs need to see the “headlines” before they dive.\n\nThanks,\nMia\n\n—\n\nEmail 2\nFrom: Noel Chen <nchen@ibm.com>\nTo: Mia Patel <mpatel@ibm.com>\nCC: Tom Alvarez <talvarez@ibm.com>, Raj Desai <rdesai@ibm.com>, Linda Vargas <lvargas@ibm.com>, Carla Soto <csoto@ibm.com>\nSubject: RE: Export buttons + one-click run (CCR WCS Insight Portal)\n\nHi Mia,\n\nYep, on all points:\n- We’ll do a single prominent Run action post-selection. That meets the “one click” (after selection) goal.\n- Brio will expose two export buttons with clear labels: .xls and .123. We’ll ensure full keyboard operability, and no hover-only controls.\n- Dashboard: Every report type will surface a minimum of one high-level, executive-friendly summary tile, with the detailed rows below.\n\nAlso confirming a couple of constraints we’re designing to:\n- Interface operable at 800x600 resolution (I’ve been blocking out layouts to avoid horizontal scroll at that size).\n- Dual branding: IBM + CCR logo present per the standards.\n- CCR nomenclature will mirror what’s in existing WCS reports. We’ll validate via CCR user testing.\n\nI’ll share low-res wireframes early next week.\n\nBest,\nNoel\n\n—\n\nEmail 3\nFrom: Linda Vargas <lvargas@ibm.com>\nTo: Noel Chen <nchen@ibm.com>, Mia Patel <mpatel@ibm.com>\nCC: Tom Alvarez <talvarez@ibm.com>, Raj Desai <rdesai@ibm.com>, Jason Wu <jwu@ibm.com>, Carla Soto <csoto@ibm.com>\nSubject: RE: Export buttons + security reminders\n\nTeam,\n\nCouple of security reminders and clarifications:\n- Access is for authorized CCR staff only. Users authenticate with their IBM intranet username and password. This is on W3 and stays on W3.\n- No automatic logins. Please do not implement any credential caching. No cookies storing login info — this is non-negotiable.\n- Availability: The portal’s availability is dependent on W3. Our standard wording is “target 95% of W3 availability.” Please don’t promise 24/7.\n\nJason is CC’d to confirm the exact phrasing for internal comms and to set up the correct access groups, including approved non‑US CCR users.\n\nThanks,\nLinda\n\n—\n\nEmail 4\nFrom: Tom Alvarez <talvarez@ibm.com>\nTo: Linda Vargas <lvargas@ibm.com>, Noel Chen <nchen@ibm.com>\nCC: Mia Patel <mpatel@ibm.com>, Raj Desai <rdesai@ibm.com>, Jason Wu <jwu@ibm.com>, Carla Soto <csoto@ibm.com>\nSubject: RE: Weekly refresh day + adding more WCS sources later\n\nHi all,\n\nOn data refresh: Proposing we set the weekly external WCS queries to run Monday nights starting at 23:00 ET, finishing before 06:00 Tuesday. If Ops prefers Friday night to reduce weekday risk, I can accommodate, but I agree with Mia that Monday makes the Tuesday data “fresh.” Action on me to finalize with Ops by Friday.\n\nOn future connectivity: We’ll be able to add additional designated WCS databases that we don’t include at launch, with data owner approval and CCR governance sign-off. No change to auth/roles — still “authorized CCR only” via intranet credentials.\n\nFinally, yes, we will include datasets for regions outside the US. From a DB standpoint, we already have tables for EMEA/APAC. Access for non-US CCR users will go through the same W3 auth, assuming they’re on the approved list.\n\nRegards,\nTom\n\n—\n\nEmail 5\nFrom: Raj Desai <rdesai@ibm.com>\nTo: Carla Soto <csoto@ibm.com>\nCC: Noel Chen <nchen@ibm.com>, Linda Vargas <lvargas@ibm.com>, Mia Patel <mpatel@ibm.com>, Tom Alvarez <talvarez@ibm.com>\nSubject: RE: Training + docs before rollout (and minor gripes)\n\nCarla,\n\nI’ll admit I was skeptical about doing training if the UI is intuitive. But let’s lock it: one training session pre-deployment for all CCR users. Please invite the entire CCR list, record it for folks who can’t attend, and share the link.\n\nAlso, please make sure the WCS User Guide and WCS Developer Guide are both updated for any change we ship. We’ve been burned by docs that lag behind. If we rename a filter or alter a summary tile, it needs to show up in both guides before go-live.\n\nSide gripe: I don’t love that we still have to support Lotus 1-2-3 format, but I understand Linda’s point. Keep the Brio export buttons for .xls and .123 for now. Maybe we can revisit sunsetting .123 later this year.\n\nThanks,\nRaj\n\n—\n\nEmail 6\nFrom: Jason Wu <jwu@ibm.com>\nTo: Linda Vargas <lvargas@ibm.com>, Noel Chen <nchen@ibm.com>, Tom Alvarez <talvarez@ibm.com>\nCC: Raj Desai <rdesai@ibm.com>, Mia Patel <mpatel@ibm.com>, Carla Soto <csoto@ibm.com>\nSubject: RE: Availability phrasing + access groups (W3)\n\nHi folks,\n\nJumping in late. Confirming the standard line we use: “Portal availability targets 95% of W3’s availability. When W3 is unavailable, the portal is unavailable.”\n\nOn access groups: we can include approved international CCR employees in the same group. We’ll sync with HR and CCR management to validate membership. No geo blocks, but obviously it’s only reachable via W3 on IBM-issued Windows machines (Windows 2000 or newer). Intranet-only exposure.\n\nNoel — also confirming the 800x600 requirement is still necessary. We’ve got a surprising number of older workstations out there. Please design and test at that resolution.\n\nTom — Monday night refresh looks fine at a glance. Please include the planned maintenance window in your note so teams know when data may be updating. Also add a simple note in the onboarding doc about “data refresh occurs weekly on [DAY].” Not a new feature; just documentation.\n\nCarla — training session: once you set the date, I’ll ask Ops to keep the systems quiet during that hour to avoid distractions. Let’s aim for broad coverage (attend or watch recording).\n\nThanks,\nJason\n\n—\n\nEmail 7\nFrom: Noel Chen <nchen@ibm.com>\nTo: All\nCC: —\nSubject: RE: Wrapping threads — UX items and open actions\n\nThanks everyone,\n\nSummary on my side:\n- UI will support both mouse and full keyboard interactions for every action (run, navigation, export). No hover-only menus.\n- Dual branding: IBM + CCR logos included per standards.\n- Operable at 800x600; no horizontal scroll; readable at low res.\n- Dashboard per report type will include at least one executive-friendly summary tile above the data table.\n- CCR nomenclature sticks to existing WCS terms. We’ll validate in CCR usability sessions.\n- One-click run after selection; one-click exports via Brio buttons (.xls and .123). No extra dialogs.\n\nSecurity/Access (Linda/Jason):\n- W3 only; authorized CCR users authenticate with IBM intranet username/password. No auto login; no credential cookies.\n- Availability framed as 95% of W3’s uptime; we won’t claim 24/7.\n\nData/Refresh (Tom):\n- Weekly data refresh, likely Monday night; queries to external WCS DBs. You’ll finalize day/time.\n- Capability to add more designated WCS databases later with approvals; no change to auth.\n- Include global datasets; approved non-US CCR staff can access via W3.\n\nDocs/Training (Carla):\n- One pre-deployment training session for all CCR users (recorded). Target wide coverage.\n- Every change reflected in WCS User + Developer Guides before rollout.\n\nOpen items:\n- Tom to finalize refresh day + comms about the refresh window.\n- Carla to send training invite + doc process.\n- Raj to send examples of what “high-level” means per report type.\n- Minor: review .123 sunset timeline (later).\n\nIf I missed anything, please shout. Otherwise, we’re aligned.\n\nNoel\n\n(sent from mobile; forgive typos)"
+    }
+  ],
+  "gold_requirements": [
+    {
+      "id": "PROMISE_13_R001",
+      "text": "The system shall use IBM and CCR branding standards. The interface must have one IBM logo and one CCR logo.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_13_R002",
+      "text": "The system shall be displayable on any work computer a CCR user may have. The system interface shall be formatted to display at 800 by 600 pixel resolution.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_13_R003",
+      "text": "The system interface will use CCR nomenclature. The system must use the same nomenclature used in the existing WCS system and reports",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_13_R004",
+      "text": "The interface must summarize the data in a fashion that s appealing to CCR management. Every report type must have at least one high level summary shown in the results dashboard/interface",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_13_R005",
+      "text": "The system must use a point and click interface. 100% of all selection and navigation functionality must be able to be activated/selected by either a mouse or a keyboard",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_13_R006",
+      "text": "The interface shall be easy to use. 90% of users should be able to successfully use the system to generate a report on their first use. The interface should adhere to IBM usability standards.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_13_R007",
+      "text": "Rreports must be easy to generate. eports must be generated within one button click and exported within one button click (after selecting the report)",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_13_R008",
+      "text": "A user shall be able to use the system without instruction after a short amount of time. After one use a user should understand and remember 90% of the system usage and navigation.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_13_R009",
+      "text": "All CCR users shall receive training before the WCS system is deployed. One training session will be held for 100% of CCR users before system deployment (based on a CCR user being available)",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_13_R010",
+      "text": "The WCS system shall use appropriate nomenclature and terminology as defined by the Corporate Community Grants organization. All interfaces and reports will undergo usability tests by CCR users.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_13_R011",
+      "text": "The WCS system shall be available at all times as long as IBM s internal intranet W3 is accessible. The WCS system will be available 95% of the time IBM s internal intranet W3 is available.",
+      "raw_label": "A",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_13_R012",
+      "text": "The WCS system shall have the ability to connect other designated WCS databases currently not included in the system.",
+      "raw_label": "SC",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_13_R013",
+      "text": "The WCS system shall have the ability to include data for regions outside the United States and be accessed by users outside of the United States if approved by CCR management.",
+      "raw_label": "SC",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_13_R014",
+      "text": "The WCS system shall be run in a Windows environment. The WCS shall be accessed by users through the Internet on an IBM computer running a Windows 2000 or above operating system.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_13_R015",
+      "text": "The Brio portion of the WCS system must be able to export files in spreadsheet form (Microsoft Excel and Lotus 1-2-3 formats). Brio will provide buttons in the user interface that produce/export reports in .xls or .123 file formats.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_13_R016",
+      "text": "The WCS system must run queries to the WCS databases once again (on a specified day) to update the available data available to CCR users. Queries must be made to external databases for data refresh once a week.",
+      "raw_label": "MN",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_13_R017",
+      "text": "All changes updates and additions to the WCS system shall be updated in the WCS Developer and WCS User Guides. Every change must be reflected in WCS system documentation",
+      "raw_label": "MN",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_13_R018",
+      "text": "The system shall only be accessed by authorized Corporate Community Grants (CCR) employees. Users must be authenticated using their IBM intranet user name and password.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_13_R019",
+      "text": "The WCS system shall not allow automatic logins by any user. Cookies containing WCS login information about a user will not be stored on a user s computer.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    }
+  ],
+  "validation": {
+    "coverage_rate": 1.0,
+    "missing_req_ids": [],
+    "unsupported_count": 2,
+    "repair_rounds_used": 1,
+    "coverage_entries": [
+      {
+        "req_id": "PROMISE_13_R001",
+        "supported": true,
+        "evidence_snippets": [
+          "include both logos"
+        ],
+        "reason": "Dual IBM and CCR logos explicitly required in sources."
+      },
+      {
+        "req_id": "PROMISE_13_R002",
+        "supported": true,
+        "evidence_snippets": [
+          "Display must work at 800x600"
+        ],
+        "reason": "Sources repeatedly require 800x600 layout and no horizontal scroll."
+      },
+      {
+        "req_id": "PROMISE_13_R003",
+        "supported": true,
+        "evidence_snippets": [
+          "CCR nomenclature match existing WCS"
+        ],
+        "reason": "Documents demand using existing WCS/CCR terminology, no ad hoc renames."
+      },
+      {
+        "req_id": "PROMISE_13_R004",
+        "supported": true,
+        "evidence_snippets": [
+          "high-level summary for EACH report type"
+        ],
+        "reason": "Requirement for executive-friendly summary tile per report is stated."
+      },
+      {
+        "req_id": "PROMISE_13_R005",
+        "supported": true,
+        "evidence_snippets": [
+          "Point-and-click; full keyboard operability"
+        ],
+        "reason": "Point-and-click UI plus 100% keyboard/mouse operability specified."
+      },
+      {
+        "req_id": "PROMISE_13_R006",
+        "supported": true,
+        "evidence_snippets": [
+          "First-use success target ~90% able to run"
+        ],
+        "reason": "Sources state 90% first-use success and adherence to IBM usability."
+      },
+      {
+        "req_id": "PROMISE_13_R007",
+        "supported": true,
+        "evidence_snippets": [
+          "One-click to generate a report once selection made"
+        ],
+        "reason": "One-click Run and one-click Export buttons explicitly required."
+      },
+      {
+        "req_id": "PROMISE_13_R008",
+        "supported": true,
+        "evidence_snippets": [
+          "learnability target 90% recall of steps"
+        ],
+        "reason": "Learnability goal: 90% recall after one session is documented."
+      },
+      {
+        "req_id": "PROMISE_13_R009",
+        "supported": true,
+        "evidence_snippets": [
+          "1 training session pre-deploy for all CCR users"
+        ],
+        "reason": "Meeting and emails lock one pre-deployment training session for all."
+      },
+      {
+        "req_id": "PROMISE_13_R010",
+        "supported": true,
+        "evidence_snippets": [
+          "All interfaces/reports undergo usability tests by CCR users"
+        ],
+        "reason": "Sources require CCR user usability testing and approved nomenclature."
+      },
+      {
+        "req_id": "PROMISE_13_R011",
+        "supported": true,
+        "evidence_snippets": [
+          "target 95% of W3 uptime"
+        ],
+        "reason": "Availability tied to W3 with 95% target."
+      },
+      {
+        "req_id": "PROMISE_13_R012",
+        "supported": true,
+        "evidence_snippets": [
+          "add connections to additional WCS databases later"
+        ],
+        "reason": "Plan to add designated WCS databases post-launch."
+      },
+      {
+        "req_id": "PROMISE_13_R013",
+        "supported": true,
+        "evidence_snippets": [
+          "include regions outside the US"
+        ],
+        "reason": "Capability to ingest global data and approve non‑US access."
+      },
+      {
+        "req_id": "PROMISE_13_R014",
+        "supported": true,
+        "evidence_snippets": [
+          "Windows 2000+ on IBM-issued machines"
+        ],
+        "reason": "Access limited to IBM Windows machines (2000 or newer)."
+      },
+      {
+        "req_id": "PROMISE_13_R015",
+        "supported": true,
+        "evidence_snippets": [
+          "Brio export buttons: .xls and .123"
+        ],
+        "reason": "Brio must provide explicit .xls and .123 export buttons."
+      },
+      {
+        "req_id": "PROMISE_13_R016",
+        "supported": true,
+        "evidence_snippets": [
+          "Weekly refresh; scheduled queries once a week"
+        ],
+        "reason": "Weekly scheduled queries on a specified day to refresh data."
+      },
+      {
+        "req_id": "PROMISE_13_R017",
+        "supported": true,
+        "evidence_snippets": [
+          "Update WCS Developer and WCS User Guides"
+        ],
+        "reason": "All changes must be reflected in both WCS guides."
+      },
+      {
+        "req_id": "PROMISE_13_R018",
+        "supported": true,
+        "evidence_snippets": [
+          "Authenticate with IBM intranet username/password"
+        ],
+        "reason": "Authorized CCR users authenticate via intranet credentials."
+      },
+      {
+        "req_id": "PROMISE_13_R019",
+        "supported": true,
+        "evidence_snippets": [
+          "No automatic login; no cookies storing credentials"
+        ],
+        "reason": "Explicit prohibition on auto-login and credential cookies."
+      }
+    ],
+    "unsupported_implied": [
+      {
+        "text": "The weekly data refresh shall run in a specified nightly maintenance window (proposed start Monday 23:00 ET and finish by Tuesday 06:00 ET) so that updated data is available by Tuesday morning.",
+        "source_snippet": "Proposed: Monday night 11pm ET (finish by Tue 6am). Alt: Fri night (Tom to check ops window).",
+        "source_type": "meeting_notes",
+        "reason": "The gold set requires weekly refresh on a specified day but does not specify a required execution start/finish window or that refresh must complete by a particular time. The source explicitly proposes a concrete nightly maintenance window (Mon 23:00–Tue 06:00) as an operational requirement, which is a significant scheduling/availability constraint not present in the gold requirements."
+      },
+      {
+        "text": "Releases/changes shall be gated on documentation being updated (i.e., a change will not be released until corresponding updates to the WCS Developer and User Guides are completed).",
+        "source_snippet": "Maybe we gate releases on documentation being updated? [Carla to propose process]\n\nmake sure the WCS User Guide and WCS Developer Guide are both updated for any change we ship... It needs to show up in both guides before go-live.",
+        "source_type": "meeting_notes",
+        "reason": "The gold set mandates that all changes be reflected in the Developer and User Guides but does not require that releases be blocked until documentation is updated. The source contains multiple statements suggesting or proposing that releases be gated on docs updates (and that docs be updated before go‑live), which is an additional process-level requirement not present in the gold set."
+      }
+    ],
+    "passed": true
+  },
+  "brief": {
+    "project_name": "CCR WCS Insight Portal",
+    "domain": "corporate philanthropy reporting and analytics",
+    "users": [
+      "CCR analysts who build and run reports",
+      "CCR managers and executives reviewing summaries",
+      "Regional program coordinators",
+      "Approved international CCR staff"
+    ],
+    "stakeholders": [
+      "CCR leadership team",
+      "IBM IT security and intranet (W3) operations",
+      "WCS data owners/DBAs",
+      "CCR training and documentation team"
+    ],
+    "business_goals": [
+      "Deliver management-ready dashboards summarizing grants activity",
+      "Reduce time from data selection to exported report for CCR staff",
+      "Enforce consistent CCR/IBM terminology and visual identity across outputs",
+      "Enable expansion to additional WCS data sources and regions with governance approval",
+      "Provide dependable intranet access on standard CCR workstations",
+      "Keep training and system documentation current to drive adoption"
+    ],
+    "core_features": [
+      "One-click report generation after selection and one-click export",
+      "Spreadsheet exports via Brio buttons (Excel .xls and Lotus 1-2-3 .123)",
+      "Results dashboard with at least one high-level summary per report type",
+      "Point-and-click UI with complete keyboard operability for all actions",
+      "Scheduled weekly data refresh from external WCS sources on a set day",
+      "Connectivity to designated additional WCS databases as approved",
+      "Support for global datasets and access for approved non‑US CCR users"
+    ],
+    "quality_concerns": [
+      "Usability aligned with IBM standards; most users can successfully create a report on first use",
+      "High learnability; after one session users can recall navigation and tasks",
+      "Consistent CCR nomenclature matching existing WCS reports; validated through CCR user testing",
+      "Executive-friendly presentation with clear summaries on the results dashboard",
+      "Availability tied to IBM W3 uptime (targeting 95% of W3 availability)",
+      "Security of access for CCR staff only; no credential caching or automatic logins",
+      "Interface readable and operable at low resolution and via mouse or keyboard"
+    ],
+    "constraints": [
+      "Runs on IBM-issued Windows machines (Windows 2000 or later) and is accessed through the corporate intranet",
+      "Intranet-only exposure; service availability depends on the IBM W3 network",
+      "Branding must conform to IBM and CCR standards and display both logos",
+      "UI must render correctly at 800×600 to support older workstations",
+      "Authentication uses IBM intranet usernames/passwords; no auto-login and no cookies storing credentials",
+      "Brio reporting component must provide button-driven exports to Excel and Lotus 1-2-3",
+      "All changes reflected in WCS User/Developer Guides; conduct a pre-deployment training session for all CCR users"
+    ],
+    "terminology": [
+      "CCR (Corporate Community Grants)",
+      "WCS (Workplace Community System)",
+      "Brio (reporting/export module)",
+      "W3 (IBM internal intranet)",
+      "Results dashboard (high-level summaries)",
+      "CCR nomenclature (standard terms used in current WCS reports)",
+      "Authorized CCR user (approved employee with intranet credentials)"
+    ]
+  },
+  "metadata": {
+    "project_id": "13",
+    "req_count": 19,
+    "label_dist": {
+      "LF": 4,
+      "US": 6,
+      "A": 1,
+      "SC": 2,
+      "O": 2,
+      "MN": 2,
+      "SE": 2
+    },
+    "llm_usage": {
+      "total_calls": 185,
+      "total_input_tokens": 1024587,
+      "total_output_tokens": 621348
+    }
+  }
+}

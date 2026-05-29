@@ -1,0 +1,114 @@
+TYPE  : meeting_notes
+TITLE : Functional deep dive notes — Dispute initiation, retrievals, chargebacks, and integrations (updated)
+UNIT  : PROMISE_4
+============================================================
+
+Date: 2025-03-18
+Location: 12F East Conf Rm / Teams link: https://teams.example.com/l/chargeback-compass-deepdive
+Attendees: Priya (PO - Disputes), Ben (IT Ops), Asha (Audit & Risk), Gloria (Compliance/Legal), Luis (Cardmember Services Rep), Dana (Merchant Services Rep), Mark (SysAdmin), Ravi (Integration Lead), Nina (UX), Tom (Merchant Relations)
+
+Note: Raw notes, incomplete, some shorthand. Action items inline. [TBD] indicates follow up.
+
+Agenda
+- Dispute initiation flows (TRR and chargeback)
+- Search and case listing behavior
+- Integrations + source data
+- Compliance mapping overview
+- Case history & auditability
+- Letters/Adjustments
+
+General
+- Dual‑audience app (internal + external) with role‑based permissions; enforce view vs update separation.
+- Guardrails: users access only their assigned cardholder base (issuer partitioning). [Confirmed]
+- Adoption: legacy dispute tools to be sunset; after two‑day training, 100% of cardmember and merchant servicing reps will use Compass for dispute work. [Priya]
+- Training goal: two days of onboarding; first‑try success for (a) case creation by cardmember reps and (b) follow‑up by merchant reps. [L&D to align]
+
+Initiation — Ticket Retrieval Requests (TRR)
+- Start a retrieval from an eligible transaction view (real‑time). Guided fields (wizard/stepper) collect required info; due date is computed from business rules (read‑only).
+- TRR types: original receipt, copy, portfolio (portfolio = supplemental documents like a rental agreement). Tooltips to clarify. [Nina]
+- Restriction: external users must NOT be able to request the “original” receipt type (internal‑only). Copy and portfolio allowed externally. [Policy]
+- Confirmation after creation: display case number, TRR type (copy/original/portfolio), and merchant response due date.
+- Letters: generate letter requests formatted to Letters app spec -> Print Letter Utility. [Ravi]
+- Reason codes: context‑driven by transaction type + merchant MCC; do not show irrelevant codes.
+
+Initiation — Chargeback
+- Chargeback can be “pending” or “immediate.” Required prompts block submission until completed; collect reasons and document links as needed.
+- Confirmation after submission: case number, subtype (pending vs immediate), and merchant response due date; also logged in the case timeline.
+- Letters: send chargeback notification via Letters app -> Print Letter Utility (use exact schema/format).
+- Adjustments: if an account credit/debit is needed, route the request to Cardmember Posting & Billing via API (no manual files).
+
+Selecting transactions
+- Only eligible transactions (age window per Reg/network). UI must block too‑old transactions. [Gloria to confirm exact day limit]
+- Direct entry from transaction list or statement detail; prefill from Statement DB (no re‑keying).
+- Multi‑transaction case: allow combining multiple transactions from the same merchant; enforce same‑merchant constraint.
+- Duplicate prevention: the system must prevent duplicate case creation for an already‑open matching pattern (cardmember + merchant + transaction(s) [+ reason as needed]). Zero tolerance—block 100% of duplicates. [Define key signature]
+
+Search & listing
+- Search by: case number, merchant account number, cardmember account number, issuer number. Filters: date range, dispute type (TRR vs chargeback), case status (open/closed/all), reason code.
+- Results: clearly distinguish type and status; provide color cues paired with labels/icons (accessibility). Pagination as needed.
+- From results, open case details with history and follow‑ups.
+
+Case history & follow‑up
+- Maintain a full audit trail: each create/modify stamped with user + timestamp; system‑generated actions labeled “system.”
+- Users can view the complete timeline/history on the case.
+- Follow‑up actions menu filtered by case status and user access (e.g., hide actions that don’t apply to closed cases; view‑only users see fewer actions).
+- System events (aging, auto updates) create activity entries and trigger an in‑app notification for the case creator upon next sign‑in. [Ben to confirm infra]
+
+Integrations
+- Source‑of‑truth: transaction details from Statement Database; cardmember details from Cardmember Information DB; merchant details from Merchant Information DB. Reference by IDs; no manual overrides.
+- Letters app integration: submit TRR/chargeback requests in Letters app schema, handed to Print Letter Utility for printing. [Validate before submit]
+- Posting & Billing: send adjustment requests via API; downstream posting may be asynchronous.
+
+Compliance
+- Map business rules to card network Merchant Operating Regulations and to Regulation E/Z as applicable (deadlines, reason eligibility, disclosures). [Gloria owns sign‑off]
+- No “efficiency” shortcuts that violate rules.
+
+Security + Access (recap)
+- Only authorized users can log in (internal SSO + external IdP). App should not bounce authenticated users unpredictably; adhere to security standards for session behavior.
+- Access model: View vs Update. Only Update role can initiate TRR/chargeback. External default = View.
+- Scope restriction: enforce issuer/cardholder‑base scoping in services and queries.
+
+Ops/Non‑func
+- Availability target: 24×7 with maintenance windows (Mon–Sat 3–4 a.m. ET; Sun 1–5 a.m. ET). [Ben to publish calendar]
+- Navigation responsiveness target ~5s between screens. Scale target ~350 concurrent users without noticeable slowdown.
+- Retention: purge dispute cases from the online disputes database when they have been closed for more than 6 months. [Policy]
+- No direct DB or file access for end users. All updates happen through the application.
+
+User Admin & Audit
+- Weekly “User Access Changes” report for A&R: includes new users and any access/role changes; include reinstatement events; timestamps; actor/admin recorded. [Asha to specify fields]
+- Revoked accounts: only System Administrator can reinstate. Log the event. [Mark]
+
+UX/Design
+- Follow corporate UI standards for internal and external portals. External palette differences OK; components from same library.
+- Lists: color cues paired with labels/icons for status/type. [Nina]
+- Stepper/wizard for initiation with clear required fields; plain‑language errors.
+
+Contradictions/unclear [left as‑is]
+- External users “cannot request original receipt” — confirmed per Compliance. [Doc rationale]
+- Case search by issuer number: Luis says rarely used; Ops wants it. Decision: keep under Advanced.
+- Due date editable? No—derived from rules. Read‑only.
+- Color codes: example colors need accessibility check. [TBD final palette]
+
+Action items
+- [Gloria] Provide mapping of reason codes by transaction type + merchant MCC.
+- [Ravi] Confirm Letters app schema for TRR + chargeback; ensure Print Letter Utility formatting is followed.
+- [Ben] Document maintenance windows in app banner + status page; confirm in‑app notification mechanism.
+- [Priya] Finalize training objectives and adoption plan (two‑day training; all reps move to Compass at cutover).
+- [Nina] Prototype search with filters and accessible status cues; expose issuer number under Advanced.
+- [Asha] Define user access report fields (new users, role changes, reinstatements, timestamps, actors).
+- [Mark] Lock admin console so only SysAdmin can reinstate; log reinstatement.
+- [Team] Define duplicate detection signature and block logic; enforce at creation.
+
+Open Issues / Parking Lot
+- Exact transaction age limits for eligibility (Reg/network). [Gloria]
+- Portfolio examples for UI help (car rental, hotel folio). [Nina]
+- Accessibility/contrast for status color accents. [Design]
+- Policy on whether closed cases can be reopened and by whom (role + status gating). [Policy]
+- Whether follow‑up action sets differ by internal sub‑roles beyond view/update. [Role matrix]
+- Letters app SLA for print handoff — confirm expectations. [Ravi]
+
+Random notes
+- “No direct DB access” to be reinforced in all documentation and training.
+- Search: quick toggles (Open, Closed, All) in header.
+- History view: show actor + timestamp for all create/modify; system events labeled “system.”
+- Training materials to include checklists aligned to first‑attempt success goals.

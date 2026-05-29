@@ -1,0 +1,571 @@
+{
+  "coverage_rate": 0.0,
+  "missing_req_ids": [
+    "PURE_2002 - evla corr_R001",
+    "PURE_2002 - evla corr_R002",
+    "PURE_2002 - evla corr_R003",
+    "PURE_2002 - evla corr_R004",
+    "PURE_2002 - evla corr_R005",
+    "PURE_2002 - evla corr_R006",
+    "PURE_2002 - evla corr_R007",
+    "PURE_2002 - evla corr_R008",
+    "PURE_2002 - evla corr_R009",
+    "PURE_2002 - evla corr_R010",
+    "PURE_2002 - evla corr_R011",
+    "PURE_2002 - evla corr_R012",
+    "PURE_2002 - evla corr_R013",
+    "PURE_2002 - evla corr_R014",
+    "PURE_2002 - evla corr_R015",
+    "PURE_2002 - evla corr_R016",
+    "PURE_2002 - evla corr_R017",
+    "PURE_2002 - evla corr_R018",
+    "PURE_2002 - evla corr_R019",
+    "PURE_2002 - evla corr_R020",
+    "PURE_2002 - evla corr_R021",
+    "PURE_2002 - evla corr_R022",
+    "PURE_2002 - evla corr_R023",
+    "PURE_2002 - evla corr_R024",
+    "PURE_2002 - evla corr_R025",
+    "PURE_2002 - evla corr_R026",
+    "PURE_2002 - evla corr_R027",
+    "PURE_2002 - evla corr_R028",
+    "PURE_2002 - evla corr_R029",
+    "PURE_2002 - evla corr_R030",
+    "PURE_2002 - evla corr_R031",
+    "PURE_2002 - evla corr_R032",
+    "PURE_2002 - evla corr_R033",
+    "PURE_2002 - evla corr_R034",
+    "PURE_2002 - evla corr_R035",
+    "PURE_2002 - evla corr_R036",
+    "PURE_2002 - evla corr_R037",
+    "PURE_2002 - evla corr_R038",
+    "PURE_2002 - evla corr_R039",
+    "PURE_2002 - evla corr_R040",
+    "PURE_2002 - evla corr_R041",
+    "PURE_2002 - evla corr_R042",
+    "PURE_2002 - evla corr_R043",
+    "PURE_2002 - evla corr_R044",
+    "PURE_2002 - evla corr_R045",
+    "PURE_2002 - evla corr_R046",
+    "PURE_2002 - evla corr_R047",
+    "PURE_2002 - evla corr_R048",
+    "PURE_2002 - evla corr_R049",
+    "PURE_2002 - evla corr_R050",
+    "PURE_2002 - evla corr_R051",
+    "PURE_2002 - evla corr_R052",
+    "PURE_2002 - evla corr_R053",
+    "PURE_2002 - evla corr_R054",
+    "PURE_2002 - evla corr_R055",
+    "PURE_2002 - evla corr_R056",
+    "PURE_2002 - evla corr_R057",
+    "PURE_2002 - evla corr_R058",
+    "PURE_2002 - evla corr_R059",
+    "PURE_2002 - evla corr_R060",
+    "PURE_2002 - evla corr_R061",
+    "PURE_2002 - evla corr_R062",
+    "PURE_2002 - evla corr_R063",
+    "PURE_2002 - evla corr_R064",
+    "PURE_2002 - evla corr_R065",
+    "PURE_2002 - evla corr_R066",
+    "PURE_2002 - evla corr_R067",
+    "PURE_2002 - evla corr_R068",
+    "PURE_2002 - evla corr_R069",
+    "PURE_2002 - evla corr_R070",
+    "PURE_2002 - evla corr_R071",
+    "PURE_2002 - evla corr_R072",
+    "PURE_2002 - evla corr_R073",
+    "PURE_2002 - evla corr_R074",
+    "PURE_2002 - evla corr_R075",
+    "PURE_2002 - evla corr_R076",
+    "PURE_2002 - evla corr_R077",
+    "PURE_2002 - evla corr_R078",
+    "PURE_2002 - evla corr_R079",
+    "PURE_2002 - evla corr_R080"
+  ],
+  "unsupported_count": 0,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PURE_2002 - evla corr_R001",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R002",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R003",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R004",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R005",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R006",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R007",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R008",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R009",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R010",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R011",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R012",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R013",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R014",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R015",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R016",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R017",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R018",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R019",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R020",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R021",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R022",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R023",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R024",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R025",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R026",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R027",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R028",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R029",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R030",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R031",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R032",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R033",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R034",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R035",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R036",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R037",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R038",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R039",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R040",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R041",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R042",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R043",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R044",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R045",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R046",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R047",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R048",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R049",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R050",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R051",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R052",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R053",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R054",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R055",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R056",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R057",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R058",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R059",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R060",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R061",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R062",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R063",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R064",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R065",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R066",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R067",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R068",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R069",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R070",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R071",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R072",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R073",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R074",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R075",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R076",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R077",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R078",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R079",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    },
+    {
+      "req_id": "PURE_2002 - evla corr_R080",
+      "supported": false,
+      "evidence_snippets": [],
+      "reason": "LLM validation failed"
+    }
+  ],
+  "unsupported_implied": [],
+  "passed": false
+}

@@ -1,0 +1,532 @@
+{
+  "artifact_id": "T2A_9313EA7C",
+  "unit_id": "PROMISE_7",
+  "origin": "PROMISE",
+  "track_id": "track2",
+  "variant_id": "defect_v1",
+  "created_at": "2026-05-26T19:54:35.414637+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Discovery Interview: Sales-to-Inventory, Formulas, Menus, and Desktop Constraints",
+      "text": "Nina [Business Analyst]: Thanks for sitting down with me. I want to make sure I understand three big areas: turning daily POS sales into inventory adjustments, how your formulas/recipes are maintained, and how you manage the POS menu. We’ll also touch on the desktop environment, backups, and permissions.\n\nOlivia [Operations Manager]: Those are the hot spots. Stock accuracy and the menu getting out of sync have been our headaches.\n\nCarlos [Inventory Clerk]: When the sales file lands each morning, I end up doing manual math to deduct ingredients. It eats a lot of time.\n\nNina [Business Analyst]: Walk me through what happens today when the POS export arrives.\n\nCarlos [Inventory Clerk]: It’s a CSV. I used to apply a worksheet formula per item—if we sold 100 Classic Burgers, I’d take buns, patties, sauces, the whole list, and then create an adjustment in accounting. If we ran out of an ingredient, we’d switch to an alternate, and that throws off the worksheet.\n\nOlivia [Operations Manager]: We need the system to do that step for us—create the inventory adjustment document automatically when the sales come in.\n\nNina [Business Analyst]: So auto-generate the Inventory Quantity Adjustment once sales are available. And do you also want a way to run it on demand?\n\nCarlos [Inventory Clerk]: Definitely. A “run for a specific day” button would save me when a file is late or a formula was wrong. And sometimes we discover an issue halfway through the month and need to regenerate starting from a date forward.\n\nNina [Business Analyst]: Understood: automatic when the data arrives, plus a manual run for a chosen day and a bulk regenerate from a selected start date forward.\n\nPriya [Menu Manager]: If you’re regenerating a large window, how long are we talking? The last vendor tried to push those into overnight jobs.\n\nDan [IT Support Lead]: Overnight is tough on our store PCs. They’re older Windows desktops; nothing fancy. We’re not buying new gear or software licenses.\n\nNina [Business Analyst]: What’s an acceptable runtime to rebuild recent history?\n\nI just remembered, there's another point I should mention: Just to clarify, we don’t want the PME building menus off the accounting product list at all. Marketing keeps the customer-facing catalog in the CMS, and the menus should be built exclusively from that catalog, only including items flagged menu_ready. The accounting system has internal SKUs and cost-coded bundles that we can’t surface to customers.\n\nOlivia [Operations Manager]: Regenerating roughly the last month should finish in about half an hour. That’s our tolerance.\n\nCarlos [Inventory Clerk]: Half an hour works. I can grab a coffee and be back to post.\n\nNina [Business Analyst]: Let’s talk formulas. You have finished items and semi-finished prep, right?\n\nOlivia [Operations Manager]: Yes. We call them semi-products in the system—things like a batch of onions or a sauce that go into multiple menu items.\n\nCarlos [Inventory Clerk]: Those semi items have their own formulas, and the final items reference them. If we update the semi, the usage should be reflected when adjustments run.\n\nNina [Business Analyst]: On substitutions—how do you want to manage alternates?\n\nCarlos [Inventory Clerk]: Each ingredient line needs a list of allowed substitutes, and the order matters. If the primary item is out, the system should move to the next one in the order. Don’t guess; follow what we set.\n\nOlivia [Operations Manager]: And it should look at what’s actually in stock that day. If there’s none of the first choice, use the next, and so on.\n\nNina [Business Analyst]: Do you want help pre-filling those lists?\n\nDan [IT Support Lead]: Suggestions would help—show common alternates automatically so we’re not building every list from scratch—but we need to be able to change the order and contents.\n\nPriya [Menu Manager]: As long as we can override, that’s fine. Keep the sequence we set; don’t shuffle it.\n\nCarlos [Inventory Clerk]: And don’t deduct from something we don’t have. If the standard patty runs out, use the alternates in the order I saved. No negative stock because the system ignored subs.\n\nNina [Business Analyst]: Got it: substitution lists with a saved priority sequence, auto-suggested options we can tweak, and the deduction logic checks on-hand stock and cascades accordingly.\n\nPriya [Menu Manager]: On the menu side, the customer-facing names shouldn’t flip just because we used a substitute. The POS still shows Classic Burger. The inventory swaps are back-of-house.\n\nSorry, going back to something I mentioned earlier — For the re-run of inventory quantity adjustments covering the last 30 days, we’re okay with a longer processing window because it’s a heavy job. In practice it takes around 90 minutes, and we plan for up to two hours during the maintenance window. As long as it wraps up within that two-hour slot, operations won’t be disrupted.\n\nNina [Business Analyst]: Let’s switch to menus. Where do you source products from now?\n\nPriya [Menu Manager]: From accounting’s product list. But then I end up retyping into the POS tool. I want the menu editor to pull directly from the accounting catalog so we aren’t duplicating items.\n\nDan [IT Support Lead]: Exactly—one product master. No side database of items in your app.\n\nOlivia [Operations Manager]: Layout is important. We have menus and submenus—like Burgers, then Classics—and I want to control the order within each. Not alphabetical. And that order needs to stick after updates.\n\nPriya [Menu Manager]: Also, the same product might appear under more than one submenu. That’s common for us.\n\nNina [Business Analyst]: So the menu editor should use the accounting catalog as its source, support menus with submenus, allow products to appear in multiple submenus, and preserve the order you set.\n\nPriya [Menu Manager]: Yes, and don’t reshuffle when we publish.\n\nActually, one more thing I wanted to bring up — From our side, when we're setting up menus in PME, we don’t want a separate catalog to maintain. PME should pull the current product list straight from the accounting system and let us assemble the product menus from those items. That way whatever shows up in the menu always mirrors what’s in accounting.\n\nNina [Business Analyst]: On security, how do you want access set up?\n\nCarlos [Inventory Clerk]: If I change my password, I don’t want to do it separately in different screens. And some roles shouldn’t even see certain areas.\n\nNina [Business Analyst]: Central account management with role-based permissions per area—inventory adjustments, formula editor, menu editor, admin—and password/permission changes consistent across the whole app.\n\nOlivia [Operations Manager]: Inventory can run adjustments but not edit formulas; Priya’s team does menus; admin manages users.\n\nDan [IT Support Lead]: And if we disable someone, it should apply everywhere in the app. We’ve had urgent situations and need lockouts to be reliable.\n\nNina [Business Analyst]: Backups—what do you need from us vs your nightly jobs?\n\nDan [IT Support Lead]: We want the application to handle scheduled backups and also let us restore on demand inside the app. If someone nukes a menu by accident, I need to pick a backup and get us back without special scripts.\n\nVictor [Finance Controller]: Our auditors also care. Adjustment outputs need to be acceptable per accounting practices, and we must be able to restore and show the same results. No hand-editing.\n\nNina [Business Analyst]: Noted: scheduled automated backups with an in-app restore option. And the IQA outputs should align with accounting expectations and be ready for external review.\n\nOlivia [Operations Manager]: One more thing—how many people can be in at once without it falling over?\n\nNina [Business Analyst]: What’s typical?\n\nOlivia [Operations Manager]: Six users is common—mix of inventory, menu work, and admin. It shouldn’t choke.\n\nDan [IT Support Lead]: And keep the user interface a classic Windows desktop. Our staff are used to menus, toolbars, Save/Undo. No extra per-user licenses for components either.\n\nNina [Business Analyst]: Understood: run on the existing Windows PCs, familiar Windows-style UI, and avoid anything that triggers royalty or per-seat fees. For sales, we’ll ingest the daily file you already get. I’ll draft this up and set a follow-up on details like formula versioning for historical runs.\n\nPriya [Menu Manager]: Sounds good. Please make sure the ordering doesn’t change on me.\n\nCarlos [Inventory Clerk]: And that the rebuild for a month is done in around 30 minutes.\n\nNina [Business Analyst]: Those are on my list. Thanks, everyone."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "RMS Working Session Notes — Auto IQA, PFE/PME, Security, Backups, Performance",
+      "text": "Date: 2025-03-18\nRoom/Link: Conf Rm 2B + Teams\nAttendees: Olivia (Ops), Priya (Menu/Catalog), Carlos (Inventory), Dan (IT), Nina (BA), Victor (Finance) [joined late]\n\nInventory / IQA\n- Daily POS sales arrive ~7:15a. Expectation: IQA docs generated automatically upon import (no manual start needed for daily flow).\n- Manual controls needed: (a) Run for a selected day, and (b) Regenerate from a chosen start date through current day.\n- Performance: Rebuild of roughly the last 30 days should complete in about 30 minutes on store PCs. Treat as a target in testing.\n- IQA output: format must be acceptable to accounting; avoid hand edits. Tie-back to relevant product/formula context (details on version handling to be covered in a later session).\n- Adjustment logic: consult on-hand stock; apply substitution lists per saved priority; avoid consuming from out-of-stock primary when allowed substitutes exist. Substitutions are inventory-side only; they do not change POS display names.\n\nPFE (Product Formula Editor)\n- Maintain formulas, including semi-finished items (semi-products) that are used inside other formulas.\n- Each ingredient can have an allowed substitution list. The order is meaningful and must persist across sessions and runs.\n- Convenience: propose common alternates automatically when adding ingredients; users can adjust and set the final sequence.\n- If no allowed substitute is available or in stock: flag for review vs other handling to be discussed later (policy TBD).\n\n- Raised during discussion: On the navigation setup for the PME module, marketing keeps stressing they need full control over the display sequence. For each menu, they want to be able to arrange the submenus, and within each submenu they need to set the exact order of products — and that curated ordering has to be saved so it doesn’t get reset between sessions or releases. Basically, once they organize it, it should stay put.\n\nPME (Product Menu Editor)\n- Source items directly from the accounting product catalog; no duplicate product masters in RMS.\n- Support nested menus and submenus; allow explicit ordering of submenus and of products within submenus; do not auto-reorder after sync/publish.\n- A single product may be placed in more than one submenu.\n- Publishing/integration details with POS are out of scope for today; structure export to be defined.\n\nSecurity / Permissions\n- Centralized user accounts; a password change or permission update should apply consistently across IQA, PFE, PME, and Admin areas.\n- Role-based access per subsystem with at least: Inventory (run/view IQA), Formula Editor (edit formulas), Menu Editor (PME), Admin (user/role management). Read-only vs edit distinctions to support separation of duties.\n- Deactivation/lockout should take effect across the application.\n\nAudit / Accounting\n- Outputs must align with accounting practices acceptable to external auditors; ensure traceability from adjustments to underlying products/formulas as applicable.\n- Audit-readiness includes demonstrating successful restoration from a backup and reconciling posted entries without manual massaging.\n- Build menus from the accounting catalog to keep product identity consistent for reconciliation.\n\nBackups / Restore\n- Provide scheduled automated backups of RMS business data (nightly acceptable); also allow an in-app on-demand restore when needed (e.g., menu changes made in error).\n- Keep a basic log/trail of backup and restore actions to support audit checks.\n\n- Raised during discussion: To keep the audit trail clean, let's keep IQA read-only with respect to inventory. It shouldn't consult live stock levels or decrement counts for substitutionary ingredients; those updates will be handled by the Inventory Service in a 6:00 p.m. batch run. IQA can just pick alternates from the static substitution table and leave inventory changes to Supply Ops.\n\n- Follow-up point: Ops flagged that when we need to regenerate the Inventory Quantity Adjustment for the past 30 days, it can't take long. That rerun for the 30-day period needs to complete within 30 minutes so it fits in the maintenance slot.\n\nConstraints / Environment\n- Must run on existing in-store Windows PCs; no new hardware expected.\n- No third-party components that create per-user or royalty fees. Keep the footprint light.\n- UI should follow a familiar Windows desktop style (menus/toolbars/standard dialogs), not a browser app that times out on users.\n\nConcurrency / Usability\n- Support at least six concurrent users across modules without issues (common scenario: two in PME, two in PFE, one in IQA, one in Admin).\n- Ensure menu ordering persists through any sync or bulk operation; previous tools alphabetized unexpectedly.\n\n- Side note from a stakeholder: On the deployment call, Linda made it clear we can't have menu maintenance in this app. All product menus will be authored in the corporate Menu Hub and pushed nightly; this system should not allow any in-app editing of menus, just read-only distribution to the POS terminals. That keeps everything consistent for compliance.\n\nAction Items\n- [Nina] Draft feature spec: auto IQA on import; manual Day Run; Rebuild From Date; substitution logic; PME/PFE requirements; security/permissions; backups/restore; performance target; concurrency assumption.\n- [Victor] Provide accounting import constraints and auditor expectations for IQA output fields.\n- [Dan] Confirm backup storage location/rotation and available disk on a representative store PC for pilot testing.\n- [Priya] Send a sample menu tree with intended ordering and a couple of items placed in multiple submenus.\n- [Carlos] Share sample formulas including a semi-product referenced by multiple finished items and an example substitution sequence.\n\nOpen Topics\n- Formula/version treatment during historical rebuilds (align with audit expectations) — TBD.\n- Behavior when all allowed substitutes are unavailable (flagging/reporting specifics) — TBD.\n- Timing of permission/password propagation (immediate vs next login) — TBD.\n- Backup scope (full RMS vs targeted areas) trade-offs — TBD."
+    },
+    {
+      "type": "email_thread",
+      "title": "Email thread: Rebuild timing, licensing, backups/restore, and menu sourcing/order",
+      "text": "Email 1\nFrom: Olivia Gomez <olivia@prepco.local>\nTo: Nina Patel <nina.ba@vendor.example>\nCC: Dan Cho <dan.it@prepco.local>\nDate: 2025-04-02 08:12\nSubject: Re: Monthly regenerate + daily rerun\n\nHi Nina,\n\nCan you please confirm two things from our call? We need to be able to re-run adjustments for a single day when a file or formula is off, and we need a bulk regenerate from the 1st of the month through today that finishes in roughly 30 minutes on our store PCs. If it runs much longer, the team stalls.\n\nThanks,\nOlivia\n\n—\n\nEmail 2\nFrom: Nina Patel <nina.ba@vendor.example>\nTo: Olivia Gomez <olivia@prepco.local>\nCC: Dan Cho <dan.it@prepco.local>, Priya Shah <priya.menu@prepco.local>, Victor Ramos <victor.finance@prepco.local>\nDate: 2025-04-02 09:47\nSubject: RE: Monthly regenerate + daily rerun\n\nHi Olivia,\n\nYes, we will support:\n- A manual “Run IQA for Day” action for a chosen date; and\n- A “Rebuild From Date” that regenerates all adjustments from the selected start date through the current day.\n\nWe’ll treat approximately 30 minutes for the last 30 days as the performance target on a representative in-store PC. Daily imports will still auto-generate IQAs when the POS sales file arrives.\n\nRegards,\nNina\n\n—\n\nEmail 3\nFrom: Dan Cho <dan.it@prepco.local>\nTo: Nina Patel <nina.ba@vendor.example>\nCC: Olivia Gomez <olivia@prepco.local>, Priya Shah <priya.menu@prepco.local>\nDate: 2025-04-02 12:22\nSubject: RE: Environment + backups/restore + concurrent users\n\nOn another note, Quick check before we finalize the spec: the team needs the app to let them capture new product formulas, keep them in the system, and revise those records later. If it's view-only, it won't fit their workflow. Please confirm create/save/edit is in scope for formula records.\n\nNina,\n\nJust to underline constraints:\n1) Please avoid any components that charge per user or have royalty fees. We’ll deploy on our existing Windows PCs and can’t take on new license costs.\n2) We need backup/restore in the application itself—scheduled backups we can set and a simple restore workflow if someone breaks a menu or similar. I don’t want to rely on command-line tools.\n3) We routinely have six people in the system at the same time across modules, so plan and test for that.\n4) Keep the UI classic Windows—menus, toolbars, Save/Undo. Our staff are comfortable with that.\n\nQuick follow-up: After reviewing last week's nav tests, we're standardizing the menu behavior: every product needs to be mapped to a single submenu only, not multiple. If PME currently allows a product to appear in more than one submenu, please turn that off and flag any duplicates for cleanup. This will keep attribution consistent and prevent users seeing the same item in multiple places.\n\nThanks,\nDan\n\n—\n\nEmail 4\nFrom: Victor Ramos <victor.finance@prepco.local>\nTo: Nina Patel <nina.ba@vendor.example>\nCC: Olivia Gomez <olivia@prepco.local>, External Audit <audit@rutherfordcpa.com>\nDate: 2025-04-02 13:40\nSubject: RE: Accounting/audit expectations for IQAs and backups\n\nNina,\n\nTwo audit points from Finance:\n- The inventory adjustment outputs must be acceptable to our accounting standards—no manual reformatting—and should provide traceability so the auditor can follow how quantities were derived based on products and formulas for the relevant dates.\n- We will be asked to demonstrate automated backups and perform an on-demand restore during audit. Last year’s vendor failed the restore; we can’t repeat that. An in-app schedule and a straightforward restore with some basic logging would help.\n\nRegards,\nVictor\n\n—\n\nEmail 5\nFrom: Priya Shah <priya.menu@prepco.local>\nTo: Nina Patel <nina.ba@vendor.example>\nCC: Olivia Gomez <olivia@prepco.local>, Dan Cho <dan.it@prepco.local>\nDate: 2025-04-02 15:03\nSubject: RE: Menu editor requirements\n\nHi Nina,\n\nOn the menu editor, please make sure:\n- It pulls directly from the accounting product catalog so I’m placing real items (no duplicate masters).\n- We can build menus with submenus and set the order at each level, and that order stays as is after any sync or publish.\n- The same product can appear in multiple submenus when needed.\n\nOn another note, Quick check on the menu structure for PME: marketing wants the same SKU to show up under both 'Accessories' and 'Spare Parts' so customers can find it from multiple paths. Can we make sure a single product can be assigned to multiple sub-menu categories in the system? That way we don't have to duplicate records just to surface it in different sections.\n\nThanks,\nPriya\n\n—\n\nEmail 6\nFrom: Nina Patel <nina.ba@vendor.example>\nTo: Olivia Gomez <olivia@prepco.local>, Dan Cho <dan.it@prepco.local>, Priya Shah <priya.menu@prepco.local>, Victor Ramos <victor.finance@prepco.local>\nDate: 2025-04-02 17:18\nSubject: RE: Summary — auto IQA, on-demand runs, menus, security, backups\n\nTeam,\n\nQuick summary of what we’re proceeding with:\n- IQA generation will auto-trigger when POS sales arrive; plus on-demand run for a selected day and a regenerate-from-date option.\n- Target performance: last ~30 days rebuild in about 30 minutes on your current Windows PCs.\n- No added per-user/royalty components; classic Windows desktop UI.\n- Backups: in-app scheduled backups and on-demand restore with basic logs.\n- Accounting/audit: IQA outputs aligned with your standards and traceable for external review.\n- Menus: source from accounting catalog; support nested menus/submenus; persistent ordering; and products can sit in multiple submenus.\n- Security: centralized accounts and role-based permissions per subsystem; password/permission changes apply consistently across modules.\n- Concurrency: plan to support at least six simultaneous users across modules in testing.\n\nI’ll circulate a draft spec with these items and call out any open questions (e.g., formula/version handling in historical runs).\n\nBest,\nNina"
+    }
+  ],
+  "gold_requirements": [
+    {
+      "id": "PROMISE_7_R001",
+      "text": "Recreation of Inventory Quantity Adjustment for the period of previous 30 days shall take no more than 30min.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R002",
+      "text": "The System shall allow for a minimum of 6 users to work at the same time.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R003",
+      "text": "The System shall utilize currently owned computer equipment.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R004",
+      "text": "The System shall be able to automatically backup business data and restore them on demand.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R005",
+      "text": "The System shall maintain consistent security. Any changes in user passwords and/or permissions should take affect in all parts of the System.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R006",
+      "text": "The System shall granularly control access rights to all major subsystems. It should be possible to assign access rights to all subsystems independently.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R007",
+      "text": "The System shall meet all applicable accounting standards. The final version of the System must successfully pass independent audit performed by a certified auditor.",
+      "raw_label": "L",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "compliance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R008",
+      "text": "The System shall not require additional third party licenses resulting in royalty fees.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R009",
+      "text": "The System shall allow generation of Inventory Quantity Adjustment documents on demand.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R010",
+      "text": "The System shall allow on demand generation of all Inventory Quantity Adjustment documents since certain point of time.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R011",
+      "text": "The IQA subsystem shall take into account current inventory status and adjust inventory of substitutionary ingredients accordingly.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R012",
+      "text": "The System shall allow entering storing and modifying product formulas.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R013",
+      "text": "Product formulas shall allow use of semi-products which have own formulas.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R014",
+      "text": "Product formula ingredients shall allow defining substitutionary ingredients.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R015",
+      "text": "Product formula substitutionary ingredients shall be entered automatically by the PFE subsystem.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R016",
+      "text": "Formula substitutionary ingredients shall be kept in persisted order",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R017",
+      "text": "Product shall allow entering storing and modifying product menus used by POS terminals.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R018",
+      "text": "PME Subsystem shall allow building product menus based on the list of products kept in the accounting system.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R019",
+      "text": "PME Subsystem shall allow keeping submenus within menus and products within submenus in a managed and persisted order.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R020",
+      "text": "PME Subsystem shall allow for a product to exist in more than one submenu",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R021",
+      "text": "The RMS System shall have Windows XP look and feel and use GUI futures making its use intuitive.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R022",
+      "text": "The System shall generate Inventory Quantity Adjustment document based on product daily sales data and product formulas.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_7_R023",
+      "text": "The System shall generate Inventory Quantity Adjustment document automatically when daily Product Sales data is available.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    }
+  ],
+  "seed_registry": [
+    {
+      "seed_item_id": "T2S_93818339",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "value_conflict",
+      "original_req_ids": [
+        "PROMISE_7_R018"
+      ],
+      "original_req_texts": [
+        "PME Subsystem shall allow building product menus based on the list of products kept in the accounting system."
+      ],
+      "injected_text": "Just to clarify, we don’t want the PME building menus off the accounting product list at all. Marketing keeps the customer-facing catalog in the CMS, and the menus should be built exclusively from that catalog, only including items flagged menu_ready. The accounting system has internal SKUs and cost-coded bundles that we can’t surface to customers.",
+      "injected_into_artifact_type": "interview_transcript",
+      "defect_description": "This statement requires menus to be built exclusively from the marketing CMS catalog and not from the accounting product list, conflicting with the gold requirement that menus be based on the accounting system’s product list.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_33A94B6E",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "semantic_conflict",
+      "original_req_ids": [
+        "PROMISE_7_R017"
+      ],
+      "original_req_texts": [
+        "Product shall allow entering storing and modifying product menus used by POS terminals."
+      ],
+      "injected_text": "On the deployment call, Linda made it clear we can't have menu maintenance in this app. All product menus will be authored in the corporate Menu Hub and pushed nightly; this system should not allow any in-app editing of menus, just read-only distribution to the POS terminals. That keeps everything consistent for compliance.",
+      "injected_into_artifact_type": "meeting_notes",
+      "defect_description": "Meeting notes state the product must not allow in-app modification of menus and only distribute read-only menus, conflicting with the gold requirement that the product allow modifying those menus.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_AC4D2B5C",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "value_conflict",
+      "original_req_ids": [
+        "PROMISE_7_R020"
+      ],
+      "original_req_texts": [
+        "PME Subsystem shall allow for a product to exist in more than one submenu"
+      ],
+      "injected_text": "After reviewing last week's nav tests, we're standardizing the menu behavior: every product needs to be mapped to a single submenu only, not multiple. If PME currently allows a product to appear in more than one submenu, please turn that off and flag any duplicates for cleanup. This will keep attribution consistent and prevent users seeing the same item in multiple places.",
+      "injected_into_artifact_type": "email_thread",
+      "defect_description": "The email requires each product to be in exactly one submenu, which conflicts with the gold requirement that a product can exist in more than one submenu.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_8DEBFCF8",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "value_conflict",
+      "original_req_ids": [
+        "PROMISE_7_R001"
+      ],
+      "original_req_texts": [
+        "Recreation of Inventory Quantity Adjustment for the period of previous 30 days shall take no more than 30min."
+      ],
+      "injected_text": "For the re-run of inventory quantity adjustments covering the last 30 days, we’re okay with a longer processing window because it’s a heavy job. In practice it takes around 90 minutes, and we plan for up to two hours during the maintenance window. As long as it wraps up within that two-hour slot, operations won’t be disrupted.",
+      "injected_into_artifact_type": "interview_transcript",
+      "defect_description": "The interview text accepts up to two hours for recreating the last 30 days of Inventory Quantity Adjustments, conflicting with the gold requirement that it take no more than 30 minutes.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_27CBB63F",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "semantic_conflict",
+      "original_req_ids": [
+        "PROMISE_7_R011"
+      ],
+      "original_req_texts": [
+        "The IQA subsystem shall take into account current inventory status and adjust inventory of substitutionary ingredients accordingly."
+      ],
+      "injected_text": "To keep the audit trail clean, let's keep IQA read-only with respect to inventory. It shouldn't consult live stock levels or decrement counts for substitutionary ingredients; those updates will be handled by the Inventory Service in a 6:00 p.m. batch run. IQA can just pick alternates from the static substitution table and leave inventory changes to Supply Ops.",
+      "injected_into_artifact_type": "meeting_notes",
+      "defect_description": "This text says IQA must not use current inventory status or adjust counts for substitutionary ingredients, delegating updates to a nightly batch, which conflicts with the requirement that IQA considers current inventory and adjusts substitutionary ingredient inventory accordingly.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_0C7A1BBD",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PROMISE_7_R019"
+      ],
+      "original_req_texts": [
+        "PME Subsystem shall allow keeping submenus within menus and products within submenus in a managed and persisted order."
+      ],
+      "injected_text": "On the navigation setup for the PME module, marketing keeps stressing they need full control over the display sequence. For each menu, they want to be able to arrange the submenus, and within each submenu they need to set the exact order of products — and that curated ordering has to be saved so it doesn’t get reset between sessions or releases. Basically, once they organize it, it should stay put.",
+      "injected_into_artifact_type": "meeting_notes",
+      "defect_description": "Paraphrases PROMISE_7_R019 by restating the need to manage and persist the ordering of submenus within menus and products within submenus.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_9CB198D1",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PROMISE_7_R020"
+      ],
+      "original_req_texts": [
+        "PME Subsystem shall allow for a product to exist in more than one submenu"
+      ],
+      "injected_text": "Quick check on the menu structure for PME: marketing wants the same SKU to show up under both 'Accessories' and 'Spare Parts' so customers can find it from multiple paths. Can we make sure a single product can be assigned to multiple sub-menu categories in the system? That way we don't have to duplicate records just to surface it in different sections.",
+      "injected_into_artifact_type": "email_thread",
+      "defect_description": "This restates the same need as PROMISE_7_R020 by requiring that one product can appear in more than one submenu.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_2B99866D",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PROMISE_7_R018"
+      ],
+      "original_req_texts": [
+        "PME Subsystem shall allow building product menus based on the list of products kept in the accounting system."
+      ],
+      "injected_text": "From our side, when we're setting up menus in PME, we don’t want a separate catalog to maintain. PME should pull the current product list straight from the accounting system and let us assemble the product menus from those items. That way whatever shows up in the menu always mirrors what’s in accounting.",
+      "injected_into_artifact_type": "interview_transcript",
+      "defect_description": "Paraphrase duplicate of PROMISE_7_R018, restating that PME must build product menus using the product list stored in the accounting system.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_DB78457B",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PROMISE_7_R001"
+      ],
+      "original_req_texts": [
+        "Recreation of Inventory Quantity Adjustment for the period of previous 30 days shall take no more than 30min."
+      ],
+      "injected_text": "Ops flagged that when we need to regenerate the Inventory Quantity Adjustment for the past 30 days, it can't take long. That rerun for the 30-day period needs to complete within 30 minutes so it fits in the maintenance slot.",
+      "injected_into_artifact_type": "meeting_notes",
+      "defect_description": "This restates PROMISE_7_R001 by requiring the 30-day Inventory Quantity Adjustment recreation to finish within 30 minutes.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_7E992626",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PROMISE_7_R012"
+      ],
+      "original_req_texts": [
+        "The System shall allow entering storing and modifying product formulas."
+      ],
+      "injected_text": "Quick check before we finalize the spec: the team needs the app to let them capture new product formulas, keep them in the system, and revise those records later. If it's view-only, it won't fit their workflow. Please confirm create/save/edit is in scope for formula records.",
+      "injected_into_artifact_type": "email_thread",
+      "defect_description": "This restates, in different words, the need to create, store, and modify product formulas, duplicating PROMISE_7_R012.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    }
+  ],
+  "brief": {
+    "project_name": "PrepBalance RMS",
+    "domain": "food service inventory and POS menu management",
+    "users": [
+      "Inventory clerk",
+      "Kitchen/production lead",
+      "Menu/catalog manager",
+      "Store accountant",
+      "POS supervisor",
+      "System administrator"
+    ],
+    "stakeholders": [
+      "Restaurant owner/franchisee",
+      "Finance controller",
+      "External auditor",
+      "IT support lead",
+      "Operations manager"
+    ],
+    "business_goals": [
+      "Keep stock accurate by translating daily POS sales into inventory adjustments based on recipes",
+      "Reduce manual effort with automated and on-demand adjustment runs, including historical rebuilds",
+      "Maintain an organized POS menu synchronized with the accounting product list",
+      "Meet accounting practices and remain audit-ready",
+      "Minimize data loss through dependable backups and quick recovery",
+      "Operate smoothly on existing in-store PCs without new licensing costs"
+    ],
+    "core_features": [
+      "Automatic generation of inventory adjustment documents when daily sales arrive",
+      "On-demand runs, including regenerating all adjustments from a chosen start date",
+      "Recipe/formula management with semi-finished items and auto-populated substitution lists kept in a defined order",
+      "Inventory logic that considers current stock and shifts usage to substitute ingredients as needed",
+      "POS menu builder with nested menus/submenus, persistent ordering, and products allowed in multiple submenus",
+      "Menu builder sources items directly from the accounting system’s product catalog",
+      "Role-based permissions scoped per subsystem (IQA, formula editor, menu editor, admin)"
+    ],
+    "quality_concerns": [
+      "Rebuilding the last month of adjustments completes within about half an hour",
+      "Handles at least six simultaneous users without issues",
+      "Password and permission changes stay consistent across all modules",
+      "Familiar Windows desktop look and feel to keep the UI intuitive",
+      "Reliable automated backups with proven restoration",
+      "Outputs acceptable to accounting standards and auditors"
+    ],
+    "constraints": [
+      "Must run on the company’s existing Windows PCs and peripherals",
+      "No components that incur ongoing royalties or additional third-party license fees",
+      "Conform to applicable accounting rules and pass an independent external audit",
+      "Provide scheduled automatic backups and on-demand data restore",
+      "Build menus from the existing accounting product list, avoiding duplicate product masters"
+    ],
+    "terminology": [
+      "Inventory Quantity Adjustment (IQA) document",
+      "Product Formula Editor (PFE)",
+      "Product Menu Editor (PME)",
+      "Semi-product (semi-finished recipe)",
+      "Substitutionary ingredient list and order",
+      "POS terminal and daily sales import",
+      "Accounting product catalog"
+    ]
+  },
+  "metadata": {
+    "project_id": "7",
+    "req_count": 23,
+    "label_dist": {
+      "PE": 2,
+      "O": 3,
+      "SE": 2,
+      "L": 1,
+      "F": 15
+    },
+    "llm_usage": {
+      "total_calls": 115,
+      "total_input_tokens": 624194,
+      "total_output_tokens": 379255
+    }
+  }
+}

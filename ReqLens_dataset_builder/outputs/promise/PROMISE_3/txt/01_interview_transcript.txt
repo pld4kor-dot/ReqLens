@@ -1,0 +1,194 @@
+TYPE  : interview_transcript
+TITLE : Discovery Interview: NurseTrack Scheduler — Scheduling, Access, and Planning Deep Dive (Revised)
+UNIT  : PROMISE_3
+============================================================
+
+Susan [Program Director]: Thanks for making the time. Sections start next quarter and I want to be crystal on what this tool must do day-to-day, not brochure-speak.
+
+Karen [Operations Coordinator]: Schedule building and keeping cohorts straight are the big time sinks. And the errors… I get too many complaints when we accidentally put students in two things at the same hour. The system has to stop us from doing that.
+
+Mia [Program Administrator]: Last winter, two labs for the same cohort landed on Tuesday morning. I didn’t catch the overlap until rosters went out. We need the tool to block conflicts or at least shout loudly before we post anything.
+
+Ben [Systems Integration Engineer]: We can make the builder conflict-aware so you can’t place the same cohort in overlapping lecture, lab, or clinical slots. That’s a hard block.
+
+Julie [Associate Dean]: Keep it straightforward. I don’t want staff fiddling for weeks to learn it. One day of training and maybe a quick reference, then productive.
+
+Alex [IT/Security]: And use the terms you already use—standard nursing language in clear English. No weird labels.
+
+Susan [Program Director]: Right. We talk about Programs of Study, cohorts by start term, clinical labs, site contacts. Also, performance can’t be sluggish. I don’t want to stare at a spinner when enrolling students.
+
+Ben [Systems Integration Engineer]: For common actions—pull up student, update cohort sequence, add a lab section—we’ll aim for responses within a few seconds. Generating the schedule across classes and labs is heavier, but we’ll target under half a minute.
+
+Karen [Operations Coordinator]: If basic clicks take longer than five seconds, my phone will ring nonstop. And if the generation takes longer than thirty seconds, we’ll assume it’s stuck.
+
+Mia [Program Administrator]: We do most work nine to five. How often is it down? The old site went offline at lunch every day.
+
+Alex [IT/Security]: Official window is eight to six. Target about ninety-five percent uptime in that window. And it should handle roughly ten of you doing real work at once.
+
+Julie [Associate Dean]: Ten concurrent staff is our reality. Also plan for growth—we’re not shrinking. Handle all students and classes now and over the next decade. We want at least five years out of this.
+
+Ben [Systems Integration Engineer]: Understood. Environment check—you’re on Windows desktops in the nursing office?
+
+Karen [Operations Coordinator]: Windows XP Pro. Yes, ancient. That’s what we have.
+
+Alex [IT/Security]: Not negotiable right now. It needs to run in a standards-compliant browser on that OS. We already deploy the university antivirus on those machines—don’t bring your own.
+
+Mia [Program Administrator]: And don’t make it IE-only. Many of us use Firefox. Just work in a normal HTML browser.
+
+Ben [Systems Integration Engineer]: Got it—browser-based UI, standards-compliant HTML, compatible with XP Pro boxes.
+
+Julie [Associate Dean]: Integrations: we publish finalized section schedules to CampusConnect, and we pull faculty from the faculty server and student basics from the student master. Still the plan?
+
+Ben [Systems Integration Engineer]: Yes. We’ll publish to CampusConnect and read faculty roster/IDs from the faculty central server, and student IDs/admission data from the student master server when needed.
+
+Susan [Program Director]: Only Karen and I should be able to push final sections to CampusConnect. No one else should even see that option.
+
+Alex [IT/Security]: That’s role-based access. Publishing area visible only to certain roles, and the finalization step limited to those two accounts.
+
+Karen [Operations Coordinator]: Clinical site details are sensitive—contacts and addresses. Only our program admins and nursing staff should see full details.
+
+Julie [Associate Dean]: And student personal data—PII—should only be visible to Susan and me. Others can see name and ID for rosters, and directory contact where policy allows, but not deeper personal info.
+
+Mia [Program Administrator]: That’s fine. I don’t need addresses. Name, ID, and a way to contact them is enough for my tasks. Still want a directory—emails and phones—for students, faculty, and site contacts so we’re not hunting.
+
+Alex [IT/Security]: Directory is fine within policy. Protect private info and add basic integrity checks—we don’t want bad data creeping in.
+
+Ben [Systems Integration Engineer]: We’ll validate inputs: required IDs present, email format checked, time ranges sane so you can’t create a zero-minute lab.
+
+Susan [Program Director]: Setup-wise, we need to create Programs of Study with required classes—clinical and non-clinical—and attach cohorts to a single program. Each cohort is tied to one curriculum and a start month/year.
+
+Mia [Program Administrator]: When I create a cohort, I want to pick start month and year so labels are consistent, and then set the preferred order of classes across quarters.
+
+Karen [Operations Coordinator]: We also add new classes—lecture and clinical. For lectures, we capture room needs and instructor needs. For clinicals, we record site needs and both lecture and lab instructor needs.
+
+Ben [Systems Integration Engineer]: We’ll model classes as non-clinical or clinical. Non-clinical stores course name, lecture room requirements, and instructor needs. Clinical stores course name, lecture room requirements, clinical site needs, plus lecture instructor needs and clinical lab instructor needs.
+
+Julie [Associate Dean]: I want a Program of Study screen where we name the program and choose required classes from a catalog. And we can edit the program later—rename or update the required list.
+
+Mia [Program Administrator]: For each cohort, I want to assign which quarter each class happens—“NUR 210 in Q2, NUR 315 clinical in Q3,” and sometimes insert a new class or clinical section as things change.
+
+Susan [Program Director]: Scheduling must be conflict-aware. No double-booking a cohort for the same day/time. Prefer a hard prevention.
+
+Alex [IT/Security]: Prevention over override. That aligns with reducing errors.
+
+Julie [Associate Dean]: Cutting student-reported scheduling mistakes by half in year one is our bar. The tool needs to help us avoid mistakes.
+
+Mia [Program Administrator]: Student side—we add new students and assign them to cohorts. Sometimes in a batch for the incoming group, other times individually for transfers. The system should handle either and check they belong to that program.
+
+Karen [Operations Coordinator]: Right. Only students eligible for that Program of Study should go into that cohort. If I try to add someone from a different track, it should warn me clearly so I can fix it.
+
+Ben [Systems Integration Engineer]: So, add nursing students; assign to cohorts in bulk or one by one; enforce eligibility based on the cohort’s program.
+
+Susan [Program Director]: Part-time students complicate everything. We need to manage their progress by adjusting sequence and timelines, and keep an audit trail so we know why we moved them.
+
+Mia [Program Administrator]: For clinical labs, we create lab sections for a clinical class: choose the site, the instructor, and the day/time. Then we enroll students registered for that clinical into lab sections. Sometimes we move a student to a different lab section for the same clinical.
+
+Karen [Operations Coordinator]: And we remove a student from a lab section if they drop. If a lab section is empty, we should be able to cancel it. But if there’s even one student, don’t allow cancellation.
+
+Ben [Systems Integration Engineer]: Understood: add lab sections with site, instructor, day/time; add students to lab sections if they’re registered for that clinical; allow moves between lab sections for the same clinical; allow removal; and only allow cancellation when the roster is empty.
+
+Julie [Associate Dean]: We rely on printed summaries: a cohort snapshot (students in the cohort, the program, the ordered sequence, progress, and estimated completion timeline); site summaries per quarter (what labs run at a particular site and when).
+
+Mia [Program Administrator]: I also print lab rosters—class name and number, lab section code, list of enrolled students, instructor, days/times, and location. For advising, an individual student summary: name, ID, admission date, classes taken, credits, GPA, and cohort.
+
+Karen [Operations Coordinator]: And a printable system log. When something goes wrong, I need to see what changed and by whom.
+
+Alex [IT/Security]: Logging helps audit. Make the log printable. Also, make sure the app plays nicely with our antivirus and is hardened against malicious input.
+
+Ben [Systems Integration Engineer]: We’ll follow secure coding and validation. We’ll also provide a contacts directory—emails and phones—for staff, students, lecture instructors, clinical lab instructors, and clinical site admins to support notifications.
+
+Susan [Program Director]: Email is fine as the primary channel. When we confirm classes and timelines, notify students about upcoming schedules. If we change a class detail or cancel, email the right group automatically.
+
+Mia [Program Administrator]: For clinical changes—capacity shifts or a lab cancellation—the affected folks need to know quickly. Same with cohort-level tweaks—sequence changes or a one-week lab cancellation due to instructor illness. And if we change a specific student’s status or lab section, that individual should get a note.
+
+Julie [Associate Dean]: Are we doing phone calls too?
+
+Mia [Program Administrator]: We’ll still call for emergencies. In the system, email is enough. No texting needed.
+
+Alex [IT/Security]: Email is within policy; text is a can of worms.
+
+Ben [Systems Integration Engineer]: Understood: email as primary. We’ll wire up events for routine communications and changes to classes, clinicals, cohorts, and individual student status, and we’ll target only the affected recipients.
+
+Susan [Program Director]: Planning: each quarter we need a report that tells us what classes we need to offer for all cohorts, how many sections and lab sections, and what room types are needed. That’s our room/site planning tool.
+
+Mia [Program Administrator]: Yes—a quarterly planning report, rolling up counts. If it shows room types like “tiered lecture hall” or “skills lab,” that’s perfect. And all reports should be printable.
+
+Ben [Systems Integration Engineer]: We’ll do a printable planning report by quarter that includes classes to offer, number of sections, number of labs, and room type needs.
+
+Julie [Associate Dean]: Data changes happen: we might rename a cohort identifier, adjust which Program of Study is assigned, change the preferred sequence, or update which quarter a class falls into.
+
+Mia [Program Administrator]: Same for Programs of Study: rename programs; redefine required classes. For clinical sites, we need to edit the site’s name, contact person, address, and contact details if they change.
+
+Karen [Operations Coordinator]: Lab sections too—update site if we move, fix the department/section label, change the instructor, adjust day/time, and tweak contact info for the lab lead. And students—names, phones, emails change; status flips full-time/part-time; occasionally we switch their Program of Study.
+
+Alex [IT/Security]: Editing is fine with permissions and logs. If someone changes student status, record it and send the right notification. And keep PII invisible to those without access even when they edit other fields.
+
+Ben [Systems Integration Engineer]: We’ll separate fields by permission. Most staff can update contact and status fields; only certain roles can view sensitive personal data; and only the authorized users can finalize and publish schedules.
+
+Susan [Program Director]: To be explicit: Julie and I are the only ones who can view PII. Karen can manage cohorts and labs without seeing everything in the student file.
+
+Karen [Operations Coordinator]: That’s fine. Give me rosters with names and IDs. I don’t need addresses. I do need their email for occasional notes.
+
+Alex [IT/Security]: Emails and phone numbers are directory info under policy, so that fits. We’ll align with the information policy.
+
+Mia [Program Administrator]: Just to confirm—cohorts are tied to a single Program of Study. No mixing.
+
+Susan [Program Director]: Correct. One cohort, one program. Enforce that.
+
+Ben [Systems Integration Engineer]: We’ll enforce that a cohort is associated with one Program of Study. When adding students to a cohort, we’ll check they match that program.
+
+Julie [Associate Dean]: And the cohort start—can the system capture month and year like “Start: September 2026”?
+
+Ben [Systems Integration Engineer]: Yes. When you add a cohort, you tag it with start month and year.
+
+Karen [Operations Coordinator]: Please make sure labels match nursing conventions—say “Clinical Lab Section,” not “practicum event.”
+
+Alex [IT/Security]: Natural terms and consistent English—got it.
+
+Mia [Program Administrator]: Don’t bury options in ten screens. It should feel intuitive so most of us can pick it up quickly. We don’t have bandwidth for long trainings.
+
+Ben [Systems Integration Engineer]: Usability is a priority. Guardrails to prevent conflicts and invalid inputs should help reduce student-reported mistakes.
+
+Susan [Program Director]: We’re aiming to cut student-reported scheduling errors by about half in the first year. If the tool blocks double-booking and enforces clinical rules, we might get there.
+
+Julie [Associate Dean]: Stability matters. During business hours, it should be up and not crashy. The previous system struggled when more than a few people used it.
+
+Alex [IT/Security]: We’ll plan for roughly ten simultaneous users during nine to five, with availability eight to six and a ninety-five percent uptime target.
+
+Mia [Program Administrator]: On schedule generation—you said under thirty seconds. Is that realistic?
+
+Ben [Systems Integration Engineer]: That’s the target. Everyday tasks should be around five seconds or less. If generation threatens to exceed thirty seconds, we’ll revisit the approach.
+
+Karen [Operations Coordinator]: For the planning report—can it aggregate for all cohorts and programs for a given quarter?
+
+Ben [Systems Integration Engineer]: Yes, it will roll up across all cohorts and programs for the selected quarter.
+
+Susan [Program Director]: Notifications should include routine “your classes coming next quarter,” and changes like class cancellations, section time/room changes, clinical capacity changes, lab cancellations, cohort sequence changes, and single-student moves or status changes. Hit only the affected people.
+
+Alex [IT/Security]: We’ll define triggers and recipients carefully. Email only; keep content in clear English.
+
+Karen [Operations Coordinator]: The old system used to fall over if more than a few of us were active. Please ensure this one supports our typical load without getting in our way.
+
+Ben [Systems Integration Engineer]: We’ll size it for around ten active staff during business hours.
+
+Mia [Program Administrator]: Clinical site records need fields for site name, contact person, their phone and email, and the address. We use the address often.
+
+Alex [IT/Security]: Address is fine. Keep it in the clinical site record and restrict details to authorized staff.
+
+Susan [Program Director]: Quick recap: model programs with required classes; cohorts tied to one program with a start month/year; classes as clinical or non-clinical with needs captured; conflict-free scheduling; manage clinical sites and lab sections; enroll/move/remove students in labs; handle part-time sequencing; print the summaries; plan per quarter across cohorts; email notifications for routine info and changes; and lock down access—PII only to me and Julie, publishing only for me and Karen.
+
+Ben [Systems Integration Engineer]: That’s the scope.
+
+Karen [Operations Coordinator]: One more thing—when I upload a list of students into a cohort, if some don’t qualify, don’t just fail silently. Give me a clear message so I know there are issues to fix before we move on.
+
+Mia [Program Administrator]: Yes—make the error messages human-readable. No mystery codes.
+
+Alex [IT/Security]: We’ll keep templates and messages in standard language.
+
+Susan [Program Director]: If we get this right, students will report fewer issues—ideally half as many.
+
+Ben [Systems Integration Engineer]: We’ll aim for that by preventing scheduling mistakes up front and making changes transparent via notifications.
+
+Julie [Associate Dean]: All right. Let’s move forward with a prototype we can pilot next quarter.
+
+Susan [Program Director]: Thanks all. Let’s keep it simple, fast, and safe—and speak our language.

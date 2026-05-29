@@ -1,0 +1,985 @@
+{
+  "artifact_id": "T2A_F8990D0D",
+  "unit_id": "PROMISE_5",
+  "origin": "PROMISE",
+  "track_id": "track2",
+  "variant_id": "defect_v1",
+  "created_at": "2026-05-26T19:50:24.838188+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Stakeholder discovery interview – EcoClaim Parts Navigator",
+      "text": "Date: 2026-02-18\nParticipants: \n- Nina (Business Analyst)\n- Jorge (Claims Operations lead)\n- Tara (Senior Adjuster)\n- Malik (Collision Estimator)\n- Priya (Corporate IT Architecture)\n- Sam (IT Security)\n- Dana (Middleware/Deployment)\n- Rob (Corporate Support Center)\n- Ellen (Legal & Compliance)\n- Vince (ChoiceParts partner liaison)\n\nNina: Let’s walk the day-in-the-life. Tara, when you’re assigning a claim, what do you need to see?\n\nTara (Adjuster): I start with the vehicle details—year, make, model—and where the car is. We go by the street address, city, state, and ideally ZIP. If the ZIP’s missing, don’t make me look it up—have the system figure it out from the address. Then I set a distance—usually something like 15 or 20 miles. It should support a small range all the way up to around thirty miles max.\n\nNina: And what do you expect back?\n\nTara: One shop recommendation, the best match—close and with the strongest performance ratings. If we can’t pick a single standout, give me a list of shops within that radius, and I’ll choose. I have to be able to put the selected facility onto the estimate assignment and, in special cases, override the top pick.\n\nJorge (Claims Ops): Exactly. We want a clear “preferred” facility surfaced, but the adjuster still needs the final say.\n\nNina: Ratings—how are those handled?\n\nJorge: Supervisors score shops. We look at how often a shop attempts to use recycled parts and how often they actually do. Scores are on a simple 1 through 10 scale. Sometimes a new shop has no scores yet—so show blank entries until we add them. Only supervisor-level adjusters should be able to change those ratings, but anyone who needs to can view them.\n\nPriya (Architecture): And let’s stay consistent with our corporate UI standards and color palette. It has to look like our other apps—clean, professional, on-brand—and follow enterprise architecture guidelines. No bespoke wild-west tech choices.\n\nNina: Browsers and devices?\n\nPriya: We still have legacy workstations. This needs to run on the machines we already have in the field—no hardware refresh. The browser baseline hasn’t changed: we still support Internet Explorer 5.5 or newer and Firefox 1.0 or newer. I know that’s ancient, but that’s our environment.\n\nMalik (Estimator): Out in the shop, conditions aren’t pristine. It’s noisy and dirty. I’m bouncing between a bay and a workstation. I need to be able to operate the app reliably in that environment; fiddly screens won’t cut it.\n\nOh wait, before we move on, Just as a reminder, anything we build needs to line up with the company’s UI standards. Use the corporate design system—approved components and layouts—so we’re consistent with the official UI guidance. If we deviate, it won’t pass review.\n\nNina: Let’s talk the estimator flow for recycled parts.\n\nMalik: When I build an estimate, I pick the damaged parts. I also have a list of suppliers our shop prefers. The search should use those inputs first—part types plus our preferred list. If that comes up empty, don’t make me start over—just fall back to searching by the vehicle’s ZIP with about a thirty-mile radius. Return the list of available recycled parts and which supplier each comes from. Keep those results tied to the estimate so later, when the adjuster runs the audit, it references exactly what I saw. And if there are no viable recycled parts, I shouldn’t be able to “pretend apply” anything—only apply parts that are actually available.\n\nTara: When I check the estimate, I’ll request an audit against the parts that were available, not just what Malik chose. That audit needs to show me totals—how many recycled parts were used, how many were available, and the percentage used. We also want an overall score that sums the line items. I’ll need to look at the audit right away, and other adjusters might need to access the same report later.\n\nSorry, going back to something I mentioned earlier — Just to be clear, don’t tie the estimator to that preferred-suppliers list — it’s too stale. For recycled parts, we want it pulling availability from the regional recycler exchange and public marketplaces like Green Parts Network and BidIt, even if those sellers aren’t on our preferred roster. That way we’re seeing the full picture on price and lead time.\n\nNina: Performance-wise, what’s acceptable?\n\nJorge: People won’t wait all day. The parts search can take a few seconds, but if it’s pushing past a quarter minute we’ll get calls. For the facility lookup, we expect it to be snappier—under ten seconds; eight seconds is a good ceiling. The audit should pop up quickly too—call it around ten seconds. When a supervisor saves ratings, that should complete in just a few seconds; five seconds feels like the upper bound for a save spinner.\n\nSam (Security): And roles matter. Estimators do the parts searching. Adjusters request audits. Only supervisors on the adjusting side can change shop ratings. Everyone else should be blocked from actions outside their role. Also, we need strong input validation—we shouldn’t accept junk data. And don’t forget data isolation: carrier A should never be able to see carrier B’s claim information. From a threat standpoint, we need the standard protections—keep the app free of malware and build in defenses to prevent denial-of-service type disruptions.\n\nEllen (Legal & Compliance): We’re subject to the usual insurance claims regulations, and there are state-by-state estimatics rules about using recycled parts. Build the workflow so it honors those constraints. Also, SOX controls still apply—auditing, access controls, change management—make sure the design lines up with those.\n\nPriya: On integration: we’ll keep using ChoiceParts for the recycled parts catalog. The feed is a nightly drop—around one in the morning is when we typically pull and refresh data. The app needs to interface with that process cleanly.\n\nVince (ChoiceParts): Correct. We publish the updated inventory once per day; your window around 1:00 AM is what we’ve been doing with your existing systems.\n\nDana (Middleware): Deployments and upgrades go through us. We only push during approved launch windows. The application must respect the enterprise maintenance schedule; if it has to go down, it goes down when the availability calendar says so, not randomly in the middle of the day.\n\nRob (Support Center): My team is first-line support. Users will call the Corporate Support Center, not the devs. So, make it easy enough that most folks don’t need to call. In-product help should be everywhere they’d expect it—ideally almost every screen. Tooltips, help icons—whatever fits the standards—so that nine times out of ten, they can find guidance without leaving the app.\n\nSorry, going back to something I mentioned earlier — On the browser front, we can drop the legacy stuff—please set the minimum Internet Explorer version to 6.0. Our IT baseline no longer includes IE 5.5, and we’re not budgeting time to keep 5.5 working. As long as it runs on IE 6 and newer plus Chrome and Firefox, we’re fine.\n\nJorge: On usability targets: we’ve struggled with clunky tools. We want this to be straightforward enough that almost all adjusters and estimators—say mid-90s percent—say it’s easy to use in our surveys. We’ll run a training roadshow, but keep it short. Two days of onsite training should be enough to get people productive. And we expect estimators to feel more efficient quickly; within the first month, at least four out of five should report their productivity improved.\n\nNina: Availability and scale—what are we planning for?\n\nDana: Operations will hold us to the published online availability schedule. Outside scheduled windows, we need solid uptime—ninety-eight percent or better. No surprise outages. During the nightly data refresh, we still expect the app to be up, unless the schedule says otherwise.\n\nPriya: On capacity, day one we should comfortably handle around fifteen hundred users logged in at once. The roadmap has aggressive growth—we want a path to an order of magnitude more concurrency, roughly ten thousand simultaneous users within two years. For data, expect on the order of fifty thousand parts records to land in our warehouse per day from the feed.\n\nNina: Anything else on look-and-feel or help?\n\nPriya: Just reiterating: follow the corporate UI and color guidelines. It should look professional—like our other apps—not a prototype. And keep in-app help discoverable per our standards.\n\nNina: To recap actions: \n- Facility finder uses Y/M/M plus address; resolves missing ZIP; user-set radius up to 30 miles; returns best-rated or a nearby list; adjuster can assign or override.\n- Estimator searches recycled parts by damaged parts and preferred suppliers; if none, auto-fallback to ZIP + 30 miles; results are retained and only available parts can be applied.\n- Adjuster requests audit; audit shows counts, percentages, and a summed score; view immediately and later.\n- Ratings viewer shows current or blanks; supervisors enter 1–10 scores for attempted vs actual recycled usage; save quickly.\n- Role restrictions enforced; input validation; cross-carrier data isolation; protections against malware and DoS.\n- ChoiceParts nightly integration around 1 AM.\n- Works on existing hardware; supports IE 5.5+ and Firefox 1.0+.\n- Adheres to enterprise architecture, UI, color, SOX, insurance and estimatics rules.\n- In-app help on almost all screens; two-day training; high ease-of-use and satisfaction targets; estimator productivity improvement.\n- Performance budgets: parts search ~15s max; facility lookup <=8s; audit ~10s; rating saves <=5s.\n- Availability per schedule; ~98% uptime outside planned outages.\n- Capacity now ~1,500 concurrent; plan to ~10,000 in two years; ~50k parts records/day.\n\nEveryone: Agreed."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "Architecture and Operations review – decisions and targets",
+      "text": "Date: 2026-03-01\nAttendees: Architecture, Security, Ops, Claims Ops, Product, Middleware, Support, Compliance\n\nDecisions/Requirements captured:\n\nPlatform and environment\n- Must operate on existing corporate desktops across all environments (no hardware upgrades).\n- Browser compatibility: Internet Explorer 5.5 and above; Mozilla Firefox 1.0 and above.\n- Conform to enterprise architecture guidelines; no non-approved frameworks.\n- Comply with corporate UI standards and corporate color scheme; deliver a professional, brand-aligned appearance.\n\nIntegration and data\n- Interface with ChoiceParts as the source of recycled parts; nightly synchronization around 1:00 AM local data center time.\n- Expect average daily parts records: ~50,000.\n\nFunctionality – facility locator\n- Inputs: vehicle year/make/model; street address, city, state, ZIP (system will derive ZIP from address if blank); user-set search radius between 1 and 30 miles.\n- Output: one preferred facility based on highest ratings and proximity; if no clear single choice, return a list within the radius.\n- Adjuster can add the chosen facility to the estimate assignment and may override the top pick when necessary.\n\nFunctionality – recycled parts\n- Estimator searches based on damaged parts list and preferred supplier list.\n- If no results from preferred suppliers, automatically fall back to search by ZIP within a 30-mile radius.\n- Return available recycled parts with associated suppliers; system retains these results for audit use.\n- Estimator applies only actually available recycled parts to the estimate; if none are available, no application is permitted.\n\n- Follow-up point: Compliance brought up data minimization and said we shouldn’t persist any search outputs. For the recycled parts lookup, don’t keep the parts or supplier lists—show them, but once the user leaves the results screen, clear everything and don’t cache it for later. That way nothing from a previous search sticks around in the system.\n\nFunctionality – audit\n- Adjuster reviews the estimate and requests an audit (adjusters only) comparing estimate vs. available parts.\n- Audit includes: total recycled parts used, number available from the original results, percentage used, and an overall score that sums line items.\n- Audit is displayed immediately and remains accessible to other adjusters later.\n\n- Additional input: During handoffs, we need to make sure the audit report isn’t just visible to the person who ran it. Other adjusters should be able to pull that report up later on when they inherit the claim, even if it’s days or weeks after the audit. That way they don’t have to re-run anything just to see what was reviewed.\n\nFunctionality – facility ratings\n- Viewer shows current ratings; if none exist, display a blank template.\n- Supervisors (adjuster supervisors only) can enter new ratings for two categories: attempted use of recycled parts and actual use of recycled parts.\n- Ratings use a 1–10 scale and can be saved by supervisors.\n\n- Side note from a stakeholder: During capacity planning, Ops said the current target blows our storage budget. For now, plan on an average of 20,000 recycled parts records per day, with occasional spikes up to around 35,000 on busy days. We'll revisit the target after the Q3 cost review.\n\n- Additional input: Before we roll this out broadly, we need to be confident it actually helps the Collision Estimators get more done. The bar we’re setting is that within their first month on the tool, at least 80% of those estimators should tell us they feel more productive. We’ll validate that via a quick survey at day 30.\n\nSecurity and access\n- Role enforcement: only collision estimators can perform parts searches; only adjusters can request audits; only supervisor-level adjusters can update facility ratings.\n- Validate inputs to prevent invalid data from being accepted.\n- Strict data isolation between insurance companies—no cross-carrier visibility.\n- System must be free of computer viruses and incorporate protections to prevent malicious attacks, including denial of service.\n\nCompliance\n- Align with Sarbanes–Oxley controls (auditability, access, change management).\n- Comply with insurance claims processing regulations.\n- Comply with estimatics requirements related to recycled parts usage.\n\nUsability and adoption\n- Ease-of-use target: at least 95% of adjusters and estimators report the product is easy to use.\n- Satisfaction target: at least 85% of users report being satisfied with the product.\n- Learning curve: two days of onsite training should be sufficient for new users.\n- In-product help must be discoverable on roughly 90% of screens to aid task completion.\n- Field conditions: usable in noisy, dirty repair shop environments.\n- Estimator productivity: within one month of adoption, at least 80% of estimators should report a productivity increase.\n\nPerformance targets (time to first response)\n- Recycled parts search: results returned within 15 seconds.\n- Preferred repair facility search: result returned within 8 seconds.\n- Recycled parts audit generation: returned within 10 seconds.\n- Saving facility ratings: committed within 5 seconds.\n\nAvailability and operations\n- Adhere to the corporate online availability schedule; downtime limited to scheduled maintenance windows.\n- Uptime goal: 98% during available online time (excluding planned outages).\n- Product maintenance occurs within established corporate maintenance windows.\n- Installations and upgrades are executed by the middleware technology team during approved launch windows.\n- Corporate Support Center provides first-line user support.\n\nScalability and growth\n- Initial concurrency capacity: handle up to 1,500 simultaneous users.\n- Growth plan: be able to scale to 10,000 concurrent users within two years of initial launch.\n\nNotes\n- All above items align with business goals to drive recycled parts usage, speed estimate creation/assignment, and enable transparent auditing while maintaining compliance and brand standards."
+    },
+    {
+      "type": "email_thread",
+      "title": "RE: Finalizing non-functional targets and roles before build freeze",
+      "text": "From: Priya.Architecture@corp.example\nTo: ProductTeam@corp.example; Ops@corp.example; Security@corp.example; SupportCenter@corp.example; Middleware@corp.example; ClaimsOps@corp.example\nDate: 2026-03-10 08:21\nSubject: RE: Finalizing non-functional targets and roles before build freeze\n\nTeam,\n\nSummarizing a few confirmations before we lock scope:\n\n1) Environment and branding\n- We are not revising desktop standards. EcoClaim Parts Navigator must run as-is on our existing hardware. Browser support remains IE 5.5+ and Firefox 1.0+.\n- UI must adhere to our corporate UI guidelines and color scheme. Please keep the overall look professional and consistent with our portfolio.\n\n2) Roles and access\n- Estimator role: can perform recycled parts searches and apply only available parts to the estimate.\n- Adjuster role: can review estimates and request recycled parts audits.\n- Adjuster Supervisor role: can view and update preferred repair facility ratings (1–10) for attempted vs. actual recycled parts usage; others can view but not edit.\n- Enforce input validation across forms. Also, ensure strict segregation so one insurer’s users cannot access another insurer’s claim data.\n\n3) Performance and availability\n- Targets we agreed: parts search <= 15s; facility lookup <= 8s; audit <= 10s; rating save <= 5s.\n- Follow the published availability schedule—no unplanned downtime. Ops is tracking us to 98% uptime during available hours.\n- Maintenance limited to corporate windows; installs/upgrades executed by Middleware during approved launch windows.\n\n4) Integration and scale\n- ChoiceParts remains the sole recycled parts source. Nightly refresh occurs at approximately 1:00 AM; please keep the interface aligned to that timing.\n- Average daily recycled parts records we’ll ingest: ~50k.\n- Concurrency: support 1,500 simultaneous users at launch; architecture runway to 10,000 concurrent users within two years.\n\nP.S. Quick reminder from support: a few of our customers are still stuck on legacy setups. The application needs to work properly on Internet Explorer 5.5 or later, so please factor that into builds and testing. Once IE 5.5+ compatibility is confirmed, we can update the release notes.\n\n5) Compliance and security hygiene\n- We remain subject to SOX. Also confirm compliance with insurance claims regulations and estimatics rules on recycled parts usage.\n- Security expects the product to be free of viruses and resilient against malicious activity, including denial-of-service. Coordinate with Security on controls.\n\nP.S. Given the compressed rollout and limited training slots, we shouldn’t hold the first release to an almost universal usability mark. For the pilot, let’s target 80% of adjusters and collision estimators saying the product is easy to use, and we’ll cover the remaining 20% with quick-reference guides and office hours. If we hit that, we can raise the bar in the next phase.\n\n6) Usability/adoption\n- In-app help needs to be easy to find on the majority of screens (target ~90% coverage) to minimize support calls.\n- Training plan is two days onsite for new users. Success measures: ~95% of adjusters/estimators rate the product easy to use; ~85% overall user satisfaction; and within one month, ~80% of estimators self-report productivity gains.\n- Field use: ensure the application remains operable in dirty, noisy repair facilities.\n\nP.S. Quick follow-up on the service locator screens: in the latest build, I can’t see the ratings for the repair facilities anywhere. We need the app to surface the up-to-date rating for each facility so users can view it at a glance. If it’s tucked away or missing, folks will assume we don’t track ratings.\n\n7) Functional clarifications\n- Facility search inputs: year/make/model; street/city/state/ZIP. If ZIP is missing, system should derive it from the address. Radius selector limited to 1–30 miles.\n- Facility results: return the top-rated facility; if no clear single, return a list within the radius. Adjuster must be able to assign the chosen facility to the estimate and override when needed.\n- Parts search: start with damaged parts + preferred suppliers; if none available, auto-fallback to ZIP + 30 miles. Return items with supplier info and retain the results for audit.\n- Audit: generated on adjuster request; show count used, count available, percentage used, and an overall score (sum of line items). Display immediately; leave accessible for later review by other adjusters.\n- Ratings: show existing scores or blanks if none; supervisors can enter and save.\n\nRob (Support) has confirmed the Support Center will be first line for incidents and how-tos.\n\nIf anyone sees gaps against these items, please reply today. Otherwise, we’ll assume these are the build targets.\n\n—Priya\n\n-----\nFrom: Sam.Security@corp.example\nDate: 2026-03-10 09:03\n\nLooks good. Please loop us in on input validation patterns and DoS protections during perf testing. Also confirm tenant isolation tests (insurer A cannot view insurer B data).\n\n—Sam\n\n-----\nFrom: Dana.Middleware@corp.example\nDate: 2026-03-10 09:17\n\nConfirmed on installs/upgrades—we’ll schedule during approved windows only. The 1:00 AM ChoiceParts feed aligns with our batch window.\n\n—Dana\n\n-----\nFrom: Jorge.ClaimsOps@corp.example\nDate: 2026-03-10 09:40\n\nOn the usability metrics: keep the in-app help visible on almost every screen so adjusters don’t have to call Rob. We’ll run two-day trainings and survey for ease-of-use (target 95%) and satisfaction (85%). We’ll also measure estimator productivity after a month; goal is 80% reporting improvement.\n\n—Jorge\n\n-----\nFrom: Rob.SupportCenter@corp.example\nDate: 2026-03-10 10:05\n\nAcknowledged. Support Center will handle user calls; please provide concise help content inline so users can resolve 9 out of 10 questions without contacting us.\n\n—Rob"
+    }
+  ],
+  "gold_requirements": [
+    {
+      "id": "PROMISE_5_R001",
+      "text": "The product must support Internet Explorer 5.5 and above.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R002",
+      "text": "The product must support Mozilla Firefox 1.0 and above.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R003",
+      "text": "The product shall interface with the Choice Parts System. This provides the feed of recycled parts data.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R004",
+      "text": "The product shall run on the existing hardware for all environments.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R005",
+      "text": "The product shall adhere to the corporate Architecture guidelines",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R006",
+      "text": "The product shall comply with corporate User Interface Guidelines",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R007",
+      "text": "The product shall comply with corporate color scheme",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R008",
+      "text": "The appearance of the product shall appear professional",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R009",
+      "text": "The product shall be easy to use by Adjusters and Collision Estimators. 95% of Adjusters and Collision Estimators shall find the product easy to use.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R010",
+      "text": "The product shall increase productivity of Collision Estimators. 80% of the Collision Estimators shall agree their productivity has increase within 1 month of using the product.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R011",
+      "text": "Users shall feel satisfied using the product. 85% of all users will be satisfied with the product.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R012",
+      "text": "The product shall be easy to learn by Adjusters and Collision Estimators. The product shall be learned with two days onsite training",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R013",
+      "text": "The user shall easily locate instructions while using the product. User help can be found within 90% of the system.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R014",
+      "text": "The search for recycled parts shall take no longer than 15 seconds. The search results shall be returned in under 15 seconds.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R015",
+      "text": "The search for the preferred repair facility shall take no longer than 8 seconds. The preferred repair facility is returned within 8 seconds",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R016",
+      "text": "The recycled parts audit report shall be returned to the user within 10 seconds. The audit report shall be returned within 10 seconds.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R017",
+      "text": "The preferred repair facility ratings shall be saved within 5 seconds. The save shall occur within 5 seconds.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R018",
+      "text": "The product shall adhere to the corporate online availability schedule. The application is brought down only within 98% of the scheduled outages per the availability schedule.",
+      "raw_label": "A",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R019",
+      "text": "The product shall achieve a 98% uptime. The product shall not fail more than 2% of the available online time.",
+      "raw_label": "A",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R020",
+      "text": "The product shall be able to handle up to 1500 simultaneous users. The system shall perform with 1500 users as a time.",
+      "raw_label": "SC",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R021",
+      "text": "The average number of recycled parts records per day shall be 50 000.",
+      "raw_label": "SC",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R022",
+      "text": "The product shall be able to handle 10 000 concurrent users within 2 years of the initial launch.",
+      "raw_label": "SC",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R023",
+      "text": "For estimators the product shall be able to be operated in a repair facility during dirty and noisy conditions.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R024",
+      "text": "The product shall interface with the ChoiceParts system once per day at approximately 1:00 AM.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R025",
+      "text": "The maintenance of the product will fall within the established corporate maintenance windows.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R026",
+      "text": "The product shall be supported using the corporate support center.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R027",
+      "text": "Product installations and upgrades shall be handled by the middleware technology team within established launch time frames.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R028",
+      "text": "Only adjusters can request recycled parts audit reports. No users without an adjuster role shall request recycled parts audits.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R029",
+      "text": "Only adjusters with a supervisor role can update preferred repair facility ratings. Users without the supervisor role cannot access the repair facility ratings.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R030",
+      "text": "Only collision estimators shall search for recycled parts. Users without the collision estimator role shall not have access to the search for recycled parts.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R031",
+      "text": "Only valid data shall be entered into the system. No invalid data shall be entered into the system.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R032",
+      "text": "One insurance company shall not be able to view another insurance companys claim data.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R033",
+      "text": "The product shall free of computer viruses.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R034",
+      "text": "The system shall prevent malicious attacks including denial of service.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R035",
+      "text": "The product must comply with Sarbanes-Oxley.",
+      "raw_label": "L",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "compliance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R036",
+      "text": "The product shall comply with the estimatics laws relating to recycled parts usage.",
+      "raw_label": "L",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "compliance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R037",
+      "text": "The product shall comply with insurance regulations regarding claims processing.",
+      "raw_label": "L",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "compliance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R038",
+      "text": "The user shall search for the preferred repair facility using vehicle vehicle location and radius in miles",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R039",
+      "text": "The vehicle data shall include vehicle year make and model",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R040",
+      "text": "The vehicle location shall include street address city state and zipcode",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R041",
+      "text": "The system shall resolve the zipcode for the street address city and state if zipcode is unknown.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R042",
+      "text": "The search radius shall be between 1 and 30 miles",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R043",
+      "text": "The system shall locate the preferred repair facility with the highest ratings for the input criteria",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R044",
+      "text": "The adjuster shall enter the preferred repair facility on the estimate assignment.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R045",
+      "text": "The adjuster shall be able to override the preferred repair facitlity on the estimate assignment.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R046",
+      "text": "The preferred repair facility shall be returned to the user.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R047",
+      "text": "The system shall return a list of repair facilities within the radius if the preferred repair facility cannot be determined.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R048",
+      "text": "The estimator shall search for available recycled parts using damaged vehicle parts information.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R049",
+      "text": "The estimator shall search for available recycled parts using a list of preferred parts suppliers.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R050",
+      "text": "The system shall search for available recycled parts for the supplied vehicle parts and suppliers.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R051",
+      "text": "The estimator shall search by zipcode with a radius of 30 miles if no parts are found for the preferred parts suppliers",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R052",
+      "text": "The system shall retain the available recycled parts and suppliers returned from the search.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R053",
+      "text": "The available recycled parts information and their suppliers shall be returned to the user.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R054",
+      "text": "The estimator shall apply selected recycled parts to the collision estimate.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R055",
+      "text": "The estimator shall not apply recycled parts to the collision estimate if no available parts are returned.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R056",
+      "text": "The adjuster shall review the collision estimate.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R057",
+      "text": "The adjuster shall request a recycled parts audit of the collision estimate.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R058",
+      "text": "The recycled parts search results provided to the estimator shall be retrieved by the system.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R059",
+      "text": "The system shall generate an audit report based on the available recycled parts and the collision estimate.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R060",
+      "text": "The audit report shall include the total number of recycled parts used in the estimate.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R061",
+      "text": "The audit report shall include the number of available recycled parts from the original search results.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R062",
+      "text": "The audit report shall include the percentage of available recycled parts used in the estimate",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R063",
+      "text": "The audit report shall include the total score of the audit which sums the indivual line items.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R064",
+      "text": "The audit report shall be displayed to the user.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R065",
+      "text": "The audit report shall be available to other adjusters at later points in time.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R066",
+      "text": "The user shall select to view the preferred repair facility ratings.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R067",
+      "text": "The current repair facility ratings shall be displayed to the user.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R068",
+      "text": "The system will display a blank set of ratings if there are not ratings yet defined.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R069",
+      "text": "The user shall enter new ratings based on the audit report",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R070",
+      "text": "The ratings shall be from a scale of 1-10",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R071",
+      "text": "The ratings shall include categories for attempted use of recycled parts and actual use of recycled parts",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R072",
+      "text": "The user shall select to save the preferred repair facility ratings.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_5_R073",
+      "text": "The preferred repair facility ratings shall be saved by the system.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    }
+  ],
+  "seed_registry": [
+    {
+      "seed_item_id": "T2S_378689D3",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "value_conflict",
+      "original_req_ids": [
+        "PROMISE_5_R001"
+      ],
+      "original_req_texts": [
+        "The product must support Internet Explorer 5.5 and above."
+      ],
+      "injected_text": "On the browser front, we can drop the legacy stuff—please set the minimum Internet Explorer version to 6.0. Our IT baseline no longer includes IE 5.5, and we’re not budgeting time to keep 5.5 working. As long as it runs on IE 6 and newer plus Chrome and Firefox, we’re fine.",
+      "injected_into_artifact_type": "interview_transcript",
+      "defect_description": "The interview sets the minimum supported Internet Explorer version to 6.0 and explicitly drops 5.5, conflicting with the requirement to support Internet Explorer 5.5 and above.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_4CCA452E",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "semantic_conflict",
+      "original_req_ids": [
+        "PROMISE_5_R052"
+      ],
+      "original_req_texts": [
+        "The system shall retain the available recycled parts and suppliers returned from the search."
+      ],
+      "injected_text": "Compliance brought up data minimization and said we shouldn’t persist any search outputs. For the recycled parts lookup, don’t keep the parts or supplier lists—show them, but once the user leaves the results screen, clear everything and don’t cache it for later. That way nothing from a previous search sticks around in the system.",
+      "injected_into_artifact_type": "meeting_notes",
+      "defect_description": "These meeting notes require clearing and not retaining recycled parts and supplier search results upon leaving the results screen, which conflicts with the gold requirement to retain those results.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_03CDCB45",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "value_conflict",
+      "original_req_ids": [
+        "PROMISE_5_R009"
+      ],
+      "original_req_texts": [
+        "The product shall be easy to use by Adjusters and Collision Estimators. 95% of Adjusters and Collision Estimators shall find the product easy to use."
+      ],
+      "injected_text": "Given the compressed rollout and limited training slots, we shouldn’t hold the first release to an almost universal usability mark. For the pilot, let’s target 80% of adjusters and collision estimators saying the product is easy to use, and we’ll cover the remaining 20% with quick-reference guides and office hours. If we hit that, we can raise the bar in the next phase.",
+      "injected_into_artifact_type": "email_thread",
+      "defect_description": "This email sets the usability target to 80% of Adjusters and Collision Estimators finding the product easy to use, conflicting with the gold requirement’s 95% threshold.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_0B72075F",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "semantic_conflict",
+      "original_req_ids": [
+        "PROMISE_5_R049"
+      ],
+      "original_req_texts": [
+        "The estimator shall search for available recycled parts using a list of preferred parts suppliers."
+      ],
+      "injected_text": "Just to be clear, don’t tie the estimator to that preferred-suppliers list — it’s too stale. For recycled parts, we want it pulling availability from the regional recycler exchange and public marketplaces like Green Parts Network and BidIt, even if those sellers aren’t on our preferred roster. That way we’re seeing the full picture on price and lead time.",
+      "injected_into_artifact_type": "interview_transcript",
+      "defect_description": "The gold mandates searching using a list of preferred suppliers, whereas the interview requires searching across regional exchanges and public marketplaces regardless of preferred status.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_C856E669",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "contradiction",
+      "defect_subtype": "value_conflict",
+      "original_req_ids": [
+        "PROMISE_5_R021"
+      ],
+      "original_req_texts": [
+        "The average number of recycled parts records per day shall be 50 000."
+      ],
+      "injected_text": "During capacity planning, Ops said the current target blows our storage budget. For now, plan on an average of 20,000 recycled parts records per day, with occasional spikes up to around 35,000 on busy days. We'll revisit the target after the Q3 cost review.",
+      "injected_into_artifact_type": "meeting_notes",
+      "defect_description": "This sets the average recycled parts records per day to 20,000, conflicting with the gold requirement that the average be 50,000 per day.",
+      "judge_task_type": "contradiction_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_2D5CEA20",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PROMISE_5_R010"
+      ],
+      "original_req_texts": [
+        "The product shall increase productivity of Collision Estimators. 80% of the Collision Estimators shall agree their productivity has increase within 1 month of using the product."
+      ],
+      "injected_text": "Before we roll this out broadly, we need to be confident it actually helps the Collision Estimators get more done. The bar we’re setting is that within their first month on the tool, at least 80% of those estimators should tell us they feel more productive. We’ll validate that via a quick survey at day 30.",
+      "injected_into_artifact_type": "meeting_notes",
+      "defect_description": "This is a paraphrased duplicate of requirement PROMISE_5_R010.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_7B8B1016",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PROMISE_5_R067"
+      ],
+      "original_req_texts": [
+        "The current repair facility ratings shall be displayed to the user."
+      ],
+      "injected_text": "Quick follow-up on the service locator screens: in the latest build, I can’t see the ratings for the repair facilities anywhere. We need the app to surface the up-to-date rating for each facility so users can view it at a glance. If it’s tucked away or missing, folks will assume we don’t track ratings.",
+      "injected_into_artifact_type": "email_thread",
+      "defect_description": "Paraphrases requirement PROMISE_5_R067 by restating that users must be shown the current repair facility ratings.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_1B5D7B4F",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PROMISE_5_R006"
+      ],
+      "original_req_texts": [
+        "The product shall comply with corporate User Interface Guidelines"
+      ],
+      "injected_text": "Just as a reminder, anything we build needs to line up with the company’s UI standards. Use the corporate design system—approved components and layouts—so we’re consistent with the official UI guidance. If we deviate, it won’t pass review.",
+      "injected_into_artifact_type": "interview_transcript",
+      "defect_description": "This paraphrases requirement PROMISE_5_R006 by restating that the product must follow the corporate user interface guidelines.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_FAAC9817",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PROMISE_5_R065"
+      ],
+      "original_req_texts": [
+        "The audit report shall be available to other adjusters at later points in time."
+      ],
+      "injected_text": "During handoffs, we need to make sure the audit report isn’t just visible to the person who ran it. Other adjusters should be able to pull that report up later on when they inherit the claim, even if it’s days or weeks after the audit. That way they don’t have to re-run anything just to see what was reviewed.",
+      "injected_into_artifact_type": "meeting_notes",
+      "defect_description": "This paraphrases and duplicates PROMISE_5_R065 by requiring that audit reports remain accessible to other adjusters at a later time.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    },
+    {
+      "seed_item_id": "T2S_C1E857A9",
+      "track_id": "track2",
+      "seed_type": "defect_seed",
+      "defect_type": "duplicate",
+      "defect_subtype": "paraphrase_duplicate",
+      "original_req_ids": [
+        "PROMISE_5_R001"
+      ],
+      "original_req_texts": [
+        "The product must support Internet Explorer 5.5 and above."
+      ],
+      "injected_text": "Quick reminder from support: a few of our customers are still stuck on legacy setups. The application needs to work properly on Internet Explorer 5.5 or later, so please factor that into builds and testing. Once IE 5.5+ compatibility is confirmed, we can update the release notes.",
+      "injected_into_artifact_type": "email_thread",
+      "defect_description": "This restates requirement PROMISE_5_R001 that the product must support Internet Explorer 5.5 and higher.",
+      "judge_task_type": "duplicate_check",
+      "target_metrics": [
+        "DEFECT_LEAKAGE_RATE"
+      ],
+      "expected_behavior": "detect_and_resolve",
+      "should_leak_to_final_output": false
+    }
+  ],
+  "brief": {
+    "project_name": "EcoClaim Parts Navigator",
+    "domain": "Auto insurance claims and repair network management",
+    "users": [
+      "Adjuster",
+      "Collision Estimator"
+    ],
+    "stakeholders": [
+      "Claims Operations leadership",
+      "Corporate IT Architecture & Security",
+      "Legal & Compliance",
+      "Middleware / Deployment team",
+      "Corporate Support Center",
+      "ChoiceParts / recycled parts network partner"
+    ],
+    "business_goals": [
+      "Reduce claim costs by increasing appropriate recycled parts usage while remaining compliant",
+      "Accelerate estimate creation and assignment by surfacing best repair facilities",
+      "Provide transparent auditing of recycled parts decisions across claims",
+      "Improve estimator/adjuster productivity and overall user satisfaction",
+      "Scale to growing user base and data volumes without service degradation",
+      "Meet corporate and industry regulations and controls throughout the process"
+    ],
+    "core_features": [
+      "Facility locator using vehicle year/make/model and street/city/state with ZIP resolution and a user-set radius",
+      "Return the highest-rated facility or a nearby list; allow adjusters to assign or override on the estimate",
+      "Recycled parts search for estimators by damaged parts and preferred suppliers with ZIP+radius fallback; retain results",
+      "Apply selected recycled parts to the estimate only when available",
+      "Audit generation for adjusters comparing estimate vs. available parts with totals, counts, percentages, and a summed score; audits remain available later",
+      "Facility ratings viewer/editor showing current or blank categories; supervisors can enter 1–10 scores for attempted vs. actual recycled parts use and save",
+      "Role-restricted actions: estimators search parts, adjusters request audits, only supervisor-level adjusters update facility ratings"
+    ],
+    "quality_concerns": [
+      "High usability and short learning curve for adjusters/estimators with discoverable in-app help",
+      "Professional look-and-feel aligned to corporate branding",
+      "Tight performance targets for searches, audits, and rating saves",
+      "High availability with reliability aligned to planned outage schedules",
+      "Strong security: role-based access, insurer data isolation, input validation, and protection from malware/DoS",
+      "Capacity for heavy concurrent use today and growth over time, and handling large daily parts feeds"
+    ],
+    "constraints": [
+      "Must run on legacy corporate browsers and existing hardware (e.g., IE 5.5+ / Firefox 1.0+)",
+      "Follow enterprise architecture, UI/color standards, and SOX controls",
+      "Adhere to insurance claims rules and recycled-parts regulations",
+      "Integrate with ChoiceParts via a nightly synchronization around 1 AM",
+      "Usable in noisy, dirty repair shop environments",
+      "Installations/upgrades handled by the middleware team in approved launch windows; supported by the corporate support center",
+      "Operate within corporate maintenance windows and published availability schedule"
+    ],
+    "terminology": [
+      "Adjuster: claims handler who reviews estimates and requests audits",
+      "Collision Estimator: shop user who builds the repair estimate and searches for recycled parts",
+      "ChoiceParts: external recycled parts data/feed provider",
+      "Preferred Repair Facility: network shop chosen for assignment based on ratings and proximity",
+      "Estimate Assignment: linkage of a claim to the chosen repair facility and parts decisions",
+      "Recycled Parts Audit Report: summary of available vs. used recycled parts with totals, percentages, and an overall score",
+      "Supplier Preferences: list of favored parts vendors used to drive searches"
+    ]
+  },
+  "metadata": {
+    "project_id": "5",
+    "req_count": 73,
+    "label_dist": {
+      "O": 10,
+      "LF": 3,
+      "US": 5,
+      "PE": 4,
+      "A": 2,
+      "SC": 3,
+      "SE": 7,
+      "L": 3,
+      "F": 36
+    },
+    "llm_usage": {
+      "total_calls": 83,
+      "total_input_tokens": 441442,
+      "total_output_tokens": 279267
+    }
+  }
+}

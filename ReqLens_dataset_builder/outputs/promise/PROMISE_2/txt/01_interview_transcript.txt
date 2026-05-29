@@ -1,0 +1,166 @@
+TYPE  : interview_transcript
+TITLE : Field Ride-Along Discovery: PocketMLS Field Kit Stakeholder Interview
+UNIT  : PROMISE_2
+============================================================
+
+Dana [Product Manager]: Thanks everyone for making time. I wanted to hear the gritty details of how you work in the field so we don’t build something that looks slick but gets in your way. Quick round of intros and then let’s dive in.
+
+Brooke [Broker/Owner]: I’m Brooke, I run Century Northside. I’m not touching code, but I care about what my agents see and how our brand comes across when they’re in client-facing moments.
+
+Sam [Field Agent]: Sam, buyer’s agent. I live out of my car and, um, my Palm. If it doesn’t work in a driveway with one bar, it’s dead to me.
+
+Priya [IT/Operations]: Priya here, brokerage ops and IT. We own the office scheduling system and the address book for clients. We’ll be the ones wiring the back end and yelling when it falls over.
+
+Miguel [MLS Rep]: Miguel from the regional MLS board. I’m here to make sure you’re not violating our data access terms and that agents can do what they’re allowed to do, and not what they’re not.
+
+Alex [Mobile Engineer]: Alex, I’m the person you’ll blame when buttons are in the wrong place on a Windows CE device. Also the one reading Palm OS docs at 2 a.m.
+
+Dana [Product Manager]: Perfect. I’ll just jump in: Sam, when you’re with a client, what’s the one thing you always need to do on your device?
+
+Sam [Field Agent]: Search. Always search. Someone says, “What’s around here with a fenced yard under five hundred?” I punch in criteria. And—oh—pictures. If the photos are tiny or muddy, I look dumb. I need to tap through to a bigger, clear shot so the client isn’t squinting.
+
+Alex [Mobile Engineer]: On images, when you say “bigger,” we’ve got limited real estate. But we can do a clear thumbnail and then a full-size view within the device limits. We’ll work to have it not look like it’s been faxed.
+
+Brooke [Broker/Owner]: The photos can’t be grainy. Period. Our clients already question these older handhelds, so the app has to present crisp images that don’t embarrass us. And no off-brand colors. People notice. Please stick to our palette, our fonts, and honestly, don’t reinvent the way the device works. Use the Palm buttons and the WinCE soft keys like they’re meant to be.
+
+Dana [Product Manager]: That’s helpful—native controls, consistent brand look. And Sam, what do you do after you find a set of results?
+
+Sam [Field Agent]: Save them. I’ll save the set so I can go back in the car between houses. Sometimes I don’t have time to set up anything fancy. I just say “save search,” and later I can pull it up. Also, map view—show me the area, then tap the one we want and get directions. I shouldn’t have to retype the address into some other app.
+
+Alex [Mobile Engineer]: We can provide a map that shows nearby listings and a single tap to directions. On these legacy devices we tie into the built-in mapping if available or our own basic directions. We’ll make sure the flow is simple: area map, select property, route. No copy-paste.
+
+Brooke [Broker/Owner]: The navigation must be simple. Use the platform’s standard menus and buttons, please. I don’t want another “clever” hamburger icon that nobody recognizes on Windows CE.
+
+Dana [Product Manager]: On that note, zero training is a goal. We want any licensed agent to recognize words like “comps,” “showing,” “CMA.” Don’t label things with weird tech terms.
+
+Priya [IT/Operations]: Also, can we make sure they don’t accidentally type in garbage? We’ve had agents put negative list prices. The office inbound API barfs.
+
+Alex [Mobile Engineer]: Right, we’ll validate input: no negative prices, dates in the right format, required fields for new listings, that kind of thing.
+
+Sam [Field Agent]: Wait, new listings? Are we editing listings on this thing too?
+
+Dana [Product Manager]: Eventually yes, both creating and updating listings from the field is part of the scope. But for today, let’s keep focused on how you’d search and show.
+
+Sam [Field Agent]: If I could tweak a listing’s status or a typo from the driveway, that’s gold. But yeah, search and map first.
+
+Brooke [Broker/Owner]: And CMA. I need my listers to crank out a quick analysis on the spot. Doesn’t need to be a 20-page glossy presentation—but pick a few comps, get the summary, so the seller doesn’t lose patience.
+
+Alex [Mobile Engineer]: For performance: on these networks, we can aim for searches to finish fast—sub-… well, let’s say half a minute, tops, to get results after you press go. CMAs will do heavier lifting; a minute is reasonable. If it takes longer than that, people assume it’s frozen.
+
+Sam [Field Agent]: If I’m sitting there waiting, that’s when the client starts telling me about their cousin’s agent. So yeah—thirty seconds is already long, but as long as it’s under, I’ll tolerate it.
+
+Miguel [MLS Rep]: And CMA data needs to be accurate to the board’s feed. Just remember, not everyone’s allowed to run every report, so check permissions.
+
+Dana [Product Manager]: Speaking of, login flows… Priya, you said earlier we already sync our contact and appointment systems. How should we think about that cadence?
+
+Priya [IT/Operations]: The office system is what it is. We’ve got a batch job. It’s every hour on the hour. If agents expect real-time, they’ll be disappointed. But if the device pulls those every hour and gives a heads-up when something new lands, that’s fine. It needs to feel timely even if it’s not instant.
+
+Sam [Field Agent]: Hourly is… ugh. Look, if a buyer pings back right after I call them, I want to know. Don’t make me wait the whole hour.
+
+Alex [Mobile Engineer]: The app can let you know when we get the new stuff from the office system. It’s bound to that hourly window. And if the client responds to a call, we can show a notification too; just to be clear, that works when the call is made from within the app so we can detect it.
+
+Sam [Field Agent]: As long as it actually tells me—don’t bury it on some screen. If my 3 pm got moved, I need to see that.
+
+Brooke [Broker/Owner]: Good. And availability—we can’t have the app down on Sunday mornings because that’s when we’re in open houses. I’m talking literally all day, every day. Treat it like the MLS: always up.
+
+Priya [IT/Operations]: The nerd in me will say “nothing is always up,” but the standard is 99.9% uptime. That’s 999 out of 1000 checks succeeding. That’s where we need to land so we’re not taking calls from agents mid-showing.
+
+Miguel [MLS Rep]: Also: only licensed users get access. The board’s very strict. No assistants using their boss’s login. Authentication and authorization, not just one or the other.
+
+Sam [Field Agent]: Wait—authent… I always mix those words up. Authentication is proving who I am, authorization is what I can do, right?
+
+Priya [IT/Operations]: Exactly. You log in, we verify you’re you, and then the system checks your role to see if you can edit a listing or just view it.
+
+Dana [Product Manager]: Great. Alex, device constraints… we keep throwing around Palm and Windows CE because that’s what we’ve got in the field today. Confirming those are the targets, not iOS or Android.
+
+Alex [Mobile Engineer]: Correct. Windows CE and Palm OS. We’ll need to follow their UI conventions. So standard menus, platform buttons. We’ll avoid custom gesture stuff these devices can’t do. And we can keep the look professional; I’ll map your brand guide to the fonts these OSes have.
+
+Brooke [Broker/Owner]: Please keep the colors and typography steady. We get flak when our flyers use one blue and our site uses a different blue. The app should feel like part of us.
+
+Sam [Field Agent]: Can we, uh, sorry, quick tangent—Dana, can we move the weekly check-in? My kid’s soccer practice got shifted.
+
+Dana [Product Manager]: Ha, let’s handle calendars after this. But good segue: in the app, when a new appointment drops from the office system, it should let you know. Like, a brief note. And ideally a list of what changed since last sync.
+
+Priya [IT/Operations]: We can compare timestamps and surface an in-app note after the hourly pull. Just remember, it won’t pop mid-hour unless something else triggers it.
+
+Sam [Field Agent]: As long as it shows up reliably at the top of the hour.
+
+Alex [Mobile Engineer]: We can add that into the sync flow.
+
+Dana [Product Manager]: Back to flows. We want the app to be self-explanatory. If Brooke recruits a new agent, they should pick it up without a training class. Labels should say “New Showing,” “Comps,” “CMA,” “Directions,” not “compute comparative X.”
+
+Brooke [Broker/Owner]: Yes, and no printed instruction packet. Agents toss them. If the install wizard can be dead simple—tap install, sign in, done—that’s better. I need this to be something an untrained agent can set up on their own.
+
+Alex [Mobile Engineer]: We’ll do an installer that guides them. The goal is that most—like, nine out of ten—of your folks can get it on the device without needing a printed sheet.
+
+Sam [Field Agent]: When I say save, I mean it. Last week, my device crashed and all my preferences went poof in another app. If this thing loses my favorites or my saved searches, I’m going to hate it.
+
+Priya [IT/Operations]: We can persist preferences to storage regularly, and on restart, restore everything. If the network is down, it should still bring back your saved stuff.
+
+Dana [Product Manager]: That leads to offline. Sam, how often are you without service?
+
+Sam [Field Agent]: Every day. Basements, rural roads, random dead zones. I need to be able to pull up the last searches, the CMA I generated ten minutes ago, and the appointments for today even if I’m offline.
+
+Alex [Mobile Engineer]: We’ll cache recent searches, generated CMAs, and your calendar so they’re viewable without a network. The system can work in offline mode and sync when it gets a signal again.
+
+Miguel [MLS Rep]: Just be mindful that data can change quickly. Keep alignment with the board’s feed when you’re back online.
+
+Brooke [Broker/Owner]: Look, if the app crashes—which everything does eventually—I don’t want Sam to lose settings. Please assure me we restore preferences 100% when it comes back.
+
+Alex [Mobile Engineer]: Yes, we can commit user settings and restore them on start so it’s exactly as you left it.
+
+Sam [Field Agent]: What about calling the seller? If I tap the number in the app, can it dial and—like you said—if they respond, I get a note?
+
+Dana [Product Manager]: That’s in scope. In-app calling to schedule showings, and when the client responds, the app should notify you.
+
+Priya [IT/Operations]: That’ll work when the call starts from the app.
+
+Miguel [MLS Rep]: On listings, when you create or update from the device, we have validation rules: required fields, board-specific picklists. The app should enforce those, not just send bad data and hope the MLS catches it.
+
+Alex [Mobile Engineer]: Absolutely. We’ll validate before sending so we prevent bad data entering the system.
+
+Sam [Field Agent]: Speaking of sending, how fast is fast? Like, if I run a search in the driveway, are we talking seconds or coffee breaks?
+
+Alex [Mobile Engineer]: Our aim is that from when you submit criteria, you’re seeing results in under half a minute. Most of the time faster, but that’s the outer bound. CMAs under a minute after you pick comps.
+
+Sam [Field Agent]: That’s fine. If it’s a minute for a CMA in the field, I can keep the conversation going.
+
+Brooke [Broker/Owner]: The app needs to feel polished. No half-baked screens. If the fonts jump around or the colors are mismatched between screens, it looks amateur. Use our color scheme throughout.
+
+Dana [Product Manager]: We’ll have a style guide and Alex will map it to the device capabilities. It’ll be stable and consistent.
+
+Priya [IT/Operations]: On security, we’ll integrate with our licensed user directory. If you’re not a registered agent, you can’t even log in. No guest mode. And even within agents, not everyone can change a listing.
+
+Sam [Field Agent]: Got it. One more, uh, gripe: some apps bury the “Back” button or call it “Return.” Just, please, stick with the device’s menu names and buttons. If I have to hunt, I’m out.
+
+Alex [Mobile Engineer]: Duly noted. We’ll keep navigation using the OS conventions—standard menus and hardware buttons. No weird labels.
+
+Dana [Product Manager]: I want to circle back to mapping. You said area view then directions. Do you also filter by area visually, or just by criteria?
+
+Sam [Field Agent]: Both. Sometimes the buyer says “We only want south of the river.” I want to see the dots there, not just a list. Then tap one, read the details with clear photos, and boom—route.
+
+Brooke [Broker/Owner]: And the captured buyer info—contacts, their phone, their name—should be in the app, not just back at the office. If schedules change, agents need that on their device.
+
+Priya [IT/Operations]: We’ll include client contacts and appointments in the hourly sync. We can’t do more frequent without breaking the office system, so please set that expectation.
+
+Sam [Field Agent]: Hourly it is, then. As long as at the top of the hour, I get a “new appointment added” message, not just a silent update.
+
+Dana [Product Manager]: That’s the plan: auto synchronization on the hour, then notify about any new client appointments.
+
+Miguel [MLS Rep]: A thing about supported devices—someone asked me if we’re doing iPhone. We’re not. This is strictly Windows CE and Palm OS. If that changes, we revisit everything.
+
+Alex [Mobile Engineer]: Yes, target platforms are legacy. It affects everything from fonts to how we do notifications.
+
+Brooke [Broker/Owner]: And don’t make me train people. It should be so intuitive that a new hire can learn it in a morning. If they need a manual, we failed.
+
+Sam [Field Agent]: Yeah, no training. I just want it to use words I use—comps, showings, offers, not “transactions” if you mean appointments.
+
+Dana [Product Manager]: Great input. Okay, I think we covered search, photos, maps, directions, saving searches, CMAs, calling, notifications, contacts/appointments sync, offline. Did we miss anything, Priya?
+
+Priya [IT/Operations]: Maybe just—when it’s offline, it should make it clear you can keep using cached data. And when it comes back, it shouldn’t forget their preferences or saved items. We don’t want people reconfiguring after a crash.
+
+Alex [Mobile Engineer]: We’ll persist preferences and restore them exactly as before.
+
+Sam [Field Agent]: Oh and please don’t schedule the demo during the inspection block on Thursday…
+
+Dana [Product Manager]: Noted. We’ll sort the calendar over email. Thanks, everyone.

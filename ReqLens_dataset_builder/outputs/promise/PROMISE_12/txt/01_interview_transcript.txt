@@ -1,0 +1,126 @@
+TYPE  : interview_transcript
+TITLE : DoIT kickoff interview on operations monitoring and data flow between CSR and EAM
+UNIT  : PROMISE_12
+============================================================
+
+Maya [DoIT PM]: Thanks for making the time. I want to walk through how you all imagine day-to-day operations of the new hub. We keep calling it WindyCity Service Link, but the name can change later. The gist is: it sits between the call center system, CSR, and Datastream, the EAM. No point-to-point anymore. Right?
+
+Leo [System Administrator]: Yeah, that’s the big one. We’ve had way too much fragility with direct pipes. When CSR talks straight to Datastream, we can’t see or control the flow. I want a central, uh, console—like a web thing—where I can watch messages moving between them, and spot when something starts to go sideways before the call volume spikes.
+
+Nina [CSR Ops Lead]: And for us, the main thing is, uh, fast. The call center folks are on the phone with residents and they don’t want to tell someone “please wait” for five minutes. If we enter a service request and it’s supposed to generate a work order in EAM, I need that to happen, like, almost immediately. Like a couple seconds. Two, maybe.
+
+Priya [DBA]: Two seconds end-to-end is about the tolerance we’ve seen work elsewhere. If the hub can process within that time—well, under—we can design the rest around that. But we’ll need to know how often it checks for new messages. Polling every second is what’s floating in my mind, but I might be misremembering what we did on the water side.
+
+Carlos [EAM Vendor Rep]: One second polling is aggressive, but doable. We generally prefer event-driven callbacks, but I understand you want the hub to pull from queues at a predictable cadence. Just… we need to avoid hammering the API.
+
+Maya [DoIT PM]: Hold that. Leo, describe the operator’s view. What exactly do you want to see when a problem starts to form?
+
+Leo [System Administrator]: Patterns. Heatmaps, maybe. Like, backlog growing on the CSR-to-EAM channel. Latency creeping up. And I want it to tell me—yeah, predict is a strong word—but give me hints when we’re about to get hammered, with alerts. Also, if external folks, like Public Works supervisors, call us, I need to be able to give them answers quickly. Internal and external support depends on visibility.
+
+Nina [CSR Ops Lead]: So is that a dashboard? Also, we have our own KPIs, like request-to-dispatch time, and first contact resolution. Could those be shown? I don’t need every low-level message, but I want the trends.
+
+Priya [DBA]: Ad-hoc reports would help the DBAs too, especially when we’re trying to figure out why a set of transactions failed. Not just canned reports—let me slice by route, by service type, by queue name.
+
+Maya [DoIT PM]: Good. But let’s rewind. You mentioned “no direct pipes” earlier, Leo. I want to be crystal clear: all traffic between CSR and Datastream must traverse the hub. There’s no shortcutting.
+
+Carlos [EAM Vendor Rep]: Sure, but I have to say, our folks sometimes ask for a direct integration for performance. If you’re mandating the hub as the only path, we’ll make it work. It just means the hub has to be asynchronous and efficient—so messages don’t block each other.
+
+Nina [CSR Ops Lead]: Asynchronous meaning… it’s slower? Because the resident’s still on the phone.
+
+Priya [DBA]: Not slower. It means the pieces don’t wait on each other. You can parallelize. Think of it like… the CSR doesn’t sit around for the full round trip; the system queues the request and returns quickly, while workers process in parallel.
+
+Leo [System Administrator]: Exactly. Multi-threading. Multiple workers chewing through the queue. And some kind of load balancer so if one worker is overloaded, others pick up the slack. It’s the only way to get through those 311 blitz days.
+
+Maya [DoIT PM]: Okay but, we need to put some stakes in the ground. “Fast” for us has meant about two seconds end-to-end. I’ve heard “one second polling” mentioned. Do we agree that’s feasible?
+
+Carlos [EAM Vendor Rep]: It’s feasible if we manage connection pools smartly and don’t just poll with empty calls every tick. Also depends on your queue technology. I’d be more comfortable with an event-driven trigger, but, sure, poll at one second intervals if we keep it efficient.
+
+Nina [CSR Ops Lead]: And uptime. We had that outage last summer during the storm. I can’t have that when we’re slammed. I think the city standard on business days is, uh, almost never down, like, four nines. The term… 99.99%? But I don’t know the math of that per month.
+
+Leo [System Administrator]: Four nines during business hours is what I’ve seen in the ops doc. But let’s not get pedantic on what counts as planned vs unplanned. If you can keep it up when we’re busy, we’re good. Normal weekend maintenance is fine as long as it doesn’t wreck the queues.
+
+Maya [DoIT PM]: On the GUI—side note—remember we have to follow the city’s App Dev guide for UI patterns. So no weird bespoke navigation. Uh, sorry, I know that’s not what we’re on right now. We’ll revisit.
+
+Priya [DBA]: While we’re on it, error handling is huge. If a transaction fails, I want the screen to show me exactly where it died: bad mapping, validation fail, endpoint timeout. And give me a path to fix it. Not just “red light.” We need resolution guidance. If we can solve, say, 99% of errors without a developer, that’s a win.
+
+Leo [System Administrator]: Right, like, if an address field is missing, let me patch and replay, or kick off a compensating action. But, uh, maybe I’m jumping topics.
+
+Carlos [EAM Vendor Rep]: Compensating transactions are important if an update got halfway through in EAM. But this starts getting into our side too—routing around failures if one asset subsystem is down. We can handle some of that, but the hub has to know to retry smartly.
+
+Nina [CSR Ops Lead]: Sorry, can we go back to the two weeks thing? Training. I’m not sending my admins to a month-long course. Our folks should be comfortable in, like, a couple of weeks of normal use. And they’ll be bouncing calls and doing other stuff; they’re not in there full-time.
+
+Maya [DoIT PM]: Right, usability is on our list. “Up to speed after two weeks” is what we’ve used in other projects. Let’s keep that.
+
+Leo [System Administrator]: Another thing: when the spike hits, I want to add workers on the fly. If we spin up more threads or nodes—whatever you call them—the system should just take them. No service restart, none of this “we’ll get back in an hour.” People are on hold. We can’t go down to add capacity.
+
+Priya [DBA]: And we shouldn’t be committing changes, like upgrades, that force downtime. I know sometimes that’s inevitable, but at least for adding processing power, we need it transparent.
+
+Carlos [EAM Vendor Rep]: There’s a practical limit, but, yes, hot adding of worker processes is something we see in our larger clients. We’ll just need health checks so the load balancer knows a node is ready before sending messages.
+
+Nina [CSR Ops Lead]: I’m thinking—what about the day we make a change to CSR? The screen changes and suddenly the hub stops, uh, seeing the messages. That happened last year. Is the hub going to be fragile like that?
+
+Priya [DBA]: If we follow standards for message formats, we avoid a lot of breakage. The hub should be fairly robust and not go down just because one end tweaked an optional field. Validation should catch noncompliant messages and route them to a fix-it queue.
+
+Maya [DoIT PM]: Maya from the future: I just want to flag we also have throughput targets. We’re not a giant e-commerce site, but over a year, we’re in the million transactions ballpark. We’ll detail that in the tech spec later. Actually—sorry, let’s keep on operations.
+
+Leo [System Administrator]: On day one, give me a simple list: messages in, messages out, success/fail, last failure reason. Over time, we can add fancy correlation and forecasting. But from the start, I need to be able to tell the CSR floor “yes, the message left, no, EAM hasn’t acknowledged yet.”
+
+Carlos [EAM Vendor Rep]: And the routing. If the EAM endpoint for, say, Fleet is down, can the hub route around? Well, not route to a different system, but hold and try alternative paths within EAM’s API endpoints. We can expose multiple endpoints; the hub should pick a healthy one.
+
+Priya [DBA]: That’s more on the retry logic and health check integration with your services. But yes, don’t just hammer a dead endpoint. And if something got half-committed, the system needs to compensate—roll back or apply the matching corrective call.
+
+Nina [CSR Ops Lead]: You lost me at compensate. I just want it to not mess up. If it does mess up, fix it. The words don’t matter as much.
+
+Maya [DoIT PM]: Totally fair. The point is: the system recovers gracefully.
+
+Leo [System Administrator]: Also, alerts. I don’t want to stare at a screen all day. If the hub detects latency beyond, say, two seconds consistently, notify us. Email alerts at low levels are fine, and I want the dashboard to make it obvious when we’re crossing our thresholds.
+
+Priya [DBA]: And poll intervals—we said one second for the inbound queues, but the checkpointing needs to be efficient. If every second we’re doing a full scan, we’ll overload. So I’m thinking more like subscription or at least incremental reads. But I guess that’s implementation detail.
+
+Carlos [EAM Vendor Rep]: Can I raise something unpopular? If you insist on four nines on business days and two-second processing and one-second polls, you’re going to need to budget for serious infrastructure. Load balancing isn’t magic.
+
+Nina [CSR Ops Lead]: We’re not asking for magic; we’re asking not to get yelled at by the alderman’s office because the pothole request disappeared.
+
+Maya [DoIT PM]: Let’s earmark the budget talk for a separate session. For now, we’re framing expectations. Another practical point: no one should create a side door later. We need a governance note: no direct CSR-to-EAM API calls; everything goes through the hub.
+
+Leo [System Administrator]: Put that in writing. We can enforce at the network level but the policy matters.
+
+Priya [DBA]: For the error rates, can we be explicit? If the tool can guide us to fix 99 out of 100 transaction errors without pulling in a developer, that’s the kind of goal that makes my team happy. Maybe it shows recommended corrections or a “replay with fix” button.
+
+Carlos [EAM Vendor Rep]: We can also provide error codes mapping on our side so the hub can translate “EAM-438” into “invalid asset id” and suggest next steps.
+
+Nina [CSR Ops Lead]: And just to be clear, the portal should not require me to memorize weird shortcuts. If my folks poke at it for a couple weeks, they should know where to click. We don’t have time for heavy training.
+
+Maya [DoIT PM]: Noted. Two weeks to proficiency, dashboards with KPIs and ad-hoc analysis, one-second intake checks, two-second end-to-end, multi-threaded, load balanced, alerting, and always going through the hub. Did I miss anything big?
+
+Leo [System Administrator]: Perhaps capacity management. When we add more workers, like on a snow day, the system should just take them without a blip. No “we need to schedule downtime.” Transparent, dynamic scaling.
+
+Priya [DBA]: And please, logging with enough detail to correlate across systems. When CSR sends “SR-98765,” I need to see its counterpart in EAM with a matching correlation ID.
+
+Carlos [EAM Vendor Rep]: That’s doable. We can include your correlation ID in our work order creation call and give it back in the response.
+
+Nina [CSR Ops Lead]: Quick tangent—can we avoid pushing changes on Friday? We had that with EAM last time, and it broke the screens.
+
+Maya [DoIT PM]: Scheduling is a fight for another day. But yes, we’ll try not to deploy before a holiday weekend. Back to topic.
+
+Leo [System Administrator]: One more thing: we need support workflows. When an external partner calls, I want to pull up the conversation for that message and tell them the status. That’s part of internal/external support—being able to answer quickly.
+
+Priya [DBA]: And please, don’t bury the maintenance tasks. If we need to purge temp queues or archive, give us clear paths. Err, I’m not saying we’ll purge live messages—just that housecleaning shouldn’t take a PhD.
+
+Maya [DoIT PM]: We’ll cover archiving in a different meeting with compliance; today’s already over time. Last call—anything burning?
+
+Carlos [EAM Vendor Rep]: Nothing from me beyond what we said: use parallel workers and sensible retries. We can talk more on the queue tech next time.
+
+Nina [CSR Ops Lead]: As long as the agent experience stays snappy in CSR, we’re good.
+
+Leo [System Administrator]: That’s where fast acknowledgments help. CSR can show “request accepted” right away; the heavy lifting happens in parallel.
+
+Maya [DoIT PM]: Alright, I’ll synthesize and send out notes. We’ll circle back on the UI standards and compliance bits next week. Thank you all.
+
+Priya [DBA]: Thanks.
+
+Nina [CSR Ops Lead]: Bye.
+
+Carlos [EAM Vendor Rep]: Cheers.
+
+Leo [System Administrator]: Later.

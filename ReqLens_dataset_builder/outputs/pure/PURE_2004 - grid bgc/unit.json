@@ -1,0 +1,648 @@
+{
+  "id": "PURE_2004 - grid bgc",
+  "origin": "PURE",
+  "created_at": "2026-05-23T17:17:36.055357+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Stakeholder Interview: GridBGC Portal Kickoff — Scientists, Security, Admin, and Middleware",
+      "text": "Maya [Scientist]: Thanks for making time. I just want to make sure this thing really helps us run Daymet and Biome-BGC without me begging for shell access on three different boxes. Right now I’m juggling scripts for surface obs and then sending them over to Biome-BGC. It’s messy.\n\nTom [Portal Admin]: Yeah, the point is absolutely that you don’t have to ssh into anything. It’ll be a web portal — a proper GUI — so you click around to manage projects, data objects, and kick off runs.\n\nPriya [Security/NCAR]: Whatever you do on the front end, the back end needs to respect NCAR policies — Gatekeeper for login, approved user lists, encrypted transfers, the usual. No guest access.\n\nGreg [Globus Integration]: For the remote bits — compute and data movement — we’ll lean on the Globus toolkit. That gives us GSI-based security and a standard way to move data and trigger runs over the grid.\n\nLeo [PI]: All good, but keep the science workflow intact. Daymet has to turn those station observations into a gridded weather product first — interpolation over the target grid — or the downstream Biome-BGC runs are garbage.\n\nMaya [Scientist]: Exactly. The Daymet step is non-negotiable. I want to define a Daymet project, point it at my surface obs or site data, run it, then feed the outputs to my BGC runs.\n\nTom [Portal Admin]: We’ll support Daymet projects directly. You’ll be able to create one, set parameters — projection, grid registration, masks, that kind of thing — and run it from the portal.\n\nGreg [Globus Integration]: And when that run occurs, it shouldn’t be on the portal host. It goes out to the compute nodes. We’ve already talked to the CU Hemisphere folks so we can target their Linux cluster.\n\nPriya [Security/NCAR]: The traffic needs to be over grid-secured channels. If the portal logs in a user, it shouldn’t start prompting them again for credentials when it submits a job or moves data. One sign-in at session start is the expectation, with proper delegation behind the scenes.\n\nTom [Portal Admin]: One-time login per session, got it. We’ll hook into Gatekeeper to keep that consistent with NCAR’s policies. After that, the portal shouldn’t nag people for a different password just because they click “Run” or “Download.”\n\nMaya [Scientist]: Good, because I’m always getting locked out mid-run on other systems. Speaking of, if I fat-finger my password three times and get locked, can someone flip the switch to unlock me? Or is it a ticket that sits for a week?\n\nTom [Portal Admin]: We can build an admin action for that — unlock user accounts — within the admin console. We already store user roles and track who’s been approved by the portal admins. So, yeah, that’s doable.\n\nLeo [PI]: Hey, before we go deeper — timeline. Also, I heard something about “three object types”? I don’t really care about the taxonomy, but please don’t balloon this into seven.\n\nTom [Portal Admin]: Right, the data model is organized into objects and projects. We keep it to three categories of objects in the system. Think of them as reusable data chunks you can share or merge.\n\nMaya [Scientist]: Share and merge is key. All of us end up copying a mask or a DEM just to change one thing and then we lose track. I want to collaborate on a single instance where appropriate.\n\nGreg [Globus Integration]: Merging data objects is fine — just make sure we keep good provenance so we know what came from where. And I’m going to advocate for strong links between inputs and outputs so we can tell exactly which inputs were used for a run later on.\n\nPriya [Security/NCAR]: That aligns with reproducibility. We’ve had audits asking, “What were the exact inputs?” If we can’t answer, we’re in trouble. So make sure those relationships are recorded clearly.\n\nTom [Portal Admin]: We can enforce relationships so that a project references its inputs and the portal retains that linkage after the run completes.\n\nMaya [Scientist]: And there’s a help menu? I haven’t got time to read a manual. Maybe tooltips or context help on the screen?\n\nTom [Portal Admin]: We’ll include an online help manual and context-sensitive help. Click the little “?” icon next to a field, you get the description in place.\n\nLeo [PI]: Can we not overdo the visuals? Pretty maps are nice, but I mainly need the numbers. If you do any quick maps, keep it lightweight.\n\nMaya [Scientist]: Some minimal visualization would help, like sanity-checking a DEM or the analysis mask outline, or plotting surface obs coverage. But yes, priority is on runs and data integrity.\n\nGreg [Globus Integration]: For downloads — just confirm — the portal should let users pull the data for the objects that are dataset-heavy. Like if you have a grid registration file or, after a Daymet run, those outputs. You click and it streams securely.\n\nTom [Portal Admin]: Yes. We’ll have download actions on dataset-bearing objects. Not everything is a file — some are parameter sets — but where there’s a file, there’s a download.\n\nPriya [Security/NCAR]: Over encrypted channels, of course, and through approved endpoints. Also, all the file storage should sit in the NCAR Mass Storage System. If you’ve got temp files, fine, but the canonical storage is MSS.\n\nGreg [Globus Integration]: We can stage to scratch on the compute side, but final outputs and the user datasets live in NCAR’s Mass Storage. Transfers in and out will use Globus.\n\nMaya [Scientist]: Switching gears — disturbances. For Biome-BGC, we need to specify events like fires and deforestation. They’re not durations for us; they’re instantaneous points where something changed. I usually put a date — sometimes down to time.\n\nLeo [PI]: And we may load a lot of them. I don’t want an arbitrary cap like “you can only add fifty events,” because we have long time series for some forests.\n\nTom [Portal Admin]: So, a disturbance project would collect an arbitrary number of these events? Each event would just be a timestamp with type and relevant details? No start/end windows, just a point.\n\nMaya [Scientist]: That’s right. Single points in time. The model handles the implications.\n\nGreg [Globus Integration]: Then we represent them as inputs the model consumes alongside site data. If we keep event duration out of it, we stay aligned with the science.\n\nPriya [Security/NCAR]: One more governance point: who can create these projects and objects? We should restrict creation to users who have been approved by the portal administrators. Also roles — scientists get more functionality than generic data downloaders.\n\nTom [Portal Admin]: We’ll set up roles: scientists first-class, data users with minimal access — read-only where it makes sense — and admin users. Only people set as approved will even log in. Everybody else gets bounced by Gatekeeper.\n\nMaya [Scientist]: So I could make a Daymet project, run it, and then spin up a Biome-BGC run using that output, all in the same portal session, without re-authenticating?\n\nGreg [Globus Integration]: That’s the idea. One credential prompt at the beginning, then delegated credentials take care of job submission and data movement behind the scenes.\n\nLeo [PI]: Reliability matters. We had a situation with another portal where jobs died because the data channel hiccupped. What’s the plan for that?\n\nGreg [Globus Integration]: Using Globus gives you mature mechanisms for secure, robust transfers and remote execution. It’s built to handle real-world networks better than ad hoc scripts.\n\nPriya [Security/NCAR]: And do not compromise security for convenience. No caching passwords in plain text, no insecure callbacks.\n\nTom [Portal Admin]: We’ll adhere to NCAR policy, use the Gatekeeper rules as-is, and only store what’s permitted — user account info, roles, and so on — in our database. Passwords never in the clear. Account creation will route through admin approval.\n\nMaya [Scientist]: Will we have templates? Like, an expert sets up a parameterization for Daymet or a standard Biome-BGC run for a common plant functional type, and the rest of us can reuse them.\n\nTom [Portal Admin]: Yes, templates are a first-class thing. You can create one, edit it, submit it for use, even delete if it’s not in use. And we’ll have access control so not every template is public.\n\nLeo [PI]: Submit — is that like a publish state?\n\nTom [Portal Admin]: More or less. Draft to submitted — submitted means it’s available for reuse.\n\nMaya [Scientist]: Question: Do we have CRUD for all the object types we’ve talked about? I need to add projections and register grids, upload surface obs, define site data, set Daymet parameters, manage DEMs, analysis masks, choose plant functional types, BGC site data, and specify outputs to collect. Sorry, that’s a mouthful.\n\nTom [Portal Admin]: That’s the plan. Create, view, edit, delete for those domain objects.\n\nPriya [Security/NCAR]: Also, only admins can unlock accounts. Please don’t expose that to regular users.\n\nGreg [Globus Integration]: On the compute flow — just to be crystal clear — once someone clicks “Run,” the job goes to compute nodes, not the portal box. We’re not running heavy processes on the web tier.\n\nLeo [PI]: And if data users are lowest priority, make sure they can still download public outputs, but not run models.\n\nTom [Portal Admin]: Yeah, data users are basically read-only for most things. Scientists are the ones who can kick off Daymet and Biome-BGC runs. Admins do account and policy stuff.\n\nMaya [Scientist]: And can scientists share objects with each other across projects? Like I want to merge my site data with someone else’s cleaned surface obs.\n\nTom [Portal Admin]: We’ll support collaboration — sharing objects between users and projects, and merging where it makes sense. We’ll include provenance notes so it’s clear what came from where.\n\nPriya [Security/NCAR]: Just document it clearly in the help. People will otherwise assume the portal is a magic box.\n\nGreg [Globus Integration]: For quick-look displays, let’s keep them basic: observations coverage, DEM hillshade, mask outline, site data shapes. No custom GIS engine.\n\nMaya [Scientist]: That’s fine. Small previews to sanity-check inputs, then I’ll pull the output files for the real analysis.\n\nLeo [PI]: Outputs — can scientists fetch Daymet outputs and the like straight from the portal? And projections or grid registrations as files?\n\nTom [Portal Admin]: Yes, downloadable. And we’ll put a little note reminding folks the downloads come from the Mass Storage System, not from someone’s desktop.\n\nPriya [Security/NCAR]: And to close the loop, access is gated: only approved users can log in at all. We’ll run an audit before launch to verify compliance.\n\nMaya [Scientist]: Sounds like we’ll get a portal that talks to a grid, runs our models out on a cluster, keeps the data tidy, and lets us reuse setups. If the help text is good and I only log in once per session, I’m happy.\n\nTom [Portal Admin]: That’s the goal. I’ll send out a draft of the user roles and the object list we’re covering. If I missed any, ping me.\n\nGreg [Globus Integration]: And I’ll confirm the Globus endpoints on the Hemisphere side.\n\nPriya [Security/NCAR]: I’ll circulate the latest NCAR security checklist as well.\n\nLeo [PI]: Good meeting. Let’s keep the shiny map budget to zero, please.\n\nMaya [Scientist]: Ha — minimal maps, maximum runs. Deal.\n\nTom [Portal Admin]: Thanks, all. We’re good.\n\nMaya [Scientist]: Bye."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "Working Session Notes — Data Objects, Disturbance Modeling, and Portal UX",
+      "text": "Date: 2025-03-18\nRoom/Link: NCAR Boulder Bldg 18, Conf Rm 3B / Zoom https://ncar.zoom.us/j/9xxxxxx\nAttendees: Tom (Portal Admin), Maya (Scientist), Greg (Globus Integration), Priya (Security/NCAR), Elena (Data Curation), Rob (Dev Lead), Jess (UX), Nate (Compute Ops - Hemisphere)\n\nNote: messy notes, typed live; some gaps. Corrections welcome.\n\nAgenda (approx):\n- Review object model and CRUD checklist\n- Disturbance modeling details for Biome-BGC\n- Daymet workflow wiring incl. outputs\n- Security & Gatekeeper, user classes, session auth\n- Downloads & viz scope\n- Templates lifecycle\n\nDiscussion — Objects and Projects\n- Projects vs objects: objects = reusable data elements; projects = grouping for runs/controls; keep three object categories.\n- CRUD coverage required for: Projection, Grid Registration, Surface Observation, Site Data, Daymet Parameterization, DEM, Analysis Mask, Daymet Project, Daymet Output, Plant Functional Type (PFT), BiomeBGC Site Data, Output Specification.\n- Rob: Implement create/read/update/delete for all above. Where delete is unsafe, restrict it; we’ll document the rules.\n- Sharing & collaboration: objects can be shared across projects; merge workflow for compatible types (e.g., Site Data + cleaned Surface Obs). Record provenance (lineage metadata + human note).\n- Data integrity: ensure runs record which inputs they used (retain relationships between projects/objects and outputs) to support reproducibility.\n- Data downloads: allowed on dataset-bearing objs: e.g., Grid Registration, Daymet Output; others too if they have files (DEM, masks, etc.). Elena: mark which ones are downloadable in the UI.\n- Low-bandwidth viz only: quick-look visualizations for Surface Observation coverage, basic DEM hillshade, Analysis Mask outline, Site Data geometry previews. Priority = low. Jess: keep it minimal; no heavy GIS.\n\nDaymet + Biome-BGC wiring\n- Daymet must ingest surface observations, interpolate to gridded weather (over target projection/grid). Maya: “that’s the key step.”\n- Support Daymet “project” concept: can define, run, and keep Daymet projects inside portal.\n- Outputs from Daymet become inputs to Biome-BGC runs; keep the linkage visible in the portal.\n- Compute: processing should run on remote nodes (Hemisphere cluster). Portal host remains lightweight.\n- Globus: all transfers + remote job interactions integrated with the Globus toolkit; security via GSI; aim for robust behavior across the grid.\n- NCAR storage: file-based storage lives in the Mass Storage System; scratch may be used for staging on compute side, but final outputs land in MSS. Priya: “Document this flow.”\n\nDisturbances for BGC\n- Need disturbance inputs used by Biome-BGC during simulation steps.\n- Event types covered for v1: fires, deforestation.\n- Disturbance project collects many events. Unlimited events — no hard coded max.\n- Each event = an instantaneous point in time. Represent by date/time stamp. No durations. Jess: UI should not show start/end fields.\n- Events included with the Biome-BGC input bundle; track which events went into a run.\n\nUser Management / Security / Roles\n- Gatekeeper for login; portal prompts for credentials at session start; single sign-on style. No re-prompt on run submission or download (delegation behind the scenes).\n- Only approved accounts can access. Admins manage approvals and roles.\n- Scientists (favored): modeling features, create/run projects, create/edit domain objects (with rules above). Data Users (lowest priority): read-only to public/shared objects, can download permitted datasets, no run rights. Portal Admins: user lifecycle, unlock accounts, policy enforcement.\n- Comply with NCAR security policies (password rules, access controls, secure transport, account lifecycle). Priya will send checklist.\n\nTemplates\n- Template objects: save expert setups. Access control on templates (private/shared/public). Lifecycle: create -> edit -> submit/publish -> delete (if not in use). Templates are intended for reuse to encourage consistent setups.\n\nHelp & UX\n- Online help manual: plan for context-sensitive help — field-level tooltips or inline help. Keep the full manual linked.\n- Scientists want clarity > pretty. Data Users: minimal guidance to find and download.\n- Single credential prompt per session; Jess: show user role in header.\n\nReliability & Compute\n- Use Globus to manage secure data movement and remote execution. Communicate job states in the portal as appropriate in later iterations.\n- Hemisphere nodes: Nate to provide endpoint names as they’re finalized.\n\nDownloads & Visualization Details\n- Downloadable: Grid Registration, Daymet Output, DEM, Analysis Mask, Projection (if file exists), and other dataset-bearing objects. Ensure secure download mechanism to/from MSS.\n- Low-priority visualizations list: Surface Observation, DEM, Analysis Mask, Site Data. No custom tileservers. Use static quick renders.\n\nContradictions/Clarifications\n- Jess suggested adding time duration on disturbance UI for “future-proofing.” Maya says this contradicts model assumption (instantaneous). Team agrees: no durations in v1.\n- Elena asked if we cap disturbance events to 1000 to simplify UI. Team: no cap; performance testing needed; maybe lazy-load UI.\n\nActions\n- Rob: implement CRUD for the full domain list. Be cautious with deletes; document safe-delete rules.\n- Jess: design disturbance event UI with single datetime picker; no duration fields.\n- Greg: confirm Globus endpoints for Hemisphere.\n- Priya: send NCAR security checklist.\n- Nate: share queue policy references and endpoint info; ensure portal jobs run on compute nodes only.\n- Elena: mark dataset-bearing objects to enable download; add provenance fields for merges.\n- Tom: finalize role definitions (Scientists, Admins, Data Users) and access behaviors; approve-only access.\n\nOpen Issues (Parking Lot)\n- Whether to support disturbance types beyond fires/deforestation in v1 [later].\n- How to present Daymet outputs preview vs full download; quick plot ok?\n- Minor UX for job progress display [later].\n\nNotes from side chats\n- Priya emphasized all comms must be secure and policy-compliant; no plain HTTP. Use Globus for transfers.\n- Jess to include a small help icon on each form; context-sensitive help is required. Full help manual link in header.\n- Tom confirmed admin console needs unlock-user function, account creation/approval, and role assignments. He mentioned Gatekeeper integration for one login per session.\n- Maya reiterated need for sharing/merging objects and clear provenance to support collaboration.\n- Nate reminded: compute not on portal host; use nodes on Hemisphere.\n- Elena mentioned three object categories; keep exactly three for consistency.\n\nNumbers scribbled (may be off)\n- Disturbance events per project: unlimited (0..n). UI loads ~50 at a time (lazy).\n- Visualization budget: minimal; under 5 quick-look types in v1.\n- User roles count: 3 (Scientists, Admins, Data Users). Data Users lowest priority.\n\nEnd note\n- Team agrees portal is web-based, grid-backed, running Daymet then Biome-BGC on remote nodes, with object/project organization, downloads, minimal viz, templates, and strong security. Integrate with the NCAR DataPortal front-door as applicable."
+    },
+    {
+      "type": "email_thread",
+      "title": "Email thread: Gatekeeper login, Globus, Disturbance Events Semantics, and Downloads",
+      "text": "Email 1\nFrom: Tom <tom@gridbgc.org>\nTo: Priya <priya@ucar.edu>, Greg <greg@globus.team>, Maya <maya@lab.edu>\nCC: Leo <leo@project.org>, Elena <elena@lab.edu>\nSubject: Gatekeeper + single login? and quick Daymet/BGC checklist\nBody:\nHi all,\n\nQuick sanity check:\n- We’re planning to prompt users once at the start for credentials (Gatekeeper), then NOT ask again when they run Daymet or Biome-BGC jobs or when downloading. Delegated credentials should cover app->compute->storage pathways.\n- Compute runs will be on the CU Hemisphere Linux nodes. Nothing heavy on the portal host.\n- All file storage goes to Mass Storage (MSS). We can stage to scratch for compute but final is in MSS.\n- For the science flow: Daymet takes the station observations, interpolates to a grid, we store that as outputs users can download, and then those outputs become inputs to Biome-BGC runs.\n- Reminder: minimal viz only (Surface Obs, DEM, Analysis Mask, Site Data previews). Low priority.\n- We’ll surface downloads on dataset-bearing objects (e.g., Grid Registration, Daymet outputs).\n\nAnything above conflict with policy or Globus practice? Also, Priya, could we get a note on account unlocks — we want an admin-only control to unlock users when they get stuck.\n\n—Tom\n\n---\nEmail 2\nFrom: Priya <priya@ucar.edu>\nTo: Tom <tom@gridbgc.org>\nCC: Greg <greg@globus.team>, Maya <maya@lab.edu>, Leo <leo@project.org>, Elena <elena@lab.edu>\nSubject: RE: Gatekeeper + single login? and quick Daymet/BGC checklist\nBody:\nTom,\n\nYes, one login at the start aligns with Gatekeeper usage. Please confirm you are not caching passwords locally; use delegated credentials. And every transfer to remote compute/storage must be over approved secure channels.\n\nAccount unlock: allowed for admins only. Also, reiterating: only users on the approved list can access the portal at all. No “guest” mode.\n\nMSS: correct, ALL file-based storage needs to land in NCAR’s Mass Storage. Temporary scratch is fine but ephemeral.\n\nMake sure you document compliance with NCAR security policies.\n\nRegards,\nPriya\n\n---\nEmail 3\nFrom: Greg <greg@globus.team>\nTo: Tom <tom@gridbgc.org>\nCC: Priya <priya@ucar.edu>, Maya <maya@lab.edu>, Leo <leo@project.org>, Elena <elena@lab.edu>, Nate <nate@hemisphere.edu>\nSubject: RE: Gatekeeper + single login? and quick Daymet/BGC checklist\nBody:\nTom + all,\n\nFrom the Globus side:\n- Yes, we’ll use the Globus toolkit for data transfers and to integrate remote job submission. This gives you GSI for security and mature mechanisms for robust operation.\n- Re Daymet outputs & downloads: recommend exposing download actions on objects that have datasets (e.g., Grid Registration, Daymet outputs; even Projections if they exist as files). Route those through Globus endpoints against MSS.\n- Compute: Hemisphere endpoints are being set up; Nate can share the names as they’re finalized. Portal should dispatch runs to compute nodes; no heavy lifting on the web tier.\n\nOne nit: make sure the portal isn’t prompting for extra credentials when moving data or running jobs. The delegated token should be enough.\n\n-Greg\n\n---\nEmail 4\nFrom: Maya <maya@lab.edu>\nTo: Tom <tom@gridbgc.org>\nCC: Greg <greg@globus.team>, Priya <priya@ucar.edu>, Elena <elena@lab.edu>, Leo <leo@project.org>\nSubject: RE: Gatekeeper + single login? + Disturbances question (fires/deforest)\nBody:\nTom,\n\nOn the science side — for the Biome-BGC runs we need the disturbance piece done right. The events we care about (for v1) are fires and deforestation. These are not durations in our model input; they’re instantaneous. So, a date (and time if you like) and the type.\n\nAlso, we sometimes have dozens or hundreds over long chronologies. Please do not cap the number of events in a disturbance “project.” If you cap it, someone will hit that limit and then we’re back to spreadsheets.\n\nIf you can group events under a disturbance project and keep them linked to the Biome-BGC run (provenance), that would be perfect.\n\nThanks,\nMaya\n\n---\nEmail 5\nFrom: Elena <elena@lab.edu>\nTo: Tom <tom@gridbgc.org>\nCC: Maya <maya@lab.edu>, Priya <priya@ucar.edu>, Greg <greg@globus.team>, Leo <leo@project.org>\nSubject: RE: Data objects — CRUD and templates (plus sharing)\nBody:\nHi Tom,\n\nA couple of content/data points:\n- We need full CRUD for our domain objects: Projection; Grid Registration; Surface Observation; Site Data; Daymet Parameterization; DEM; Analysis Mask; Daymet Project and Daymet Output; Plant Functional Type; BiomeBGC Site Data; Output Specification. I think that’s the whole zoo.\n- Please remember we are organizing into objects and projects. Users (esp. scientists) need to share objects across projects and sometimes merge compatible ones. When merging, track the relationships.\n- For templates: access controls are important. Let us create, view, edit, submit (publish), and delete a template. Templates should be reusable so folks can standardize setups.\n\nAlso +1 on keeping visualizations low priority. Basic previews for those four types are enough.\n\n-Elena\n\n---\nEmail 6\nFrom: Leo <leo@project.org>\nTo: Tom <tom@gridbgc.org>\nCC: Priya <priya@ucar.edu>, Greg <greg@globus.team>, Maya <maya@lab.edu>, Elena <elena@lab.edu>\nSubject: RE: RE: Gatekeeper + single login? and scope (user classes and policy)\nBody:\nTom,\n\nJust to reiterate the business angle:\n- Scientists are the primary audience; give them the better UX and the ability to run Daymet projects and Biome-BGC simulations. Data Users are lowest priority — read-only access where feasible and downloads to public/shared data, but no compute rights.\n- Portal Admins should have the levers for account creation/approval, role assignment, and the “unlock user” control Priya mentioned. Please keep all this within NCAR policy. No shortcuts.\n- Make sure we’re not inventing new capabilities beyond what we discussed. The portal is web-based, grid-backed, and we’re standardizing on Globus. Let’s stick to that plan.\n\nOne thing I want to avoid: multiple prompts for credentials. It’s a killer for adoption. If we can truly do it once per session and everything else rides that, we’re good.\n\nPartial open items:\n- Confirm we still only have three object categories (we said we would keep it that way).\n- Confirm mass storage only for files, not some random NFS mount someone sneaks in.\n\nThanks,\nLeo\n\n---\nEmail 7\nFrom: Tom <tom@gridbgc.org>\nTo: All\nCC: Nate <nate@hemisphere.edu>\nSubject: RE: Scope wrap (Globus, MSS, disturbances, CRUD) — partial resolution + a couple open items\nBody:\nThanks everyone for the quick replies.\n\nAcknowledged and incorporated:\n- Gatekeeper with single credential prompt at session start; no extra prompts later. We will use delegated credentials.\n- Use Globus toolkit for secure transfers and remote job integration. All communications to compute/storage over secure channels.\n- Compute on Hemisphere nodes only; portal host stays lightweight. Nate is helping with endpoints.\n- All file-based storage -> NCAR Mass Storage. Scratch is only for staging on the compute side.\n- Daymet: workflow to convert surface observations into gridded weather via projects. Outputs downloadable and feed Biome-BGC inputs.\n- Disturbance modeling: support disturbance projects and events; events (fires + deforestation) are single timestamps; unlimited events per project.\n- Domain objects CRUD: Projection, Grid Registration, Surface Observation, Site Data, Daymet Parameterization, DEM, Analysis Mask, Daymet Project/Output, PFT, BiomeBGC Site Data, Output Specification. We’ll keep clear relationships so runs show which inputs they used.\n- Sharing/merging objects with provenance; collaboration across projects.\n- Templates: create/view/edit/submit/delete; access control; intended for reuse.\n- Visualization: very basic previews for Surface Obs, DEM, Analysis Mask, Site Data — low priority.\n- Roles: Scientists (favored) can run models; Data Users read-only + downloads; Admins manage accounts/roles and can unlock when needed.\n\nOpen items (still):\n- Minor: presentation of Daymet output previews vs full download.\n\nIf I missed anything, shout. Otherwise, we’ll move this into the spec draft and coordinate with the NCAR DataPortal team on integration points.\n\n—Tom"
+    }
+  ],
+  "gold_requirements": [
+    {
+      "id": "PURE_2004 - grid bgc_R001",
+      "text": "The system shall be a grid-based software infrastructure to support bio-geo-chemical (BGC) modeling.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "both",
+      "source_region": "2.1.1 Text Narrative"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R002",
+      "text": "The system shall use the Daymet surface weather interpolation engine to generate gridded surface weather datasets from observation records.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "both",
+      "source_region": "2.1.1 Text Narrative"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R003",
+      "text": "The system shall support Daymet project model runs.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "both",
+      "source_region": "2.1.1 Text Narrative"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R004",
+      "text": "The system shall use the Biome-BGC model to perform bio-geo-chemical (BGC) modeling activities.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "both",
+      "source_region": "2.1.1 Text Narrative"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R005",
+      "text": "The system shall provide a graphical user interface to access system functions.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "both",
+      "source_region": "2.1.1 Text Narrative"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R006",
+      "text": "The system shall utilize grid technologies to provide secure communications to remote computing resources.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": "both",
+      "source_region": "2.1.1 Text Narrative"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R007",
+      "text": "The system shall utilize grid technologies to provide reliable communications to remote computing resources.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": "both",
+      "source_region": "2.1.1 Text Narrative"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R008",
+      "text": "The system shall use the Globus toolkit.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0001"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R009",
+      "text": "The system shall comply with NCAR security policies and constraints.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0001"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R010",
+      "text": "The system will use the NCAR Mass Storage System for all file-based storage.",
+      "raw_label": null,
+      "requirement_kind": "domain_assumption",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0001"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R011",
+      "text": "The system shall provide disturbance objects that store information about climate factors influencing the Biome-BGC model.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.19 Disturbance Objects"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R012",
+      "text": "The system shall support disturbance event types, including fires and deforestation.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.19 Disturbance Objects"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R013",
+      "text": "The system shall support disturbance projects that contain a series of disturbance events.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.19 Disturbance Objects"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R014",
+      "text": "The system shall allow a disturbance project to contain an unlimited number of events.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.19 Disturbance Objects"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R015",
+      "text": "The system shall represent each disturbance event as occurring at a single point in time with an associated date and time and shall not record an event duration.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.19 Disturbance Objects"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R016",
+      "text": "The system shall control access to functional areas using user accounts and shall grant access only to users approved by GridBGC administrators.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "both",
+      "source_region": "3.1 User Accounts"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R017",
+      "text": "The system shall prompt the user at the beginning of each session to enter their credentials and shall not prompt for additional or different credentials after successful login.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.1 User Accounts"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R018",
+      "text": "The system shall allow administrators to unlock a user's account.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "both",
+      "source_region": "3.1 User Accounts"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R019",
+      "text": "The system shall manage and store user account information and support gatekeeper accounts, user roles, account creation, and administrative account management functions.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "both",
+      "source_region": "3.1 User Accounts"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R020",
+      "text": "The system shall provide a web portal component as part of the operating environment.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0001"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R021",
+      "text": "The system shall use compute nodes for processing tasks.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0001"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R022",
+      "text": "The system shall provide an online help manual including context-sensitive help.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0001"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R023",
+      "text": "The system shall support organization of data into objects and projects and shall maintain data element relationships and enforce data integrity for organized data.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0001"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R024",
+      "text": "The system shall support sharing and merging of objects and collaboration features for projects and objects.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0001"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R025",
+      "text": "The system shall support template objects with access control and lifecycle operations including create, read/display, update/edit, submit, and delete.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0001"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R026",
+      "text": "The system shall provide create, read, update, and delete operations for the defined domain object types including Projection, Grid Registration, Surface Observation, Site Data, Daymet Parameterization, DEM, Analysis Mask, Daymet Project, Daymet Output, Plant Functional Type, BiomeBGC Site Data, and Output Specification.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0001"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R027",
+      "text": "The system shall provide low-priority visualization capabilities for Surface Observation, DEM, Analysis Mask, and Site Data objects.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0001"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R028",
+      "text": "The system shall allow data downloads for objects that contain datasets (for example Projection, Grid Registration, and Daymet Output objects).",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0001"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R029",
+      "text": "The system shall support three types of objects.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0001"
+    },
+    {
+      "id": "PURE_2004 - grid bgc_R030",
+      "text": "The system shall support the user classes: Scientists (favored), Portal Administrators, and Data Users (lowest priority) and shall apply the specified priority distinctions to functionality where indicated.",
+      "raw_label": null,
+      "requirement_kind": "business_rule",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0001"
+    }
+  ],
+  "validation": {
+    "coverage_rate": 0.9667,
+    "missing_req_ids": [
+      "PURE_2004 - grid bgc_R011"
+    ],
+    "unsupported_count": 3,
+    "repair_rounds_used": 1,
+    "coverage_entries": [
+      {
+        "req_id": "PURE_2004 - grid bgc_R001",
+        "supported": true,
+        "evidence_snippets": [
+          "move data and trigger runs over the grid"
+        ],
+        "reason": "Portal + grid-backed compute for BGC runs described"
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R002",
+        "supported": true,
+        "evidence_snippets": [
+          "interpolation over the target grid"
+        ],
+        "reason": "Daymet described turning station obs into gridded outputs"
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R003",
+        "supported": true,
+        "evidence_snippets": [
+          "support Daymet projects directly"
+        ],
+        "reason": "Sources state Daymet projects can be defined and run"
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R004",
+        "supported": true,
+        "evidence_snippets": [
+          "run Daymet and Biome-BGC"
+        ],
+        "reason": "Multiple references to running Biome-BGC for BGC modeling"
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R005",
+        "supported": true,
+        "evidence_snippets": [
+          "web portal — a proper GUI"
+        ],
+        "reason": "Interview explicitly states a web GUI for users"
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R006",
+        "supported": true,
+        "evidence_snippets": [
+          "GSI-based security"
+        ],
+        "reason": "Globus/GSI and grid-secured channels required by sources"
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R007",
+        "supported": true,
+        "evidence_snippets": [
+          "mature mechanisms for robust operation"
+        ],
+        "reason": "Globus described as providing robust, reliable grid interactions"
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R008",
+        "supported": true,
+        "evidence_snippets": [
+          "use the Globus toolkit"
+        ],
+        "reason": "Multiple artifacts state the system will use Globus"
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R009",
+        "supported": true,
+        "evidence_snippets": [
+          "comply with NCAR security policies"
+        ],
+        "reason": "Priya and notes repeatedly require NCAR policy compliance"
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R010",
+        "supported": true,
+        "evidence_snippets": [
+          "NCAR Mass Storage System"
+        ],
+        "reason": "Sources mandate final file storage reside in NCAR MSS"
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R011",
+        "supported": false,
+        "evidence_snippets": [
+          "disturbance inputs used by Biome-BGC"
+        ],
+        "reason": "No statement about storing climate-factor details."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R012",
+        "supported": true,
+        "evidence_snippets": [
+          "Event types covered for v1: fires, deforestation"
+        ],
+        "reason": "Fires and deforestation explicitly listed as event types."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R013",
+        "supported": true,
+        "evidence_snippets": [
+          "Disturbance project collects many events."
+        ],
+        "reason": "Disturbance projects described as containing many events."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R014",
+        "supported": true,
+        "evidence_snippets": [
+          "Unlimited events — no hard coded max."
+        ],
+        "reason": "Team explicitly rejected an event cap; no limit."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R015",
+        "supported": true,
+        "evidence_snippets": [
+          "Each event = an instantaneous point in time."
+        ],
+        "reason": "Events are point-in-time with date/time; no durations."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R016",
+        "supported": true,
+        "evidence_snippets": [
+          "only users on the approved list can access"
+        ],
+        "reason": "Access limited to approved accounts managed by admins."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R017",
+        "supported": true,
+        "evidence_snippets": [
+          "one-time login per session, got it."
+        ],
+        "reason": "Single initial credential prompt; no re-prompting thereafter."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R018",
+        "supported": true,
+        "evidence_snippets": [
+          "unlock user accounts — within the admin console."
+        ],
+        "reason": "Admins explicitly given ability to unlock accounts."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R019",
+        "supported": true,
+        "evidence_snippets": [
+          "Gatekeeper for login; admins manage approvals"
+        ],
+        "reason": "Mentions Gatekeeper, roles, approvals, and admin lifecycle."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R020",
+        "supported": true,
+        "evidence_snippets": [
+          "It’ll be a web portal — a proper GUI"
+        ],
+        "reason": "Stakeholders describe a web portal GUI front end."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R021",
+        "supported": true,
+        "evidence_snippets": [
+          "goes out to the compute nodes."
+        ],
+        "reason": "Remote compute on Hemisphere cluster, not portal host."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R022",
+        "supported": true,
+        "evidence_snippets": [
+          "online help manual and context-sensitive help"
+        ],
+        "reason": "Includes online manual and field tooltips."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R023",
+        "supported": true,
+        "evidence_snippets": [
+          "retain that linkage after the run"
+        ],
+        "reason": "Objects/projects model with recorded provenance and input-output links."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R024",
+        "supported": true,
+        "evidence_snippets": [
+          "Share and merge is key."
+        ],
+        "reason": "Objects can be shared, merged; provenance recorded."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R025",
+        "supported": true,
+        "evidence_snippets": [
+          "create -> edit -> submit/publish -> delete"
+        ],
+        "reason": "Templates have access control and full lifecycle operations."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R026",
+        "supported": true,
+        "evidence_snippets": [
+          "CRUD coverage required for domain objects"
+        ],
+        "reason": "Meeting notes require CRUD for all listed domain objects."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R027",
+        "supported": true,
+        "evidence_snippets": [
+          "quick-look visualizations for Surface Observation"
+        ],
+        "reason": "Low-priority quick-look visualizations for those four types."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R028",
+        "supported": true,
+        "evidence_snippets": [
+          "Data downloads: allowed on dataset-bearing objs"
+        ],
+        "reason": "Downloads exposed on dataset-bearing objects via Globus/MSS."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R029",
+        "supported": true,
+        "evidence_snippets": [
+          "keep three object categories."
+        ],
+        "reason": "Design states three object categories explicitly."
+      },
+      {
+        "req_id": "PURE_2004 - grid bgc_R030",
+        "supported": true,
+        "evidence_snippets": [
+          "Scientists, Admins, Data Users"
+        ],
+        "reason": "Three user classes with prioritized functionality described."
+      }
+    ],
+    "unsupported_implied": [
+      {
+        "text": "The system shall stage files to temporary scratch storage on compute nodes for processing (ephemeral staging), distinct from canonical storage in the NCAR Mass Storage System.",
+        "source_snippet": "\"We can stage to scratch on the compute side, but final outputs and the user datasets live in NCAR’s Mass Storage.\"",
+        "source_type": "meeting_notes",
+        "reason": "The source explicitly requires using compute-side scratch for staging prior to writing final outputs to MSS. The gold set mandates MSS for file-based storage but does not require or describe ephemeral/staging storage on compute nodes as a capability."
+      },
+      {
+        "text": "The system shall support UI scalability for very large disturbance event lists by using lazy-loading or pagination (e.g., loading ~50 events at a time) so the interface remains responsive with unlimited events.",
+        "source_snippet": "\"Disturbance events per project: unlimited (0..n). UI loads ~50 at a time (lazy).\"",
+        "source_type": "meeting_notes",
+        "reason": "The source explicitly prescribes a UI behavior (lazy-load ~50 items at a time) to handle unlimited disturbance events. The gold requirements allow unlimited events but do not specify UI scalability or lazy-loading/pagination as a required capability."
+      },
+      {
+        "text": "The system shall present job state/status information in the portal (i.e., communicate remote job states to users via the web UI).",
+        "source_snippet": "\"Using Globus to manage secure data movement and remote execution. Communicate job states in the portal as appropriate in later iterations.\"",
+        "source_type": "meeting_notes",
+        "reason": "The source indicates an intention to surface job states in the portal UI. The gold requirements require remote compute nodes and use of grid technologies, but do not require the portal to report or present remote job status information to users."
+      }
+    ],
+    "passed": false
+  },
+  "brief": {
+    "project_name": "GridBGC Portal",
+    "domain": "Earth system and bio-geo-chemical modeling",
+    "users": [
+      "Scientists (primary/favored)",
+      "Portal Administrators",
+      "Data Users (read-only, lowest priority)"
+    ],
+    "stakeholders": [
+      "NCAR Security and DataPortal operations",
+      "CU Hemisphere Linux cluster operations",
+      "Globus/Grid middleware integration team",
+      "Principal investigators and research sponsors",
+      "Laboratory data providers and curators"
+    ],
+    "business_goals": [
+      "Provide a grid-backed workspace for Daymet and Biome-BGC modeling to accelerate science workflows",
+      "Leverage remote compute nodes to run large simulations efficiently",
+      "Enable sharing, reuse, and collaboration via organized objects, projects, and templates",
+      "Maintain secure, policy-compliant access and account governance for approved users",
+      "Offer easy retrieval and basic viewing of outputs to support downstream analysis",
+      "Improve reproducibility with enforced data relationships and reusable expert setups"
+    ],
+    "core_features": [
+      "Web portal GUI with user/role management, account creation, Gatekeeper-backed login, and admin account unlock",
+      "Daymet workflows to turn surface observations into gridded weather and run Daymet projects",
+      "Biome-BGC simulation runs with disturbance modeling: fires/deforestation as point-in-time events; unlimited events per disturbance project",
+      "Organize data into objects and projects with sharing, merging, collaboration, and enforced relationships/immutability once used",
+      "CRUD for domain objects: Projection, Grid Registration, Surface Observation, Site Data, Daymet Parameterization, DEM, Analysis Mask, Daymet Project/Output, Plant Functional Type, BiomeBGC Site Data, Output Specification",
+      "Template objects with access control and full lifecycle: create, view, edit, submit, delete",
+      "Data downloads for dataset-bearing objects and low-priority visualizations for Surface Observation, DEM, Analysis Mask, and Site Data, plus context-sensitive online help"
+    ],
+    "quality_concerns": [
+      "Strong security and policy compliance using grid-secured communications",
+      "Reliable job orchestration and data transfers over grid middleware",
+      "Data integrity and reproducibility (preserve inputs/relationships after runs)",
+      "Usability via a clear GUI and context-sensitive help",
+      "Scalability and availability through distributed compute nodes"
+    ],
+    "constraints": [
+      "Delivered as a web portal integrated with NCAR DataPortal; browser-based client",
+      "Globus toolkit required for grid services and secure transport",
+      "All file-based storage resides in the NCAR Mass Storage System",
+      "Compute-intensive tasks execute on remote compute nodes (e.g., CU Hemisphere Linux cluster)",
+      "NCAR Gatekeeper policies apply; only approved users may access; single credential prompt per session",
+      "Grid-oriented architecture centered on BGC workflows using Daymet and Biome-BGC"
+    ],
+    "terminology": [
+      "Daymet: engine that interpolates surface observations into gridded weather datasets",
+      "Biome-BGC: ecosystem biogeochemical model for simulations",
+      "Object vs Project: reusable data element vs run/control grouping; three object types are supported",
+      "Disturbance event/project: fires, deforestation, etc.; events are instant (date/time only) and grouped into projects",
+      "Template object: saved expert configuration for reuse and sharing with lifecycle controls",
+      "Grid Registration: mapping/registration of datasets to a grid; supports download",
+      "Plant Functional Type (PFT), DEM, Analysis Mask, Daymet Parameterization, Site Data: key data object types used in modeling"
+    ]
+  },
+  "metadata": {
+    "file_path": "data/pure/2004 - grid bgc.pdf",
+    "file_type": ".pdf",
+    "char_count": 52506,
+    "profile": {
+      "char_count": 52506,
+      "heading_density": 428,
+      "shall_count": 163,
+      "must_count": 14,
+      "will_count": 61,
+      "use_case_count": 0,
+      "stakeholder_count": 0,
+      "requirement_keyword_count": 13,
+      "structure_strength": "strong"
+    },
+    "section_count": 70,
+    "dense_sections": 5,
+    "gold_count": 30,
+    "section_candidates": 19,
+    "raw_candidates": 26,
+    "llm_usage": {
+      "total_calls": 289,
+      "total_input_tokens": 707046,
+      "total_output_tokens": 672952
+    }
+  }
+}

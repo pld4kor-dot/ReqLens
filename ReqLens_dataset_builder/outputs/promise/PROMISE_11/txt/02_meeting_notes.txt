@@ -1,0 +1,82 @@
+TYPE  : meeting_notes
+TITLE : TeleShift Portal working session — role control, performance, and availability
+UNIT  : PROMISE_11
+============================================================
+
+Date: 2025-03-17
+Room/Link: DePaul TeleServices Center Conf Rm B / Teams link: https://dpts.example.com/meet/tele-ops-0317
+Attendees:
+- Maria (Supervisor)
+- Priya (IT Operations & Support)
+- Leo (UX Lead)
+- Sam (QA)
+- Note-taker: J. Collins (PM) [arrived late]
+
+Notes (raw):
+- Goal: speed up schedule admin, fill empty calling slots quickly. New portal must be straightforward.
+- Training time: Maria said "10 mins max" to get a caller or new supervisor up to speed. Keep onboarding light.
+- Task duration expectation: “in and out” — aim common flows < ~2 min end-to-end (incl load). Ken’s phrasing referenced 2 minutes; keep that.
+- Browsers: must run on legacy (Internet Explorer + Netscape Navigator). Avoid heavy JS features that break. Browser independent wherever possible.
+- Roles/permissions: Only supervisors can
+  - advertise/post empty time slots to staff
+  - enter/update caller schedules
+  - view all callers' schedules (full roster)
+  - Note: callers should not be allowed to do above. Team leads? [TBD] Maria says no (supervisors-only).
+- Contradiction captured: earlier someone suggested team leads could post slots (for coverage). Maria vetoed: keep it locked to supervisor role. Resolve in access control design.
+- Performance requirements (Priya):
+  - Supervisor schedule view at DePaul center: target p90 ≈ 2s, tail under 5s. Instrument and alert.
+  - All operations on slow link (~56k): p90 ≈ 6s.
+  - On faster link (~112k+): p90 ≈ 3s.
+  - Clarify definitions to users (p90 = 90th percentile) — avoid confusion w/ averages.
+- Availability:
+  - Service available every day (year-round). The phrasing in ops doc lists two windows: midnight→late afternoon and early morning→end-of-day; combined this is effectively full-day.
+  - Question from Maria: "Is there a maintenance hour?" Priya: If any, early morning around 6-7 am, kept minimal. But expectation is continuous access across days.
+  - Action: Priya to document hours in plain language (no ambiguity). Consider stating “available 12:00 AM–6:00 PM and 7:00 AM–11:59 PM daily”. Check with Ops Dir.
+- UX/Usability:
+  - Simplicity bar: beta survey must come back with very strong simplicity score. Leo suggested aim: 90%+ of testers say "simple enough" (wording to be set in survey).
+  - Appeal: also test “do you like how it looks?” Expectation: ~80% positive responses. If fall short, iterate.
+  - Keep UI minimal (no heavy images; layout works in IE/Netscape). Avoid horizontal scroll. Large fonts for readability (Ken feedback).
+- Task flow details (short notes):
+  - Enter caller schedule (supervisor-only): pre-fill fields to reduce clicks. Save and confirm in <2 min.
+  - Advertise empty slot (supervisor-only): one screen form; after post, visible to callers and staff list. Keep minimal data entry.
+  - View all callers schedule (supervisor-only): grid loads fast; no extraneous columns by default. Must hit the 2s p90 target at DePaul.
+- Beta plan:
+  - Recruit ~15-20 testers (mix of callers/supervisors). Measure time-to-first-success (learnability under ~10 min). Also time-to-completion for tasks (<= 2 min typical).
+  - Survey questions: simplicity (yes/no or 5-pt) and appeal (yes/no or 5-pt). Thresholds: simplicity >= 90% positive; appeal >= 80% positive. If below, plan redesign sprint.
+- Ops constraints:
+  - Monitor on 56k and 112k+ simulated links; gather p90 stats across main operations.
+  - Strict response target for supervisor schedule view at DePaul. SLA instrumented at edge.
+  - Browser matrix: IE and Netscape mandatory. Chrome/Firefox nice-to-have? [NOT decided yet] -> Maria: We have to support the legacy, anything extra is gravy.
+- Misc (sloppy):
+  - Ken volunteered to test on slow home connection.
+  - Maria wants zero surprise downtime during afternoons.
+  - Priya mentioned we’ll avoid huge payloads; use simple CSS.
+  - Someone asked about letting callers post their own swaps — tabled. [Parking Lot]
+
+Action Items:
+- [Priya] Write clear availability statement using exact hours (12:00 AM–6:00 PM and 7:00 AM–11:59 PM, daily). Confirm with Ops Director that this indeed implies full-day coverage. Due Fri.
+- [Leo] Draft beta survey with simplicity and appeal questions; include targets (>=90% for simplicity, >=80% for appeal). Due next UX sync.
+- [Sam] Define p90 measurement approach and test plan on 56k/112k networks and at DePaul. Include supervisor schedule view separate reporting (2s/5s bounds). Due next QA meeting.
+- [Maria] Provide list of common tasks to time (enter schedule, advertise slot, view all schedules). Annotate which should complete in under 2 min. Due Thu.
+- [J. Collins] Clarify role semantics (team lead vs supervisor). Right now: supervisor-only for the three restricted actions. Check with HR. Due Mon.
+
+Open Issues / Parking Lot:
+- Which IE/Netscape versions are realistic to test? [TBD]. Risk: design tradeoffs.
+- Do we need a banner during maintenance (if 6–7 am)? [TBD]. Maria prefers no banner in afternoons.
+- Caller visibility: is viewing only their own schedule sufficient? (Scope says yes; confirm). [TBD]
+- ~Support Chrome-first themes~ (crossed out) — staying with legacy-first approach for now.
+- Whether to show roster with photos (performance risk) vs initials only. Leaning initials.
+- Enforcement of supervisor-only actions: UI hide vs hard authorization (answer should be both). Implementation detail awaiting Dev.
+
+Contradictions/clarifications recorded:
+- Availability described both as “always on” and with an early-morning maintenance wedge. Resolution pending Ops doc; target is effectively 24h.
+- Someone said team leads can advertise slots (earlier email convo). Meeting agreed: no, supervisors only.
+- "Average load time" was mentioned in passing; corrected to p90 metric. Tail cap for supervisor schedule view under 5s.
+
+Misc numeric scribbles (from whiteboard):
+- 2m (tasks) / 10m (learn)
+- p90: 2s (sup view @ DePaul), pTail < 5s
+- 56k → 6s p90; 112k+ → 3s p90
+- Beta: 90% simple / 80% appeal
+
+End of notes.

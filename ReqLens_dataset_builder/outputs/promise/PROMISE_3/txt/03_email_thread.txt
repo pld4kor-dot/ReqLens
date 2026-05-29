@@ -1,0 +1,229 @@
+TYPE  : email_thread
+TITLE : Email Thread: Access Controls, Publishing, and Environment Constraints for NurseTrack Scheduler (Revised)
+UNIT  : PROMISE_3
+============================================================
+
+Email 1
+From: Susan Poslusny <sposlusny@univ.edu>
+To: Ben Patel <bpatel@it.univ.edu>
+CC: Julie Donalek <jdonalek@univ.edu>, Karen Sysol <ksysol@univ.edu>, Alex Kim <akim@it.univ.edu>, Mia Torres <mtorres@univ.edu>
+Date: Mon, Apr 7, 2025 at 8:14 AM
+Subject: Access + publishing + some must-haves
+
+Hi Ben,
+
+Quick recap to make sure we’re aligned before you lock the build:
+
+1) Only Karen and I can finalize/publish section schedules to CampusConnect. Please make sure no one else even sees that button.
+
+2) Student personal info (beyond directory basics) should be visible only to me and Julie. Others can work with cohorts/labs and see names/IDs and university emails as needed.
+
+3) Clinical site details (contact names, phone, email, address) should be limited to our program administrators/nursing staff.
+
+4) We need friendly error checks (validation) so staff don’t enter garbage (bad emails, zero-minute labs, etc.). Goal is to reduce mistakes that trigger student complaints.
+
+5) Responsiveness: normal tasks within a few seconds (~5). The full “build sections” pass should complete around 30 seconds.
+
+6) We work 8am–6pm; please treat that as the window where it must be up (~95%+ during those hours). We see about 10 of us in there at once most afternoons.
+
+7) Still on Windows XP Pro in the office. Browser-based, standards-compliant HTML (we use Firefox and some IE). We cannot install anything heavyweight.
+
+8) Planning report by quarter across all cohorts/programs showing classes to offer, section/lab counts, and room types. And the usual printables (cohorts, sites, labs, students, log).
+
+Thanks,
+
+Susan
+
+—
+
+Email 2
+From: Ben Patel <bpatel@it.univ.edu>
+To: Susan Poslusny <sposlusny@univ.edu>
+CC: Julie Donalek <jdonalek@univ.edu>, Karen Sysol <ksysol@univ.edu>, Alex Kim <akim@it.univ.edu>, Mia Torres <mtorres@univ.edu>
+Date: Mon, Apr 7, 2025 at 9:02 AM
+Subject: RE: Access + publishing + some must-haves
+
+Hi Susan,
+
+Thanks — helpful checklist. Confirmations/clarifiers inline:
+
+1) Finalize/Publish: We’ll restrict the CampusConnect publishing interface to authorized users only, and the finalization action to just you + Karen. Others won’t see that module.
+
+2) Student PII: We’ll partition fields so only you + Julie can view sensitive elements. Staff will see name/ID and directory contact where permissible.
+
+3) Clinical site info: Details (contact person, phone, email, address) visible to Program Admins/Nursing Staff only.
+
+4) Validation: We’re adding checks across forms (email format, time ranges, required IDs, etc.) to keep data clean.
+
+5) Performance: Targeting <=5s for standard tasks; schedule generation optimized to finish under 30s.
+
+6) Availability: We’ll aim for ~95% uptime within 8–6 and size for ~10 concurrent active users.
+
+7) Environment: Building for XP Pro desktops, browser-based, standards-compliant HTML. Testing on Firefox ESR and IE8 per Alex’s matrix.
+
+8) Reports/printables: In scope—cohort snapshot, site overview (by quarter), lab roster, student summary (with admission date/classes/credits/GPA/cohort), system log. Planning report will roll up classes to be offered, section/lab counts, and room type needs per quarter.
+
+We’re also covering: creating Programs of Study (name + required classes), cohorts tied to a single PoS and tagged by start month/year, class modeling (non-clinical vs clinical with respective needs), conflict prevention for cohort schedules, lab enrollment (add/move/remove within same clinical), part-time adjustments to sequences/timelines, and email notifications for routine and change events (classes, clinicals, cohorts, student-specific changes).
+
+Best,
+Ben
+
+—
+
+Email 3
+From: Alex Kim <akim@it.univ.edu>
+To: Ben Patel <bpatel@it.univ.edu>
+CC: Susan Poslusny <sposlusny@univ.edu>, Julie Donalek <jdonalek@univ.edu>, Karen Sysol <ksysol@univ.edu>, Mia Torres <mtorres@univ.edu>
+Date: Mon, Apr 7, 2025 at 9:24 AM
+Subject: RE: Access + publishing + some must-haves (security notes)
+
+Team,
+
+Two quick security notes:
+
+- Information policy: protect private info per policy. We have audit requirements; the printable system log will help.
+
+- Antivirus: Use the University standard (already on desktops). Don’t ship anything separate. Please harden the app against malicious input/attacks (we’ll run our scans).
+
+On browsers: Support for standards-compliant HTML browsers. Practical test set includes Firefox ESR and IE8 on XP Pro.
+
+Also, limit CampusConnect interface access to authorized accounts only (in addition to the finalization limit).
+
+Alex
+
+—
+
+Email 4
+From: Karen Sysol <ksysol@univ.edu>
+To: Ben Patel <bpatel@it.univ.edu>
+CC: Susan Poslusny <sposlusny@univ.edu>, Julie Donalek <jdonalek@univ.edu>, Alex Kim <akim@it.univ.edu>, Mia Torres <mtorres@univ.edu>
+Date: Mon, Apr 7, 2025 at 10:03 AM
+Subject: RE: Access + publishing + some must-haves — practical reminders
+
+Hi Ben,
+
+A few practicals from the scheduling trenches:
+
+- When I add a clinical lab section, I need: the clinical site name, the class instructor, and the day/time. We also track a department/section label sometimes (please include an editable field for that). If we later move the lab to a different site or change the instructor/time, we have to be able to edit those.
+
+- Cancel lab rule: do not let me cancel if even one student is enrolled. Only when enrollment is zero should it allow cancel.
+
+- Students: we add new nursing students all the time. Then we assign them to cohorts, often in bulk. Please validate eligibility (PoS match). If a few don’t pass, don’t let it slip through—warn me clearly so I can correct the list.
+
+- Conflict guardrails: The system should block putting the same cohort in two places at the same time/day.
+
+- Email notices: keep it email-only. Use notifications for routine messages (upcoming classes/schedules) and for changes—class cancellations, section detail changes, changes to offerings, clinical capacity changes, lab cancellations, cohort sequence changes, week-specific issues (instructor out sick), and individual changes (FT->PT, moved lab section). Aim messages only at the affected people.
+
+Thanks!
+
+Karen
+
+—
+
+Email 5
+From: Mia Torres <mtorres@univ.edu>
+To: Ben Patel <bpatel@it.univ.edu>
+CC: Susan Poslusny <sposlusny@univ.edu>, Julie Donalek <jdonalek@univ.edu>, Karen Sysol <ksysol@univ.edu>, Alex Kim <akim@it.univ.edu>
+Date: Mon, Apr 7, 2025 at 10:41 AM
+Subject: RE: Access + publishing + must-haves (PoS, cohorts, reports)
+
+Hi Ben,
+
+Adding a few PoS/cohort/report points I noted while prepping curriculum lists:
+
+- Program of Study creation/edit: create a PoS with program name and pick the required classes (clinical and non-clinical). Sometimes we rename a program or change the required list—editing should be straightforward.
+
+- Class modeling: when we add new classes, mark them as either non-clinical or clinical. For non-clinical, capture lecture room requirements + instructor needs. For clinical, include clinical site needs and separate fields for lecture instructor needs vs clinical lab instructor needs.
+
+- Cohorts: when adding a cohort, identify it by start month/year (e.g., Sep 2026). Tie the cohort to ONE PoS only. For each class in the sequence, set which quarter it will be offered. We occasionally insert a new class or clinical section midstream.
+
+- Reports/printables we rely on: cohort snapshot (students, PoS, sequence, progress, completion timeline); clinical site summary per quarter (site info + labs, dates/times); clinical lab roster (class name/number, lab section id, list of enrolled students, instructor, days/times, location); individual student summary (name, ID, admission date, classes, credits, GPA, cohort); system log (printable); planning report by quarter (classes, number of sections, number of labs, and room types needed) across all programs/cohorts.
+
+- Directory: please store email + phone for staff, students, lecture instructors, clinical lab instructors, and clinical site admins. This helps notifications and quick outreach.
+
+Let me know if you need examples — I have spreadsheets with sequences and room type notes.
+
+Mia
+
+—
+
+Email 6
+From: Julie Donalek <jdonalek@univ.edu>
+To: Ben Patel <bpatel@it.univ.edu>
+CC: Susan Poslusny <sposlusny@univ.edu>, Karen Sysol <ksysol@univ.edu>, Alex Kim <akim@it.univ.edu>, Mia Torres <mtorres@univ.edu>
+Date: Mon, Apr 7, 2025 at 11:23 AM
+Subject: RE: Access + publishing + must-haves (training/perf/availability)
+
+Hi all,
+
+Small additions:
+
+- Usability: design so most staff get up to speed after a single day of training. A quick reference guide would help, but the interface should be intuitive—two out of three admins should manage their tasks without leaning on Karen.
+
+- Language: keep labels in standard English and nursing terminology. Icons/labels must be naturally understandable.
+
+- Timeliness: staff need to complete tasks quickly—holding the ~5 second mark for most actions is good.
+
+- Availability: reiterating the 8am–6pm window and ~95% uptime; the system should handle our workload during those hours without choking.
+
+- Growth: handle all our students/classes now and in coming years (10-year horizon). We want minimum 5-year viability.
+
+Thanks,
+
+Julie
+
+—
+
+Email 7
+From: Ben Patel <bpatel@it.univ.edu>
+To: All recipients above
+Date: Mon, Apr 7, 2025 at 12:07 PM
+Subject: RE: Access + publishing + must-haves (consolidated + next steps)
+
+Thanks everyone—consolidating and calling out two questions:
+
+- Environment/compatibility: XP Pro desktops, standards-compliant HTML browser (Firefox ESR / IE8 in test set). No client installs beyond browser. University standard antivirus in place; we’ll ensure compatibility.
+
+- Integrations: publish finalized section schedules to CampusConnect (restricted access); read from faculty central server and student master server for instructor/student data. CampusConnect area hidden for non-authorized roles; final publish limited to Susan + Karen.
+
+- Security model: Only Julie + Susan can view student PII. Clinical site details visible to Program Admins/Nursing Staff. Data protected per info policy. App hardened.
+
+- Core features: create Programs of Study (name + required classes), add cohorts (start month/year) tied to exactly one PoS, set preferred sequence and per-class quarter, add new classes (mark clinical vs non-clinical with their respective needs), add clinical sites (name, contact person, contact info, address), create clinical lab sections (site, instructor, day/time; plus dept label), enroll students into labs (registered for that clinical), move student between lab sections of the same clinical, remove from lab, cancel lab only if zero enrolled, manage part-time students by adjusting sequence/timelines.
+
+- Reports/printables: cohort snapshot, site-overview (by quarter), lab roster, individual student summary (incl. admission date/classes/credits/GPA/cohort), system log, planning report by quarter (classes, section counts, lab counts, room types).
+
+- Notifications (email-only): routine schedule/timeline info; change alerts for class cancellations/section changes/offering changes; clinical capacity changes/lab cancellations; cohort sequence changes/weekly issues (e.g., instructor illness); individual changes (FT->PT, moved lab section). Target only affected recipients; keep content clear.
+
+- Performance/availability: normal tasks ~<=5s; schedule generation ~<=30s; availability 8–6 with ~95% uptime; handle ~10 simultaneous active users; scale for all nursing students/classes now and into the next decade; expected to support operations for at least 5 years.
+
+Two questions:
+
+1) Eligibility: we plan to enforce PoS match for cohort assignment. Any other constraints (GPA/credits)? If not, we’ll keep it PoS-only for now.
+
+2) After-hours: our support window is 8–6. Do you want any commitments outside that, or is the focus strictly business hours? We can keep focus on 8–6 if that’s sufficient.
+
+Mia—if you can send your PoS/class room type notes, that’ll help with the planning report.
+
+Best,
+Ben
+
+—
+
+Email 8
+From: Susan Poslusny <sposlusny@univ.edu>
+To: Ben Patel <bpatel@it.univ.edu>
+CC: Julie Donalek <jdonalek@univ.edu>, Karen Sysol <ksysol@univ.edu>, Alex Kim <akim@it.univ.edu>, Mia Torres <mtorres@univ.edu>
+Date: Mon, Apr 7, 2025 at 1:02 PM (sent from mobile)
+Subject: RE: Access + publishing + must-haves (answers)
+
+Ben,
+
+1) Eligibility: Keep it simple—PoS match only. No GPA/credit rules for now.
+
+2) After-hours: Our priority is 8–6. No need to spend cycles outside that window.
+
+Everything else in your list looks right. Thanks for corralling this.
+
+—Susan
+
+(sent from my phone, pls excuse typos)

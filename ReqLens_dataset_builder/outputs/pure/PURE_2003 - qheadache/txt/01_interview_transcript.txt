@@ -1,0 +1,226 @@
+TYPE  : interview_transcript
+TITLE : Qheadache kickoff interview — gameplay, UI, and cross-platform considerations
+UNIT  : PURE_2003 - qheadache
+============================================================
+
+Maya [Business Analyst]: Okay, thanks for joining. Let’s dive right in. This is the first long-form chat to nail down what we mean when we say “simple standalone sliding-block puzzle,” branded… well, we’re calling it Qheadache officially.
+
+Victor [Product Owner]: Yeah, that name stuck. We’re not changing it. It’s Qheadache everywhere — the app title bar, About box, you name it.
+
+Lars [Qt Programmer]: Great, Qheadache it is. Desktop app, Qt. No server, right? I just want to be sure we aren’t sneaking in cloud saves or anything.
+
+Maya [Business Analyst]: Correct, standalone. No back-end, no online bits. Single local user per machine. We’re keeping it clean.
+
+Renee [QA Tester]: Single user as in… one profile? Like it doesn’t switch profiles inside the app? I’ll need that spelled out for testing.
+
+Victor [Product Owner]: Exactly, one user context at a time. We’re not doing multiple logins or profiles. Just whoever is playing on that computer.
+
+Sasha [Community Rep]: Which is fine for the audience. Kids and grown-ups will share the same PC sometimes, but they aren’t expecting profiles. They just want to play.
+
+Maya [Business Analyst]: Speaking of the audience, we want it to be approachable for beginners, starting roughly 8 years old, up through puzzle-savvy adults. No special training, no thick manual. If you can use a mouse and keyboard, you’re good.
+
+Sasha [Community Rep]: And they will use both. Some will have trackpads, some mice, even those weird pen devices. But basically move the cursor and click. Oh, and typing names when they win.
+
+Lars [Qt Programmer]: Input devices that can move a cursor and accept text entry should work fine in Qt: mouse, touchpad, trackball, pen, even some joystick-driven cursors technically. Keyboard for menu navigation and name entry is trivial.
+
+Renee [QA Tester]: Good, I’ll test with mouse and touchpad at least. Now, the board. I need clarity on size. I’ve seen drafts saying “5x by 4x,” but is that width by height or the other way around?
+
+Maya [Business Analyst]: Height is 5x, width is 4x. So it’s taller than it is wide. I know people get that reversed.
+
+Lars [Qt Programmer]: Got it. 5x tall, 4x wide. And the unit x is our layout scaling unit — constrained so that x stays between 50 and 100 pixels. We’ll pick an initial x based on the window size.
+
+Victor [Product Owner]: We’re also saying it’s playable at 800x600 minimum. That’s non-negotiable. It needs to be clear at that resolution.
+
+Renee [QA Tester]: I’m going to test on a Windows machine at 800x600 just to be sure, and then on a couple of Linux variants. But we have to run on Windows; folks keep asking for Windows builds in the community.
+
+Lars [Qt Programmer]: Running on all Qt-supported OSes is fine. Windows, Linux, macOS — but Windows portability is an explicit must-have.
+
+Sasha [Community Rep]: Another thing people care about — visuals. We promised a black backdrop for the board, right? And the blocks are the bright yellow ones.
+
+Victor [Product Owner]: Yes, black board, yellow blocks. Keep the blocks with a tiny spacing so they don’t stick to each other visually.
+
+Maya [Business Analyst]: Spacing is 0.1x between blocks. It’s subtle but noticeable.
+
+Lars [Qt Programmer]: Okay, 0.1x gutters. I’ll enforce that consistently. Now, the pieces: remind me of the exact set.
+
+Maya [Business Analyst]: Four small squares, each 1x by 1x.
+
+Renee [QA Tester]: And four tall rectangles, 2x tall by x wide. Plus one wide rectangle, x tall by 2x wide, and the “big square,” which is 2x by 2x.
+
+Sasha [Community Rep]: That’s the classic set folks expect. Don’t mess with the counts or the sizes — there was drama in another game when they changed it.
+
+Victor [Product Owner]: We’re not changing it. It’s fixed.
+
+Lars [Qt Programmer]: Alright. Play interaction: we’re going with mouse-driven drag, but I want to confirm: when the player presses the left mouse button on a block, does that immediately put us into a moving state?
+
+Maya [Business Analyst]: Yes. We’ve been calling it “block movement” state in notes. You’re dragging at that point.
+
+Renee [QA Tester]: And when they let go of the left button over that block, we’re back to selection mode. That transition matters for testing stuck states.
+
+Sasha [Community Rep]: People will expect the block to stick to the cursor while they’re holding it down. If it lags or jumps, they’ll complain.
+
+Lars [Qt Programmer]: It’ll follow the mouse movements smoothly; I’ll make sure the drag is responsive.
+
+Victor [Product Owner]: Also, we have to do menus. The main window has a menu bar — Stats, Help, the usual. Keep it straightforward, menu-driven. No hidden gestures or anything.
+
+Maya [Business Analyst]: Right, graphics and menus. We can have some sound effects if you want, but the game must be fully playable muted. Actually, let’s make sure that if audio is off, nothing breaks.
+
+Renee [QA Tester]: I’ll test with the OS muted too. I don’t want sound to be a dependency. We had that issue somewhere else where a missing audio driver froze a dialog. Not again.
+
+Sasha [Community Rep]: And kids play on school computers with sound off; also some parents hate bleeps and bloops.
+
+Lars [Qt Programmer]: Menus: Stats should have two items — Display and Erase — in that order? I’ve seen both orders in screenshots from other apps.
+
+Maya [Business Analyst]: Display, then Erase. When you choose Display, it pops up the scores window listing recorded players and their times and moves. If you choose Erase, it clears all stats.
+
+Renee [QA Tester]: And the menu should close after the action is done. I don’t want sticky open menus confusing users.
+
+Victor [Product Owner]: Yes, close the menu afterward. Same idea for Help -> About. Open About, then when you’re done, the Help menu shouldn’t stay open.
+
+Lars [Qt Programmer]: About content — do we have the actual text? I need to embed it.
+
+Maya [Business Analyst]: We do. The exact line is: “Qheadache 1.0 by Jean-Philippe Brossat jp_brossat@yahoo.fr”. That needs to be shown exactly like that in the About window.
+
+Sasha [Community Rep]: It’s a nice touch to credit the original author. People in the community care about attribution.
+
+Renee [QA Tester]: Okay, I’ll verify the exact characters, spaces, the email, everything. Now, stats: on victory we prompt for the player’s name, right? That’s when we record the time and action count together with the name.
+
+Victor [Product Owner]: Yes. So you solve the puzzle, you get a name prompt. If it’s a kid, they might just type initials. But we need a field for it.
+
+Lars [Qt Programmer]: We’ll have a modal dialog on victory with an entry field. Then we write out the score record: name, elapsed time, and action count.
+
+Sasha [Community Rep]: People will want to see a list. So the scores window you mentioned needs to show all saved players sorted… actually, do we care about ordering?
+
+Maya [Business Analyst]: Let’s not overcomplicate it right now. Just show the list. Sorting isn’t a requirement this round. The important part is we display all recorded scores.
+
+Renee [QA Tester]: Undo/redo: we agreed to allow undoing and redoing a lot of moves. What’s the cap again?
+
+Lars [Qt Programmer]: I can implement a ring buffer. But what’s the number we picked?
+
+Maya [Business Analyst]: Up to the last 1000 actions. It’s high, but it stops memory growth.
+
+Sasha [Community Rep]: 1000 is fine. People will brag they can step through their entire solution backward.
+
+Victor [Product Owner]: That number’s a ceiling. We aren’t exposing that as a setting — at least not now.
+
+Renee [QA Tester]: So action count is the number we present on screen during play too, right? I want to see it increment so kids can see how efficient they were.
+
+Lars [Qt Programmer]: Yes, I’ll surface both the elapsed time and the current move count somewhere in the main window UI — maybe a small status bar or a panel near the menu.
+
+Maya [Business Analyst]: Make sure it’s readable at 800x600. Big clear digits. We’re designing for clarity, no clutter.
+
+Sasha [Community Rep]: UI question: The board area itself is a black rectangle of 5x by 4x. If the window resizes, do we scale x between 50 and 100? What if the window gets huge?
+
+Lars [Qt Programmer]: I’ll clamp x within 50–100 pixels. If the window is too big, we can keep the board centered with padding. If it’s too small to fit 50px per x, we block it — but the minimum app window will be at least 800x600 anyway, so it should be fine.
+
+Renee [QA Tester]: I’ll test resizing scenarios. Also DPI scaling on Windows. But at base level, as long as our math on x is consistent, the blocks won’t collide visually thanks to that 0.1x gap.
+
+Victor [Product Owner]: And the highlight or movement visuals: we’re not doing fancy shadows or filters. Keep it crisp. Yellow on black with clean spacing is the look.
+
+Sasha [Community Rep]: Does the block actually “snap” to anything? People will complain if the drag sticks inside other blocks.
+
+Lars [Qt Programmer]: It won’t overlap others. Movement is constrained so blocks slide freely where allowed; while moving, the selected block follows the cursor. When you release the left button, we switch back to selection. That’s the cycle.
+
+Maya [Business Analyst]: Exactly. Press-down on a block puts you in moving mode; release returns you to normal. That matches what players expect.
+
+Renee [QA Tester]: Let’s not forget menu operations are keyboard accessible too. Arrow keys and Enter should work to select Stats->Display, Stats->Erase, Help->About.
+
+Lars [Qt Programmer]: Standard Qt menu input covers that. Cursor input from keyboard and pointing devices is a must anyway.
+
+Victor [Product Owner]: One more time on brand: the name Qheadache needs to appear in the title bar of the main window. Also in the About line we discussed.
+
+Maya [Business Analyst]: And in the installer name and icon if we do one. But at minimum inside the app.
+
+Sasha [Community Rep]: Scheduling stuff — sorry to derail — but I heard we’re aiming for a demo next month. I might be out the first week.
+
+Renee [QA Tester]: That reminds me, I asked for budget to borrow a classroom laptop set. Some of them run old Windows and low resolutions. I’ll try 800x600 on one of those.
+
+Lars [Qt Programmer]: The Qt build can target a wide range of OSes. Windows is a given, Linux is fine, macOS also. I’ll set up CI for at least Windows and Linux local builds. Not that we’re doing any server, but cross-OS testing is worthwhile.
+
+Maya [Business Analyst]: Right. And remember, we’re writing our internal doc for our analysts, developers, and testers. QA will need crisp acceptance criteria especially around menu behavior and score recording.
+
+Sasha [Community Rep]: Question: The game is play-without-sound friendly, but do we need a mute button? Or is it just silent by default?
+
+Victor [Product Owner]: We can include simple sounds later, but for now keep in mind it must be fully playable with no audio at all. Whether there’s a toggle is secondary. The crucial thing is no dependency on sound.
+
+Renee [QA Tester]: I’ll test with system-level mute and also if there’s an in-app mute. But yeah, must be playable silently.
+
+Lars [Qt Programmer]: Stats “Erase” — is that instant? Some apps confirm before wiping. I assume if we keep it simple, one activation clears everything and returns you with the menu closed.
+
+Maya [Business Analyst]: Keep it simple. We don’t need a confirm dialog this phase; it’s a straightforward clear.
+
+Sasha [Community Rep]: For the About, please make sure that exact text shows: Qheadache 1.0 by Jean-Philippe Brossat jp_brossat@yahoo.fr. People will take screenshots.
+
+Renee [QA Tester]: I’ll literally compare the characters. Last project we had a missing dash and I nearly lost my mind.
+
+Victor [Product Owner]: Game loop-wise, we’re solving a single “headache” layout. It’s not a level pack. Just the specific puzzle. That’s enough for the brand.
+
+Maya [Business Analyst]: Right, we’re not doing multiple puzzles here. The UI should present the board and let users solve that specific configuration.
+
+Sasha [Community Rep]: I’m okay with that. People new to sliding puzzles like a single goal. The advanced folks can chase lower move counts.
+
+Lars [Qt Programmer]: Speaking of move counts, I’m planning to show the elapsed time in mm:ss and the action count incrementing by 1 per move. Both visible at all times during play.
+
+Renee [QA Tester]: And those values are exactly what we capture into a “score” when the player wins: the name, the time, and the move count.
+
+Maya [Business Analyst]: Yes. Scores are then visible through the Stats menu when you choose Display. That opens a window listing all players with their recorded results.
+
+Victor [Product Owner]: Menu closure: after you pick Display, the menu should disappear and leave you with the scores window. Don’t leave the menu stuck open.
+
+Lars [Qt Programmer]: Same pattern for Help->About. When you choose About, we pop the About window and the Help menu closes. Consistent behavior.
+
+Sasha [Community Rep]: Do we need narration or voice? I assume no. Kids can read the menus.
+
+Maya [Business Analyst]: No narration. Keep it minimal.
+
+Renee [QA Tester]: Minor confusion: earlier I heard someone say 4x by 5x. Can we write that down one more time so it’s unambiguous in the test plan?
+
+Maya [Business Analyst]: Height equals 5x, width equals 4x. Board rectangle sits in the main window, background black. Blocks are the yellow ones with 0.1x gaps between them.
+
+Lars [Qt Programmer]: Then the main window holds both the board and the menu bar. I’ll do a basic layout with the menu bar at the top, board centered, and a small status area for time and moves.
+
+Victor [Product Owner]: Keep the interface menu-driven. People know File, Edit, etc., but here we mainly need the Statistics and Help menus. No context menus right now.
+
+Sasha [Community Rep]: A community tangent: someone asked if we’re going to support multi-user sessions on the same machine. We already said single user, correct?
+
+Maya [Business Analyst]: Single user per machine per session. That’s deliberate.
+
+Renee [QA Tester]: Alright. Another tangent while we’re at it — we’re not doing network. I’m relieved. Testing servers is a headache, pun intended.
+
+Lars [Qt Programmer]: Desktop only. No server calls. All data local.
+
+Victor [Product Owner]: Audio aside, do we need any special skills assumed for users? I’m thinking no. They need basic computer literacy only.
+
+Sasha [Community Rep]: Exactly. If you can handle a mouse and type your name, you can play. Kids as young as eight should get it.
+
+Maya [Business Analyst]: Let’s wrap with a quick recap: Qheadache is a desktop Qt game with a main window that has a menu bar and the puzzle board. The board is 5x tall, 4x wide, black background; blocks are yellow, spaced 0.1x apart. There are four 1x1 squares, four 2x by 1x rectangles, one 1x by 2x rectangle, and one 2x by 2x square. Play is mouse-driven: press left to enter movement, the block follows the cursor, release returns to selection. Keyboard and pointing devices work for cursor and menu and name entry. We track time and actions, show those during play, and on victory we prompt for a name and store that with the time and move count. Stats menu shows Display then Erase; Display opens the scores window listing all players; Erase clears stats; menus close after the action. Help->About opens an About window with the exact text — and the menu closes too. The app runs standalone across Qt-supported OSes including Windows. The UI is clear at 800x600. No audio dependency. Single local user. Audience is 8+ up to adult enthusiasts.
+
+Renee [QA Tester]: Perfect summary. I’ll turn that into a test checklist.
+
+Lars [Qt Programmer]: I’m good. I’ll start stubbing the main window, menus, board, and movement logic. We’ll wire up the score recording after I have the undo/redo buffer working — oh, undo/redo is 1000 actions maximum, I’ll implement the cap now.
+
+Sasha [Community Rep]: I’m excited. Please make the drag feel smooth — people always complain about stutter.
+
+Victor [Product Owner]: Smooth movement, reliable behavior, and a neat little About box. It’s going to be fine.
+
+Maya [Business Analyst]: Great. If anything is unclear, ping me. But I think we’re aligned: no special training required, accessible, and menu-driven. Thanks, everyone.
+
+Renee [QA Tester]: Thanks. I’ll go schedule the Windows tests.
+
+Lars [Qt Programmer]: I’ll push the first Qt project template this afternoon.
+
+Sasha [Community Rep]: I’ll start drafting the community announcement once we have screenshots.
+
+Victor [Product Owner]: Let’s reconvene next week for a quick demo of the main window and the drag behavior.
+
+Maya [Business Analyst]: Done. Meeting adjourned. Actually, wait—one last thing: make sure the app window title says Qheadache. Not QHeadache or something else.
+
+Lars [Qt Programmer]: Noted: exact capitalization, Qheadache. I’ll set it now before I forget.
+
+Renee [QA Tester]: I’ll check that too. See you all.
+
+Sasha [Community Rep]: Bye!
+
+Victor [Product Owner]: Later.
+
+Maya [Business Analyst]: Thanks, all.

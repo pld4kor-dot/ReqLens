@@ -1,0 +1,186 @@
+TYPE  : interview_transcript
+TITLE : Periscope Duel kickoff intake interview
+UNIT  : PROMISE_10
+============================================================
+
+Mia [Product Owner]: Thanks for hopping on. Big picture, Periscope Duel is supposed to feel like a quick head-to-head skirmish. You jump in, pick someone from the lobby, and you are looking down a periscope at your boards. Like, it needs to look like ships at sea, not just a spreadsheet of squares.
+
+Raj [Game Client Engineering Lead]: Yeah, the circular view is doable. We can mask the two grids in a round viewport to sell the periscope vibe. We can do a subtle vignette around the edges. Just, uh, we need to be careful with performance there.
+
+Owen [Audio and UX Designer]: Visuals are one side. Sound sells it. When you line up a shot, I want the soft hum and ocean ambience in your ears. Then a distinct splash for a miss, a hard metal-on-metal thump for a hit, and something more dramatic for a sink, like creaking and water rushing.
+
+Tasha [DevOps SRE]: I am going to say this early: please do not tie any of that to blocking server calls. We can stream the ambient and just trigger event sounds based on responses. But we need to keep the round trip snappy.
+
+Luis [Privacy Compliance]: And while you are selling a vibe, we cannot sell identities. There is no chat, no names, no personal info. Just anonymous presence in the lobby and in the match. Nothing that can be reverse engineered to identify a player.
+
+Camille [Localization Manager]: Also, the very first thing a new user sees should ask language. English, Spanish, French. Not hidden in a settings menu. Up front. After that, all system prompts, labels, and those notifications should reflect the choice.
+
+Mia [Product Owner]: Right, language on entry. And on game flow, we stick to simple. Two boards per player. Your own fleet board, and your firing board. You never see the other person’s layout.
+
+Raj [Game Client Engineering Lead]: Quick check: when you say two boards, you mean an offensive grid where you track where you shot, and a defensive grid which is where your ships live. Not two copies of the same thing.
+
+Mia [Product Owner]: Exactly. And both are visible within that circular periscope viewport. The offensive one could be the foreground when it is your turn to shoot.
+
+Luis [Privacy Compliance]: Hold on, the term offensive grid worried me. That does not mean we expose the opponent’s squares, correct?
+
+Raj [Game Client Engineering Lead]: No, sorry. Offensive grid is just your log of where you have fired. It is not the other person’s board. You only ever see your own ships and your own shot history.
+
+Mia [Product Owner]: Right. And for setup, each player places five ships. Standard set. Place them on your defense side. No overlap. They can be horizontal, vertical, and also diagonal. That is a bit different from some classic rules, but we want that extra twist.
+
+Owen [Audio and UX Designer]: Visual-wise, I want them to look like actual ship classes. Not generic rectangles. A battleship looks like a battleship, a destroyer like a destroyer. Within the grid aesthetic, of course.
+
+Raj [Game Client Engineering Lead]: We can render ship sprites to match classes. I will need asset lists from you, Owen. Also, diagonal placement is fine, but I have to implement the occupancy check so that the path is contiguous and does not cross another ship.
+
+Mia [Product Owner]: Exactly, no overlaps. If someone tries to drop one on top of another, the UI should nudge them, red outline, whatever, and refuse to place.
+
+Tasha [DevOps SRE]: Question, do we lock in both players before we start placement? Or can you browse the lobby while placing ships? That would be a sync headache.
+
+Mia [Product Owner]: Once you click an opponent, both of you leave the lobby list. That is a one-click action to start, and now you are unavailable to others until the match ends.
+
+Luis [Privacy Compliance]: Do not forget the idle behavior in the lobby. If someone is not actually active, they should not be shown as available. And if they disappear for a day, they should be cleared out.
+
+Camille [Localization Manager]: Also those messages like You are no longer available to others, we will need strings for the three languages and for the match state notifications too.
+
+Raj [Game Client Engineering Lead]: On the turn system, after both players place all five ships, we assign who shoots first. Is that random or based on something?
+
+Mia [Product Owner]: Random is fine. The key is: each turn, one player is the shooter and the other is receiving fire. Say so plainly at the start of every turn. Notifications like Your shot or Brace, incoming.
+
+Owen [Audio and UX Designer]: We can have the ambient sea bed come up right as the offensive turn starts, then layer the event sounds after the server reply.
+
+Tasha [DevOps SRE]: That means the server has to evaluate very quickly. We are aiming for, what, sub two seconds for most user actions? If the tail goes to four, users will feel it. We can buffer sounds client-side while we wait.
+
+Mia [Product Owner]: Keep the experience fast, yes. But let us park the exact metrics for later. I do want to lock the rules. Shooter taps a coordinate on their firing board. The system checks the target’s defense board, returns hit or miss.
+
+Raj [Game Client Engineering Lead]: And we mirror that into visuals. On the defender’s own board, the cell gets marked as hit or miss. On the shooter’s firing grid, mark the same. It needs to be consistent.
+
+Luis [Privacy Compliance]: We are not showing any of that from the defender’s perspective to the attacker though, right? No ghosting or revealing patterns.
+
+Raj [Game Client Engineering Lead]: Correct. The shooter only sees their own firing marks. The defender only sees the impact marks on their own board. No peeking.
+
+Mia [Product Owner]: When a ship is completely hit, we call it sunk and say what went down. Like You sank their destroyer. Both players get notified. And the defender board should show that ship as sunk, labeled with the type.
+
+Owen [Audio and UX Designer]: And the sinking sound is distinct. A lower, longer sound. Not just a repeated hit.
+
+Camille [Localization Manager]: We will need ship class names in Spanish and French. Some classes differ in common usage. Check with me before finalizing the labels.
+
+Raj [Game Client Engineering Lead]: Do we also mark sunk on the attacker’s firing grid? That would help them track which targets are off the table.
+
+Mia [Product Owner]: Yes, mark that as sunk on the attacker’s side too. Different icon or overlay so it is clear that ship is down.
+
+Tasha [DevOps SRE]: Timing of state change matters. When do we decide sink? After we process the hit, we check if all cells for that ship are hit, then send out a sunk event. The client needs to handle the three paths: miss, hit, ship sunk.
+
+Owen [Audio and UX Designer]: Exactly. Audio cues map one-to-one with those. Miss is splash, hit is impact, sink is dramatic. And the ambient is during the aiming or right at the start of a shot. I do not want silence.
+
+Luis [Privacy Compliance]: Also, no player-to-player messaging in the notifications. Just event descriptions. No names, no handles. Purely system-generated status.
+
+Mia [Product Owner]: And shots are sometimes streaks. If you hit, you get another shot. Miss means hand the periscope to the other person.
+
+Raj [Game Client Engineering Lead]: So on a miss, we flip the roles. Shooter becomes defender, defender becomes shooter. On a hit, the shooter stays offensive for another try.
+
+Tasha [DevOps SRE]: The roles state should be authoritative on the server. Clients can optimistically highlight, but do not award extra turns locally until the server confirms.
+
+Camille [Localization Manager]: Those turn status prompts at the start of each turn need translations too. And consistent grammar even when the message is short.
+
+Mia [Product Owner]: We should highlight Your turn and Not your turn clearly. I want new players to understand without a tutorial.
+
+Owen [Audio and UX Designer]: UI copy plus tone of the sounds can teach the flow. For first-timers, if the labels and cues are clean, they should be able to play through to the end without reading a manual.
+
+Raj [Game Client Engineering Lead]: Back to setup. Diagonals worry me. Not technically, but players might try weird Z-shaped placements. We are restricting to straight lines on diagonals, right? No curves.
+
+Mia [Product Owner]: Straight lines only. Diagonals allowed, but not zigzags. And again, no overlaps. If the path intersects an existing ship cell, reject the placement.
+
+Luis [Privacy Compliance]: On the lobby, how does a player identify themselves as available? Is there a big button, or is presence automatic?
+
+Mia [Product Owner]: They have to opt in. Like a Set me as available toggle. And back out at any time. They can delist themselves whenever.
+
+Raj [Game Client Engineering Lead]: When two players match, both get removed from the pickable list immediately. No one else can click them in that window.
+
+Tasha [DevOps SRE]: Idle detection: we need pragmatic rules. If someone is idle in the lobby, hide them from new selections. If they are absent an entire day, purge them so the list stays clean.
+
+Camille [Localization Manager]: The strings for idle hiding should be neutral. And any duration numbers need to adapt to locale formatting. But we can keep numerals consistent.
+
+Owen [Audio and UX Designer]: Small thing: during placement, no ambient. Save it for the action to reinforce when the gunner is up. When the periscope is active for a shot, have the ocean swell in.
+
+Raj [Game Client Engineering Lead]: For match ending, we have two pathways. If the last ship goes down, we declare victory. Or if someone taps give up, we end it as a resignation. Both sides get a message about why it ended.
+
+Mia [Product Owner]: Then they can choose to go back to the lobby as available again, or just leave. I want it to be low friction.
+
+Luis [Privacy Compliance]: When you say leave, just remove from the list. There is no persistent profile to worry about, right?
+
+Raj [Game Client Engineering Lead]: Correct. It is anonymous presence. The server tracks a session token and a state. No names.
+
+Tasha [DevOps SRE]: Speaking of server, I know we said not to get into metrics, but we cannot ignore them. We need to support a lot of matches at once. If we get featured somewhere, the simultaneous games spike could be large.
+
+Mia [Product Owner]: Definitely. Operate reliably at scale and be always on. But let us not derail. Back to the turn loop, we keep assigning turns until the game ends. There is no time limit round by default.
+
+Owen [Audio and UX Designer]: We can pace the feel with the sounds so it feels brisk. Short delays so the feedback lands quickly.
+
+Camille [Localization Manager]: Just flag every user-facing line you are thinking of so we can localize early. Turn prompts, lobby labels, results like Miss, Hit, Sunk, You win, Opponent left, etc.
+
+Raj [Game Client Engineering Lead]: Another detail: when marking the sunk ship on the defender’s board, we can outline the entire ship shape and show the class icon. On the attacker’s firing grid, maybe we use a badge indicating downed ship type at the last hit location.
+
+Mia [Product Owner]: That is fine as long as it is unmistakable that the entire ship is gone. And systematic. No surprises.
+
+Luis [Privacy Compliance]: One more thing. Make sure the match notifications do not include any identifying string. No device model, no partial IP, nothing. We have to be strict.
+
+Tasha [DevOps SRE]: That is fine. All user-facing events can be generated from server enums. Client just presents them.
+
+Owen [Audio and UX Designer]: Quick tangent. Scheduling. If we need ship art final by end of month, I need to know. Otherwise I am going to be behind on audio too.
+
+Mia [Product Owner]: We can sync on that offline. Back to placements. If a user tries to place a ship partially off the board, obviously reject. And if they try to reposition after locking in all five, do we allow rearranging before both press ready?
+
+Raj [Game Client Engineering Lead]: I would allow moving ships around until the player hits Ready. After both hit Ready, placement is frozen. Then we pick who fires first and immediately notify both of their roles.
+
+Camille [Localization Manager]: The Ready label is different in languages. Keep it short. Also the phrase You are defending vs You are attacking needs to be consistent with whatever we call those roles.
+
+Luis [Privacy Compliance]: Sorry, a misunderstanding earlier. When you said offensive grid, I thought it meant offensive content. But we are good. It is just the grid where you mark your shots. All good.
+
+Tasha [DevOps SRE]: I am more worried about the user waiting. If it takes more than a couple seconds to resolve a shot, they will think the app hung. We need to keep the vast majority under two seconds and worst cases not much above that. We can log the percentiles.
+
+Raj [Game Client Engineering Lead]: I can optimize path checks and the hit evaluation. It is just an array lookup. The heavier part will be sending events to both clients and updating both boards.
+
+Owen [Audio and UX Designer]: We can preload the miss and hit sounds so they play immediately when the response lands. Sinking we can start with a short stinger and then extend if the animation plays.
+
+Mia [Product Owner]: This is all in service of making it intuitive. I want nine out of ten new players to be able to start and finish a game without any help. That is the bar.
+
+Camille [Localization Manager]: Which means our labels have to carry a lot of weight. If we hide anything important in tooltips, we might miss that target in Spanish and French.
+
+Luis [Privacy Compliance]: On the lobby again, what is the visual for availability? A green dot is fine, but avoid any personal details. No avatars that could be uploaded, for example.
+
+Raj [Game Client Engineering Lead]: It will be generic silhouettes or nothing, just a row of anonymous slots with an available indicator. Clicking one initiates the match. One click. They vanish from the list for everyone else.
+
+Tasha [DevOps SRE]: Edge case. What if both users click each other at the same moment? We need a lock so only one pairing is created and both are removed from the pool atomically.
+
+Mia [Product Owner]: Yes, please. That is invisible to the player though. From their perspective, it is just instant pairing and into placement.
+
+Owen [Audio and UX Designer]: Back to the periscope mask. The grids need to sit inside a circle. The rest of the screen can go darker with a subtle haze, maybe a metal rim. That sells the theme.
+
+Raj [Game Client Engineering Lead]: Agreed. The periscope mask is a composite layer. On small screens, we may need to scale the grid so it is legible without breaking the circle.
+
+Camille [Localization Manager]: French can be verbose. Make sure there is room in the masked view for longer labels or use icons with tooltips that are localized.
+
+Luis [Privacy Compliance]: Tooltips okay, but remember we do not let them hover over anything that would reveal the other player. No stats, no win streaks. Keep it anonymous.
+
+Mia [Product Owner]: Understood. It is about the moment-to-moment duel, not profiles. After a game ends, we flash a simple message explaining why and then offer two big buttons: List me again or Exit lobby.
+
+Raj [Game Client Engineering Lead]: The reason string will either be You sank all enemy ships or Opponent ended the match or You ended the match. We will map the cause to the label.
+
+Owen [Audio and UX Designer]: I will add a short end-of-match sound. A bell or something nautical when the match ends. Not asked for, but it helps closure.
+
+Luis [Privacy Compliance]: Careful. Bells are fine. Just do not embed any third-party tracking beacons in the audio layer. Kidding, but not really.
+
+Tasha [DevOps SRE]: I will keep third-party SDKs out of core. Also, we need to be up around the clock. We will design the backend so there is no planned downtime during peak hours, ideally zero.
+
+Mia [Product Owner]: Okay, let us wrap. Summary: circular periscope view for both boards; ship classes look like ships; sounds for miss, hit, sink; five ships placed with straight lines including diagonals and no overlaps; shooter taps a cell, system checks defender board, we mark both boards; if you hit, shoot again, miss swaps roles; end when last ship is sunk or someone ends early; no identities; quick lobby with one-click select; you can delist any time, and inactive folks drop off.
+
+Raj [Game Client Engineering Lead]: I will document the state machine: lobby, match_placement, match_turn_offense, match_turn_defense, match_end. Role toggles on miss, stays on hit.
+
+Camille [Localization Manager]: And I will start compiling strings in three languages with placeholders for ship types and reasons for end-of-match.
+
+Owen [Audio and UX Designer]: I will cut the ambient loop, splash, impact, and sink sounds. And provide alternate versions in case we need shorter cues for slow devices.
+
+Luis [Privacy Compliance]: I will review the lobby for any identity leaks and sign off on the anonymous flow. No PII, ever.
+
+Tasha [DevOps SRE]: And I will draft the non-functional targets we can live with so the client does not feel laggy.
+
+Mia [Product Owner]: Great. Thanks all. If I missed anything, ping me.

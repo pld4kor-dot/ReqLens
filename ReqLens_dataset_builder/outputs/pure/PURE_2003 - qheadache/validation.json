@@ -1,0 +1,352 @@
+{
+  "coverage_rate": 1.0,
+  "missing_req_ids": [],
+  "unsupported_count": 2,
+  "repair_rounds_used": 0,
+  "coverage_entries": [
+    {
+      "req_id": "PURE_2003 - qheadache_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "official product name as Qheadache."
+      ],
+      "reason": "Name specified in transcript, notes, and emails."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "sliding-block desktop puzzle."
+      ],
+      "reason": "Described as a desktop Qt game application."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "one “headache” puzzle only. UI should help"
+      ],
+      "reason": "UI explicitly intended to support that single puzzle."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "aimed at analysts, programmers, and testers (internal)"
+      ],
+      "reason": "Spec audience stated directly in notes/emails."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "standalone. No back-end, no online bits."
+      ],
+      "reason": "Repeatedly described as a standalone local application."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "menus + graphics + optional audio."
+      ],
+      "reason": "UI model lists menus, graphics, and optional sounds."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "Must be fully playable with sound off."
+      ],
+      "reason": "Playability without sound is explicitly required."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "Main window: menu bar + board area"
+      ],
+      "reason": "Main window layout includes a board and menu bar."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "Height is 5x, width is 4x."
+      ],
+      "reason": "Board geometry (5x by 4x) is explicitly finalized."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "clamp x within 50–100 px."
+      ],
+      "reason": "Unit x explicitly constrained to 50–100 pixels."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "Spacing is 0.1x between blocks."
+      ],
+      "reason": "Spec explicitly requires 0.1x block spacing."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "Four small squares, each 1x by 1x."
+      ],
+      "reason": "Spec lists four 1x-by-1x square pieces."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "four tall rectangles, 2x tall by x wide."
+      ],
+      "reason": "Spec lists four rectangles sized 2x by x."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "one wide rectangle, x tall by 2x wide."
+      ],
+      "reason": "Spec includes one 1x-by-2x wide rectangle."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "the “big square,” which is 2x by 2x."
+      ],
+      "reason": "Spec includes one 2x-by-2x big square."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "black board, yellow blocks."
+      ],
+      "reason": "Spec explicitly mandates black board and yellow blocks."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "Left mouse down on a block => enter movement state"
+      ],
+      "reason": "Spec defines left-button press enters 'block movement'."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "On left button release ... return to selection state."
+      ],
+      "reason": "Spec defines release returns to selection state."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "While in movement, block should track cursor position."
+      ],
+      "reason": "Spec requires block follow cursor during movement state."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R020",
+      "supported": true,
+      "evidence_snippets": [
+        "keyboard, mouse, touchpad, trackball, etc."
+      ],
+      "reason": "Spec accepts keyboard and pointing devices for input and naming."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R021",
+      "supported": true,
+      "evidence_snippets": [
+        "playable at 800x600 minimum."
+      ],
+      "reason": "Spec explicitly requires minimum 800x600 resolution."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R022",
+      "supported": true,
+      "evidence_snippets": [
+        "I’ll ensure portability across Qt-supported OS"
+      ],
+      "reason": "Documents require Qt and portability across Qt-supported OS."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R023",
+      "supported": true,
+      "evidence_snippets": [
+        "Windows support is explicitly required."
+      ],
+      "reason": "Windows portability is stated as an explicit must-have."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R024",
+      "supported": true,
+      "evidence_snippets": [
+        "Undo/Redo: provide history up to last 1000 actions."
+      ],
+      "reason": "Spec defines undo/redo history capped at 1000 actions."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R025",
+      "supported": true,
+      "evidence_snippets": [
+        "show elapsed time during a game session."
+      ],
+      "reason": "Elapsed time displayed during gameplay is required."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R026",
+      "supported": true,
+      "evidence_snippets": [
+        "Show action count incrementing per move."
+      ],
+      "reason": "Action count is tracked and shown during play."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R027",
+      "supported": true,
+      "evidence_snippets": [
+        "Record: player name + elapsed time + action count."
+      ],
+      "reason": "On win the system records name, time, and actions."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R028",
+      "supported": true,
+      "evidence_snippets": [
+        "open scores window with list of recorded players."
+      ],
+      "reason": "Display action opens a scores window listing players."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R029",
+      "supported": true,
+      "evidence_snippets": [
+        "Stats menu items order is Display then Erase."
+      ],
+      "reason": "Statistics menu must contain Display then Erase in order."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R030",
+      "supported": true,
+      "evidence_snippets": [
+        "Accept both mouse and keyboard selection."
+      ],
+      "reason": "Menus (including Statistics) accept mouse and keyboard input."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R031",
+      "supported": true,
+      "evidence_snippets": [
+        "Display => open scores window"
+      ],
+      "reason": "Display opens the statistics/scores window."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R032",
+      "supported": true,
+      "evidence_snippets": [
+        "Erase => wipe stored stats"
+      ],
+      "reason": "Erase is specified to clear stored stats."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R033",
+      "supported": true,
+      "evidence_snippets": [
+        "Statistics menu should close"
+      ],
+      "reason": "Menu must close after performing action."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R034",
+      "supported": true,
+      "evidence_snippets": [
+        "Help menu: contains About item"
+      ],
+      "reason": "About item explicitly required in Help menu."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R035",
+      "supported": true,
+      "evidence_snippets": [
+        "Accept keyboard and mouse selection"
+      ],
+      "reason": "Menu selection accepts keyboard and mouse input."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R036",
+      "supported": true,
+      "evidence_snippets": [
+        "Qheadache 1.0 by Jean-Philippe Brossat",
+        "jp_brossat@yahoo.fr"
+      ],
+      "reason": "About text exact line is specified to be shown."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R037",
+      "supported": true,
+      "evidence_snippets": [
+        "Help menu closes after About is shown"
+      ],
+      "reason": "Help menu must close when About opens."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R038",
+      "supported": true,
+      "evidence_snippets": [
+        "Single local user per machine"
+      ],
+      "reason": "Spec repeatedly states single local user only."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R039",
+      "supported": true,
+      "evidence_snippets": [
+        "No special training, no thick manual"
+      ],
+      "reason": "Users need no special qualifications or training."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R040",
+      "supported": true,
+      "evidence_snippets": [
+        "If you can use a mouse and keyboard"
+      ],
+      "reason": "Assumes users know basic computer input methods."
+    },
+    {
+      "req_id": "PURE_2003 - qheadache_R041",
+      "supported": true,
+      "evidence_snippets": [
+        "Kids as young as 8 should manage"
+      ],
+      "reason": "Spec explicitly targets ages 8+ and adult puzzle players"
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "The system shall provide smooth, low-latency, responsive block-dragging so that the selected block follows the cursor without lag, jumps, or stutter.",
+      "source_snippet": "\"It’ll follow the mouse movements smoothly; I’ll make sure the drag is responsive.\"",
+      "source_type": "interview_transcript",
+      "reason": "Multiple stakeholders explicitly require smooth, responsive dragging (no lag/jumps/stutter). The gold requirements specify that blocks move with mouse input but do not impose any performance/usability requirement about smoothness or low-latency tracking, so this quality-of-interaction requirement is a significant capability not covered by the gold set."
+    },
+    {
+      "text": "The system shall clear the redo history when the user makes a new move after performing an undo (i.e., standard undo/redo semantics where redo is invalidated by new actions).",
+      "source_snippet": "\"I’ll implement a circular buffer and ensure redo clears when a new move is made after undo.\"",
+      "source_type": "email_thread",
+      "reason": "The gold set requires undo/redo up to 1000 actions but does not specify the semantics of redo when new moves are made after an undo. The source explicitly requires redo to be cleared in that situation, which is a functional behavior requirement not present in the gold list."
+    }
+  ],
+  "passed": true
+}

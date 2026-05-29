@@ -1,0 +1,79 @@
+TYPE  : meeting_notes
+TITLE : Architecture and Operations review – decisions and targets
+UNIT  : PROMISE_5
+============================================================
+
+Date: 2026-03-01
+Attendees: Architecture, Security, Ops, Claims Ops, Product, Middleware, Support, Compliance
+
+Decisions/Requirements captured:
+
+Platform and environment
+- Must operate on existing corporate desktops across all environments (no hardware upgrades).
+- Browser compatibility: Internet Explorer 5.5 and above; Mozilla Firefox 1.0 and above.
+- Conform to enterprise architecture guidelines; no non-approved frameworks.
+- Comply with corporate UI standards and corporate color scheme; deliver a professional, brand-aligned appearance.
+
+Integration and data
+- Interface with ChoiceParts as the source of recycled parts; nightly synchronization around 1:00 AM local data center time.
+- Expect average daily parts records: ~50,000.
+
+Functionality – facility locator
+- Inputs: vehicle year/make/model; street address, city, state, ZIP (system will derive ZIP from address if blank); user-set search radius between 1 and 30 miles.
+- Output: one preferred facility based on highest ratings and proximity; if no clear single choice, return a list within the radius.
+- Adjuster can add the chosen facility to the estimate assignment and may override the top pick when necessary.
+
+Functionality – recycled parts
+- Estimator searches based on damaged parts list and preferred supplier list.
+- If no results from preferred suppliers, automatically fall back to search by ZIP within a 30-mile radius.
+- Return available recycled parts with associated suppliers; system retains these results for audit use.
+- Estimator applies only actually available recycled parts to the estimate; if none are available, no application is permitted.
+
+Functionality – audit
+- Adjuster reviews the estimate and requests an audit (adjusters only) comparing estimate vs. available parts.
+- Audit includes: total recycled parts used, number available from the original results, percentage used, and an overall score that sums line items.
+- Audit is displayed immediately and remains accessible to other adjusters later.
+
+Functionality – facility ratings
+- Viewer shows current ratings; if none exist, display a blank template.
+- Supervisors (adjuster supervisors only) can enter new ratings for two categories: attempted use of recycled parts and actual use of recycled parts.
+- Ratings use a 1–10 scale and can be saved by supervisors.
+
+Security and access
+- Role enforcement: only collision estimators can perform parts searches; only adjusters can request audits; only supervisor-level adjusters can update facility ratings.
+- Validate inputs to prevent invalid data from being accepted.
+- Strict data isolation between insurance companies—no cross-carrier visibility.
+- System must be free of computer viruses and incorporate protections to prevent malicious attacks, including denial of service.
+
+Compliance
+- Align with Sarbanes–Oxley controls (auditability, access, change management).
+- Comply with insurance claims processing regulations.
+- Comply with estimatics requirements related to recycled parts usage.
+
+Usability and adoption
+- Ease-of-use target: at least 95% of adjusters and estimators report the product is easy to use.
+- Satisfaction target: at least 85% of users report being satisfied with the product.
+- Learning curve: two days of onsite training should be sufficient for new users.
+- In-product help must be discoverable on roughly 90% of screens to aid task completion.
+- Field conditions: usable in noisy, dirty repair shop environments.
+- Estimator productivity: within one month of adoption, at least 80% of estimators should report a productivity increase.
+
+Performance targets (time to first response)
+- Recycled parts search: results returned within 15 seconds.
+- Preferred repair facility search: result returned within 8 seconds.
+- Recycled parts audit generation: returned within 10 seconds.
+- Saving facility ratings: committed within 5 seconds.
+
+Availability and operations
+- Adhere to the corporate online availability schedule; downtime limited to scheduled maintenance windows.
+- Uptime goal: 98% during available online time (excluding planned outages).
+- Product maintenance occurs within established corporate maintenance windows.
+- Installations and upgrades are executed by the middleware technology team during approved launch windows.
+- Corporate Support Center provides first-line user support.
+
+Scalability and growth
+- Initial concurrency capacity: handle up to 1,500 simultaneous users.
+- Growth plan: be able to scale to 10,000 concurrent users within two years of initial launch.
+
+Notes
+- All above items align with business goals to drive recycled parts usage, speed estimate creation/assignment, and enable transparent auditing while maintaining compliance and brand standards.

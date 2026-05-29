@@ -1,0 +1,134 @@
+TYPE  : interview_transcript
+TITLE : Stakeholder Interview: GridBGC Portal Kickoff — Scientists, Security, Admin, and Middleware
+UNIT  : PURE_2004 - grid bgc
+============================================================
+
+Maya [Scientist]: Thanks for making time. I just want to make sure this thing really helps us run Daymet and Biome-BGC without me begging for shell access on three different boxes. Right now I’m juggling scripts for surface obs and then sending them over to Biome-BGC. It’s messy.
+
+Tom [Portal Admin]: Yeah, the point is absolutely that you don’t have to ssh into anything. It’ll be a web portal — a proper GUI — so you click around to manage projects, data objects, and kick off runs.
+
+Priya [Security/NCAR]: Whatever you do on the front end, the back end needs to respect NCAR policies — Gatekeeper for login, approved user lists, encrypted transfers, the usual. No guest access.
+
+Greg [Globus Integration]: For the remote bits — compute and data movement — we’ll lean on the Globus toolkit. That gives us GSI-based security and a standard way to move data and trigger runs over the grid.
+
+Leo [PI]: All good, but keep the science workflow intact. Daymet has to turn those station observations into a gridded weather product first — interpolation over the target grid — or the downstream Biome-BGC runs are garbage.
+
+Maya [Scientist]: Exactly. The Daymet step is non-negotiable. I want to define a Daymet project, point it at my surface obs or site data, run it, then feed the outputs to my BGC runs.
+
+Tom [Portal Admin]: We’ll support Daymet projects directly. You’ll be able to create one, set parameters — projection, grid registration, masks, that kind of thing — and run it from the portal.
+
+Greg [Globus Integration]: And when that run occurs, it shouldn’t be on the portal host. It goes out to the compute nodes. We’ve already talked to the CU Hemisphere folks so we can target their Linux cluster.
+
+Priya [Security/NCAR]: The traffic needs to be over grid-secured channels. If the portal logs in a user, it shouldn’t start prompting them again for credentials when it submits a job or moves data. One sign-in at session start is the expectation, with proper delegation behind the scenes.
+
+Tom [Portal Admin]: One-time login per session, got it. We’ll hook into Gatekeeper to keep that consistent with NCAR’s policies. After that, the portal shouldn’t nag people for a different password just because they click “Run” or “Download.”
+
+Maya [Scientist]: Good, because I’m always getting locked out mid-run on other systems. Speaking of, if I fat-finger my password three times and get locked, can someone flip the switch to unlock me? Or is it a ticket that sits for a week?
+
+Tom [Portal Admin]: We can build an admin action for that — unlock user accounts — within the admin console. We already store user roles and track who’s been approved by the portal admins. So, yeah, that’s doable.
+
+Leo [PI]: Hey, before we go deeper — timeline. Also, I heard something about “three object types”? I don’t really care about the taxonomy, but please don’t balloon this into seven.
+
+Tom [Portal Admin]: Right, the data model is organized into objects and projects. We keep it to three categories of objects in the system. Think of them as reusable data chunks you can share or merge.
+
+Maya [Scientist]: Share and merge is key. All of us end up copying a mask or a DEM just to change one thing and then we lose track. I want to collaborate on a single instance where appropriate.
+
+Greg [Globus Integration]: Merging data objects is fine — just make sure we keep good provenance so we know what came from where. And I’m going to advocate for strong links between inputs and outputs so we can tell exactly which inputs were used for a run later on.
+
+Priya [Security/NCAR]: That aligns with reproducibility. We’ve had audits asking, “What were the exact inputs?” If we can’t answer, we’re in trouble. So make sure those relationships are recorded clearly.
+
+Tom [Portal Admin]: We can enforce relationships so that a project references its inputs and the portal retains that linkage after the run completes.
+
+Maya [Scientist]: And there’s a help menu? I haven’t got time to read a manual. Maybe tooltips or context help on the screen?
+
+Tom [Portal Admin]: We’ll include an online help manual and context-sensitive help. Click the little “?” icon next to a field, you get the description in place.
+
+Leo [PI]: Can we not overdo the visuals? Pretty maps are nice, but I mainly need the numbers. If you do any quick maps, keep it lightweight.
+
+Maya [Scientist]: Some minimal visualization would help, like sanity-checking a DEM or the analysis mask outline, or plotting surface obs coverage. But yes, priority is on runs and data integrity.
+
+Greg [Globus Integration]: For downloads — just confirm — the portal should let users pull the data for the objects that are dataset-heavy. Like if you have a grid registration file or, after a Daymet run, those outputs. You click and it streams securely.
+
+Tom [Portal Admin]: Yes. We’ll have download actions on dataset-bearing objects. Not everything is a file — some are parameter sets — but where there’s a file, there’s a download.
+
+Priya [Security/NCAR]: Over encrypted channels, of course, and through approved endpoints. Also, all the file storage should sit in the NCAR Mass Storage System. If you’ve got temp files, fine, but the canonical storage is MSS.
+
+Greg [Globus Integration]: We can stage to scratch on the compute side, but final outputs and the user datasets live in NCAR’s Mass Storage. Transfers in and out will use Globus.
+
+Maya [Scientist]: Switching gears — disturbances. For Biome-BGC, we need to specify events like fires and deforestation. They’re not durations for us; they’re instantaneous points where something changed. I usually put a date — sometimes down to time.
+
+Leo [PI]: And we may load a lot of them. I don’t want an arbitrary cap like “you can only add fifty events,” because we have long time series for some forests.
+
+Tom [Portal Admin]: So, a disturbance project would collect an arbitrary number of these events? Each event would just be a timestamp with type and relevant details? No start/end windows, just a point.
+
+Maya [Scientist]: That’s right. Single points in time. The model handles the implications.
+
+Greg [Globus Integration]: Then we represent them as inputs the model consumes alongside site data. If we keep event duration out of it, we stay aligned with the science.
+
+Priya [Security/NCAR]: One more governance point: who can create these projects and objects? We should restrict creation to users who have been approved by the portal administrators. Also roles — scientists get more functionality than generic data downloaders.
+
+Tom [Portal Admin]: We’ll set up roles: scientists first-class, data users with minimal access — read-only where it makes sense — and admin users. Only people set as approved will even log in. Everybody else gets bounced by Gatekeeper.
+
+Maya [Scientist]: So I could make a Daymet project, run it, and then spin up a Biome-BGC run using that output, all in the same portal session, without re-authenticating?
+
+Greg [Globus Integration]: That’s the idea. One credential prompt at the beginning, then delegated credentials take care of job submission and data movement behind the scenes.
+
+Leo [PI]: Reliability matters. We had a situation with another portal where jobs died because the data channel hiccupped. What’s the plan for that?
+
+Greg [Globus Integration]: Using Globus gives you mature mechanisms for secure, robust transfers and remote execution. It’s built to handle real-world networks better than ad hoc scripts.
+
+Priya [Security/NCAR]: And do not compromise security for convenience. No caching passwords in plain text, no insecure callbacks.
+
+Tom [Portal Admin]: We’ll adhere to NCAR policy, use the Gatekeeper rules as-is, and only store what’s permitted — user account info, roles, and so on — in our database. Passwords never in the clear. Account creation will route through admin approval.
+
+Maya [Scientist]: Will we have templates? Like, an expert sets up a parameterization for Daymet or a standard Biome-BGC run for a common plant functional type, and the rest of us can reuse them.
+
+Tom [Portal Admin]: Yes, templates are a first-class thing. You can create one, edit it, submit it for use, even delete if it’s not in use. And we’ll have access control so not every template is public.
+
+Leo [PI]: Submit — is that like a publish state?
+
+Tom [Portal Admin]: More or less. Draft to submitted — submitted means it’s available for reuse.
+
+Maya [Scientist]: Question: Do we have CRUD for all the object types we’ve talked about? I need to add projections and register grids, upload surface obs, define site data, set Daymet parameters, manage DEMs, analysis masks, choose plant functional types, BGC site data, and specify outputs to collect. Sorry, that’s a mouthful.
+
+Tom [Portal Admin]: That’s the plan. Create, view, edit, delete for those domain objects.
+
+Priya [Security/NCAR]: Also, only admins can unlock accounts. Please don’t expose that to regular users.
+
+Greg [Globus Integration]: On the compute flow — just to be crystal clear — once someone clicks “Run,” the job goes to compute nodes, not the portal box. We’re not running heavy processes on the web tier.
+
+Leo [PI]: And if data users are lowest priority, make sure they can still download public outputs, but not run models.
+
+Tom [Portal Admin]: Yeah, data users are basically read-only for most things. Scientists are the ones who can kick off Daymet and Biome-BGC runs. Admins do account and policy stuff.
+
+Maya [Scientist]: And can scientists share objects with each other across projects? Like I want to merge my site data with someone else’s cleaned surface obs.
+
+Tom [Portal Admin]: We’ll support collaboration — sharing objects between users and projects, and merging where it makes sense. We’ll include provenance notes so it’s clear what came from where.
+
+Priya [Security/NCAR]: Just document it clearly in the help. People will otherwise assume the portal is a magic box.
+
+Greg [Globus Integration]: For quick-look displays, let’s keep them basic: observations coverage, DEM hillshade, mask outline, site data shapes. No custom GIS engine.
+
+Maya [Scientist]: That’s fine. Small previews to sanity-check inputs, then I’ll pull the output files for the real analysis.
+
+Leo [PI]: Outputs — can scientists fetch Daymet outputs and the like straight from the portal? And projections or grid registrations as files?
+
+Tom [Portal Admin]: Yes, downloadable. And we’ll put a little note reminding folks the downloads come from the Mass Storage System, not from someone’s desktop.
+
+Priya [Security/NCAR]: And to close the loop, access is gated: only approved users can log in at all. We’ll run an audit before launch to verify compliance.
+
+Maya [Scientist]: Sounds like we’ll get a portal that talks to a grid, runs our models out on a cluster, keeps the data tidy, and lets us reuse setups. If the help text is good and I only log in once per session, I’m happy.
+
+Tom [Portal Admin]: That’s the goal. I’ll send out a draft of the user roles and the object list we’re covering. If I missed any, ping me.
+
+Greg [Globus Integration]: And I’ll confirm the Globus endpoints on the Hemisphere side.
+
+Priya [Security/NCAR]: I’ll circulate the latest NCAR security checklist as well.
+
+Leo [PI]: Good meeting. Let’s keep the shiny map budget to zero, please.
+
+Maya [Scientist]: Ha — minimal maps, maximum runs. Deal.
+
+Tom [Portal Admin]: Thanks, all. We’re good.
+
+Maya [Scientist]: Bye.

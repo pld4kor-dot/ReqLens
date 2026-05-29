@@ -1,0 +1,397 @@
+{
+  "id": "PROMISE_14",
+  "origin": "PROMISE",
+  "created_at": "2026-05-23T15:30:02.051151+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Stakeholder Discovery Interview: Gridiron League Hub Core Experience and Ops",
+      "text": "Maya [Product Manager]: Thanks for making time, everyone. I want to walk through the core league experience and some of the operational guardrails. This is early discovery, so messy is fine. I’m going to ask naïve questions too.\n\nTom [League Commissioner]: No worries. I’ve been running our home league for like twelve years, so I have opinions.\n\nRiley [Team Owner]: Same. I just want it to be easy to do my roster moves and see stats. The other site we used made everything like five clicks away.\n\nJorge [DevOps]: And I’m here to make sure what we commit to is doable with the infrastructure we’ve sketched. We’re aiming for very little downtime, right?\n\nPriya [Database Admin]: I’ll chime in on data layout. We’ve got two distinct datasets in mind, active vs. historical, but we can get into that.\n\nMaya [Product Manager]: Great. Let’s start with access. For team owners, the owner page is their hub. Do we require sign-in every time, or is it…\n\nRiley [Team Owner]: I’m fine with logging in; just don’t make it a chore every single time. Username and password should get me back to my roster page. That owner dashboard is where I live.\n\nMaya [Product Manager]: Yes, the baseline is standard username plus password before you can reach the owner dashboard. No bypasses. We can discuss session length later.\n\nTom [League Commissioner]: And the commissioner console needs to be locked down. In our league, only I can tweak scoring rules, roster limits, draft settings. No co-commissioner accidents. If a team owner could change settings, we’d get chaos.\n\nMaya [Product Manager]: Understood. Per league, only the designated commissioner toggles those configurations. We’ll make sure the permissions model enforces that strictly.\n\nJorge [DevOps]: Just flagging that as RBAC in the app layer. Commissioner role only for settings endpoints. Everyone else read-only for those.\n\nRiley [Team Owner]: Right, and visually, please make that stuff live somewhere different. Like, don’t put add player next to edit scoring. I don’t want to click the wrong thing.\n\nMaya [Product Manager]: Separation of action areas versus navigation, got it. We’ll keep a consistent layout so the action buttons are always, say, on the right panel, and global nav on the left or top. And breadcrumbs at the top so you know where you are.\n\nTom [League Commissioner]: Breadcrumbs?\n\nPriya [Database Admin]: That’s the little trail, like Home > League > Team > Player.\n\nTom [League Commissioner]: Oh! Yeah, that. The current site I use has that and it helps, especially when you get lost in the waiver list.\n\nMaya [Product Manager]: Perfect. Every page gets that location trail. Now, speed. Riley, when you first land, can you find your league and your team quickly?\n\nRiley [Team Owner]: If I’m new, I don’t want to dig around. I should be able to go from the homepage to my league page and then to my team page really fast. Like, half a minute tops. If I can’t figure it out in 20, 30 seconds, I’m bouncing.\n\nMaya [Product Manager]: So onboarding should be intuitive enough that within about 30 seconds a first-time user gets to league and team pages from the starting page. That’s our target.\n\nJorge [DevOps]: That implies the links are prominent and the network calls are fast. We’re aiming for sub-quarter-second response per user action over the network. 250 milliseconds budget for server-side processing from request to response, excluding the browser rendering.\n\nRiley [Team Owner]: 250 milliseconds… that’s like instant to me. As long as it feels snappy.\n\nTom [League Commissioner]: And reliability. Our season is sixteen, no, eighteen weeks now. If the site goes down Sunday morning, everybody loses their minds. We had that last year—like an hour outage—and it crushed us.\n\nJorge [DevOps]: We’re proposing a very strict availability target. Minutes of downtime per year, not hours. Think like ten minutes total in a calendar year, outside planned maintenance. It’s ambitious but we should plan for it.\n\nMaya [Product Manager]: Okay, maintenance windows. We need to carve out a regular time when we can deploy in-season updates without upsetting live games.\n\nTom [League Commissioner]: Do it midweek, super early. We all set our lineups Tuesday night or Wednesday afternoon.\n\nRiley [Team Owner]: Early Wednesday morning, like 3 to 6 AM Central, works. Nobody is on then, except insomniacs.\n\nJorge [DevOps]: We can schedule patches and minor updates in that window during the season and keep perceived downtime near zero.\n\nMaya [Product Manager]: And the major version refresh—ideally we launch those right at the start of each NFL season. New season, new release.\n\nPriya [Database Admin]: Data. We’ll have the active stuff—rosters, waiver claims, current week stats—in a primary database optimized for quick access. It doubles as a cache layer for hot users so we can serve requests under that 250 ms target.\n\nJorge [DevOps]: And the long-term store for historic stats, weekly lines from prior seasons, career totals—put that in a secondary database tuned for history and analytics. We don’t want heavy history reads slowing down live game traffic.\n\nRiley [Team Owner]: As long as when I click a player I can see a lot. Not just like yards and touchdowns; I want receptions, targets, snap counts, red zone looks… points too. Everywhere I go, show me the stat lines so I don’t have to open new tabs.\n\nMaya [Product Manager]: How many are we talking? We’ve been tossing around the idea of showing at least twenty-five data points for each player, plus their fantasy points, on any page where players appear.\n\nTom [League Commissioner]: That’s a lot, but the hardcore folks want it. Don’t bury it. I hate when you have to click into a player to see anything.\n\nRiley [Team Owner]: Exactly. And make the add, drop, and trade actions one click from the owner dashboard. If I’m on my team page, there should be a button right there to start a trade or add from free agents. No hunting.\n\nMaya [Product Manager]: One click to jump into those flows from the dashboard. Once you’re in, we will still show a confirmation step for destructive actions like dropping someone or finalizing a trade. We don’t want accidental roster changes.\n\nTom [League Commissioner]: Please. I once tapped drop by mistake on my phone and… well, that was a disaster.\n\nJorge [DevOps]: Confirmation modals are fine. Just make sure the APIs don’t perform the mutation until the confirm comes through, so we avoid partial updates.\n\nPriya [Database Admin]: On the backend, we’ll stage the change and commit after that confirm. That keeps the primary store consistent. We can also archive the outcome for history later.\n\nRiley [Team Owner]: Wait, when you say secondary, do I have to wait to see history?\n\nPriya [Database Admin]: No. For immediate stuff, we’ll mirror enough recent data in the primary so frequent lookups are fast. The secondary is for the deep historical queries. Think previous seasons’ weekly breakdowns.\n\nMaya [Product Manager]: Back to navigation. The layout needs to be consistent. Action items in one place, navigation elsewhere, and breadcrumbs on every page. That consistency reduces misclicks.\n\nTom [League Commissioner]: The last platform moved the trade button around depending on the page. Drove me nuts.\n\nRiley [Team Owner]: And make the league message wall simple. Just a little stream with the latest posts. I don’t need a whole forum. Show like the five most recent messages, with a snippet so I can tell what it’s about.\n\nMaya [Product Manager]: How long a snippet?\n\nRiley [Team Owner]: A couple lines. Maybe 150 characters? Enough to see the joke or the trash talk.\n\nTom [League Commissioner]: Yeah, no infinite scroll on that wall. Keep it lightweight. If we need archives, whatever, but the league page should show the last five and a teaser.\n\nJorge [DevOps]: That also keeps the payload small and avoids chatty calls. Less to render means we can stick to the quarter-second response budget.\n\nPriya [Database Admin]: The message wall posts can sit in the primary too for the current season, then roll to the secondary at season end. Historical smack talk is… historical data.\n\nMaya [Product Manager]: Ha. Okay, so content-wise, the wall is five recent posts with up to roughly 150 characters preview, click to open the full post if needed. We won’t overbuild it.\n\nRiley [Team Owner]: On that note, don’t make the wall the focus. The roster page and add/drop should be front and center.\n\nTom [League Commissioner]: Agree. Owners spend most time setting lineups and eyeing trades. Speaking of which, can we make add/drop literally one click from the team dashboard? Like, a link that jumps to free agents already filtered by my needs.\n\nMaya [Product Manager]: The “one click” bit is about starting the flow, not completing the transaction instantly. It’s still add then confirm, drop then confirm.\n\nRiley [Team Owner]: Right, I get that. Just don’t bury the link.\n\nJorge [DevOps]: Quick tangent—are we committing to a pure web app? Or is there any native component? It matters for our hosting plan.\n\nMaya [Product Manager]: This is a web application. Runs on a web app server. We can worry about mobile responsiveness, but the platform itself is a web app.\n\nJorge [DevOps]: Good. That keeps our deployment straightforward. We’ll time changes during that midweek window to minimize any disruption. But the overall objective still reads like ten minutes max downtime annually. That’s tight. We need to be precise about how we count it.\n\nTom [League Commissioner]: If you tell me it’ll be up, just keep it up. Ten minutes sounds like nothing. I’m okay with planned maintenance if it’s like 3 AM Wednesday midseason.\n\nPriya [Database Admin]: That’s when we can run migrations too. Schema changes only in that window during the season, please.\n\nMaya [Product Manager]: Yes, in-season updates are limited to that Wednesday early morning slot. Bigger annual changes roll out right before Week 1.\n\nRiley [Team Owner]: Can you give me a little trail at the top so I know where I came from? Like Home > My League > Team? Sometimes I go into player pages and forget how to get back.\n\nMaya [Product Manager]: That’s the breadcrumb we mentioned. We’ll include it on all pages, not just deep ones.\n\nTom [League Commissioner]: Sorry, what did you call it? Breadcrumb? Like cookie crumbs. Funny.\n\nRiley [Team Owner]: Haha, yeah.\n\nJorge [DevOps]: On the performance estimate, not to be a downer, but if we’re pulling 25-plus stats per player on every page, we need to cache the stat lines aggressively. Otherwise 250 milliseconds is tough under load.\n\nPriya [Database Admin]: We can materialize a stat line document in the primary for active players, then hydrate it nightly from the secondary. During games, we’ll have to stream updates from the provider into the primary. The secondary is just the long-term sink.\n\nMaya [Product Manager]: That covers the technical path. From a user perspective, they’ll see at least 25 stats plus points wherever player data is shown—team roster, free agent list, matchup view.\n\nRiley [Team Owner]: Do not hide points. Some sites make you hover. Show the points directly.\n\nTom [League Commissioner]: And only I can flip the scoring rules. Nobody else should be able to mess with that.\n\nMaya [Product Manager]: Repeating that in case the notes miss it: Commissioner-only authorization on league configuration.\n\nJorge [DevOps]: Copy. We’ll enforce that at the route level and in the UI—no visible controls for non-commissioners.\n\nRiley [Team Owner]: Another thing: when I drop someone, there has to be a yes/no check. I’m always terrified of my thumb hitting the wrong place.\n\nMaya [Product Manager]: Confirmations for drop and trade actions before the server commits. It’s a guardrail.\n\nPriya [Database Admin]: We can implement soft transactions. The user initiates, we stage, then the confirm triggers the write. If they back out, we discard the staged change.\n\nTom [League Commissioner]: And trades too. Let me review and accept before it goes live. No accidental trades.\n\nJorge [DevOps]: That’s two-step on the UX side. Backend will treat it as an atomic change after final consent. No half trades.\n\nMaya [Product Manager]: Good. Now, clarity on page layout. I want consistency. The navigation—a menu and that breadcrumb—sit in one place. The action items like add/drop/trade are in a distinct area. We keep that pattern everywhere.\n\nRiley [Team Owner]: Please. Don’t move the cheese.\n\nTom [League Commissioner]: Can we see the latest league chatter when we land on the league page? Just the last few. Don’t make it busy.\n\nMaya [Product Manager]: Yes. We said five most recent with short previews—about 150 characters. You can click in for more.\n\nJorge [DevOps]: If we stick to five, we can render that in the initial payload without dragging. It helps meet the 250 ms budget.\n\nPriya [Database Admin]: And we’ll index the latest posts by league ID in the primary for quick retrieval. Old posts will be archived in the secondary.\n\nRiley [Team Owner]: Okay, speaking of speed—new users. You said 30 seconds to find my team. Are we putting big buttons? Like Get to your league, Create or Join…\n\nMaya [Product Manager]: Exactly. The landing page will funnel first-time users to Join League or Find My Team immediately, and once they authenticate with username and password, they can reach their owner page quickly.\n\nTom [League Commissioner]: Wait—so they have to log in before they can see their team? That makes sense. You don’t want randoms peeping rosters.\n\nMaya [Product Manager]: Correct. Team owner pages are behind authentication.\n\nJorge [DevOps]: Also worth noting, to hit our uptime target, we’ll do planned upgrades during that Wednesday 3 to 6 AM Central window during the season. For the big release at season start, we’ll schedule a maintenance message and aim for minimal disruption. But if we need a few minutes, that’s the time.\n\nTom [League Commissioner]: As long as it’s not Sunday.\n\nRiley [Team Owner]: Never Sunday.\n\nPriya [Database Admin]: Data ingestion from the stats provider, we’ll need to reconcile the 25-plus stats per player. That’s at least the standard box score metrics plus derived points. We’ll store both raw stats and computed points so we can show points everywhere.\n\nMaya [Product Manager]: Yes, points should be visible on every page that shows players. Owners make decisions at a glance.\n\nRiley [Team Owner]: Side note—can we get notifications when a trade is proposed? Actually, wait—ignore that. You’re trying to keep this simple. Just make sure when I propose a trade, it asks me to confirm.\n\nMaya [Product Manager]: Right now we’re not scoping notifications. But yes, the confirm step is in scope.\n\nJorge [DevOps]: Contention point: twenty-five stats per page. On mobile view, that’s a lot. But I suppose we can make it horizontally scrollable or collapsible without changing the fact that the data is present.\n\nMaya [Product Manager]: We’ll deal with presentation later, but the requirement is that the data is available on each page. Maybe a condensed mode. The key is not making people click into separate pages to see them.\n\nTom [League Commissioner]: Another thing: there should be a clear, single link to start a trade from my own team page. I don’t want to navigate to some separate trades area; one click should take me right to propose.\n\nMaya [Product Manager]: Yes, from the owner dashboard a single click will take you into the trade flow, same for add and drop. That’s the shortcut we want.\n\nRiley [Team Owner]: And then it confirms before it does anything. Good.\n\nJorge [DevOps]: Performance again: The application server stack needs to be tuned. We’re planning a web application server deployment. The primary DB will handle hot data as a kind of cached store for active users’ stuff. Secondary holds the historical stats and records.\n\nPriya [Database Admin]: For clarity, the primary is essentially operational storage for the current season: active rosters, pending transactions, current week player stats, and the like. The secondary accumulates historical stats across seasons, long-term records, transaction history—anything older gets moved there.\n\nMaya [Product Manager]: Good. I think we’ve hit the major beats. Any objections to the 3 to 6 AM Wednesday window for in-season updates?\n\nTom [League Commissioner]: No, that’s fine. Just tell us if you ever have to break that rule.\n\nRiley [Team Owner]: The season-start release—can you push it like the week before kickoff so we have time to acclimate? Or literally the beginning of the season?\n\nMaya [Product Manager]: The plan is to align the new major version with the start of the NFL season. We can open a staging preview earlier for commissioners, but the official release is at season start.\n\nJorge [DevOps]: We should also document that transactions—add, drop, trade—complete quickly on the network. Users shouldn’t wait more than a quarter second after they click confirm. It’s basically instantaneous to them.\n\nRiley [Team Owner]: If I click add and it spins, I get nervous. So, yeah, fast.\n\nPriya [Database Admin]: We’ll keep the write path lean—use the primary with precomputed indexes. Follow-up views should reflect the change quickly.\n\nTom [League Commissioner]: And if something goes wrong, I don’t want the whole site down. You said we’re aiming for ten minutes downtime per year? That’s… very little.\n\nJorge [DevOps]: It is. We’ll need careful change control. But the goal is minutes, not hours. Ten is a good upper bound to plan against.\n\nMaya [Product Manager]: Okay, summarizing what we agreed so far: owners authenticate with username and password to reach their owner dashboard; the commissioner is the only one who can adjust league settings; consistent layout with separate action and navigation areas and breadcrumb location on every page; message wall on the league page shows the five most recent posts with roughly 150-character previews; first-time users can get to league and team pages within thirty seconds from the start; from the owner dashboard it’s one click to add, drop, and trade flows; before dropping or trading, ask for confirmation; on every page we show at least twenty-five stats per player plus points; user transactions complete in around 250 milliseconds over the network; the app runs on a web application server with a primary database for hot, cached active data and a secondary for historical stats and records; updates happen Wednesdays 3 to 6 AM Central during the season; and major releases go live at the beginning of each NFL season.\n\nRiley [Team Owner]: That’s the dream. Just make it not suck.\n\nTom [League Commissioner]: And don’t move the trade button around.\n\nJorge [DevOps]: And don’t ask me for two-hour maintenance windows Sunday mornings.\n\nPriya [Database Admin]: And don’t forget indexing the stat lines.\n\nMaya [Product Manager]: All noted. Any last concerns?\n\nRiley [Team Owner]: One tiny thing—on the breadcrumbs, can it show my team name instead of just Team? Like Home > League > Riley’s Runners. Just nice to see.\n\nMaya [Product Manager]: We can do that without changing the requirement. It’s still the same structural trail. Good suggestion.\n\nTom [League Commissioner]: If someone isn’t signed in, do they see anything? Like a generic home?\n\nMaya [Product Manager]: Yes, but not owner pages. The owner dashboard is behind authentication. Public pages would be marketing and general info.\n\nJorge [DevOps]: That actually helps performance because anonymous traffic won’t hit the same hot paths.\n\nPriya [Database Admin]: It also avoids loading active user cache for anonymous sessions.\n\nRiley [Team Owner]: Cool. I’m good.\n\nMaya [Product Manager]: Thanks all. I’ll circulate scrappy notes, and we’ll validate with a prototype.\n\nTom [League Commissioner]: Looking forward to clicking add and not getting lost.\n\nJorge [DevOps]: Looking forward to not getting paged on Sundays.\n\nPriya [Database Admin]: Looking forward to nice, clean schemas.\n\nMaya [Product Manager]: Meeting adjourned."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "UX and Ops Working Session Notes — Navigation, Roster Actions, and Release Cadence",
+      "text": "Date: 2025-03-11\nLocation: Zoom call link: https://zoom.example.com/j/123456789\nAttendees: Maya (PM), Jorge (DevOps), Priya (DBA), Tom (Commissioner), Riley (Owner), Alex (Design), Chen (FE Eng), Sahana (BE Eng)\n\nAgenda (loosely):\n- Nav consistency + breadcrumbs\n- Owner dashboard quick actions (add/drop/trade)\n- Message wall content limits\n- Onboarding path for first-timers\n- Performance targets + downtime budget\n- Data tiers (primary vs. secondary DB)\n- Maintenance window + season release plan\n\nNotes (raw):\n- Nav: maintain a consistent scaffold across pages. Action items grouped separate from nav controls. Alex: action area right rail? Chen: left rail nav w/ breadcrumb top. Maya: yes to breadcrumb on every page. Riley: wants to see Home > League > Team names in the trail.\n- Contradiction? Alex suggested actions top-right; Chen suggested bottom-fixed actions on mobile. [TBD] unify. Consistency is the key, not exact placement; but action vs nav separation is required.\n- Breadcrumb index bar across all pages. Include league name and team name. Tom: helpful when deep in player list.\n- Owner auth: username + password gate to reach owner dashboard. No bypass. Riley ok with sessions but keep it straightforward.\n- Commissioner-only changes: Only 1 person per league (the commissioner) can change league settings. RBAC. No co-comm edits. Auditing at launch? [Out of scope]\n- Onboarding: new users should be able to land and reach league page and then team page in ~30s from start page. Big Join League / Find Team buttons. Alex: reduce friction. Jorge: perf helps too.\n- Message wall: limit to 5 most recent posts on league page. Show teaser snippet ~150 chars. Tom does not want long threads on landing. Archive link optional [later].\n- Riley: please keep the wall light-weight. Just the latest five, not everything.\n- Quick actions: From owner dashboard, link to add, drop, and trade flows should be one click away. No hunting through menus.\n- Confirmations: Before drop or trade is final, show a confirmation prompt. Extra safety. Sahana: server requires explicit confirm before committing.\n- Stats per page: Show at least 25 NFL player stats plus fantasy points on any page where players are listed or referenced. Alex worried about density on mobile. Chen: can collapse groupings but still present. Note: ensure points always visible.\n- Performance: Target network-side transaction completion ~0.25s (250 ms). Jorge: need caching strategy, avoid chatty calls. Chen: batch requests.\n- Availability: extremely high. Downtime minutes per year. Jorge wrote 10 min/yr as budget. Tom says Sunday outages unacceptable.\n- Hosting: Application runs on a web application server. No native app in scope right now.\n- Databases: Primary DB holds hot/active user data (also acts as cached store for active sessions), e.g., current week stats, rosters, pending transactions. Secondary DB holds historical stats and long-term records. Movement: nightly jobs to push older data to secondary. Priya: index latest wall posts in primary.\n- Updates: In-season updates only in Wednesday early morning window 3–6 AM CST. Plan low-impact deploys. Alex: can we do A/B? Jorge: not in season, keep it simple.\n- Season release: Major version rollouts aligned with beginning of each NFL season. Staging previews ok earlier.\n- UI consistency: explicit separation of action buttons vs navigation tabs. Avoid mixing them. Alex: create a pattern library. Riley: don’t move the trade button page-to-page.\n- Breadcrumb examples: Home > League > Riley’s Runners. Home > League > Free Agents. Home > League > Team > Player detail. [Check with content for exact labels.]\n- Owner dashboard: should have add, drop, trade entry points with clear labels. One click to enter those flows. After confirm, do the mutation.\n- Confirm risk: accidental taps on mobile. Use confirm yes/no for drop/trade. For add, do we confirm? [Not required, but maybe]. Decision: confirm drop and trade only for now.\n- Message wall content limits: show only the first ~150 characters as teaser. Don’t show images in teaser. [TBD] whether to count by chars or graphemes. Keep to approx 150.\n- New users path: After sign-up or sign-in (username/password), show find/join league. Then link to team. Riley: can get to team in 20–30s if clear.\n- Priya: Stats provider feed volume: >25 fields per player per week. We must select at least 25 for display baseline. Points computed field included.\n- Jorge: To hit 250 ms, precompute stat lines for active players in primary DB. Avoid aggregating on the fly.\n- Availability again: 10 minutes/year total downtime. That includes unplanned only or total including planned? [Clarify]. Prefer to count unplanned. But commit to minutes only overall.\n- Maintenance exceptions: If emergency fix outside window? Tom: only if critical and not game day Sunday. Jorge: will avoid; if necessary, announce.\n- Constraint scribbles: Runs on web application server, primary DB ~cached layer for active users, secondary for historical. No native app deliverable now.\n- DevOps: Deploy during Wed 3–6 AM. Database schema changes only in that window in-season.\n- Riley raised UI confusion on prior app: trade button moved around. Emphasize consistent placement. Use breadcrumb to avoid dead ends.\n- Alex proposed a sticky footer with actions on mobile. Chen: okay if consistent across pages. Maya: the main rule is action vs nav separation; exact position is flexible if uniform.\n- Chen: owner dashboard must expose one-click entry points to add/drop/trade. Avoid nested menus. Make it obviously a single tap/click to start.\n- Sahana: server will only commit after explicit confirm for drop/trade.\n- Priya: message wall in primary for current season; archive to secondary at season end. Retrieve last 5 posts quickly via index. Keep payload small.\n- Tom: Breadcrumb shows where you are; also show league name. Helps me backtrack.\n- Riley: Stats everywhere. Even on trade propose screen, show 25+ metrics + points so I can compare quickly.\n- Alex: Might need a show more toggle to avoid overwhelming. But the requirement is that data is there. We can collapse sections.\n- Jorge: Monitoring to meet uptime and fast issue detection.\n- Maya: Confirm again major release timing: season start. Minor updates go to Wed window only in-season.\n- Chen: search? [Out of scope now.] Keep it simple.\n- Tom: notifications? [Out of scope.] Just make confirms work.\n- Priya: Keep the points calculation consistent on every page; don’t compute differently.\n- Jorge: 0.25 s target is for server network roundtrip excluding client rendering. Might feel slower on bad wifi. Still aim for it.\n- Riley: I don’t care about the millisecond number; I just want it to feel instant.\n- Maya: Put both: objective 250 ms, user perception: snappy.\n\nContradictions/unclear bits to resolve:\n- Action placement conflict (top-right vs sticky footer). Both agree on consistent separation. [Resolve in design doc]\n- Count downtime (planned + unplanned?) vs just unplanned. [Clarify with Ops policy]\n- Confirm add? Currently no. Might be asked later. [NOT decided yet]\n- Teaser length: about 150 chars vs exactly 150 chars. [Use approx; cap at 150]\n\nAction Items:\n- Alex to draft a pattern showing action area and navigation separated, include breadcrumb. Due Fri.\n- Chen to prototype owner dashboard with one-click entry to add/drop/trade. Due next Wed.\n- Sahana + Priya to design staged confirmation flow for drop and trade. Due Thu.\n- Jorge to draft uptime policy and define downtime counting. Include ten minutes/year budget. Due next Mon.\n- Priya to diagram primary vs secondary DB: what lives where (active cached vs historical), include message wall lifecycle. Due Tue.\n- Maya to write onboarding success metric: first-time user can reach league and team in 30 seconds from landing. Due Fri.\n- Alex to spec message wall teaser truncation at ~150 chars; show last 5 posts only. Due Fri.\n- Jorge to formalize maintenance window docs: in-season updates only Wed 3–6 AM CST. Major version at NFL season start. Due next Mon.\n\nOpen Issues / Parking Lot:\n- Breadcrumb labeling formatting (team name vs team ID) [TBD]\n- Whether points should be bold everywhere; accessibility concerns [check with UX]\n- What happens if confirm modal is blocked by popup blockers? [Dev to handle in-app confirm]\n- Define what constitutes a user transaction for the 0.25 s target. Is browsing the wall included? [Probably not, focus on add/drop/trade, page loads]\n- Pros/cons of showing exactly 25 stats vs at least 25 stats. Decision: at least 25, not fewer.\n- Impact of heavy stat payload on mobile data; prefetch vs lazy load [investigate]\n\nMisc scribbles:\n- Runs on web app server\n- Primary DB = hot cache for active users, Secondary = historical stats/records\n- Update window: Wed 3–6 AM CST; No deploys on Sunday\n- Availability = minutes/yr, target 10\n- Owner auth = username/password\n- Commissioner-only settings edits per league\n- One-click access to add/drop/trade from owner dashboard\n- Confirm before drop/trade\n- Message wall last 5 posts; teaser length ~150\n- Breadcrumb nav on every page, consistent format\n- Show 25+ stats + points on each player view\n- Network tx ~0.25 s\n- Major release at beginning of NFL season\n\nStruck ideas:\n- ~~Add email notifications for trades at launch~~ [scope creep]\n- ~~Infinite-scroll league wall~~ [against perf + clarity]\n\nEnd of notes."
+    },
+    {
+      "type": "email_thread",
+      "title": "Thread: Wednesday Maintenance Window, Owner Auth, and UI Consistency Questions",
+      "text": "Email 1\nFrom: Maya Patel <maya@gridironhub.com>\nTo: Tom Rivera <tom.commish@example.com>, Riley Hu <riley.owner@example.com>\nCC: Jorge Salgado <jorge.ops@gridironhub.com>, Priya Menon <priya.dba@gridironhub.com>, Alex Park <alex.design@gridironhub.com>\nSubject: Quick confirmations: access, wall teaser, and midweek updates\nBody:\nHey Tom and Riley,\n\nQuick sanity checks so we can lock a few things:\n- Owner dashboards require sign-in with username/password. No anonymous viewing of team pages, correct?\n- League page will have a simple message wall that shows the latest five posts with a short preview (we're capping the teaser around 150 characters). Sound right?\n- We're scheduling in-season app updates during an early Wednesday window (3–6 AM Central). Outside of that, we avoid changes. Major new version goes live at the beginning of the NFL season.\n- Also, we're standardizing a breadcrumb trail on every page and keeping action buttons separated from navigation so you don't accidentally hit the wrong thing.\n- From the owner dashboard, add/drop/trade flows will be just one click away, with a confirm step for drop/trade to avoid accidental roster changes.\n\nAnything in there you disagree with?\n\nThanks!\nMaya\n\n—\n\nEmail 2\nFrom: Tom Rivera <tom.commish@example.com>\nTo: Maya Patel <maya@gridironhub.com>\nCC: Riley Hu <riley.owner@example.com>, Jorge Salgado <jorge.ops@gridironhub.com>, Priya Menon <priya.dba@gridironhub.com>\nSubject: RE: Quick confirmations: access, wall teaser, and midweek updates\nBody:\nHey Maya,\n\nAll that looks good. Two emphatic yes-es from me:\n- Only the commissioner in a given league can change league settings. Please make sure nobody else even sees those controls.\n- Early Wednesday updates are fine. Just not Sunday. Ever. If you need to do a season-start push, do it right when the season flips.\n\nBreadcrumb thing is helpful. And the wall preview length sounds right. Five posts is plenty.\n\nThanks,\nTom\n\n—\n\nEmail 3\nFrom: Riley Hu <riley.owner@example.com>\nTo: Maya Patel <maya@gridironhub.com>\nCC: Tom Rivera <tom.commish@example.com>, Alex Park <alex.design@gridironhub.com>\nSubject: RE: Quick confirmations: access, wall teaser, and midweek updates (and quick actions)\nBody:\nHi all,\n\nNo complaints here. Just make the roster actions front and center. If I can hit Add, Drop, or Trade from my owner page without digging, that’s perfect. One click to start. And PLEASE show me a confirm before it actually drops or trades a guy—my thumbs are clumsy.\n\nAlso, one thing that bugs me on other sites: they hide the points behind a tooltip. If you’re showing those 25-plus stats, just include points visibly on every page that lists players. I don’t want to guess.\n\nBreadcrumbs will help me not get lost. Keep the navigation and the action buttons apart. I’ve tapped the wrong one before when they jam everything together.\n\nThanks,\nRiley\n\n—\n\nEmail 4\nFrom: Jorge Salgado <jorge.ops@gridironhub.com>\nTo: Maya Patel <maya@gridironhub.com>, Alex Park <alex.design@gridironhub.com>\nCC: Tom Rivera <tom.commish@example.com>, Riley Hu <riley.owner@example.com>, Priya Menon <priya.dba@gridironhub.com>, Sahana Iyer <sahana.backend@gridironhub.com>\nSubject: RE: Quick confirmations: access, wall teaser, and midweek updates — perf and uptime caveats\nBody:\nJumping in with ops constraints so we’re not overpromising:\n\n- Performance: We’re targeting that every user transaction (think add, drop, trade confirmations, etc.) completes over the network in about a quarter of a second. 250 ms on the server side is the SLO we’re drafting. That means we’ll need to keep payloads tight — e.g., limiting the league wall to five posts helps a lot.\n\n- Availability: The business has floated a minutes-per-year downtime goal. I’ve penciled in a 10 minutes/year upper bound outside the scheduled Wednesday window. It’s aggressive but we’ll plan around it.\n\n- Hosting: This is a web application server deployment. Just clarifying we’re not doing any native app in scope right now.\n\n- Maintenance: Agree on the 3–6 AM CST Wednesday in-season updates. Season-start major version is fine. If we need an emergency outside that slot, we will coordinate and avoid Sundays.\n\nAlex — keeping actions and nav separated and a breadcrumb on each page both reduce errors, so I’m on board.\n\nJorge\n\n—\n\nEmail 5\nFrom: Priya Menon <priya.dba@gridironhub.com>\nTo: Maya Patel <maya@gridironhub.com>, Jorge Salgado <jorge.ops@gridironhub.com>\nCC: Alex Park <alex.design@gridironhub.com>, Sahana Iyer <sahana.backend@gridironhub.com>, Tom Rivera <tom.commish@example.com>\nSubject: RE: perf/uptime caveats + data layout note\nBody:\nAdding DB angle:\n\n- We will keep a primary database focused on active users’ needs. It will act like a cached store for hot data — current rosters, pending add/drop/trade transactions, current week stat lines. That’s how we can realistically hit the ~250 ms target without recomputing.\n\n- A secondary database will hold the long-term historicals: prior seasons’ stats, career numbers, old message wall posts, long-term league records. We’ll archive into this regularly so the primary stays lean.\n\n- For the message wall, I’ll index by league and timestamp in the primary to fetch exactly the last five quickly. Teaser length we can cap around 150 chars at the app layer.\n\n- Points will be included in the stat line object we serve to the UI so that wherever players show up, they get 25+ stats plus points without extra calls.\n\nPriya\n\n—\n\nEmail 6\nFrom: Alex Park <alex.design@gridironhub.com>\nTo: Maya Patel <maya@gridironhub.com>, Riley Hu <riley.owner@example.com>\nCC: Jorge Salgado <jorge.ops@gridironhub.com>, Priya Menon <priya.dba@gridironhub.com>, Tom Rivera <tom.commish@example.com>, Chen Li <chen.fe@gridironhub.com>\nSubject: RE: UI bits — actions vs nav, breadcrumbs, and clutter\nBody:\nHey team,\n\nDesign take:\n- We’ll standardize a global navigation zone with the breadcrumb trail visible at the top of every page. That breadcrumb will include league and team names so orientation is obvious.\n- Action items (Add, Drop, Trade) will live in a predictable action block on owner pages. Same placement page-to-page. From there, you’ll have a single click to start each flow.\n- Confirmations: we will add a clear confirmation step for drop/trade. I’ll avoid dark patterns.\n- Stats: I’ll work with FE to show at least 25 stats plus points everywhere players are listed. On mobile we might collapse some groups but the data will still be present.\n- League wall: last five posts only, teaser roughly 150 characters. Clean and small so it doesn’t slow down.\n\nRiley, LMK if that sounds like what you had in mind.\n\nAlex\n\n—\n\nEmail 7\nFrom: Tom Rivera <tom.commish@example.com>\nTo: Maya Patel <maya@gridironhub.com>\nCC: Alex Park <alex.design@gridironhub.com>, Jorge Salgado <jorge.ops@gridironhub.com>, Priya Menon <priya.dba@gridironhub.com>, Riley Hu <riley.owner@example.com>\nSubject: RE: UI bits — one more commissioner thing\nBody:\nSmall nit from the commish side: make absolutely sure only I can adjust league settings. One user per league with that authority. I don’t even want a co-commissioner option at launch. And please keep those controls away from the roster actions visually.\n\nAlso, unrelated but important: If a new person signs up, they should be able to get to the league and their team fast. You keep saying 30 seconds. That sounds right. Just confirming you’re designing for that.\n\nThanks,\nTom\n\n—\n\nEmail 8\nFrom: Maya Patel <maya@gridironhub.com>\nTo: Tom Rivera <tom.commish@example.com>, Riley Hu <riley.owner@example.com>\nCC: Jorge Salgado <jorge.ops@gridironhub.com>, Priya Menon <priya.dba@gridironhub.com>, Alex Park <alex.design@gridironhub.com>, Chen Li <chen.fe@gridironhub.com>\nSubject: RE: UI bits — closing the loop (some open items)\nBody:\nThanks everyone — summarizing where we landed and what’s still open:\n\n- Owner pages behind username/password. Yes, locked.\n- Commissioner-only controls per league for settings. We’ll hide them from other roles and enforce on the backend too.\n- Consistent layout: navigation zone + breadcrumb on all pages; action items in a distinct place. We’ll stick to that pattern.\n- League wall shows last 5 posts, teaser length capped around 150 chars.\n- Owner dashboard has one-click entry to Add, Drop, Trade flows. There will be a confirmation prompt before any drop or trade is committed.\n- Stats: on any page where players show up, we’ll display at least 25 stats and the fantasy points.\n- Performance target: transactions complete in roughly a quarter second over the network. Jorge is writing the SLO doc.\n- Availability target: minutes of downtime per year, with a 10 min/year budget we’re planning against.\n- Infra: Web application server, primary DB for hot (cached-by-usage) data, secondary DB for historical and long-term records.\n- Updates: In-season updates only Wednesday 3–6 AM CST. Major version release aligned to the start of the NFL season.\n\nOpen items:\n- Alex and Chen to finalize exact placement of the action block (but it will be consistent). Due next week.\n- Jorge to clarify whether the 10 min/year includes planned maintenance or just unplanned. He’ll propose language.\n\nThanks all — replies inline if you disagree with anything above.\n\nMaya\n\n(sent from mobile, excuse typos)"
+    }
+  ],
+  "gold_requirements": [
+    {
+      "id": "PROMISE_14_R001",
+      "text": "Each team owner will need to use a username and password in order to be authenticated to reach the team owner s page",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_14_R002",
+      "text": "The Commissioner will be the only authorized user per league to adjust league settings.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_14_R003",
+      "text": "Each page shall contain a navigation menu which shows the index into which the current page is contained.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_14_R004",
+      "text": "Each page shall contain a similar format with action items in one location and navigation buttons in a different location.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_14_R005",
+      "text": "The message board shall contain the 5 most recently posted messages on the league page. The messages will contain up to the first 150 characters of the message.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_14_R006",
+      "text": "A new user shall be able to navigate through the league and team pages within 30 seconds of reaching the start-up page.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_14_R007",
+      "text": "Users shall be able to reach the add drop and trade player pages with one click from the team owner s page.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_14_R008",
+      "text": "Users shall be able to view at least 25 NFL player statistics and points on each page.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_14_R009",
+      "text": "The application shall ask the user to confirm dropping a player or trading a player before performing the action.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_14_R010",
+      "text": "The application shall be able to complete every user transaction within one fourth of a second of receiving the request over the network.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_14_R011",
+      "text": "The application shall have a downtime of at most 10 minutes per year.",
+      "raw_label": "A",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_14_R012",
+      "text": "The application shall run on a web application server.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_14_R013",
+      "text": "A primary database will be used to store cached data for active users.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_14_R014",
+      "text": "A secondary database will be used to store historical statistics and data.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_14_R015",
+      "text": "Application updates shall occur between 3AM and 6 AM CST on Wednesday morning during the middle of the NFL season.",
+      "raw_label": "MN",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_14_R016",
+      "text": "New System version releases shall be released at the beginning of each NFL season.",
+      "raw_label": "MN",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": null,
+      "source_region": null
+    }
+  ],
+  "validation": {
+    "coverage_rate": 1.0,
+    "missing_req_ids": [],
+    "unsupported_count": 3,
+    "repair_rounds_used": 1,
+    "coverage_entries": [
+      {
+        "req_id": "PROMISE_14_R001",
+        "supported": true,
+        "evidence_snippets": [
+          "username + password before owner dashboard"
+        ],
+        "reason": "Explicitly required in transcript, notes, and emails."
+      },
+      {
+        "req_id": "PROMISE_14_R002",
+        "supported": true,
+        "evidence_snippets": [
+          "Only the commissioner can change league settings"
+        ],
+        "reason": "Commissioner-only edits stated across artifacts."
+      },
+      {
+        "req_id": "PROMISE_14_R003",
+        "supported": true,
+        "evidence_snippets": [
+          "breadcrumb on every page"
+        ],
+        "reason": "Breadcrumb trail required on every page."
+      },
+      {
+        "req_id": "PROMISE_14_R004",
+        "supported": true,
+        "evidence_snippets": [
+          "action items grouped separate from nav"
+        ],
+        "reason": "Action vs navigation separation mandated in notes."
+      },
+      {
+        "req_id": "PROMISE_14_R005",
+        "supported": true,
+        "evidence_snippets": [
+          "latest five posts with a short preview ~150"
+        ],
+        "reason": "Five-post limit and ~150-char teaser explicitly specified."
+      },
+      {
+        "req_id": "PROMISE_14_R006",
+        "supported": true,
+        "evidence_snippets": [
+          "within about 30 seconds a first-time user"
+        ],
+        "reason": "30-second onboarding navigation target stated."
+      },
+      {
+        "req_id": "PROMISE_14_R007",
+        "supported": true,
+        "evidence_snippets": [
+          "add, drop, and trade actions one click from owner"
+        ],
+        "reason": "One-click access to add/drop/trade repeatedly required."
+      },
+      {
+        "req_id": "PROMISE_14_R008",
+        "supported": true,
+        "evidence_snippets": [
+          "show at least twenty-five data points for each player"
+        ],
+        "reason": "25+ stats plus points requirement clearly specified."
+      },
+      {
+        "req_id": "PROMISE_14_R009",
+        "supported": true,
+        "evidence_snippets": [
+          "show a confirmation prompt before drop or trade"
+        ],
+        "reason": "Confirmation required for drop and trade actions."
+      },
+      {
+        "req_id": "PROMISE_14_R010",
+        "supported": true,
+        "evidence_snippets": [
+          "250 ms on the server side is the SLO"
+        ],
+        "reason": "Quarter-second (250ms) transaction completion target stated."
+      },
+      {
+        "req_id": "PROMISE_14_R011",
+        "supported": true,
+        "evidence_snippets": [
+          "10 minutes/year upper bound"
+        ],
+        "reason": "Explicit 10 minutes/year downtime budget stated."
+      },
+      {
+        "req_id": "PROMISE_14_R012",
+        "supported": true,
+        "evidence_snippets": [
+          "web application server deployment"
+        ],
+        "reason": "Sources explicitly state web application server hosting."
+      },
+      {
+        "req_id": "PROMISE_14_R013",
+        "supported": true,
+        "evidence_snippets": [
+          "primary DB acts as cached store for hot data"
+        ],
+        "reason": "Primary DB described as cached store for active users."
+      },
+      {
+        "req_id": "PROMISE_14_R014",
+        "supported": true,
+        "evidence_snippets": [
+          "secondary DB holds historical stats"
+        ],
+        "reason": "Secondary DB described for long-term historical data."
+      },
+      {
+        "req_id": "PROMISE_14_R015",
+        "supported": true,
+        "evidence_snippets": [
+          "in-season updates Wed 3–6 AM CST"
+        ],
+        "reason": "In-season updates scheduled Wednesdays 3–6 AM CST."
+      },
+      {
+        "req_id": "PROMISE_14_R016",
+        "supported": true,
+        "evidence_snippets": [
+          "major version rollouts aligned with beginning of each NFL season"
+        ],
+        "reason": "Major releases are to occur at NFL season start."
+      }
+    ],
+    "unsupported_implied": [
+      {
+        "text": "No deployments or maintenance actions shall be performed on Sundays (i.e., avoid any updates or maintenance on Sunday game days).",
+        "source_snippet": "\"Early Wednesday updates are fine. Just not Sunday. Ever.\"",
+        "source_type": "email_thread",
+        "reason": "The team repeatedly states an operational prohibition on Sunday deploys/maintenance (multiple attendees emphasize 'not Sunday'). This is an explicit scheduling constraint on when maintenance or deployments may occur that is not captured by the gold requirement which only specifies the Wednesday 3–6 AM in-season window."
+      },
+      {
+        "text": "Database schema changes (and similar disruptive DB migrations) shall only be performed during the in-season Wednesday 3–6 AM CST maintenance window.",
+        "source_snippet": "\"Schema changes only in that window during the season, please.\"",
+        "source_type": "interview_transcript",
+        "reason": "The discussion explicitly restricts schema changes to the agreed midweek maintenance window to avoid in-season disruption. The gold set mandates the maintenance window timing but does not state that schema changes themselves are constrained to that window; this is a separate, significant operational requirement."
+      },
+      {
+        "text": "Transactional operations (adds/drops/trades) must be staged and committed atomically only after explicit user confirmation so that no partial/half-updates (e.g., half trades) can occur.",
+        "source_snippet": "\"Just make sure the APIs don’t perform the mutation until the confirm comes through, so we avoid partial updates.\"",
+        "source_type": "interview_transcript",
+        "reason": "While the gold set requires confirmation before drop/trade, the source also requires backend behavior guaranteeing atomic staging/commit semantics (no partial updates or half-completed trades). That atomicity/back-end staging requirement is a distinct system capability not expressed in the gold text."
+      }
+    ],
+    "passed": false
+  },
+  "brief": {
+    "project_name": "Gridiron League Hub",
+    "domain": "Fantasy sports (NFL) web application",
+    "users": [
+      "Team Owner",
+      "League Commissioner",
+      "First-time user (new sign-up)"
+    ],
+    "stakeholders": [
+      "Operations/DevOps team",
+      "Database administrator",
+      "Product manager",
+      "NFL stats data provider"
+    ],
+    "business_goals": [
+      "Deliver a fast, reliable league experience throughout the NFL season",
+      "Enable commissioners to configure leagues securely and independently",
+      "Make roster moves (add, drop, trade) quick and intuitive from the owner dashboard",
+      "Keep members engaged via a simple league message wall",
+      "Surface rich player stats and points on every view to inform decisions"
+    ],
+    "core_features": [
+      "Credentialed access for team owners to their owner page (username/password)",
+      "Commissioner-only controls for league configuration",
+      "Consistent page layout with clearly separated action areas and navigation, plus breadcrumb-style location cues",
+      "League wall showing the latest five posts with a short teaser (~150 characters)",
+      "One-click links from the owner dashboard to add, drop, and trade flows, with confirmation prompts for drop/trade",
+      "Per-page display of 25+ NFL player stats and points"
+    ],
+    "quality_concerns": [
+      "Access control and authentication for owners’ pages",
+      "Onboarding speed: newcomers can find league and team pages within about 30 seconds of landing",
+      "Network-side transactions complete in roughly a quarter-second",
+      "Very high availability with only minutes of downtime allowed annually",
+      "UI consistency to reduce errors: actions separated from navigation",
+      "Planned maintenance overnight midweek (3–6 AM CST in-season) and season-start major releases"
+    ],
+    "constraints": [
+      "Runs on a web application server",
+      "Primary database serves as cached storage for active users’ data",
+      "Secondary database stores historical statistics and long-term records",
+      "Update window restricted to early Wednesday mornings (3–6 AM CST) during the NFL season",
+      "Major version rollouts aligned to the beginning of each NFL season"
+    ],
+    "terminology": [
+      "Commissioner",
+      "Team Owner",
+      "Add/Drop",
+      "Trade",
+      "Message Wall (teaser)",
+      "Breadcrumb navigation",
+      "Player stat line (points)"
+    ]
+  },
+  "metadata": {
+    "project_id": "14",
+    "req_count": 16,
+    "label_dist": {
+      "SE": 2,
+      "LF": 3,
+      "US": 4,
+      "PE": 1,
+      "A": 1,
+      "O": 3,
+      "MN": 2
+    },
+    "llm_usage": {
+      "total_calls": 194,
+      "total_input_tokens": 1078967,
+      "total_output_tokens": 661789
+    }
+  }
+}

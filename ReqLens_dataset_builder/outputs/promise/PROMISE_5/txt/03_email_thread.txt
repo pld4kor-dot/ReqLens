@@ -1,0 +1,87 @@
+TYPE  : email_thread
+TITLE : RE: Finalizing non-functional targets and roles before build freeze
+UNIT  : PROMISE_5
+============================================================
+
+From: Priya.Architecture@corp.example
+To: ProductTeam@corp.example; Ops@corp.example; Security@corp.example; SupportCenter@corp.example; Middleware@corp.example; ClaimsOps@corp.example
+Date: 2026-03-10 08:21
+Subject: RE: Finalizing non-functional targets and roles before build freeze
+
+Team,
+
+Summarizing a few confirmations before we lock scope:
+
+1) Environment and branding
+- We are not revising desktop standards. EcoClaim Parts Navigator must run as-is on our existing hardware. Browser support remains IE 5.5+ and Firefox 1.0+.
+- UI must adhere to our corporate UI guidelines and color scheme. Please keep the overall look professional and consistent with our portfolio.
+
+2) Roles and access
+- Estimator role: can perform recycled parts searches and apply only available parts to the estimate.
+- Adjuster role: can review estimates and request recycled parts audits.
+- Adjuster Supervisor role: can view and update preferred repair facility ratings (1–10) for attempted vs. actual recycled parts usage; others can view but not edit.
+- Enforce input validation across forms. Also, ensure strict segregation so one insurer’s users cannot access another insurer’s claim data.
+
+3) Performance and availability
+- Targets we agreed: parts search <= 15s; facility lookup <= 8s; audit <= 10s; rating save <= 5s.
+- Follow the published availability schedule—no unplanned downtime. Ops is tracking us to 98% uptime during available hours.
+- Maintenance limited to corporate windows; installs/upgrades executed by Middleware during approved launch windows.
+
+4) Integration and scale
+- ChoiceParts remains the sole recycled parts source. Nightly refresh occurs at approximately 1:00 AM; please keep the interface aligned to that timing.
+- Average daily recycled parts records we’ll ingest: ~50k.
+- Concurrency: support 1,500 simultaneous users at launch; architecture runway to 10,000 concurrent users within two years.
+
+5) Compliance and security hygiene
+- We remain subject to SOX. Also confirm compliance with insurance claims regulations and estimatics rules on recycled parts usage.
+- Security expects the product to be free of viruses and resilient against malicious activity, including denial-of-service. Coordinate with Security on controls.
+
+6) Usability/adoption
+- In-app help needs to be easy to find on the majority of screens (target ~90% coverage) to minimize support calls.
+- Training plan is two days onsite for new users. Success measures: ~95% of adjusters/estimators rate the product easy to use; ~85% overall user satisfaction; and within one month, ~80% of estimators self-report productivity gains.
+- Field use: ensure the application remains operable in dirty, noisy repair facilities.
+
+7) Functional clarifications
+- Facility search inputs: year/make/model; street/city/state/ZIP. If ZIP is missing, system should derive it from the address. Radius selector limited to 1–30 miles.
+- Facility results: return the top-rated facility; if no clear single, return a list within the radius. Adjuster must be able to assign the chosen facility to the estimate and override when needed.
+- Parts search: start with damaged parts + preferred suppliers; if none available, auto-fallback to ZIP + 30 miles. Return items with supplier info and retain the results for audit.
+- Audit: generated on adjuster request; show count used, count available, percentage used, and an overall score (sum of line items). Display immediately; leave accessible for later review by other adjusters.
+- Ratings: show existing scores or blanks if none; supervisors can enter and save.
+
+Rob (Support) has confirmed the Support Center will be first line for incidents and how-tos.
+
+If anyone sees gaps against these items, please reply today. Otherwise, we’ll assume these are the build targets.
+
+—Priya
+
+-----
+From: Sam.Security@corp.example
+Date: 2026-03-10 09:03
+
+Looks good. Please loop us in on input validation patterns and DoS protections during perf testing. Also confirm tenant isolation tests (insurer A cannot view insurer B data).
+
+—Sam
+
+-----
+From: Dana.Middleware@corp.example
+Date: 2026-03-10 09:17
+
+Confirmed on installs/upgrades—we’ll schedule during approved windows only. The 1:00 AM ChoiceParts feed aligns with our batch window.
+
+—Dana
+
+-----
+From: Jorge.ClaimsOps@corp.example
+Date: 2026-03-10 09:40
+
+On the usability metrics: keep the in-app help visible on almost every screen so adjusters don’t have to call Rob. We’ll run two-day trainings and survey for ease-of-use (target 95%) and satisfaction (85%). We’ll also measure estimator productivity after a month; goal is 80% reporting improvement.
+
+—Jorge
+
+-----
+From: Rob.SupportCenter@corp.example
+Date: 2026-03-10 10:05
+
+Acknowledged. Support Center will handle user calls; please provide concise help content inline so users can resolve 9 out of 10 questions without contacting us.
+
+—Rob

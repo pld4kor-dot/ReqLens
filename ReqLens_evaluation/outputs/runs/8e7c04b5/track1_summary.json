@@ -1,0 +1,16 @@
+[
+  {
+    "system_id": "reqinone_v1",
+    "unit_count": 13,
+    "mean_uar": 0.0,
+    "mean_hrr": 1.0,
+    "mean_grr": 0.198
+  },
+  {
+    "system_id": "reqlens_v2",
+    "unit_count": 13,
+    "mean_uar": 0.0,
+    "mean_hrr": 1.0,
+    "mean_grr": 0.0424
+  }
+]

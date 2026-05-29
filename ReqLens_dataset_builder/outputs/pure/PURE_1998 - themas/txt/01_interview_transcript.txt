@@ -1,0 +1,222 @@
+TYPE  : interview_transcript
+TITLE : Discovery Interview — THEMAS Operations and Control Behavior (revised)
+UNIT  : PURE_1998 - themas
+============================================================
+
+Barry [Project Manager]: Okay, thanks everyone for making time. We’re trying to pull together all the messy bits before the formal write‑up. I want to focus on how you all see THEMAS behaving day to day, and, uh, some of the rough edges we keep circling around—so jump in, don’t wait for me.
+
+Nina [HVAC Supervisor]: I’ll kick us off. For me it’s simple: I need to see all the thermostats by their quadrant ID—like the zone name—and what they’re set to right now. I don’t need a spaceship cockpit, just a clean list. Then if I pick one, I can bump the setpoint, but only to something that makes sense. Don’t let me type 200 degrees.
+
+Priya [Principal Software Architect]: Right, so you’re thinking a validated set of allowable temperatures for each thermostat, not freeform entry.
+
+Nina [HVAC Supervisor]: Exactly. A dropdown or a list. I can pick 68 or 72, etc. No weird numbers.
+
+Leo [Design Requirements]: Noted: the console shows available thermostats and current temperature settings, and the supervisor can select a thermostat and choose a new setting from a list of valid values.
+
+Carla [QA/Verification Engineer]: When you change that setpoint, we need to make sure the system checks it against the valid range before applying it. Also, I want confirmation that the value was accepted into the system state. Not the unit turning on—that’s different—but that the new setpoint is now the value we use.
+
+Barry [Project Manager]: That part we can show in the UI and log—confirm the setting was within the valid range and the system applied it.
+
+Omar [Facilities Maintenance Technician]: Quick question. When you say “valid,” I’ve seen thermostats with limits like 60 to 80. But sometimes we enforce 65 to 75 building‑wide. Which wins?
+
+Priya [Principal Software Architect]: The initialized valid temperature range will be the authority. We’ll load that from the initialization parameters, so we can enforce the narrower building policy if needed.
+
+Nina [HVAC Supervisor]: Good. If it’s out of bounds, just don’t let me choose it. Or if someone feeds us an invalid setpoint from some external config, flag it.
+
+Carla [QA/Verification Engineer]: And log it. We want a status on validity. Basically, if the input thermometer value or the setpoint is outside limits, we mark the condition.
+
+Leo [Design Requirements]: Capture: the software validates current temperature and temperature settings against the defined valid range, and indicates valid vs invalid status. That includes the operator change path.
+
+Barry [Project Manager]: Before we get too deep into runtime controls, can we tackle startup? We keep saying we want a known state.
+
+Priya [Principal Software Architect]: Yes. On initialization, the software reads an initialization file with the definitions of each unit—like which thermostat goes with which heating or cooling unit. We also load the thermostat identifiers themselves—unique IDs. And—this is important—we send requests to turn all units off at startup, so we begin in a known off baseline.
+
+Omar [Facilities Maintenance Technician]: That’s what I want to see. You can’t trust the field—they might be on already and we’d be blind. If we send OFF across the board first, then start reading data, we know what we’re dealing with.
+
+Nina [HVAC Supervisor]: Right, kill everything then bring things on only as needed. Makes sense. But, do we wait to collect the temperatures until after that?
+
+Priya [Principal Software Architect]: We will issue OFF requests and then proceed to read current temperature and current setpoint from each thermostat. We don’t block on feedback from the equipment because we don’t expect any confirmation back from the unit.
+
+Carla [QA/Verification Engineer]: That’s the no‑ack rule, right? We send H/C ON/OFF requests without getting an execution confirmation.
+
+Leo [Design Requirements]: Correct. The plan is: read two data points from each thermostat—the near‑real‑time temperature and the target setpoint.
+
+Nina [HVAC Supervisor]: While we’re on that: How do you decide when to heat or cool? I’ve heard you mention those bands… the lower and upper something.
+
+Priya [Principal Software Architect]: There are two concepts. First, we have overtemperature limits around the setpoint using OD, the overtemperature delta. So we compute LO = TSET minus OD and UO = TSET plus OD. If the current temperature T goes below LO or above UO, that’s a limit breach. We raise an indication.
+
+Barry [Project Manager]: That’s like an alarm boundary, yeah?
+
+Priya [Principal Software Architect]: Exactly—an exceedance. Separately, we have the trigger delta TD, which defines a narrower band for deciding whether to call for heating or cooling. So we compute LT = TSET minus TD and UT = TSET plus TD. If the current temperature falls outside LT/UT, then we consider turning something on, subject to utilization rules.
+
+Omar [Facilities Maintenance Technician]: So you’ll, ah, switch on heat if it’s below LT, and cooling if it’s above UT? That’s the gist?
+
+Priya [Principal Software Architect]: Yes, but there are constraints—like max concurrent units and the queue behavior. The raw decision is as you said.
+
+Carla [QA/Verification Engineer]: Just to be explicit: when the temperature is within the valid band and the setpoint is valid, the system accepts the setpoint and applies it. If either reading is out of the allowed range, we mark it invalid and don’t use it for control decisions, right?
+
+Priya [Principal Software Architect]: Correct. Invalid inputs are flagged and not acted on. We also generate status so the supervisor can see what’s going on.
+
+Nina [HVAC Supervisor]: I still want a quick way to force a unit on if I need it. Like if we have a group in a conference room, I might want to override.
+
+Barry [Project Manager]: We’re not doing overrides in the sense of ignoring the rules, but you as the supervisor can send manual ON or OFF to a specific unit. The system will still treat it like a request and apply the same utilization rules.
+
+Leo [Design Requirements]: Manual controls from the console: ON/OFF request per unit, consistent with the same signal we send automatically.
+
+Omar [Facilities Maintenance Technician]: And those signals—we’re just emitting requests to the field interface, right? We’re not listening for an “I did it.”
+
+Priya [Principal Software Architect]: Exactly. We generate H/C ON/OFF requests to the interfaces. There’s no reliable feedback loop telling us execution status, so we treat it as fire‑and‑forget and maintain our own software record of the intended state.
+
+Carla [QA/Verification Engineer]: Since we can’t know if the hardware actually did it, we need to keep our internal ON/OFF status model up to date with our last request. Then we can time‑slice utilization tracking from that.
+
+Nina [HVAC Supervisor]: Speaking of utilization, I need to not trip breakers by spinning everything up. What’s the rule again for total units?
+
+Priya [Principal Software Architect]: There’s a cap—the maximum number of concurrent units we’re allowed to have running. If a new request comes in and we’re at that limit, we don’t drop it; we put it into a waiting queue.
+
+Leo [Design Requirements]: And that queue is LIFO, last in, first out. So the most recent request gets considered first when capacity frees up.
+
+Omar [Facilities Maintenance Technician]: Why LIFO though? That seems unfair.
+
+Barry [Project Manager]: It was chosen to match responsiveness for the most recent conditions—this came out of a prior study. We can revisit after prototype.
+
+Nina [HVAC Supervisor]: If we can’t turn something on because we’re full, I need to know. Maybe an alert like “No capacity” or something.
+
+Carla [QA/Verification Engineer]: We plan to emit a “Unit Unavailable” event when a request can’t be honored due to the cap. It should hit the event log so it shows up later.
+
+Priya [Principal Software Architect]: And when a unit turns off—either we sent OFF or the thermostat no longer needs it—we’ll check the LIFO queue. If any entry exists, we pop one, re‑check the associated thermostat’s need, and if it still wants service, we send an ON for that unit.
+
+Omar [Facilities Maintenance Technician]: So you re‑read the thermostat need before turning it on, not just blindly honoring the old request. Good.
+
+Leo [Design Requirements]: That’s consistent with the idea that requests can get stale.
+
+Nina [HVAC Supervisor]: What about when the room warms up in the meantime? Yeah, re‑checking is necessary.
+
+Barry [Project Manager]: Let’s circle back to the temperature monitoring itself. Is that a dedicated function or just part of everything?
+
+Priya [Principal Software Architect]: It’s a primary function. We will have a component responsible for monitoring temperature inputs, validating them, and feeding downstream logic.
+
+Carla [QA/Verification Engineer]: For verification, we’ll need clear logging around when we read T and TSET per thermostat, their validation status, and the computed LT/UT, LO/UO values. If there’s a breach, we need an event.
+
+Nina [HVAC Supervisor]: Events are fine. Just don’t drown me. I want to see the list of thermostats and their current settings front and center. The rest can be a drill‑down.
+
+Leo [Design Requirements]: UI: display available thermostats and current temperature settings, with a selection workflow to adjust the setpoint only to a valid list.
+
+Omar [Facilities Maintenance Technician]: Also the manual ON/OFF controls on that same screen, please. It’s a hassle if I have to flip tabs.
+
+Priya [Principal Software Architect]: We can put manual controls in a side panel for the selected unit.
+
+Carla [QA/Verification Engineer]: Edge case—initialization. We said we read the initialization file. What exactly is in there? Just the mappings?
+
+Priya [Principal Software Architect]: The initialization data defines heating and cooling systems—basically the set of units—and their relationships to thermostats, plus operational parameters like valid temperature range, OD and TD values, and the limit on concurrent operations. Also, that’s where we pick up the unique thermostat IDs.
+
+Barry [Project Manager]: And sequence—first we issue OFF to all units, then we read thermostat data.
+
+Omar [Facilities Maintenance Technician]: Right. And we’ll store the ON/OFF status per unit internally from then on.
+
+Nina [HVAC Supervisor]: Now I’m thinking… sometimes someone sets the thermostat in the physical room. How does that impact us?
+
+Priya [Principal Software Architect]: If the thermostat device changes its setpoint, we read it as the new TSET on the next poll. We still validate it against range. If it’s valid, we use it. If not, mark invalid and proceed accordingly. We don’t override it automatically.
+
+Carla [QA/Verification Engineer]: But we should still show what the thermostat says and note it’s invalid. That helps with audits.
+
+Leo [Design Requirements]: That implies we recognize two types of data: current temperature and the temperature setting. We must store them distinctly.
+
+Barry [Project Manager]: Back to decisions—so the actual turning on of heating or cooling is per the rules we’ve been drafting. We’ll capture the detailed rules in the design section, but operationally, it’s the trigger boundaries and the utilization constraint.
+
+Nina [HVAC Supervisor]: I don’t want to argue LT/UT math with you. Just keep it comfortable and don’t overshoot. If the room is under the lower trigger, the heat request goes out—simple.
+
+Omar [Facilities Maintenance Technician]: Uh, quick tangent—are we going to get into reports here? Because I also want monthly stats. But maybe that’s later.
+
+Barry [Project Manager]: Let’s park detailed reporting for later. We’re focusing on control and monitoring for this call. We will have reporting but not now.
+
+Carla [QA/Verification Engineer]: Fine. But remember, every control decision and alarm has to hit an event stream, so later the reports have something to pull from. We can’t backfill.
+
+Priya [Principal Software Architect]: Understood. Event and alarm data generation is a core output alongside the H/C request messages.
+
+Nina [HVAC Supervisor]: Okay, can I also ask—if I send a manual ON, and we’re at cap, I want to know immediately that it’s not happening. Don’t hide it.
+
+Leo [Design Requirements]: We will make sure the “Unit Unavailable” event is generated and recorded. How we reflect that in the console during operations can be handled in the UI design so we don’t clutter the main list.
+
+Omar [Facilities Maintenance Technician]: And after a unit goes OFF, you’ll check the queue and maybe turn another one on if needed. Good.
+
+Carla [QA/Verification Engineer]: We should talk about how we track which units are ON in software. We can maintain an internal in‑memory state keyed by unit ID. That will drive the utilization metrics later. But we won’t pretend to know actual hardware state.
+
+Priya [Principal Software Architect]: Yes. The internal state reflects our last commanded state. We won’t attempt to verify execution by the field unit.
+
+Nina [HVAC Supervisor]: That’s fine. I just want to make sure the screen doesn’t show it as ON when we know we didn’t have capacity. If it’s denied, it stays OFF in our view.
+
+Barry [Project Manager]: Process wise, let’s also clarify communication channels. We will interact with thermostats and the equipment only via their defined interfaces. No direct hacks.
+
+Leo [Design Requirements]: Capture: the system talks to thermostats and heating/cooling units via designated interfaces. Decisions generate H/C ON/OFF requests on those interfaces.
+
+Omar [Facilities Maintenance Technician]: A question—if a thermostat flips from hot to okay while in the queue, you said you’ll re‑check before turning on. Does that also mean you’ll drop that queued request if no longer needed?
+
+Priya [Principal Software Architect]: Yes, we discard it. We only submit an ON if the thermostat still needs service when the slot opens up.
+
+Carla [QA/Verification Engineer]: We need to log that too—“dropped request due to no longer needed.” It might be important for statistics later, but I’m not going to argue for new report fields now.
+
+Nina [HVAC Supervisor]: This is all good. For me, the big usability thing is that the list of thermostats and their current settings is clear and uncluttered. Don’t bury controls.
+
+Barry [Project Manager]: Duly noted on the minimalism.
+
+Leo [Design Requirements]: Recap on the main flow: Init reads file, assigns thermostat IDs, turns all units OFF to start, then starts reading two data points per thermostat—current temp T and current setpoint TSET—validates them, applies valid setpoints, computes LO/UO for limit checks and LT/UT for control decisions, generates events/alarms and H/C requests, tracks unit ON/OFF state internally, enforces a cap with a LIFO waiting queue, emits Unit Unavailable when we can’t honor a request, and re‑checks queued entries on OFF.
+
+Omar [Facilities Maintenance Technician]: That’s a good summary.
+
+Nina [HVAC Supervisor]: And plus, I can manually request ON/OFF as supervisor, and tweak the setpoint from a valid list. That’s what I care about day‑to‑day.
+
+Carla [QA/Verification Engineer]: We’ll also need a thermostat simulator to exercise the logic later, but that’s for the test plan discussion—oh, sorry, I know we said no reports and no test plan yet. Just flagging it.
+
+Barry [Project Manager]: Put a pin in that for the next session.
+
+Priya [Principal Software Architect]: One small nit: when we compute LO, UO, LT, UT, all of that should be precise and we should record those values in our logs or traces so we can diagnose weirdness in pilot if something looks off.
+
+Nina [HVAC Supervisor]: As long as whatever diagnostics don’t clutter the operator view. Keep the main list clean.
+
+Leo [Design Requirements]: We’ll figure out display levels. The key is to make the decisions transparent enough for QA and engineering, but simple enough for operations.
+
+Omar [Facilities Maintenance Technician]: Can we go back to the initialization file format? Like, do I need to enter the mapping manually? Because that could be a source of errors.
+
+Priya [Principal Software Architect]: We’ll define a file structure that names the units and thermostats, pairs them, and includes the operational parameters. We’ll validate it on load. If it fails, we abort and log an error. But that’s more implementation detail; high‑level, yes, we read that file and derive the system’s definitions from it.
+
+Carla [QA/Verification Engineer]: When we abort, we still should have a safe state—everything OFF—so we don’t get stuck with units on.
+
+Barry [Project Manager]: Absolutely, safe known state first.
+
+Nina [HVAC Supervisor]: There’s also the case where a unit is in maintenance. If you try to turn it on, I’d rather be told upfront that it’s not available than see it sit in the queue.
+
+Leo [Design Requirements]: That’s a good point, but for now the “Unit Unavailable” event is meant for capacity limitations. We can capture maintenance unavailability separately in the initialization or operational flags later. Let’s not expand scope right now.
+
+Carla [QA/Verification Engineer]: Agreed—don’t add new behaviors today. Stick to utilization cap “unavailable”.
+
+Omar [Facilities Maintenance Technician]: I’ll mark maintenance in the file once we support it. Not for v1 then.
+
+Priya [Principal Software Architect]: For v1, Unit Unavailable strictly means “could not honor ON request because max concurrent units running.”
+
+Barry [Project Manager]: Okay, timeline check—we’re running over. Last questions on control signaling and temperature monitoring for this round?
+
+Nina [HVAC Supervisor]: One minor: on the console, can I see both the current temp and the setpoint next to each thermostat? Not just the setting?
+
+Leo [Design Requirements]: Makes sense. The requirement we captured was to show thermostats and current settings. Let’s add that current temperature display is also visible where practical. We’ll keep it clean.
+
+Priya [Principal Software Architect]: From a data standpoint, we already have both, so it’s not a problem. The design will decide exact placement.
+
+Carla [QA/Verification Engineer]: And validation: if current temperature reading itself is out of the valid range—sensor fault?—we should label it invalid and not use it for decisions, correct?
+
+Priya [Principal Software Architect]: Correct. Temperature input validation applies to both T and TSET.
+
+Omar [Facilities Maintenance Technician]: What about noise? If the temp is flapping around the trigger, will we rapidly toggle?
+
+Priya [Principal Software Architect]: The trigger band TD inherently provides hysteresis. As long as we’re within LT to UT, we don’t change state.
+
+Barry [Project Manager]: Great. We’ll be writing all of this up. We’ll cover reporting and verification and the rest in the next interviews. Thank you all.
+
+Nina [HVAC Supervisor]: Thanks, talk soon.
+
+Carla [QA/Verification Engineer]: Bye.
+
+Omar [Facilities Maintenance Technician]: Later.
+
+Priya [Principal Software Architect]: Thanks.
+
+Leo [Design Requirements]: I’ll clean up my notes and push them.

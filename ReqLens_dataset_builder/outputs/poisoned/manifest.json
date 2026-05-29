@@ -1,0 +1,277 @@
+{
+  "artifacts": [
+    {
+      "unit_id": "PURE_1998 - themas",
+      "origin": "PURE",
+      "track_id": "track1",
+      "variant_id": "hallu_v1",
+      "artifact_id": "T1A_F3E2D825",
+      "path": "outputs/poisoned/track1/PURE_1998 - themas/poisoned_track1_hallu_v1.json",
+      "pool_size": 68,
+      "fake_count": 11
+    },
+    {
+      "unit_id": "PURE_1998 - themas",
+      "origin": "PURE",
+      "track_id": "track2",
+      "variant_id": "defect_v1",
+      "artifact_id": "T2A_84A7E3D8",
+      "path": "outputs/poisoned/track2/PURE_1998 - themas/poisoned_track2_defect_v1.json",
+      "contradiction_count": 5,
+      "duplicate_count": 5,
+      "total_seeds": 10
+    },
+    {
+      "unit_id": "PURE_2001 - esa",
+      "origin": "PURE",
+      "track_id": "track1",
+      "variant_id": "hallu_v1",
+      "artifact_id": "T1A_3CEA8951",
+      "path": "outputs/poisoned/track1/PURE_2001 - esa/poisoned_track1_hallu_v1.json",
+      "pool_size": 44,
+      "fake_count": 6
+    },
+    {
+      "unit_id": "PURE_2001 - esa",
+      "origin": "PURE",
+      "track_id": "track2",
+      "variant_id": "defect_v1",
+      "artifact_id": "T2A_CD784B7A",
+      "path": "outputs/poisoned/track2/PURE_2001 - esa/poisoned_track2_defect_v1.json",
+      "contradiction_count": 5,
+      "duplicate_count": 5,
+      "total_seeds": 10
+    },
+    {
+      "unit_id": "PURE_2001 - space fractions",
+      "origin": "PURE",
+      "track_id": "track1",
+      "variant_id": "hallu_v1",
+      "artifact_id": "T1A_FD66153A",
+      "path": "outputs/poisoned/track1/PURE_2001 - space fractions/poisoned_track1_hallu_v1.json",
+      "pool_size": 40,
+      "fake_count": 6
+    },
+    {
+      "unit_id": "PURE_2001 - space fractions",
+      "origin": "PURE",
+      "track_id": "track2",
+      "variant_id": "defect_v1",
+      "artifact_id": "T2A_A1D6111D",
+      "path": "outputs/poisoned/track2/PURE_2001 - space fractions/poisoned_track2_defect_v1.json",
+      "contradiction_count": 5,
+      "duplicate_count": 5,
+      "total_seeds": 10
+    },
+    {
+      "unit_id": "PURE_2003 - qheadache",
+      "origin": "PURE",
+      "track_id": "track1",
+      "variant_id": "hallu_v1",
+      "artifact_id": "T1A_B8C819AF",
+      "path": "outputs/poisoned/track1/PURE_2003 - qheadache/poisoned_track1_hallu_v1.json",
+      "pool_size": 49,
+      "fake_count": 8
+    },
+    {
+      "unit_id": "PURE_2003 - qheadache",
+      "origin": "PURE",
+      "track_id": "track2",
+      "variant_id": "defect_v1",
+      "artifact_id": "T2A_77747D2E",
+      "path": "outputs/poisoned/track2/PURE_2003 - qheadache/poisoned_track2_defect_v1.json",
+      "contradiction_count": 5,
+      "duplicate_count": 5,
+      "total_seeds": 10
+    },
+    {
+      "unit_id": "PURE_2004 - colorcast",
+      "origin": "PURE",
+      "track_id": "track1",
+      "variant_id": "hallu_v1",
+      "artifact_id": "T1A_B1B542E2",
+      "path": "outputs/poisoned/track1/PURE_2004 - colorcast/poisoned_track1_hallu_v1.json",
+      "pool_size": 56,
+      "fake_count": 8
+    },
+    {
+      "unit_id": "PURE_2004 - colorcast",
+      "origin": "PURE",
+      "track_id": "track2",
+      "variant_id": "defect_v1",
+      "artifact_id": "T2A_7E035B13",
+      "path": "outputs/poisoned/track2/PURE_2004 - colorcast/poisoned_track2_defect_v1.json",
+      "contradiction_count": 5,
+      "duplicate_count": 5,
+      "total_seeds": 10
+    },
+    {
+      "unit_id": "PURE_2005 - phin",
+      "origin": "PURE",
+      "track_id": "track1",
+      "variant_id": "hallu_v1",
+      "artifact_id": "T1A_7DD6641E",
+      "path": "outputs/poisoned/track1/PURE_2005 - phin/poisoned_track1_hallu_v1.json",
+      "pool_size": 50,
+      "fake_count": 8
+    },
+    {
+      "unit_id": "PURE_2005 - phin",
+      "origin": "PURE",
+      "track_id": "track2",
+      "variant_id": "defect_v1",
+      "artifact_id": "T2A_55AC4047",
+      "path": "outputs/poisoned/track2/PURE_2005 - phin/poisoned_track2_defect_v1.json",
+      "contradiction_count": 5,
+      "duplicate_count": 5,
+      "total_seeds": 10
+    },
+    {
+      "unit_id": "PROMISE_10",
+      "origin": "PROMISE",
+      "track_id": "track1",
+      "variant_id": "hallu_v1",
+      "artifact_id": "T1A_EE3ACD84",
+      "path": "outputs/poisoned/track1/PROMISE_10/poisoned_track1_hallu_v1.json",
+      "pool_size": 62,
+      "fake_count": 10
+    },
+    {
+      "unit_id": "PROMISE_10",
+      "origin": "PROMISE",
+      "track_id": "track2",
+      "variant_id": "defect_v1",
+      "artifact_id": "T2A_CD131605",
+      "path": "outputs/poisoned/track2/PROMISE_10/poisoned_track2_defect_v1.json",
+      "contradiction_count": 5,
+      "duplicate_count": 5,
+      "total_seeds": 10
+    },
+    {
+      "unit_id": "PROMISE_11",
+      "origin": "PROMISE",
+      "track_id": "track1",
+      "variant_id": "hallu_v1",
+      "artifact_id": "T1A_81975F20",
+      "path": "outputs/poisoned/track1/PROMISE_11/poisoned_track1_hallu_v1.json",
+      "pool_size": 18,
+      "fake_count": 5
+    },
+    {
+      "unit_id": "PROMISE_11",
+      "origin": "PROMISE",
+      "track_id": "track2",
+      "variant_id": "defect_v1",
+      "artifact_id": "T2A_7644CB7B",
+      "path": "outputs/poisoned/track2/PROMISE_11/poisoned_track2_defect_v1.json",
+      "contradiction_count": 5,
+      "duplicate_count": 5,
+      "total_seeds": 10
+    },
+    {
+      "unit_id": "PROMISE_13",
+      "origin": "PROMISE",
+      "track_id": "track1",
+      "variant_id": "hallu_v1",
+      "artifact_id": "T1A_144ABB6B",
+      "path": "outputs/poisoned/track1/PROMISE_13/poisoned_track1_hallu_v1.json",
+      "pool_size": 24,
+      "fake_count": 5
+    },
+    {
+      "unit_id": "PROMISE_13",
+      "origin": "PROMISE",
+      "track_id": "track2",
+      "variant_id": "defect_v1",
+      "artifact_id": "T2A_DBDF6167",
+      "path": "outputs/poisoned/track2/PROMISE_13/poisoned_track2_defect_v1.json",
+      "contradiction_count": 5,
+      "duplicate_count": 5,
+      "total_seeds": 10
+    },
+    {
+      "unit_id": "PROMISE_15",
+      "origin": "PROMISE",
+      "track_id": "track1",
+      "variant_id": "hallu_v1",
+      "artifact_id": "T1A_CB721F29",
+      "path": "outputs/poisoned/track1/PROMISE_15/poisoned_track1_hallu_v1.json",
+      "pool_size": 17,
+      "fake_count": 5
+    },
+    {
+      "unit_id": "PROMISE_15",
+      "origin": "PROMISE",
+      "track_id": "track2",
+      "variant_id": "defect_v1",
+      "artifact_id": "T2A_83DC7111",
+      "path": "outputs/poisoned/track2/PROMISE_15/poisoned_track2_defect_v1.json",
+      "contradiction_count": 5,
+      "duplicate_count": 5,
+      "total_seeds": 10
+    },
+    {
+      "unit_id": "PROMISE_5",
+      "origin": "PROMISE",
+      "track_id": "track1",
+      "variant_id": "hallu_v1",
+      "artifact_id": "T1A_14B2AF6A",
+      "path": "outputs/poisoned/track1/PROMISE_5/poisoned_track1_hallu_v1.json",
+      "pool_size": 87,
+      "fake_count": 14
+    },
+    {
+      "unit_id": "PROMISE_5",
+      "origin": "PROMISE",
+      "track_id": "track2",
+      "variant_id": "defect_v1",
+      "artifact_id": "T2A_F8990D0D",
+      "path": "outputs/poisoned/track2/PROMISE_5/poisoned_track2_defect_v1.json",
+      "contradiction_count": 5,
+      "duplicate_count": 5,
+      "total_seeds": 10
+    },
+    {
+      "unit_id": "PROMISE_7",
+      "origin": "PROMISE",
+      "track_id": "track1",
+      "variant_id": "hallu_v1",
+      "artifact_id": "T1A_78F37D68",
+      "path": "outputs/poisoned/track1/PROMISE_7/poisoned_track1_hallu_v1.json",
+      "pool_size": 28,
+      "fake_count": 5
+    },
+    {
+      "unit_id": "PROMISE_7",
+      "origin": "PROMISE",
+      "track_id": "track2",
+      "variant_id": "defect_v1",
+      "artifact_id": "T2A_9313EA7C",
+      "path": "outputs/poisoned/track2/PROMISE_7/poisoned_track2_defect_v1.json",
+      "contradiction_count": 5,
+      "duplicate_count": 5,
+      "total_seeds": 10
+    },
+    {
+      "unit_id": "PROMISE_8",
+      "origin": "PROMISE",
+      "track_id": "track1",
+      "variant_id": "hallu_v1",
+      "artifact_id": "T1A_09DD1864",
+      "path": "outputs/poisoned/track1/PROMISE_8/poisoned_track1_hallu_v1.json",
+      "pool_size": 107,
+      "fake_count": 15
+    },
+    {
+      "unit_id": "PROMISE_8",
+      "origin": "PROMISE",
+      "track_id": "track2",
+      "variant_id": "defect_v1",
+      "artifact_id": "T2A_CD071967",
+      "path": "outputs/poisoned/track2/PROMISE_8/poisoned_track2_defect_v1.json",
+      "contradiction_count": 5,
+      "duplicate_count": 5,
+      "total_seeds": 10
+    }
+  ]
+}

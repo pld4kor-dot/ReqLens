@@ -1,0 +1,175 @@
+{
+  "coverage_rate": 1.0,
+  "missing_req_ids": [],
+  "unsupported_count": 2,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PROMISE_13_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "include both logos"
+      ],
+      "reason": "Dual IBM and CCR logos explicitly required in sources."
+    },
+    {
+      "req_id": "PROMISE_13_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "Display must work at 800x600"
+      ],
+      "reason": "Sources repeatedly require 800x600 layout and no horizontal scroll."
+    },
+    {
+      "req_id": "PROMISE_13_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "CCR nomenclature match existing WCS"
+      ],
+      "reason": "Documents demand using existing WCS/CCR terminology, no ad hoc renames."
+    },
+    {
+      "req_id": "PROMISE_13_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "high-level summary for EACH report type"
+      ],
+      "reason": "Requirement for executive-friendly summary tile per report is stated."
+    },
+    {
+      "req_id": "PROMISE_13_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "Point-and-click; full keyboard operability"
+      ],
+      "reason": "Point-and-click UI plus 100% keyboard/mouse operability specified."
+    },
+    {
+      "req_id": "PROMISE_13_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "First-use success target ~90% able to run"
+      ],
+      "reason": "Sources state 90% first-use success and adherence to IBM usability."
+    },
+    {
+      "req_id": "PROMISE_13_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "One-click to generate a report once selection made"
+      ],
+      "reason": "One-click Run and one-click Export buttons explicitly required."
+    },
+    {
+      "req_id": "PROMISE_13_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "learnability target 90% recall of steps"
+      ],
+      "reason": "Learnability goal: 90% recall after one session is documented."
+    },
+    {
+      "req_id": "PROMISE_13_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "1 training session pre-deploy for all CCR users"
+      ],
+      "reason": "Meeting and emails lock one pre-deployment training session for all."
+    },
+    {
+      "req_id": "PROMISE_13_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "All interfaces/reports undergo usability tests by CCR users"
+      ],
+      "reason": "Sources require CCR user usability testing and approved nomenclature."
+    },
+    {
+      "req_id": "PROMISE_13_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "target 95% of W3 uptime"
+      ],
+      "reason": "Availability tied to W3 with 95% target."
+    },
+    {
+      "req_id": "PROMISE_13_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "add connections to additional WCS databases later"
+      ],
+      "reason": "Plan to add designated WCS databases post-launch."
+    },
+    {
+      "req_id": "PROMISE_13_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "include regions outside the US"
+      ],
+      "reason": "Capability to ingest global data and approve non‑US access."
+    },
+    {
+      "req_id": "PROMISE_13_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "Windows 2000+ on IBM-issued machines"
+      ],
+      "reason": "Access limited to IBM Windows machines (2000 or newer)."
+    },
+    {
+      "req_id": "PROMISE_13_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "Brio export buttons: .xls and .123"
+      ],
+      "reason": "Brio must provide explicit .xls and .123 export buttons."
+    },
+    {
+      "req_id": "PROMISE_13_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "Weekly refresh; scheduled queries once a week"
+      ],
+      "reason": "Weekly scheduled queries on a specified day to refresh data."
+    },
+    {
+      "req_id": "PROMISE_13_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "Update WCS Developer and WCS User Guides"
+      ],
+      "reason": "All changes must be reflected in both WCS guides."
+    },
+    {
+      "req_id": "PROMISE_13_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "Authenticate with IBM intranet username/password"
+      ],
+      "reason": "Authorized CCR users authenticate via intranet credentials."
+    },
+    {
+      "req_id": "PROMISE_13_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "No automatic login; no cookies storing credentials"
+      ],
+      "reason": "Explicit prohibition on auto-login and credential cookies."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "The weekly data refresh shall run in a specified nightly maintenance window (proposed start Monday 23:00 ET and finish by Tuesday 06:00 ET) so that updated data is available by Tuesday morning.",
+      "source_snippet": "Proposed: Monday night 11pm ET (finish by Tue 6am). Alt: Fri night (Tom to check ops window).",
+      "source_type": "meeting_notes",
+      "reason": "The gold set requires weekly refresh on a specified day but does not specify a required execution start/finish window or that refresh must complete by a particular time. The source explicitly proposes a concrete nightly maintenance window (Mon 23:00–Tue 06:00) as an operational requirement, which is a significant scheduling/availability constraint not present in the gold requirements."
+    },
+    {
+      "text": "Releases/changes shall be gated on documentation being updated (i.e., a change will not be released until corresponding updates to the WCS Developer and User Guides are completed).",
+      "source_snippet": "Maybe we gate releases on documentation being updated? [Carla to propose process]\n\nmake sure the WCS User Guide and WCS Developer Guide are both updated for any change we ship... It needs to show up in both guides before go-live.",
+      "source_type": "meeting_notes",
+      "reason": "The gold set mandates that all changes be reflected in the Developer and User Guides but does not require that releases be blocked until documentation is updated. The source contains multiple statements suggesting or proposing that releases be gated on docs updates (and that docs be updated before go‑live), which is an additional process-level requirement not present in the gold set."
+    }
+  ],
+  "passed": true
+}

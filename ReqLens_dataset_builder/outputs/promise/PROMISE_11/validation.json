@@ -1,0 +1,128 @@
+{
+  "coverage_rate": 1.0,
+  "missing_req_ids": [],
+  "unsupported_count": 2,
+  "repair_rounds_used": 0,
+  "coverage_entries": [
+    {
+      "req_id": "PROMISE_11_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "aim common flows < ~2 min"
+      ],
+      "reason": "Stakeholders set 2-minute target for common tasks."
+    },
+    {
+      "req_id": "PROMISE_11_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "10 mins max"
+      ],
+      "reason": "Participants repeatedly require ~10 minute learnability."
+    },
+    {
+      "req_id": "PROMISE_11_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "p90: 2s (sup view @ DePaul), pTail < 5s"
+      ],
+      "reason": "DePaul supervisor view p90=2s and tail under 5s stated."
+    },
+    {
+      "req_id": "PROMISE_11_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "56k → 6s p90"
+      ],
+      "reason": "56k reference link p90 ≈ 6s target documented."
+    },
+    {
+      "req_id": "PROMISE_11_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "112k+ → 3s p90"
+      ],
+      "reason": "112k+ link p90 ≈ 3s target explicitly stated."
+    },
+    {
+      "req_id": "PROMISE_11_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "12:00 AM–6:00 PM"
+      ],
+      "reason": "Meeting notes list 12:00AM–6:00PM as availability window."
+    },
+    {
+      "req_id": "PROMISE_11_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "7:00 AM–11:59 PM"
+      ],
+      "reason": "Meeting notes list 7:00AM–11:59PM as availability window."
+    },
+    {
+      "req_id": "PROMISE_11_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "Internet Explorer + Netscape Navigator"
+      ],
+      "reason": "Legacy browser support (IE and Netscape) required."
+    },
+    {
+      "req_id": "PROMISE_11_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "Only supervisors can advertise/post"
+      ],
+      "reason": "Roles/permissions specify supervisors exclusively post slots."
+    },
+    {
+      "req_id": "PROMISE_11_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "enter/update caller schedules"
+      ],
+      "reason": "Meeting notes and transcript require supervisors edit schedules."
+    },
+    {
+      "req_id": "PROMISE_11_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "Only supervisors should be pushing out those openings",
+        "view all callers' schedules (full roster)"
+      ],
+      "reason": "Notes and transcript explicitly set supervisor-only permissions."
+    },
+    {
+      "req_id": "PROMISE_11_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "simplicity >= 90% positive"
+      ],
+      "reason": "Beta survey target of 90%+ simplicity is specified in notes."
+    },
+    {
+      "req_id": "PROMISE_11_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "appeal >= 80% positive"
+      ],
+      "reason": "Meeting notes and emails set 80% appeal target for beta."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "The system must include performance instrumentation, synthetic probes and real-user monitoring for key views (especially the supervisor schedule view at DePaul), with alerting so operations can detect and respond when p90/ tail targets are missed.",
+      "source_snippet": "\"we’ll instrument it at the DePaul center. If we see it drifting over two seconds regularly, we’ll optimize.\" / \"I’ll set up synthetic probes + real-user monitoring.\"",
+      "source_type": "interview_transcript | email_thread",
+      "reason": "While the gold set specifies numerical performance targets (p90, tail bounds), it does not require the system to provide monitoring/probes, instrumentation, or alerting. The source explicitly requires synthetic probes, real-user monitoring, and alerts as operational capabilities to enforce and detect SLA violations, which is a significant system capability not covered by the gold requirements."
+    },
+    {
+      "text": "The system shall present understandable, user-friendly error messages to prevent users from being stuck and having to seek help.",
+      "source_snippet": "\"Also, error messages need to be understandable, because we don’t want people stuck for ten minutes\"",
+      "source_type": "interview_transcript",
+      "reason": "The gold requirements address learnability, task time, responsiveness, availability, browser support, roles, and survey thresholds, but none require the system to produce clear, actionable error messages. The source explicitly calls out understandable error messages as a usability requirement to avoid long user delays, which is a distinct and significant quality requirement absent from the gold set."
+    }
+  ],
+  "passed": true
+}

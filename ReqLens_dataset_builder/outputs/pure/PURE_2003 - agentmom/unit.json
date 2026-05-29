@@ -1,0 +1,722 @@
+{
+  "id": "PURE_2003 - agentmom",
+  "origin": "PURE",
+  "created_at": "2026-05-23T16:40:13.755273+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Advisor check-in on agentMom+ GroupComms messaging behaviors and controls (reconvened)",
+      "text": "Maya [Project Lead]: Thanks for jumping on again. Quick pass through point-to-point, group comms, and controls so we’re aligned with your expectations, Dr. Chen, and with Priya’s team needs.\n\nDr. Chen [Advisor]: No slides, please. Just walk me through how one agent talks to another, and how it talks to many. And where folks can tune behavior.\n\nLuis [Network Admin]: Before we dive in, reminder: when you all test broadcast on the lab LAN, keep the traffic reasonable. We had a flood last week from a heartbeat mishap.\n\nPriya [Partner Dev]: That was on us. We’ll be more careful. We still want broadcast in the toolbox for discovery, though.\n\nMaya [Project Lead]: It’s in. For the LAN, broadcast send and receive are supported. You can push a discovery ping and every host on the same subnet can hear it. It won’t cross routers—classic local network scope.\n\nLuis [Network Admin]: Right. All hosts on the local subnet see it; it’s not routed. It’s fine for discovery or occasional announcements; don’t treat it as a primary channel.\n\nDr. Chen [Advisor]: Unicast next. If I send A then B, does the other side always see A then B? And are you delivering only to the intended address?\n\nMaya [Project Lead]: Yes on both. For point-to-point, we commit to in-order delivery and correct addressing. We’re leaning on TCP semantics and tagging with sequence numbers so we can detect reordering if we ever change transports. Delivery goes only to the specified destination, not anyone else.\n\nSam [QA]: I’ve got order assertions in the test rig, plus a negative case for misaddressed messages to ensure nothing leaks to a third party.\n\nPriya [Partner Dev]: Can the sender choose encryption per message? For commands we want encryption; for telemetry, probably not.\n\nMaya [Project Lead]: Yes. You can toggle encryption per send. If the flag is set and keys are configured, we encrypt before transmission. On receive, if the message indicates it’s protected and the recipient has the right material, it’s automatically presented as plaintext to the app. If the recipient lacks what’s needed, the payload won’t be usable by that recipient—we’ll document the handling, but you don’t have to write manual decrypt code either way.\n\nLuis [Network Admin]: Just so we’re clear, you’re talking about securing the message content, not switching the whole socket to HTTPS or something.\n\nSam [QA]: Correct—message-level protection, not TLS. I’ll make sure the test plan spells that out to avoid confusion.\n\nDr. Chen [Advisor]: Good. So unicast is ordered, targeted, with optional per-message protection and automatic handling on receipt. Now, group messaging. What happens before an agent formally joins a group?\n\nMaya [Project Lead]: Nothing reaches it for that group. We enforce that no group traffic is delivered to an agent until it has sent a join request and been accepted. Once joined, it receives group messages. The same component can send to the group address.\n\nPriya [Partner Dev]: Can an agent listen to more than one group at the same time? We have a commands group and an alerts group.\n\nMaya [Project Lead]: Yes. Multiple concurrent group subscriptions are supported. You can bind to multiple multicast addresses as configured and receive from each. We expose TTL and socket options for tuning.\n\nLuis [Network Admin]: Do you expose time-to-live? I want to avoid folks blasting packets across too many hops by default.\n\nSam [QA]: Just to clarify: TTL here is IP hop scope, not a message expiry timer.\n\nMaya [Project Lead]: Exactly. TTL, group address, and port are configurable with sane defaults. We’ll label TTL semantics clearly as hop count.\n\nDr. Chen [Advisor]: And if an agent leaves or decides to “mute” the group temporarily?\n\nMaya [Project Lead]: Leaving: the agent issues a leave request and from that point we stop delivering that group’s messages to it. For a temporary opt-out, it can pause receiving without dissolving its membership; we halt delivery immediately on that command, and resume when it opts back in.\n\nPriya [Partner Dev]: That pause is important for us. We park agents sometimes and don’t want them processing anything until resumed.\n\nSam [QA]: I’ll add tests for join, mute/opt-out, unmute, and leave. Also negative tests: nothing delivered before join, and nothing after leave.\n\nDr. Chen [Advisor]: Are there notifications when someone joins or leaves?\n\nMaya [Project Lead]: Yes. We emit group-level events. On join, we publish a join notice to a control channel; on leave, a corresponding leave notice. Members can update their rosters or UIs off those events.\n\nLuis [Network Admin]: And we’re aligned that multicast ordering isn’t guaranteed, right? Best effort only.\n\nMaya [Project Lead]: Correct. We’re not promising order for multicast or broadcast. If strict order is needed for multi-recipient workflows, we can do orchestrated unicast or define a higher-level protocol in agent logic. Base layer: best effort for multicast and broadcast.\n\nDr. Chen [Advisor]: Fine. Conversation control—do agents themselves run the conversation, or can a component do it?\n\nMaya [Project Lead]: Both. We support agent-driven conversations, where your code drives the state machine, and a component-driven mode where a conversation manager orchestrates and your agent supplies callbacks. It’s a configurable choice.\n\nSam [QA]: We’ll make it pluggable so teams can switch modes for experiments without rewriting logic.\n\nPriya [Partner Dev]: Related to groups: if an agent dies, can a replacement join and take over its role so the rest of the group treats it as the participant going forward?\n\nMaya [Project Lead]: Yes. That’s part of our organization/reorganization story. A substitute agent can join and act within the same group so coordination continues. We’ll handle the join and notifications so others see the change.\n\nLuis [Network Admin]: Just make sure you handle identity and keys properly. And keep that join event visible so others can react.\n\nDr. Chen [Advisor]: Backward compatibility. We still have agentMom 1.2 deployments. I don’t want them stranded.\n\nMaya [Project Lead]: We’re shipping a compatibility layer so new agents interoperate with 1.2. A 1.2 agent can unicast to a new one and vice versa; basic group participation works as expected. For mixed environments, features that require shared understanding—like per-message protection—should be used where both sides support them. Baseline messaging works without special switches.\n\nPriya [Partner Dev]: We’ll be mixed until fall, so that’s important. Please don’t break the basics.\n\nSam [QA]: I’ll set up mixed-version tests: unicast both ways and group membership enforcement (no traffic before join or after leave).\n\nDr. Chen [Advisor]: One more on broadcast: can my agent both listen for LAN broadcast and send one?\n\nMaya [Project Lead]: Yes. It can send a local broadcast and it can receive broadcast traffic on the LAN. We’ll include cautions in the guide about using it sparingly and not for sensitive material—when confidentiality is needed, prefer unicast or group messages configured for protection.\n\nDr. Chen [Advisor]: Good. Maya, please include a product perspective describing the users—developers, behavior designers, and network admins—and the constraints such as best-effort on multicast/broadcast. And ensure whatever we claim about ordering, addressing, and message protection is testable.\n\nMaya [Project Lead]: Will do. On configuration: we’ll expose TTL, group address, and port via config files and APIs. That covers binding to multiple groups at once.\n\nSam [QA]: I’ll wire logs to show unicast sequence numbers and the join/leave events for groups so we can demonstrate behavior.\n\nDr. Chen [Advisor]: Great. I want to see a demo where an agent joins, receives, mutes and stops receiving, unmutes, then leaves, with notifications visible. Also show unicast with and without message protection, verifying ordered delivery, and an agent listening to two groups concurrently. If possible, show the conversation-control toggle and a substitution scenario where a replacement agent joins the group and takes over.\n\nMaya [Project Lead]: We’ll line that up. We’ll send you the write-up so none of this gets lost.\n\nLuis [Network Admin]: Ping me before you start any high-traffic tests so I can keep an eye on the switches.\n\nPriya [Partner Dev]: I can bring a prototype agent for the substitution scenario—kill one and have the replacement pick up.\n\nDr. Chen [Advisor]: Good. Let’s wrap here."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "Working session notes — SRS structure, access, and group comms detail (cleaned summary)",
+      "text": "Date: 2025-03-18\nRoom/Call: Eng Bldg 3, Rm 214 / Zoom link: https://zoom.example.edu/agentmom-srs\nAttendees: Maya (Project Lead), Dr. Chen (Advisor), Sam (QA), Priya (Partner Dev), Luis (NetOps), Erin (Doc writer)\n\nAgenda highlights:\n- SRS outline (IEEE-flavored), audience/scope\n- Access controls — keep doc restricted\n- Multicast configuration knobs\n- Group membership lifecycle: join/leave, notifications, opt-out pause\n- Backward compatibility and mixed deployments\n\nDecisions/notes:\n- SRS structure: Follow IEEE-style with a clear product perspective (users, functionality, constraints/assumptions) and a section for use cases + detailed requirements. Erin to map to Sec 2 / Sec 3.\n- Audience/scope: Document is for the advisor and committee only. Keep in a private folder; avoid broad sharing links. The SRS describes framework behavior; it is not a tutorial.\n- Constraints/assumptions to state explicitly in Sec 2:\n  - Underlying network provides multicast and UDP broadcast; unicast leverages TCP/IP.\n  - Multicast and broadcast are best-effort transport (no ordering guarantee at that layer); unicast delivery is ordered and directed to a specific address.\n  - LAN broadcast scope is local subnet only (not routed). QA to verify isolation across subnets.\n- Unicast behaviors to capture:\n  - Ordered, point-to-point delivery (A then B arrives as A then B).\n  - Correct addressing (deliver only to the target address).\n  - Optional message protection on a per-send basis; receiver handles protected messages automatically when configured. Avoid deep crypto spec; describe capability.\n- Multicast group behaviors to capture:\n  - Explicit join request required before receiving any group traffic (enforced at least at the application layer).\n  - Explicit leave request; after leave, stop delivering group traffic to that agent.\n  - Opt-out/mute: reversible pause of deliveries while otherwise remaining a member; delivery halts immediately on opt-out and resumes on opt-in.\n  - Notifications: publish join and leave events so members can update rosters. Keep event payload minimal (agent id, timestamp). [naming TBD]\n  - Optional group message protection when configured; members handle protected messages automatically when configured.\n  - Multiple group subscriptions allowed concurrently.\n- Multicast configuration (Sec 2 + Sec 3):\n  - Expose TTL (IP hop scope), group address, and port via config and APIs. Provide safe defaults. Erin to note TTL semantics clearly.\n  - Luis to supply recommended address ranges/examples and caution against reserved ranges.\n- Broadcast (LAN):\n  - Support sending and receiving on the local network. Use primarily for discovery/announcements.\n  - Scope: all hosts on same subnet; not routed. QA to confirm with two-subnet test.\n  - For confidentiality needs, prefer unicast or groups configured for protection (don’t rely on broadcast for sensitive content).\n- Conversation control modes:\n  - Support agent-driven and component-driven conversation orchestration; make it configurable. Include at least one use case for each.\n- Agent substitution (organization/reorganization):\n  - Allow a replacement agent to join and act within a group so coordination continues. Ensure join/leave notifications make the transition visible to other members. [credentials continuity considerations documented at a high level]\n- Backward compatibility:\n  - Interoperate with agentMom 1.2 via a compatibility layer. Mixed deployments expected. Baseline messaging works across versions; features that require shared understanding are used where both sides support them. QA to run mixed-version tests (unicast both ways; group join/leave enforcement).\n- Access restrictions:\n  - SRS visibility limited to advisor + committee. Code/config examples can live in the team repo; keep the SRS in a restricted area.\n\nUse cases (sketches for Sec 3):\n- UC1: Agent A sends command to Agent B (unicast). A chooses protection on/off per message. B handles protected and unprotected receipts automatically. Verify order under load.\n- UC2: Group lifecycle: Agent joins commands group; before join, receives 0; after join, receives; join notice observed. Agent opts out (pause) and receives nothing while paused; then opts back in and resumes; finally leaves and receives nothing after leave; leave notice observed.\n- UC3: Multi-group: Single agent subscribes to two groups simultaneously (alerts, telemetry). Configure different TTL values and addresses/ports; verify reception on both.\n- UC4: Broadcast discovery: agent broadcasts “who’s there?” on LAN; others respond via unicast. Verify all local hosts receive; verify no cross-subnet delivery.\n\nReminders:\n- Phase II demo will show the driving capabilities (don’t over-star). Candidates: unicast ordered delivery; optional per-message protection with automatic handling; group join/leave enforcement with notifications; LAN broadcast send/receive; and, if time permits, conversation-control toggle and an agent substitution event.\n- Erin to place constraints/assumptions up front and keep requirement statements testable.\n\nOpen items [TBD]:\n- Event naming for join/leave notifications (standardize terms).\n- Key management depth: likely out of scope; include brief pointer only.\n- Exact formatting of Sec 3 requirements vs appendix cross-reference."
+    },
+    {
+      "type": "email_thread",
+      "title": "Thread: agentMom+ compatibility, security toggles, substitution, and Phase II demo scope (recap)",
+      "text": "Email 1\nFrom: Maya <maya@grad.example.edu>\nTo: Priya <priya@partnerlab.example.com>\nCC: Dr. Chen <chen@faculty.example.edu>, Sam <sam.qa@example.edu>, Luis <luis.netops@example.edu>\nSubject: agentMom+ compat + security toggles + demo asks\n\nHi all,\n\nQuick recap after standup:\n\n- Compatibility stays on by default so new agents can interoperate with agentMom 1.2. Your legacy nodes should still send/receive basic messages without code changes. For features that require shared understanding (e.g., per-message protection), use them where both sides support them; otherwise keep those particular flows plain.\n- Security: per-message protection remains optional. You can flip it on for unicast; the receiver will handle protected messages automatically when configured. Same idea for multicast groups that opt into protection.\n- Group membership: after leave(), deliveries from that group stop without a grace period. For a temporary pause, use opt-out; deliveries halt while paused and resume when re-enabled.\n- Broadcast: behavior is scoped to the local network. If you broadcast a ping, all hosts on that LAN should see it, but it won’t go beyond. It’s intended for discovery/announcements rather than sensitive content.\n- Substitution: we plan to show a replacement agent joining a group and taking over the role so the group can continue without manual reconfiguration.\n- Demo: We’ll keep the “starred” list tight per Dr. Chen. I’ll circulate the list once we finalize it in the SRS draft.\n\nIf anything here conflicts with your expectations, please shout.\n\n–Maya\n\n---\n\nEmail 2\nFrom: Priya <priya@partnerlab.example.com>\nTo: Maya <maya@grad.example.edu>\nCC: Sam <sam.qa@example.edu>, Dr. Chen <chen@faculty.example.edu>, Luis <luis.netops@example.edu>\nSubject: RE: agentMom+ compat + security toggles + demo asks\n\nHey Maya,\n\nThanks. A couple confirmations:\n\n1) Unicast: we want to send some commands protected and have the receiver just handle that automatically. No manual decrypt calls from our app—still correct?\n\n2) Multicast: if a group is configured for protection, members should send/receive protected payloads transparently. Non-members shouldn’t be able to make use of that traffic.\n\n3) Mixed with 1.2: our legacy agents will run plain for now; basic exchange should just work without flipping obscure switches.\n\nAlso, leave semantics: we expect deliveries to stop right after leave(). We don’t want buffered stragglers.\n\nAnd yes, we’d like to include the substitution scenario in the demo—kill one agent and have a standby step in.\n\n-Priya\n\n(sent from mobile)\n\n---\n\nEmail 3\nFrom: Luis <luis.netops@example.edu>\nTo: Maya <maya@grad.example.edu>, Priya <priya@partnerlab.example.com>\nCC: Sam <sam.qa@example.edu>, Dr. Chen <chen@faculty.example.edu>\nSubject: RE: agentMom+ compat + security toggles + demo asks (broadcast scope)\n\nAdding a network note: broadcast reaches hosts on the same local subnet only. If you see it across subnets, something’s misconfigured. It’s great for discovery or wake-ups; for anything sensitive, prefer unicast or a group that’s configured for protection.\n\n– Luis\n\n---\n\nEmail 4\nFrom: Sam <sam.qa@example.edu>\nTo: Maya <maya@grad.example.edu>, Priya <priya@partnerlab.example.com>\nCC: Dr. Chen <chen@faculty.example.edu>, Luis <luis.netops@example.edu>\nSubject: RE: agentMom+ compat + security toggles + demo asks (QA plan)\n\nQA plan snapshot so it’s written down:\n\n- Unicast protection toggle: when sender flags “protect=true,” the receiver (with config) should hand plaintext to the app; when false, plaintext end-to-end. We’ll verify no spurious failures when protection is off.\n\n- Multicast protection: when a group is configured for it, members (with config) should handle protected messages on receipt. If a node isn’t in the group, our app layer should not treat that traffic as consumable.\n\n- Leave() semantics: deliveries stop immediately after leave(). I’ll assert no group payloads arrive after the leave call.\n\n- Broadcast scope: set up two subnets to confirm broadcast does not cross. On one subnet, every host will receive the ping; on the other, none should.\n\n- Mixed-version tests: 1) 1.2 -> new unicast (plain), 2) new -> 1.2 unicast (plain), 3) new <-> new unicast protected and plain, 4) group membership enforcement around join/leave across versions.\n\n- Substitution: simulate failure of an agent in a group, then start a replacement; verify the group continues and that members see the join/leave notifications around the swap.\n\nIf I missed something, reply-all.\n\n— Sam\n\n---\n\nEmail 5\nFrom: Dr. Chen <chen@faculty.example.edu>\nTo: Maya <maya@grad.example.edu>\nCC: Priya <priya@partnerlab.example.com>, Sam <sam.qa@example.edu>, Luis <luis.netops@example.edu>\nSubject: RE: agentMom+ compat + security toggles + demo asks (constraints and reminders)\n\nMaya,\n\nTwo reminders:\n\n1) The “must demo by end of Phase II” stars in the SRS are commitments. Choose the driving capabilities carefully and deliver them.\n\n2) The SRS is for the committee/advisor only. Keep the file in the restricted folder. The committee expects a clear description of the framework behavior—unicast, multicast, broadcast, conversation control, substitution, compatibility—not marketing.\n\nCarry on.\n\n– YC\n\n---\n\nEmail 6\nFrom: Maya <maya@grad.example.edu>\nTo: Priya <priya@partnerlab.example.com>\nCC: Sam <sam.qa@example.edu>, Dr. Chen <chen@faculty.example.edu>, Luis <luis.netops@example.edu>\nSubject: RE: broadcast receive listener (quick answer)\n\nPriya,\n\nYes—broadcast receive is supported through the framework. You won’t need to hand-roll raw sockets; we’ll document the supported way to consume those messages alongside unicast/multicast in the SDK guide.\n\nOn leave(): confirmed again—once processed, deliveries from that group stop. Sam has a regression specifically for the post-leave window.\n\nWe’ll include the substitution step-in during the demo: original member exits, replacement joins the group and continues the role, with the join/leave events visible so other agents can react.\n\n–Maya"
+    }
+  ],
+  "gold_requirements": [
+    {
+      "id": "PURE_2003 - agentmom_R001",
+      "text": "The SRS shall conform to IEEE Std 830-1998 (Software Requirements Specification).",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "compliance",
+      "source_strategy": "section",
+      "source_region": "1 Applying Broadcasting/Multicasting/Secured Communication to agentMom in"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R002",
+      "text": "The SRS shall be submitted in partial fulfillment of the requirements for the Master of Science in Engineering (MSE) degree.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1 Applying Broadcasting/Multicasting/Secured Communication to agentMom in"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R003",
+      "text": "The document shall describe the functionality and behavior of the new agentMom framework.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1.1 Purpose"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R004",
+      "text": "The document shall be viewable only by the project advisor and committee members.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": "section",
+      "source_region": "1.1 Purpose"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R005",
+      "text": "The SRS shall include a Section 2 that describes the product perspective, overall functionality, intended users, constraints, and assumptions of the software.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1.5 Overview / Section 2"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R006",
+      "text": "The SRS shall include a Section 3 that provides general use cases and specific requirements of the software.",
+      "raw_label": null,
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "1.5 Overview / Section 3"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R007",
+      "text": "The system shall send a notification when an agent joins a group.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "Page 6"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R008",
+      "text": "The system shall send a notification when an agent leaves a group.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "Page 6"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R009",
+      "text": "The system shall stop delivering group messages to an agent that requests not to receive further messages.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "Page 6"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R010",
+      "text": "The system shall allow an agent that substitutes for another agent to join and act as part of the group.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "Page 6"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R011",
+      "text": "The system shall support sending and receiving unicast messages.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "both",
+      "source_region": "Page 6 and raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R012",
+      "text": "The system shall ensure unicast messages are delivered only to the specified recipient address.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R013",
+      "text": "The system shall ensure unicast messages arrive at the specified address in order.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R014",
+      "text": "The system shall provide the capability to encrypt unicast messages.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": "both",
+      "source_region": "Page 6 and raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R015",
+      "text": "The system shall provide the capability to decrypt unicast messages.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": "both",
+      "source_region": "Page 6 and raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R016",
+      "text": "The system shall allow an agent to choose whether to encrypt a message.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "security",
+      "source_strategy": "section",
+      "source_region": "3.2.4 Security"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R017",
+      "text": "The system shall automatically decrypt received encrypted messages.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "security",
+      "source_strategy": "section",
+      "source_region": "3.2.4 Security"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R018",
+      "text": "The system shall support sending and receiving multicast messages.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "both",
+      "source_region": "3.2.2 Multicast Communication and raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R019",
+      "text": "The system shall support sending a request to join a multicast group.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "both",
+      "source_region": "3.2.2 Multicast Communication and raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R020",
+      "text": "The system shall support sending a request to leave a multicast group.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "both",
+      "source_region": "3.2.2 Multicast Communication and raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R021",
+      "text": "The system shall not receive multicast messages from a group before joining that group.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "both",
+      "source_region": "3.2.2 Multicast Communication and raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R022",
+      "text": "The system shall not receive multicast messages from a group after leaving that group.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "both",
+      "source_region": "3.2.2 Multicast Communication and raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R023",
+      "text": "The system shall allow configuring the time-to-live (TTL) value for multicast messages.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "both",
+      "source_region": "3.2.2 Multicast Communication and raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R024",
+      "text": "The system shall allow configuring the multicast address and port used for sending and receiving multicast messages.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "both",
+      "source_region": "3.2.2 Multicast Communication and raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R025",
+      "text": "The system shall be able to receive multicast messages from multiple multicast groups.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "both",
+      "source_region": "3.2.2 Multicast Communication and raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R026",
+      "text": "The system shall provide the capability to encrypt multicast messages.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": "both",
+      "source_region": "3.2.4 Security and raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R027",
+      "text": "The system shall provide the capability to decrypt multicast messages.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": "both",
+      "source_region": "3.2.4 Security and raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R028",
+      "text": "The system shall support sending broadcast messages.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "both",
+      "source_region": "3.2.3 Broadcast Communication and raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R029",
+      "text": "The system shall support receiving broadcast messages.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "both",
+      "source_region": "3.2.3 Broadcast Communication and raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R030",
+      "text": "The system shall deliver broadcast messages to all hosts on the same local network.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.2.3 Broadcast Communication"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R031",
+      "text": "The new agentMom shall be compatible with agentMom 1.2.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.2.6.1 The new built agentMom shall be compatible with the agentMom 1.2"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R032",
+      "text": "Any requirement marked with '*' as a Driving Requirement shall be demonstrated by the end of phase II.",
+      "raw_label": null,
+      "requirement_kind": "business_rule",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "section",
+      "source_region": "3.2.6.1 The new built agentMom shall be compatible with the agentMom 1.2"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R033",
+      "text": "The system shall support an architecture in which agents directly control conversations.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2003 - agentmom_R034",
+      "text": "The system shall support an architecture in which agent components control conversations.",
+      "raw_label": null,
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    }
+  ],
+  "validation": {
+    "coverage_rate": 0.9706,
+    "missing_req_ids": [
+      "PURE_2003 - agentmom_R002"
+    ],
+    "unsupported_count": 3,
+    "repair_rounds_used": 1,
+    "coverage_entries": [
+      {
+        "req_id": "PURE_2003 - agentmom_R001",
+        "supported": true,
+        "evidence_snippets": [
+          "SRS outline (IEEE-flavored)"
+        ],
+        "reason": "Meeting notes require IEEE-style SRS conformity."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R002",
+        "supported": false,
+        "evidence_snippets": [
+          "SRS is for the advisor and committee only."
+        ],
+        "reason": "No statement about submission for MSE degree found."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R003",
+        "supported": true,
+        "evidence_snippets": [
+          "The SRS describes framework behavior"
+        ],
+        "reason": "Document explicitly described as describing framework behavior."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R004",
+        "supported": true,
+        "evidence_snippets": [
+          "Document is for the advisor and committee only."
+        ],
+        "reason": "Meeting notes and emails require restricted visibility."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R005",
+        "supported": true,
+        "evidence_snippets": [
+          "Constraints/assumptions to state explicitly in Sec 2"
+        ],
+        "reason": "Sec 2 content and mapping are specified in meeting notes."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R006",
+        "supported": true,
+        "evidence_snippets": [
+          "Use cases (sketches for Sec 3)"
+        ],
+        "reason": "Meeting notes provide Sec 3 use case and requirements plan."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R007",
+        "supported": true,
+        "evidence_snippets": [
+          "publish a join notice to a control channel"
+        ],
+        "reason": "Join notifications are explicitly specified in multiple artifacts."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R008",
+        "supported": true,
+        "evidence_snippets": [
+          "a corresponding leave notice"
+        ],
+        "reason": "Leave notifications are explicitly specified in sources."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R009",
+        "supported": true,
+        "evidence_snippets": [
+          "we stop delivering that group's messages to it"
+        ],
+        "reason": "Leave/opt-out semantics state deliveries halt immediately."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R010",
+        "supported": true,
+        "evidence_snippets": [
+          "A substitute agent can join and act within the same group"
+        ],
+        "reason": "Agent substitution and takeover described in notes and transcript."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R011",
+        "supported": true,
+        "evidence_snippets": [
+          "support sending and receiving unicast"
+        ],
+        "reason": "Transcript and notes describe unicast send/receive capability."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R012",
+        "supported": true,
+        "evidence_snippets": [
+          "Delivery goes only to the specified destination"
+        ],
+        "reason": "Source states delivery is targeted to specified address only."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R013",
+        "supported": true,
+        "evidence_snippets": [
+          "in-order delivery"
+        ],
+        "reason": "Unicast is described as ordered (A then B arrives A then B)."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R014",
+        "supported": true,
+        "evidence_snippets": [
+          "You can toggle encryption per send"
+        ],
+        "reason": "Per-message protection/encryption capability is described."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R015",
+        "supported": true,
+        "evidence_snippets": [
+          "automatically presented as plaintext"
+        ],
+        "reason": "Receivers handle protected payloads and present plaintext automatically."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R016",
+        "supported": true,
+        "evidence_snippets": [
+          "sender choose encryption per message"
+        ],
+        "reason": "Sources explicitly state agents can choose protection per send."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R017",
+        "supported": true,
+        "evidence_snippets": [
+          "automatically presented as plaintext"
+        ],
+        "reason": "Automatic decryption/handling of protected messages is described."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R018",
+        "supported": true,
+        "evidence_snippets": [
+          "Multiple group subscriptions allowed concurrently"
+        ],
+        "reason": "Documents describe multicast groups, subscriptions, and reception."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R019",
+        "supported": true,
+        "evidence_snippets": [
+          "Explicit join request required"
+        ],
+        "reason": "Join request required before receiving any group traffic."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R020",
+        "supported": true,
+        "evidence_snippets": [
+          "Explicit leave request"
+        ],
+        "reason": "Leave request stops deliveries; sources specify leave() semantics."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R021",
+        "supported": true,
+        "evidence_snippets": [
+          "no group traffic is delivered to an agent"
+        ],
+        "reason": "Source enforces no delivery until join request accepted."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R022",
+        "supported": true,
+        "evidence_snippets": [
+          "we stop delivering that group’s messages to it"
+        ],
+        "reason": "Deliveries stop immediately after the leave request is processed."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R023",
+        "supported": true,
+        "evidence_snippets": [
+          "We expose TTL and socket options"
+        ],
+        "reason": "TTL is exposed and configurable via APIs."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R024",
+        "supported": true,
+        "evidence_snippets": [
+          "Expose TTL, group address, and port"
+        ],
+        "reason": "Group address and port are configurable via config/APIs."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R025",
+        "supported": true,
+        "evidence_snippets": [
+          "Multiple concurrent group subscriptions are supported"
+        ],
+        "reason": "System supports binding to and receiving from multiple groups."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R026",
+        "supported": true,
+        "evidence_snippets": [
+          "Optional group message protection when configured"
+        ],
+        "reason": "Group-level protection (encrypt) is supported when configured."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R027",
+        "supported": true,
+        "evidence_snippets": [
+          "handle protected messages automatically when configured"
+        ],
+        "reason": "Recipients automatically handle (decrypt) protected group messages."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R028",
+        "supported": true,
+        "evidence_snippets": [
+          "broadcast send and receive are supported"
+        ],
+        "reason": "Framework supports sending broadcast messages on the LAN."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R029",
+        "supported": true,
+        "evidence_snippets": [
+          "broadcast receive is supported"
+        ],
+        "reason": "Framework supports receiving broadcast messages."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R030",
+        "supported": true,
+        "evidence_snippets": [
+          "all hosts on the local subnet see it"
+        ],
+        "reason": "Broadcasts are scoped to local subnet; reach all local hosts."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R031",
+        "supported": true,
+        "evidence_snippets": [
+          "interoperate with agentMom 1.2"
+        ],
+        "reason": "Sources state compatibility with agentMom 1.2."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R032",
+        "supported": true,
+        "evidence_snippets": [
+          "must demo by end of Phase II"
+        ],
+        "reason": "Starred driving capabilities committed to Phase II demo."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R033",
+        "supported": true,
+        "evidence_snippets": [
+          "agent-driven conversations"
+        ],
+        "reason": "Spec explicitly supports agent-driven conversation mode."
+      },
+      {
+        "req_id": "PURE_2003 - agentmom_R034",
+        "supported": true,
+        "evidence_snippets": [
+          "component-driven mode"
+        ],
+        "reason": "Spec explicitly supports component-driven conversation orchestration."
+      }
+    ],
+    "unsupported_implied": [
+      {
+        "text": "The system shall tag unicast messages with sequence numbers (or equivalent) and expose those sequence numbers in logs so reordering can be detected and verified.",
+        "source_snippet": "\"tagging with sequence numbers so we can detect reordering\" / \"I’ll wire logs to show unicast sequence numbers\"",
+        "source_type": "interview_transcript | meeting_notes",
+        "reason": "The artifacts explicitly state using sequence numbers and logging them to detect/verify reordering. The gold set requires ordered unicast delivery but does not require sequence-number tagging or logging for verification/diagnosis; this is a distinct, significant capability implied by the source."
+      },
+      {
+        "text": "The system shall produce logs (or equivalent observable events) that include group join and leave events so behavior can be demonstrated and audited.",
+        "source_snippet": "\"I’ll wire logs to show ... the join/leave events for groups\" / \"We emit group-level events. On join, we publish a join notice ... on leave, a corresponding leave notice.\"",
+        "source_type": "interview_transcript | meeting_notes",
+        "reason": "While the gold set requires notifications for join/leave, the artifacts additionally require that these events be recorded/exposed in logs for demonstration and QA. Logging/auditing of these events is a separate operational capability not covered by the gold requirements."
+      },
+      {
+        "text": "The system shall ensure protected (encrypted) messages are unusable by recipients that lack the required keying material or are not members of the protected group (i.e., non-members cannot make use of protected traffic).",
+        "source_snippet": "\"If the recipient lacks what’s needed, the payload won’t be usable by that recipient\" / \"Non-members shouldn’t be able to make use of that traffic.\"",
+        "source_type": "interview_transcript | meeting_notes | email_thread",
+        "reason": "The artifacts state that protected messages must not be usable by recipients without the proper material (and non-members should not be able to use protected group traffic). The gold set specifies encryption/decryption capabilities but does not state this access-control behavior for recipients lacking keys or for non-members; this is a significant security behavior implied by the sources."
+      }
+    ],
+    "passed": false
+  },
+  "brief": {
+    "project_name": "agentMom+ GroupComms",
+    "domain": "multi-agent systems communication framework (Java)",
+    "users": [
+      "Multi-agent application developers",
+      "Agent behavior designers",
+      "Network administrators configuring multicast and broadcast",
+      "QA/test engineers validating messaging",
+      "Graduate researchers building MAS prototypes"
+    ],
+    "stakeholders": [
+      "Graduate project team",
+      "Faculty advisor",
+      "Thesis committee members",
+      "Partner application teams adopting agentMom",
+      "IT/network operations",
+      "Security reviewer"
+    ],
+    "business_goals": [
+      "Provide a reusable Java framework for agent messaging across unicast, multicast, and broadcast",
+      "Enable optional secure messaging to protect content when needed",
+      "Preserve backward compatibility with agentMom 1.2 to ease migration",
+      "Support dynamic group coordination including join/leave, reorganization, and substitution",
+      "Produce an IEEE-aligned SRS that clearly describes the framework’s behavior for advisor/committee review",
+      "Demonstrate the driving capabilities by the end of Phase II"
+    ],
+    "core_features": [
+      "Unicast messaging with ordered, address-targeted delivery; send/receive with optional encryption and automatic decryption on receipt",
+      "Multicast groups with join/leave requests, membership enforcement (no traffic before join or after leave), join/leave notifications, opt-out halts delivery, and optional group encryption with auto-decrypt for members",
+      "Configurable multicast parameters (address, port, TTL) and ability to subscribe to multiple groups simultaneously",
+      "LAN broadcast: send and receive messages reaching all hosts on the local network",
+      "Choice of conversation-control mode: agent-driven or component-driven",
+      "Agent substitution so a replacement agent can join and act within a group",
+      "Compatibility layer to interoperate with existing agentMom 1.2 agents"
+    ],
+    "quality_concerns": [
+      "Confidentiality for uni- and multicast via message-level encryption",
+      "Ordered delivery and correct addressing for unicast messages",
+      "Interoperability and backward compatibility across agentMom versions",
+      "Acknowledged best-effort behavior for multicast/broadcast transport",
+      "Configurability and maintainability of group and network settings",
+      "Restricted access to project documentation (advisor/committee only)",
+      "Standards-aligned SRS structure and clarity"
+    ],
+    "constraints": [
+      "SRS must follow an IEEE-style structure with a product perspective section (covering functionality, users, constraints, assumptions) and a section for use cases and detailed requirements",
+      "Submission is part of fulfilling MSE degree requirements and will be reviewed by the advisor and committee",
+      "SRS readership is limited to the advisor and committee members",
+      "Underlying network must support multicast and UDP broadcast; unicast uses TCP/IP",
+      "Timeline requires that all starred driving items are demonstrated by the end of Phase II",
+      "Multicast and broadcast operate with best-effort delivery guarantees only",
+      "Must remain compatible with existing agentMom 1.2 deployments"
+    ],
+    "terminology": [
+      "agentMom 1.2 / new agentMom",
+      "Unicast",
+      "Multicast group",
+      "Broadcast (local network)",
+      "Time-To-Live (TTL)",
+      "Organization and reorganization",
+      "Conversation control (agent-driven vs component-driven)"
+    ]
+  },
+  "metadata": {
+    "file_path": "data/pure/2003 - agentmom.pdf",
+    "file_type": ".pdf",
+    "char_count": 13322,
+    "profile": {
+      "char_count": 13322,
+      "heading_density": 44,
+      "shall_count": 25,
+      "must_count": 1,
+      "will_count": 1,
+      "use_case_count": 4,
+      "stakeholder_count": 0,
+      "requirement_keyword_count": 14,
+      "structure_strength": "strong"
+    },
+    "section_count": 35,
+    "dense_sections": 11,
+    "gold_count": 34,
+    "section_candidates": 35,
+    "raw_candidates": 25,
+    "llm_usage": {
+      "total_calls": 187,
+      "total_input_tokens": 425443,
+      "total_output_tokens": 413582
+    }
+  }
+}

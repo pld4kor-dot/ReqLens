@@ -1,0 +1,93 @@
+TYPE  : meeting_notes
+TITLE : Ops/Design Working Session — LeadWash Relay Routing & SLAs
+UNIT  : PROMISE_9
+============================================================
+
+Date: 2025-03-19
+Location: Teams Call (https://meet.company.com/leadwash-relay)
+Attendees: Priya (Tech Ops Eng), Asha (Corp/School Param Admin), Maria (EC), Jason (Admissions Rep), Owen (IT Ops/SRE), Carla (Marketing Acq) [joined late], Nadine (Enterprise CRM liaison) [left early]
+
+— Notes are rough, live-typed. Some items are TBD. Some numbers missing context. Check with Finance and CRM after. —
+
+Agenda
+- Intake + validation checks
+- Scoring components & thresholds by school
+- Routing (high/medium/low)
+- ARA alignment + rep assignment timing
+- Vendor returns, credits, billing
+- Performance, logging, and reporting (day vs off-hours)
+- Admin tool permissions + maintenance
+
+Intake & Validation
+- Must accept leads via existing web service infra (no new gateway). Ops wants same load balancer + certs. [?]
+- Inbound format: neutral, non-binding (XML/XSD). JSON? —> not this phase. Sam’s vendors to adapt.
+- Validate: required fields present (email, phone, program code, campus/online flag?), formats. Program code must be known (see CRM list).
+- If validation fails: reject immediately. BUT still persist record (for audit, credit tracking). “Insert all leads captured” phrasing used.
+- Carla asked if we can do auto-correction (e.g., strip spaces in phone). Priya: Keep validation strict; do not alter lead content materially. We will not perform automatic corrections in v1. [TBD doc of required/optional fields]
+
+Scoring Engine
+- Two parts: contact score + academic score = total. Weighting by Corporate baseline; schools allowed to tweak within bounds.
+- Asha to provide ranges for high/medium/low cutoffs per school (e.g., total >= X —> high). Numbers in draft: H 80+, M 50–79, L < 50 [NOT decided yet].
+- Corporate vs school params: different weight for certain programs (e.g., Nursing gets higher academic weight?). Keep param-driven.
+- Transparency ask: ensure the engine keeps contact vs academic components distinct for tuning. ECs just need clear notes on why something isn’t high.
+
+Routing Logic
+- High tier: send to Enterprise CRM immediately, include total score in payload (so CRM sees score). Confirm field mapping with Nadine.
+- Medium: EC manual verify in eLeads. Maria wants “verify/push” button. No ARA until verified. Might need state “Pending EC.”
+- Low: return to vendor right away. Include rejection rationale + original data (or normalized echo). Sam requested reason codes list.
+- Duplicates: CRM may flag potential duplicates. We must store potential dupes responses in our DB for reference (even if we proceed). Display a duplicate flag in eLeads so ECs are aware. Note: Do NOT reject on potential alone unless threshold says so. [TBD]
+
+ARA and Rep Assignment
+- Lead should have a rep set before submit to CRM (pre-assignment) based on CRM-provided availability list. Nadine to confirm interplay with ARA in CRM.
+- ARA deadline: CRM expects lead within ~3 min of intake. Our pipeline must keep within that.
+- Periodic list of available reps delivered from CRM (file? API?). Current plan: scheduled export (hourly? 15 min?). [check with CRM]. Store list in LeadWash.
+
+Performance Targets (SLAs)
+- Daytime (8AM–8PM CST): 90% of leads complete end-to-end within 5 minutes. Owen: This is total cycle, not just wash.
+- Off-hours: aim tighter — 99% done within 3 minutes (automation). Carla: seems aggressive. Priya: previously agreed. Keep for now.
+- Per-lead washing step: 97% finish < 25 sec. Outliers: must log event + actual duration to diagnostics. Owen wants correlation IDs.
+- If CRM lookup or dupe-check slow, do not blow SLA. Proceed where possible and mark for later reconciliation. [TBD exact behavior]
+
+Logging & Defects
+- Ops requires defect/issues dashboard accessible 24x7. Who gets access? IT ops + on-call engineers. Business summary weekly.
+- For slow leads > 25 sec, record how long + which step was bottleneck (validation, scoring, CRM call, EC queue handoff). Owen to define log taxonomy.
+- Add alert thresholds during off-hours if backlog > N (N=50?). [TBD N]
+
+Vendor Returns & Credits
+- Low-tier leads: return immediately to vendor with rejection reason. Provide reason code + human text, plus include vendor’s original lead content for reconciliation.
+- Vendor side must confirm invalid before credit issuance (no unilateral credits). Partners verify and mark as invalid accepted.
+- After vendor confirms, they send a credit validation record to billing. Interface is existing Enterprise billing endpoint. Finance applies credit (timeline?). [check with Finance]
+- Maria asked: can EC override “low” if clear error? Decision: No manual rescue of low category; route back to vendor only.
+
+Data Persistence & Compliance
+- Must insert/persist all leads that hit web service, regardless of outcome (accept/reject). Keep for audit, credit disputes, and volume analytics.
+- Track parameter governance and access rights. Asha to document who can change what and when. [No ad hoc changes outside windows]
+
+Admin Tool & Security
+- Admin interface to maintain scoring/washing parameters (cutoffs, weights, reason texts). Role-based: Corporate admins (global), school admins (scoped). ECs have view-only. Vendors have no access.
+- Authentication: SSO; authorization: roles and school scoping. Changes only in planned maintenance windows.
+- Some debate: emergency hotfix allowed? If yes, require Director approval + change ticket. [TBD policy]
+
+Interfaces & Constraints
+- Must remain within in-house web service stack (existing LB, app servers). No third-party iPaaS. IT will not approve new infra this quarter.
+- Inbound: XML per published XSD. Outbound to CRM: existing APIs/interfaces only (Nadine to confirm field for score).
+- Vendor transports: current approach uses HTTPS posts. Some vendors want SFTP —> not supported for the real-time path.
+
+eLeads Behavior
+- Mediums appear in EC queue promptly (seconds to minute). Show: notes indicating validation outcomes or missing info that affected routing.
+- EC action: Verify -> system assigns rep using latest availability -> submit to CRM.
+- Duplicates: show potential duplicate flag from CRM; EC can choose to proceed (if allowed) or mark as duplicate [policy TBD]. Regardless, store the potential duplicate details.
+
+Open Issues / Parking Lot
+- Clarify ARA vs pre-assignment: if we pre-assign, does CRM still run ARA? Nadine to confirm. We need to “assign before submit” per business ask, but CRM may re-evaluate. Could be config.
+- Off-hours stricter SLA: Carla concerned marketing campaigns may spike volume; capacity plan? Owen to project concurrency. [TBD]
+- Reason codes standardization: map to vendor reason code dictionary and billing credit categories. Finance to review.
+- Maintenance windows: exact schedule (weekly? bi-weekly?). Emergency changes policy undecided.
+- Frequency of rep availability feed: options 15 min vs hourly. Impact on stale assignment. [TBD]
+
+Numbers jotted
+- > 25 sec wash time = slow event (97% should be faster). Log duration.
+- Day: 90% done < 5 min total. Night: 99% < 3 min total. ARA deadline 3 min from intake.
+- Rep availability feed cadence: 15? 30? 60? [TBD]
+
+End of notes. These are not final decisions; confirm with CRM/Finance. Some items [TBD] and will be revisited next sync.

@@ -1,0 +1,139 @@
+TYPE  : email_thread
+TITLE : Thread: CSR-EAM Hub security & retention, platform neutrality, and failure handling
+UNIT  : PROMISE_12
+============================================================
+
+Email 1
+From: Janet <janet.security@citychi.gov>
+To: Maya <maya.pm@doit.citychi.gov>
+CC: Leo <leo.ops@doit.citychi.gov>, Priya <priya.dba@doit.citychi.gov>
+Subject: CSR<>EAM hub - security expectations and retention (draft)
+
+Hi Maya,
+
+Following up from yesterday’s call. Please ensure the spec explicitly states:
+- AuthN/AuthZ required for all portal users and service accounts (role-based)
+- Message-level privacy + integrity: encryption in transit AND signatures/validation. I’m leaning WS-Security style envelopes or equivalent — we can hash out tech later, but we need message integrity checks, not just TLS.
+- Audit trail retained minimum 12 months. We can debate warm vs cold storage, but the point is we must be able to reconstruct a transaction trail end-to-end during audits.
+
+If you have something drafty I can mark up, send it my way. Also, I heard someone mention Friday deployments… please let’s write in that upgrades won’t take the service down.
+
+- J
+
+—
+
+Email 2
+From: Maya <maya.pm@doit.citychi.gov>
+To: Janet <janet.security@citychi.gov>
+CC: Leo <leo.ops@doit.citychi.gov>, Priya <priya.dba@doit.citychi.gov>, Carlos <carlos.vendor@eamco.com>, Nina <nina.csr@citychi.gov>
+Subject: RE: CSR<>EAM hub - security expectations and retention (draft)
+
+Thanks Janet,
+
+Agree on all three. We’ll include:
+- Portal login with roles (ops admin, read-only analyst, etc.). Service accounts scoped least-privilege.
+- Message security: encrypt and sign at the message level; we can reference WS-Sec conventions in the requirements so vendors don’t come back with TLS-only.
+- Retention: 1-year minimum. We’ll need to spell out that message content and metadata (timestamps, correlation IDs, who retried, etc.) are stored.
+
+On upgrades: the plan is “keep the lights on” during changes. At least for adding new worker capacity, the service shouldn’t blink. For deeper upgrades, we’ll aim for rolling. Leo, can you sanity check? Carlos, any concerns on message signing from your side?
+
+- M
+
+—
+
+Email 3
+From: Carlos <carlos.vendor@eamco.com>
+To: Maya <maya.pm@doit.citychi.gov>
+CC: Janet <janet.security@citychi.gov>, Leo <leo.ops@doit.citychi.gov>, Priya <priya.dba@doit.citychi.gov>, Nina <nina.csr@citychi.gov>
+Subject: RE: RE: CSR<>EAM hub - security expectations and retention (draft)
+
+Hi all,
+
+On message signing/encryption: we can support WS-Security headers, but be aware it adds processing overhead. If you’re also holding to the ~2s end-to-end target, we’ll need multi-threading and load balancing across the hub’s workers so the crypto doesn’t become the bottleneck.
+
+We’ve also seen trouble when hubs try to store raw payloads for a year without planning. If you’re retaining, please make sure access to archives is controlled and aligns with city policy.
+
+Also, I want to raise a design point: failure handling. If a work order create call succeeds in EAM but the hub misses the ack due to a network blip, will you support a compensating mechanism? The goal would be to confirm final state and avoid duplicates while closing the loop. We can coordinate on what our side exposes to help you validate state.
+
+Regarding upgrades: we can align with rolling updates. Hot-adding workers is fine; just register them with the LB. Totally okay from our perspective.
+
+- Carlos
+
+—
+
+Email 4
+From: Leo <leo.ops@doit.citychi.gov>
+To: Carlos <carlos.vendor@eamco.com>
+CC: Maya <maya.pm@doit.citychi.gov>, Janet <janet.security@citychi.gov>, Priya <priya.dba@doit.citychi.gov>, Nina <nina.csr@citychi.gov>
+Subject: RE: security + failure handling + capacity adds
+
+Carlos,
+
+Yup, we’re planning for parallel workers and LB from day one. Crypto overhead is real; we’re not going to sacrifice the security, so we’ll handle it with concurrency. We also have the polling cadence in mind (roughly every second) for inbound, though if we can flip to event-driven later that would be nice.
+
+On compensating: yes, please. We want both retry/backoff and compensating transactions when partial updates are detected. And the hub needs to “route around” your failing endpoint if one node on your side is sick — hit a healthy one, not beat the dead horse.
+
+On the archive, we’ll follow the city’s governance on how retention is protected and who can access it. We need the one-year window because when something goes wrong in March, we get asked about it in February next year.
+
+Also, on auth: we’ll use the city’s standard approach for authentication and then enforce authorization per role. No anonymous admin screens.
+
+- Leo
+
+(sent from mobile, pardon typos)
+
+—
+
+Email 5
+From: Priya <priya.dba@doit.citychi.gov>
+To: Janet <janet.security@citychi.gov>, Maya <maya.pm@doit.citychi.gov>
+CC: Leo <leo.ops@doit.citychi.gov>, Carlos <carlos.vendor@eamco.com>, Nina <nina.csr@citychi.gov>, Wendy <wendy.standards@doit.citychi.gov>
+Subject: RE: CSR/EAM hub - platform + new tech question (drifting subject)
+
+Jumping in with a somewhat related concern: we keep saying “platform-agnostic.” For the record, we need to be able to deploy this on whatever our infra team standardizes on (Windows or Linux VMs, or containers) without rewriting the app. Same for the connectors: we can’t be locked into one vendor’s runtime. And longer term, we’re going to need to integrate a new asset subsystem (unknown tech now). We should capture that the architecture should accept new adapters without re-architecting the core.
+
+And to close the loop on retention: please specify we store enough metadata to trace a transaction across systems (IDs, timestamps, who replayed it). At least 12 months, maybe more, but we can start with the one-year commitment and revisit storage growth after go-live.
+
+Side note: the audit folks will want integrity verification — e.g., message-level signatures or digests to prove no tampering. That goes beyond TLS. WS-Sec lines up nicely with that, as Janet said.
+
+- Priya
+
+—
+
+Email 6
+From: Maya <maya.pm@doit.citychi.gov>
+To: All
+CC: 
+Subject: RE: CSR/EAM hub - security, retention, platform, failure handling (summary + next steps)
+
+Team,
+
+Thanks for the inputs. Capturing where we landed (and a couple of open points):
+
+Security
+- Authentication + authorization: portal users are role-based; service accounts scoped with least privilege. No anonymous access.
+- Message privacy + integrity: adopt a standards-based approach (WS-Security or equivalent) so payloads are encrypted/signed. We’ll include integrity checks to catch tampering, not rely only on TLS.
+
+Audit/Retention
+- Retain message history + metadata for minimum 1 year. Include correlation IDs, timestamps, actions/retries, and any transformations.
+
+Failure handling
+- Use retry/backoff and support compensating transactions where a step succeeded on one side but not acknowledged. Coordinate with EAM behavior to validate end-state and avoid duplicates.
+- Route around failing endpoints when possible; do health checks and failover to healthy nodes (on the EAM side where supported).
+
+Platform/Extensibility
+- Platform independent design: no lock-in to a single OS or dev environment. Deployable on Windows/Linux/containers as needed. Adapters/connectors should be cross-platform.
+- Accept new technologies later without core architecture changes (plugin/adapter model).
+
+Operations
+- Adding new processing capacity (more workers) must not interrupt service. We will do hot-add with LB registration.
+- We continue to target around 2s end-to-end handling and frequent (about once per second) intake checks; concurrency + LB are assumed to keep us there even with security overhead.
+
+Open items / pushback
+- Carlos flagged crypto overhead; we’ll mitigate via concurrency but will baseline perf in perf testing. If we need to tune, we’ll do so without relaxing security requirements.
+- Janet to schedule a security workshop to nail down the WS-Sec profile and key management approach.
+- Priya to propose the archive schema and access controls for audit queries.
+- Maya to verify with Wendy that our UI and API choices still align with the city framework (no off-framework widgets; this is a separate topic but interrelated).
+
+Partial resolution: we’re aligned on the need for role-based access, message-level security, one-year retention, compensating + routing around failures, and platform independence. Remaining action items above. I’ll incorporate this into the requirements draft and circulate by Friday.
+
+- Maya

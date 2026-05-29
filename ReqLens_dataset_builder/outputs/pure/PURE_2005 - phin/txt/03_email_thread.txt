@@ -1,0 +1,157 @@
+TYPE  : email_thread
+TITLE : Thread: Countermeasures workflow, data exchange, and PHIN alignment
+UNIT  : PURE_2005 - phin
+============================================================
+
+Email 1
+From: Carla Martinez <carla.martinez@stateph.gov>
+To: Maya Patel <maya.patel@stateph.gov>, Tom Nguyen <tom.nguyen@stateph.gov>, Elena Rossi <elena.rossi@stateph.gov>, Raj Kulkarni <raj.kulkarni@stateph.gov>
+CC: Denise Lane <denise.lane@stateph.gov>, Clinic Ops Team <clinicops@stateph.gov>
+Subject: Countermeasure data (orders, administrations, AE) and messaging
+Date: 2025-04-02 08:14
+
+Good morning team,
+
+Following yesterday’s chat with the clinic lead, we need to nail down how PHINTrace OM will handle countermeasures for this program. We’ve gotten burned before by partial records.
+
+High level asks:
+- When recording prophylaxis or treatment, we need to capture who ordered it (identity of the prescriber or ordering officer), the product name, date given, type (prophylaxis vs treatment), duration if applicable, and dosage. This will let us follow up on whether it was appropriate and complete.
+- We also need to capture adverse events post administration. We use that data both to decide whether additional interventions are needed (e.g., switch product) and to identify patterns that could point to a problematic batch or perhaps an issue with the administering facility or person.
+- Messaging: we should be able to receive and process messages about administrations that happened at partner sites (e.g., drive-through PODs), and link those administered doses to the person who received them. Conversely, when our epidemiology team needs a clinic to administer prophylaxis, we should be able to send a request message (administration request) and track the response.
+
+I know we also owe DPH a plan for exchanging aggregate numbers out to surveillance and response-tracking systems, like total vaccinations/treatments administered and counts under isolation/quarantine. We can discuss if that flows out of the same pipeline or a separate report job.
+
+Please poke holes. I’ll start drafting a requirements snippet this afternoon.
+
+Carla
+
+---
+
+Email 2
+From: Tom Nguyen <tom.nguyen@stateph.gov>
+To: Carla Martinez <carla.martinez@stateph.gov>
+CC: Maya Patel <maya.patel@stateph.gov>, Elena Rossi <elena.rossi@stateph.gov>, Raj Kulkarni <raj.kulkarni@stateph.gov>, Denise Lane <denise.lane@stateph.gov>, Clinic Ops Team <clinicops@stateph.gov>
+Subject: RE: Countermeasure data (orders, administrations, AE) and messaging
+Date: 2025-04-02 09:02
+
+Carla,
+
+All makes sense. A couple extra clarifications from the field side:
+
+- For adverse events, we don’t need the system to diagnose, but we do want structured capture so we can slice by product and lot/batch. That way if 8 people had similar events after the same lot, we can flag it upstream.
+- On the outbound request, please make sure the receiving entity (clinic, mobile team) gets a patient identifier they can use, and when they respond it should link automatically to our subject record. I think Elena can help here.
+- Re: aggregate numbers, we need to also share counts like number of suspect cases (whatever definition we lock), number of contacts per case, number of persons under isolation or quarantine, and the number of vaccinations or treatments administered. Surveillance has asked for bi-directional so we can ingest their updates too.
+
+Also, side note: we have to share per our policies with emergency management partners and occasionally media; not asking for anything fancy, but OM should help package those messages with the right level of detail and keep a record that we sent them.
+
+Thanks,
+Tom
+
+Sent from mobile, sorry for typos
+
+---
+
+Email 3
+From: Elena Rossi <elena.rossi@stateph.gov>
+To: Tom Nguyen <tom.nguyen@stateph.gov>, Carla Martinez <carla.martinez@stateph.gov>
+CC: Raj Kulkarni <raj.kulkarni@stateph.gov>, Denise Lane <denise.lane@stateph.gov>, Clinic Ops Team <clinicops@stateph.gov>, Maya Patel <maya.patel@stateph.gov>
+Subject: RE: Countermeasure data (orders, administrations, AE) and messaging (plus vocab + formats)
+Date: 2025-04-02 10:21
+
+Jumping in on the tech bits.
+
+- Receiving and parsing administration messages: yes, we can set up interfaces to accept inbound messages from partner clinics/PODs. We have to stick to PHIN Cross-Functional specs for message construction and parsing and to secure transport rules. I’ll review the current docs at the CDC site again to ensure alignment. Implementers must review those reqs; we can’t wing it.
+- Linking: when an inbound admin message arrives, we’ll map their patient ID to our Subject ID (we may include both in the payload to be safe) and link the administered countermeasure to that subject. If there was a prior request from us, we can link back to the request too.
+- Outbound: generating and sending a request message to administer prophylaxis/treatment is doable. We’ll coordinate with partners on an approved secure transport (e.g., standard secure messaging per PHIN options) so they can receive and respond reliably.
+- Formats and dictionaries: we should support at least HL7 v2 or FHIR for structured messages, and CSV uploads where partners can’t do HL7. We have to publish data dictionaries so they know which fields are standard and which we’ve customized.
+- Vocabularies: when we exchange, we should use established vocab standards (LOINC, SNOMED, race/ethnicity codes). Internally we can have configurable domain vocabularies for outbreak data so Maya’s team can add new exposure types or object categories, but we’ll still map to standards for exchange. We’ll need governance to accept new standards as they’re defined.
+
+Security: Raj will say this too, but all exchanged data must use secure mechanisms. No emailing PHI. We’ll stick to the secure transports defined in the PHIN specs.
+
+Lastly, the CRA functional requirements for countermeasures are not optional. We need to conform to the Countermeasure/Response Administration process flows so we don’t invent our own AE fields. I’ll link those to the design doc.
+
+Elena
+
+---
+
+Email 4
+From: Raj Kulkarni <raj.kulkarni@stateph.gov>
+To: Elena Rossi <elena.rossi@stateph.gov>, Tom Nguyen <tom.nguyen@stateph.gov>, Carla Martinez <carla.martinez@stateph.gov>
+CC: Denise Lane <denise.lane@stateph.gov>, Clinic Ops Team <clinicops@stateph.gov>, Maya Patel <maya.patel@stateph.gov>
+Subject: RE: Countermeasure data (orders, administrations, AE) and messaging (plus vocab + formats)
+Date: 2025-04-02 11:10
+
+Adding guardrails and a couple of constraints.
+
+1) Secure exchange is non-negotiable. We’ll apply agency policy and legal guidance. Transport must be TLS or approved equivalent; no exceptions. For partners that can’t meet us there, we do not send PHI; we stick to de-identified aggregates.
+
+2) Cross-Functional Components Requirements: Implementers (us and vendor) must review the PHIN Preparedness Cross Functional Components Requirements at cdc dot gov slash phin. Those define message construction, parsing, and secure transport. Also they include operational, vocabulary, security, and availability cross-functional items. No one gets to claim ignorance later.
+
+3) CRA Conformance: As Elena said, we must conform to PHIN Preparedness Countermeasure/Response Administration functional requirements and process flows. That covers prophylaxis/treatment and adverse event data.
+
+4) Backups and COOP: OM data must be covered by documented backup policies/procedures, and we need to actually implement those procedures (jobs, schedules, restore steps). Also, continuity of operations is not a nice-to-have. The organization will establish and maintain a COOP plan, and the system must support continuity so we can maintain outbreak management and other PHIN functions during disruptions and remain available after a catastrophic event. We expect availability even after a catastrophic event. This affects how we architect, where we host, and our runbooks. We need business to sign off on RTO/RPO. [Action: Denise/Raj to propose]
+
+5) Operational monitoring: we’ll instrument the system to detect/report issues that could affect OM activities (e.g., interface queues jammed, sync errors). I’ll own the monitoring stack but we’ll need product to decide what gets bubbled to users vs IT.
+
+6) Training: The organization has to provide employee training on operational procedures so public health partners can support OM and other PHIN areas. This isn’t a feature but we need to plan for it; otherwise people won’t follow workflows.
+
+7) Documentation: System documentation must reference the CRA functional requirements/process flows for monitoring and follow-up data. When audit time comes, we’ll need to show we aligned to those.
+
+8) Deployment reality check: we still support disconnected field use. When devices come back online, they must sync cleanly with server and peer instances so we have consistent shared OM data. Also ensure that data collected on remote devices is uploaded and stored centrally. This is old news for some of you, but I’m repeating it because it affects how we do countermeasure follow-up in the field.
+
+Raj
+
+---
+
+Email 5
+From: Denise Lane <denise.lane@stateph.gov>
+To: Raj Kulkarni <raj.kulkarni@stateph.gov>, Elena Rossi <elena.rossi@stateph.gov>, Tom Nguyen <tom.nguyen@stateph.gov>, Carla Martinez <carla.martinez@stateph.gov>
+CC: Clinic Ops Team <clinicops@stateph.gov>, Maya Patel <maya.patel@stateph.gov>, PIO Desk <pio@stateph.gov>
+Subject: RE: Countermeasure data + messaging + reporting to partners (subject drift, sorry)
+Date: 2025-04-02 12:33
+
+Two cents from leadership, plus a curveball.
+
+- Communications: OM should help us communicate to stakeholders per policy. That includes emergency management (FEMA, hazmat, public works), intel partners as appropriate, media, and the public. I don’t want a rogue email campaign; the system should facilitate generating the right content and routing through approved channels. PIO is cc’d; please coordinate with them on templates.
+- Aggregates: We need to provide aggregate data to other systems and partners. Counts of suspect cases, contacts per case, vaccinations and treatments administered, persons under isolation/quarantine. Some of this will be a nightly export; some may be bi-directional exchange with surveillance/early event detection, lab, response tracking, across state and local partners. The interfaces should be established and standards-based.
+- Observation grouping: Make sure messages indicate what is lab vs symptom vs exposure vs risk vs treatment. Our partners have explicitly asked for this grouping in payloads so they can route internally.
+
+Pushback item: I am wary of us supporting too many import/export formats. Every additional format is maintenance. We need a minimal set: HL7 v2 or FHIR for structured clinical, CSV for the lowest common denominator, and maybe one text format if absolutely necessary. If we support everything under the sun, we will drown. Let’s document the formats we support and provide mapping/data dictionaries to describe both standard and custom fields.
+
+Also, Raj, agree on secure exchange and COOP. But cost alert: we have a limited budget for redundant hosting. Please bring options with price tags. Also, training: we can schedule but need to align with union constraints (work hours, etc.).
+
+Finally, we cannot forget privacy. The system must protect sensitive information for patients, orgs, and personnel. I will not sign off if access controls are floppy. Protect from sabotage/unauthorized access too. We’ve had an uptick in phishing attempts.
+
+Denise
+
+---
+
+Email 6
+From: Maya Patel <maya.patel@stateph.gov>
+To: Denise Lane <denise.lane@stateph.gov>, Raj Kulkarni <raj.kulkarni@stateph.gov>, Elena Rossi <elena.rossi@stateph.gov>, Tom Nguyen <tom.nguyen@stateph.gov>, Carla Martinez <carla.martinez@stateph.gov>
+CC: Clinic Ops Team <clinicops@stateph.gov>, PIO Desk <pio@stateph.gov>
+Subject: RE: Countermeasure data + messaging + reporting to partners (with practical notes)
+Date: 2025-04-02 14:05
+
+Thanks all. A few practical notes from the field side and a couple of open questions to close the loop (for now):
+
+- For countermeasure records: we will log ordering provider identity, product name, date, type, duration (if it’s a course), dosage. That’s straightforward. Please also capture the site where it was administered (clinic site) and link to that organization record, so when we look at adverse events we can separate product batch issues from potential admin problems at a site.
+- Adverse events: We will collect follow-up data from subjects and sometimes proxies (caregivers). We also have response examinations required by certain prophylaxis protocols. Our nurses need a place to record that follow-up happened and any findings. We don’t need decision support here, just a place to put it and the ability to query it later.
+- Exchange and aggregates: Agree with Denise on counts. I’d like to see the nightly payload group observations by type (lab, symptom, exposure, risk, treatment) and include a mapping/dictionary so our county partners (who use different systems) can reconcile our custom fields. Bi-directional exchanges are critical; counties often find new contacts before we do.
+- Security and privacy: +1 to Raj and Denise. Please no unsecured anything. And please apply privacy across the board; some modules historically leaked more than others.
+- Disconnected use: We do a lot of follow-up in places with zero connectivity. Make sure when we get back online, the sync is robust and we don’t lose data or corrupt records. Also, it has to upload data from remote devices into the central system without us babysitting it.
+- Backups/COOP: From the user perspective, I don’t care how, but I need the system to still be there after a storm knocks out the main site. If that means we fail over or we run lightweight until we’re back, fine. But please document the backup/restore policies and the continuity steps, and keep the plan current.
+- Training: We have a lot of turnover and surges. If training on operational procedures is not baked in and updated, we will fall back to spreadsheets and phone calls and then we’ll have a mess. Please plan for ongoing training and refreshers.
+- Documentation: Please make sure the system docs explicitly reference the Countermeasure/Response Admin requirements for monitoring and follow-up. The auditors are going to look for that mapping.
+
+Open questions / actions:
+1) Elena/Raj: Can we lock the minimal set of exchange formats for countermeasure messages this week? Denise is right about maintenance. If HL7 and CSV are the ones, say so. Also need to confirm secure transports we allow.
+2) Carla: Will vocabulary governance cover how we accept new standards (e.g., new LOINC panels)? We’ll need to accept and implement additional standards as they’re defined.
+3) Raj: When we say operational monitoring will detect/report issues, who gets alerted and how? I don’t want my team paged at 2 am for an interface queue glitch unless we decided that is our responsibility.
+4) Tom: Which aggregate metrics do you want in the first drop? Be specific so we don’t leave out isolation/quarantine counts.
+
+Partial resolution: We agree on core countermeasure data capture and the need to send requests and receive/admin messages, link them to subjects, and feed aggregates bi-directionally to partners. We agree on secure exchange, adherence to PHIN Cross-Functional and CRA requirements, and that we will use standard vocabularies in exchanges with configurable internal domain lists.
+
+Still open: exact formats list and transport options; COOP design options with budget; training schedule; ops monitoring alerting policy.
+
+Maya

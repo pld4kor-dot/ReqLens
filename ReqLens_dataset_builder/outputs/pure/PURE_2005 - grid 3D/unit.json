@@ -1,0 +1,266 @@
+{
+  "id": "PURE_2005 - grid 3D",
+  "origin": "PURE",
+  "created_at": "2026-05-23T17:25:45.483232+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Stakeholder Interview: Early Direction for BioGrid 3D Explorer (edited)",
+      "text": "Ben [Developer]: Thanks for making time. I wanted to get a rough pass on what's essential versus nice-to-have. I know this is exploratory, so feel free to jump in or push back.\n\nDr Delmiro [Client]: Sure, Ben. We need something that lets the team—Identifiers, Investigators, and the folks who do demos—actually see these data clouds in three dimensions. Not a gimmick. We need to be able to inspect patterns.\n\nSara [Investigator]: Right. The thing we keep running into is that our points are there but when we print screenshots for a paper they go muddy. On black-and-white printers the colors wash out. And during rotation the axis labels get weird—sometimes hard to read, sometimes they flip.\n\nAnthony [Supervisor]: Clarity on paper is a must. We submit to journals that expect black-on-white figures. If the palette relies on subtle hues that vanish in grayscale, it's not useful. So: high contrast by default. And the axes? If you rotate the scene, the labels should remain legible. That is table stakes.\n\nBen [Developer]: Okay, default look suitable for black-on-white printing, high contrast. Axis labels readable even after a reorient. For the labels, do you envision them always facing the viewer? Or just large enough—\n\nSara [Investigator]: Facing me, ideally. When I rotate I want to still see X, Y, Z clearly, not mirrored or upside-down. I don’t want to squint and guess.\n\nDr Delmiro [Client]: Also, marker size. We had another tool where the dots were too big and at a distance it looked like a blob. Patterns got distorted. Can we keep them tiny so the overall structure isn't blown out by fat dots?\n\nBen [Developer]: So: point glyphs sized to preserve the spatial pattern, especially when zoomed out. They can scale a bit when you zoom in, but not so much that they overlap heavily.\n\nAnthony [Supervisor]: Keep interactions simple. No heavy training. Some of our users are Identifiers; they just want to check something and confirm it's where they expect. The basics should be discoverable—mouse drag to rotate, wheel to zoom. Nothing hidden behind obscure key combos.\n\nSara [Investigator]: Also, response time. If I click to select a point, I need it to react. Not a beach ball. A couple of seconds tops. Faster would be great. Same story when I change the view—spin, zoom—don’t make me wait.\n\nBen [Developer]: Understood. We'll budget for snappy responses to selection and changing view. No more than about two seconds is what I’m hearing.\n\nDr Delmiro [Client]: And startup. The team needs to be able to open a dataset between meetings. Typical files are a few tens of thousands of points. If it takes a minute, people drift. Around half a minute would be acceptable, and yes, it depends on how many points there are.\n\nAnthony [Supervisor]: We should be honest that if someone loads a monster dataset it will be slower. But for typical sizes, sub-30 seconds cold start is reasonable.\n\nBen [Developer]: Okay: on typical datasets, aim to start in about 30 seconds or less, with the caveat that it depends on size. And for user actions like selecting or changing orientation, don't exceed ~2 seconds.\n\nSara [Investigator]: About the axes: do we need lots of ticks? I get lost without any ticks, but if they cause aliasing during rotation maybe fewer is better. As long as the letters stay readable.\n\nAnthony [Supervisor]: Legibility first, not maximum tick density. We can go lighter on ticks. Also, I'd avoid fancy shading that interferes with print.\n\nDr Delmiro [Client]: We tried a package with glossy spheres—looked pretty, printed as gray blobs. Useless. So high-contrast, simple markers. Keep the field of view uncluttered.\n\nBen [Developer]: We’ll keep the markers simple and small by default to support that.\n\nSara [Investigator]: When I select something, make it obvious. A clear highlight or something. Don’t bury feedback in a menu.\n\nAnthony [Supervisor]: Agreed. Keep the interactions intuitive. A one-page quick start at most. Click to select, drag to rotate, scroll to zoom—simple.\n\nBen [Developer]: Can we clarify users once more? We’ve said Identifiers, Investigators, and Demonstrators.\n\nDr Delmiro [Client]: Yes. Identifiers are checking things quickly. Investigators explore—spotting clusters and outliers. Demonstrators need to show the plots in talks—live rotation and then screenshots. Those three groups are our world.\n\nSara [Investigator]: Speaking of demos, when I rotate for a room, the axis labels need to stay, um, not blocky. We had a time where the Z label turned backward. Another time the labels got lost behind the cloud.\n\nBen [Developer]: We can make labels keep a stable orientation and render them so they remain readable from the camera angle. We'll test that extensively while rotating.\n\nDr Delmiro [Client]: Good. But don’t make labels massive and cover the data. Keep them legible without being billboard-sized.\n\nAnthony [Supervisor]: And let's be realistic—startup. If we say under half a minute for typical data, don’t show me 90 seconds. Size-dependent, but make typical usage acceptable.\n\nBen [Developer]: I’ll prototype with a typical dataset—around the tens of thousands of points—and measure. If we hit limits, we’ll be transparent.\n\nSara [Investigator]: I’ll provide real files. Also, we’ll run print tests on the lab printer to check that screenshots come out crisp and the dots don’t merge.\n\nDr Delmiro [Client]: Great. And let’s not turn this into a training burden. Students should be able to sit down and figure it out in a minute by playing around.\n\nBen [Developer]: Got it: simple interactions, small markers to preserve patterns, axis labels that stay readable even when rotated, print-friendly visuals, start quickly, and be responsive—around two seconds per interaction.\n\nAnthony [Supervisor]: That captures it. Let's reconvene after the prototype is up.\n\nSara [Investigator]: Sounds good. I’ve got to run to a seminar. Thanks.\n\nDr Delmiro [Client]: Thanks everyone.\n\nBen [Developer]: Thanks. I’ll follow up with a summary and questions if anything's unclear."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "Notes: BioGrid 3D Working Session — Printability & Interaction (edited)",
+      "text": "Date: 2025-03-06\nLocation: UCL Eng D Building Rm 4.12 / Zoom link: https://ucl.zoom.us/j/9xxx\nAttendees: \n- Dr Delmiro Fernandez-Reyes (client)\n- Anthony Finkelstein (UCL supervisor)\n- Ben Tagger (developer)\n- Sara Patel (Investigator)\n- Kofi Mensah (Identifier) [joined late]\n\nContext: review early prototype behavior for Grid 3D; focus = clarity when rotating, printing screenshots, basic UX. Raw notes below, not polished.\n\n- Opening check: Ben showed a rough grid of points, small dots, axes X Y Z shown.\n- Sara: when rotating quickly the labels flicker? Or are they aliasing — [?]\n- Ben: testing camera-aligned labels; need to lock orientation to keep them readable.\n- Anthony: Key requirement: labels remain readable after reorientation; recognizable letters; no mirror flips.\n- Delmiro: printing — lab printers (B/W only). Screenshots must be clear black on white. No dark backgrounds.\n- Palette discussion: \n  - Start with high-contrast monochrome. \n  - Avoid gradients/shading that muddies print. \n  - Test on paper (journal guidance suggests black on white).\n- Point markers:\n  - Keep small — \"don’t fatten the cloud.\" \n  - At zoomed out view, markers shouldn't smear into each other.\n  - At zoom in, scale modestly; avoid occluding neighbors; preserve pattern.\n  - Kofi: Identifier task = find something quickly without training. Keep it simple.\n- Interaction basics:\n  - Drag = rotate (no modifier keys). \n  - Scroll/pinch = zoom.\n  - Right-click? maybe context, but avoid hidden essentials. [TBD]\n  - Selecting a single point should \"feel instant\" (<=2 seconds). Selecting a set (lasso) also within ~2 seconds. Sara says 1.5 is ideal, but 2 okay.\n- Startup time: \n  - Typical dataset: 30k–60k points (need real numbers — Sara to send 3 files).\n  - Cold start target: ~25–30 sec; depends on # points. Anthony warns not to overpromise. \n  - If very large (hundreds of thousands+), expect longer (document this).\n- Users/personas:\n  - Identifiers → quick check, confirm placement. \n  - Investigators → explore patterns, outliers.\n  - Demonstrators → live rotate, make screenshots for talks/papers. \n  - No specialist training expected. Provide a 1-page quick start max. \n  - Kofi: Please avoid jargon tooltips; keep plain language.\n- Axis & labels specifics:\n  - Labels should not disappear behind points. Consider drawing them so they remain visible (e.g., halo/contrast).\n  - Ticks: fewer ticks if needed to keep letters legible during rotation. \n  - Font size vs zoom: maintain a minimum on-screen size so they don't shrink to unreadable. \n  - Bug seen: Z label mirrored when camera past 180 — fix.\n- Graphics representation:\n  - Keep markers simple and print-friendly by default. \n  - Spheres look nice but ruin print — avoid. \n  - Minimal lighting; gradients risk muddy prints. \n- Contradictions noted:\n  - Sara: wants larger markers for seminars so people in the back see. \n    Anthony: larger markers at distance distort distribution — prefers small. \n    Note: prioritize accuracy; revisit presentation needs after tests. [TBD]\n  - Delmiro: \"Make labels big\" vs Kofi: \"Labels cover data\" — need balance. \n- Environments (background): machines in the lab vary; keep approach pragmatic. \n- Performance checklist:\n  - Interaction latency: selection, orientation change → under ~2s. \n  - Smooth rotate (fps metric TBD) — quantify later. \n  - Start-up: aim <=30s on typical; note size dependence in the UI. \n- Printing workflow:\n  - Screenshot with white background, crisp dark markers/labels. \n  - Export format discussion parked; for now, OS screenshot is fine. \n  - Test prints: Sara to run on HP LaserJet in NIMR; Anthony to check on dept Xerox. \n- Discoverability / training:\n  - No specialist training. If anything, show a brief \"drag to rotate\" hint once. \n  - Avoid nested menus. Keep selection feedback obvious (e.g., highlight or side info). \n  - Add short Quick Start (one page max). Owner: Ben (draft), Kofi (plain-language edit). \n- Data specifics:\n  - File includes point identifiers + 3 parameters per point. \n  - Multi-select needed; keep scope tight—no advanced stats inside tool.\n- Time pressure:\n  - Publication deadline mid-June. Prototype demo in 2 weeks. \n  - Scope changes require client okay (Delmiro). \n- Random notes: \n  - Someone said \"glyphs\"; Kofi heard \"glands\" — clarify terms in UI. \n  - Avoid fancy transparency — printing risk. \n  - Axis letters must be recognizable, even during fast spin.\n\nAction Items:\n- Sara: send 3 datasets (small/typical/large) by Friday. \n- Ben: fix label mirroring; test camera-aligned approach. \n- Ben: enforce small marker defaults; test zoom scaling behavior. \n- Kofi: try prototype w/o instructions; note confusion points. \n- Delmiro: confirm presentation needs for Demonstrators (do they require larger font?) \n\nOpen Issues / Parking Lot:\n- Whether to adjust marker sizing during presentations without misrepresenting distribution — needs test; not decided. \n- Whether we need ticks at all vs fewer ticks. \n- Frame rate metric (20? 24? 30?) — needs test data. \n- Print format export — currently out of scope; revisit if time allows.\n\nNotes addendum (after-call): \n- Quick hallway test with a monochrome palette looked sharp on white background. \n- Startup for 48k points on Ben's laptop ~22 sec; on a lab box ~28 sec. Informal; redo properly. \n- Contradiction flagged: Delmiro pushed for bigger axis labels; Anthony worried about occlusion. Try halo/contrast instead of increasing size."
+    },
+    {
+      "type": "email_thread",
+      "title": "Email Thread: Printing, Axis Labels, and Performance Targets (edited)",
+      "text": "Email 1\nFrom: Ben Tagger <ben.tagger@ucl.ac.uk>\nTo: Delmiro Fernandez-Reyes <dfr@nirm.ac.uk>\nCC: Anthony Finkelstein <a.finkelstein@ucl.ac.uk>, Sara Patel <s.patel@nirm.ac.uk>\nDate: Tue, 11 Mar 2025 09:14:07 +0000\nSubject: Questions re: Grid 3D printing + responsiveness\n\nHi Delmiro,\n\nQuick follow-ups after the session last week:\n\n1) Printing: To make screenshots usable for journals, I’m planning a default look that’s essentially dark markers/axes on white, minimal shading. Any objections to prioritizing print clarity over on-screen “prettiness”?\n\n2) Axis labels: There was feedback that after rotating, labels must remain clear and not inverted. I can pin their orientation to the camera and add contrast so they don’t blend into the point cloud. Sound good?\n\n3) Marker sizing: I’ve set very small point markers by default, with mild scaling on zoom. The goal is to preserve the overall pattern and avoid a “blob” look when zoomed out. For presentations we can review sizing later, but accuracy comes first.\n\n4) Performance targets: Is it acceptable to say “typical datasets open in ~30 seconds” (size dependent), and that key interactions (selection, changing orientation) will respond within about 2 seconds? I want to put concrete numbers in so we can test against them.\n\n5) Users: Just confirming the target groups are Identifiers, Investigators, and Demonstrators. I’ll bake their needs into the UX.\n\nBest,\nBen\n\n---\n\nEmail 2\nFrom: Delmiro Fernandez-Reyes <dfr@nirm.ac.uk>\nTo: Ben Tagger <ben.tagger@ucl.ac.uk>\nCC: Anthony Finkelstein <a.finkelstein@ucl.ac.uk>, Sara Patel <s.patel@nirm.ac.uk>\nDate: Tue, 11 Mar 2025 10:02:31 +0000\nSubject: RE: Questions re: Grid 3D printing + responsiveness\n\nHi Ben,\n\nAll fine by me in principle. We’ve burned ourselves before with “pretty” visuals that turned to grey mush on printouts. So yes, make it black-on-white friendly by default. We can live without gradients.\n\nLabels: absolutely must be readable no matter how you rotate. We had a demo where Z looked backwards. Please avoid that embarrassment.\n\nMarker size: tiny by default. We care about seeing the pattern, not beach balls. Presenters do sometimes ask for bolder points in a lecture hall, but don’t mislead—defaults should preserve the distribution.\n\nPerformance: I’m okay putting numbers: “cold start in under about half a minute for the usual files,” and “interactions within a couple seconds.” If something is slower, call it out early.\n\nUsers: yes, those three. Keep it dead simple for Identifiers; Investigators will poke around; Demonstrators need clean screenshots and smooth rotation.\n\nD.\n\nSent from mobile\n\n---\n\nEmail 3\nFrom: Anthony Finkelstein <a.finkelstein@ucl.ac.uk>\nTo: Ben Tagger <ben.tagger@ucl.ac.uk>, Delmiro Fernandez-Reyes <dfr@nirm.ac.uk>\nCC: Sara Patel <s.patel@nirm.ac.uk>\nDate: Tue, 11 Mar 2025 10:26:44 +0000\nSubject: RE: RE: Questions re: Grid 3D printing + responsiveness (labels)\n\nJumping in: on the axis labels, pinning their orientation is necessary but not sufficient if they vanish behind the point cloud. Ensure they remain legible when the grid is reoriented—draw in a way that they stay visible. Please test while spinning rapidly; we’ve had aliasing issues.\n\nAlso, our lab environments vary. No training is the theme—keep the UI intuitive. A one-page quick-start is fine, nothing more.\n\nA\n\n---\n\nEmail 4\nFrom: Sara Patel <s.patel@nirm.ac.uk>\nTo: Ben Tagger <ben.tagger@ucl.ac.uk>\nCC: Delmiro Fernandez-Reyes <dfr@nirm.ac.uk>, Anthony Finkelstein <a.finkelstein@ucl.ac.uk>\nDate: Tue, 11 Mar 2025 12:11:09 +0000\nSubject: RE: Printing + responsiveness + user groups\n\nHi all,\n\nAdding context: For Identifiers (like Kofi), selecting one point to check something needs to be quick—if it spins for more than 2 seconds people think it’s frozen. Same for lassoing a small set; I demo to students and I can’t have a long lag. Regarding the markers, please keep them small—especially in screenshots. In our last paper, the points looked like smudges when downsampled for print.\n\nRe labels: my biggest pain has been when rotating—the letters either flip or get too small. If the font keeps a minimum on-screen size and the letters face the viewer, it’ll save us a lot of grief.\n\nI’ll send three datasets later today (small ~10k, typical ~40–60k, big ~250k). I agree with D: start time under 30 seconds for the middle one is fine; the huge one will be slower and that’s okay as long as it’s acknowledged.\n\nSara\n\n---\n\nEmail 5\nFrom: Ben Tagger <ben.tagger@ucl.ac.uk>\nTo: Sara Patel <s.patel@nirm.ac.uk>\nCC: Delmiro Fernandez-Reyes <dfr@nirm.ac.uk>, Anthony Finkelstein <a.finkelstein@ucl.ac.uk>\nDate: Tue, 11 Mar 2025 13:02:55 +0000\nSubject: RE: Printing + responsiveness + user groups (perf caveat)\n\nThanks Sara. One pushback/clarification on start-up: 30 seconds on typical is achievable, but if someone drops in an extremely large file, physics applies. I’ll write the guidance as “typical datasets open in about 30 seconds (size-dependent).” I’ll also make sure selection/orientation changes stay within ~2 seconds under those typical conditions.\n\nOn labels: I’m adding camera-aligned axis labels with a contrasting outline so they remain readable during rotation; I’ll also clamp the font size so it never goes below a certain pixel height on screen. We’ll test quickly spinning the scene to ensure legibility.\n\nMarkers: default will be very small dots. For presentation use, we’ll evaluate whether a modest size adjustment still preserves the pattern before making any call.\n\nBen\n\n---\n\nEmail 6\nFrom: Anthony Finkelstein <a.finkelstein@ucl.ac.uk>\nTo: Ben Tagger <ben.tagger@ucl.ac.uk>, Delmiro Fernandez-Reyes <dfr@nirm.ac.uk>\nCC: Sara Patel <s.patel@nirm.ac.uk>\nDate: Tue, 11 Mar 2025 14:21:39 +0000\nSubject: RE: RE: Printing + responsiveness + user groups (perf caveat)\n\nBen,\n\nThe guidance text sounds reasonable. Please be explicit in the UI about performance dependence on number of points. I also support the 2 second interaction budget. For print, emphasize black on white first; color is optional. No gradients.\n\nOne more: ensure the axes are clearly labeled at all times; the letters must be recognizable—even for someone at the back of a lecture hall. If we must reduce tick density to achieve this, do so.\n\nA\n\n---\n\nEmail 7\nFrom: Delmiro Fernandez-Reyes <dfr@nirm.ac.uk>\nTo: Ben Tagger <ben.tagger@ucl.ac.uk>\nCC: Anthony Finkelstein <a.finkelstein@ucl.ac.uk>, Sara Patel <s.patel@nirm.ac.uk>\nDate: Tue, 11 Mar 2025 16:48:03 +0000\nSubject: RE: Printing/labels/perf — next steps\n\nAll,\n\nThis mostly aligns. Let’s do this:\n\n- Ben to implement: small default markers (do not distort overall patterns), print-friendly default (black on white), labels readable at all orientations, and the ~2s interaction target. \n- Startup: phrase as “opens in ~30s for typical datasets; depends on size.” We’ll test with Sara’s files once they arrive.\n- Users: proceed assuming Identifiers/Investigators/Demonstrators. Keep the UI discoverable; no specialized training.\n\nOpen items: \n- Review presentation needs around marker and label sizing; if any change risks misrepresenting the data, we won’t do it. \n- Sara to send data files and do a quick print test on the lab printer (tomorrow?).\n\nThanks,\nD.\n\nSent from my phone"
+    }
+  ],
+  "gold_requirements": [
+    {
+      "id": "PURE_2005 - grid 3D_R001",
+      "text": "The system shall render point markers small enough that they do not distort the overall pattern of the point distribution.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2005 - grid 3D_R002",
+      "text": "The system shall keep axis labels clearly legible and recognizable after the grid is reoriented.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2005 - grid 3D_R003",
+      "text": "The system shall use a color scheme suitable for producing clear black-on-white printed screenshots.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2005 - grid 3D_R004",
+      "text": "The system shall be intuitive to use and shall not require specialist training.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2005 - grid 3D_R005",
+      "text": "The system shall start within 30 seconds under typical conditions, depending on the number of data points.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2005 - grid 3D_R006",
+      "text": "The system shall respond to user interactions (for example selecting data points, requesting information, or changing grid orientation) within 2 seconds.",
+      "raw_label": null,
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    },
+    {
+      "id": "PURE_2005 - grid 3D_R007",
+      "text": "Developers shall assume that the system's users include Identifiers, Investigators, and Demonstrators.",
+      "raw_label": null,
+      "requirement_kind": "domain_assumption",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": "raw_chunk",
+      "source_region": "raw_chunk_0002"
+    }
+  ],
+  "validation": {
+    "coverage_rate": 1.0,
+    "missing_req_ids": [],
+    "unsupported_count": 5,
+    "repair_rounds_used": 1,
+    "coverage_entries": [
+      {
+        "req_id": "PURE_2005 - grid 3D_R001",
+        "supported": true,
+        "evidence_snippets": [
+          "point glyphs sized to preserve the spatial"
+        ],
+        "reason": "Stakeholders demanded small markers to preserve distribution."
+      },
+      {
+        "req_id": "PURE_2005 - grid 3D_R002",
+        "supported": true,
+        "evidence_snippets": [
+          "axis labels readable even after a reorient"
+        ],
+        "reason": "Multiple notes require labels remain legible after rotation."
+      },
+      {
+        "req_id": "PURE_2005 - grid 3D_R003",
+        "supported": true,
+        "evidence_snippets": [
+          "black-on-white printing, high contrast"
+        ],
+        "reason": "Team explicitly insisted on high-contrast, print-friendly scheme."
+      },
+      {
+        "req_id": "PURE_2005 - grid 3D_R004",
+        "supported": true,
+        "evidence_snippets": [
+          "No heavy training."
+        ],
+        "reason": "Documents call for intuitive UI and minimal/no specialist training."
+      },
+      {
+        "req_id": "PURE_2005 - grid 3D_R005",
+        "supported": true,
+        "evidence_snippets": [
+          "~25–30 sec; depends on # points"
+        ],
+        "reason": "Explicit cold-start target ~30s for typical datasets, size-dependent."
+      },
+      {
+        "req_id": "PURE_2005 - grid 3D_R006",
+        "supported": true,
+        "evidence_snippets": [
+          "No more than about two seconds"
+        ],
+        "reason": "Interaction latency budget of ~2 seconds stated repeatedly."
+      },
+      {
+        "req_id": "PURE_2005 - grid 3D_R007",
+        "supported": true,
+        "evidence_snippets": [
+          "Identifiers, Investigators, and Demonstrators"
+        ],
+        "reason": "Users personas explicitly named across notes and emails."
+      }
+    ],
+    "unsupported_implied": [
+      {
+        "text": "The system shall use specific, discoverable input mappings for basic interactions (e.g., mouse drag to rotate the view, scroll/pinch to zoom, click to select) with no essential functions hidden behind modifier keys.",
+        "source_snippet": "\"Drag = rotate (no modifier keys). \\nScroll/pinch = zoom.\"",
+        "source_type": "meeting_notes",
+        "reason": "The artifacts explicitly require concrete input mappings for basic interactions so users can discover them without training. The gold set requires the system be intuitive and not require specialist training, but does not mandate these specific, discoverable control mappings."
+      },
+      {
+        "text": "The system shall provide minimal onboarding/documentation (a one-page Quick Start and a one-time in-UI hint such as 'drag to rotate') to support discoverability.",
+        "source_snippet": "\"A one-page quick-start is fine, nothing more.\" / \"If anything, show a brief \\\"drag to rotate\\\" hint once.\"",
+        "source_type": "meeting_notes",
+        "reason": "Stakeholders explicitly requested a one-page quick-start and a short in-UI hint to ensure discoverability. The gold requirements prohibit specialist training but do not require a specific quick-start/hint deliverable."
+      },
+      {
+        "text": "The system shall provide immediate, obvious selection feedback (for example a clear highlight or visible side information) when a user selects one or more points.",
+        "source_snippet": "\"When I select something, make it obvious. A clear highlight or something. Don’t bury feedback in a menu.\"",
+        "source_type": "interview_transcript",
+        "reason": "While the gold set specifies interaction latency for selections, it does not require particular visible feedback. The source explicitly asks for prominent, immediate visual feedback when points are selected, which is a distinct UI requirement."
+      },
+      {
+        "text": "The system shall support multi-selection (e.g., lasso selection of sets of points) and meet the same interaction responsiveness targets for multi-select operations (approximately within 2 seconds).",
+        "source_snippet": "\"Selecting a set (lasso) also within ~2 seconds.\"",
+        "source_type": "meeting_notes",
+        "reason": "The artifacts call out lasso/multi-select as a required capability with the same responsiveness bounds. The gold set mentions selecting data points but does not explicitly require multi-select/lasso functionality."
+      },
+      {
+        "text": "The system shall explicitly inform users in the UI about performance dependence on the number of points (e.g., a notice or guidance indicating that startup/interaction times depend on dataset size).",
+        "source_snippet": "\"Please be explicit in the UI about performance dependence on number of points.\"",
+        "source_type": "email_thread",
+        "reason": "Stakeholders expect the UI to communicate that performance varies with dataset size. The gold requirement states timing targets conditioned on dataset size but does not require the system to surface that dependence to users in the UI."
+      }
+    ],
+    "passed": false
+  },
+  "brief": {
+    "project_name": "BioGrid 3D Explorer",
+    "domain": "Scientific data visualization for biomedical research",
+    "users": [
+      "Identifier",
+      "Investigator",
+      "Demonstrator"
+    ],
+    "stakeholders": [
+      "Dr Delmiro Fernandez-Reyes (client)",
+      "Parasitology Department at NIMR",
+      "Research scientists and students",
+      "Ben Tagger (developer/maintainer)",
+      "Anthony Finkelstein (UCL supervisor)"
+    ],
+    "business_goals": [
+      "Enable exploratory 3D inspection of biological datasets",
+      "Let researchers spot attribute differences at a glance",
+      "Produce visuals suitable for inclusion in papers and talks",
+      "Deliver an original tool that fills a gap in current offerings",
+      "Meet tight research publication timelines"
+    ],
+    "core_features": [
+      "Import a user-supplied data file of named points with three parameters",
+      "Render a 3D grid of points",
+      "Rotate, pan, and zoom the scene smoothly",
+      "Select one or multiple points and view their details",
+      "Display axes and labels to orient the viewer",
+      "Switch between basic graphical representations as needed"
+    ],
+    "quality_concerns": [
+      "Point glyphs scaled to preserve spatial patterns and avoid clutter",
+      "Axis labels remain readable during rotation and reorientation",
+      "High-contrast palette that prints clearly in black on white",
+      "Simple, discoverable interactions; no specialist training expected",
+      "Cold start completes in roughly half a minute for typical datasets (size-dependent)",
+      "User actions like selection or view changes respond within about two seconds"
+    ],
+    "constraints": [
+      "Runs on Windows (98/2000/NT/XP) and Unix-like platforms (Linux/Solaris)",
+      "Input is a structured file containing point identifiers and three parameters per point",
+      "Performance depends on the number of plotted points",
+      "Scope changes require client approval",
+      "Development and release aligned to research publication deadlines",
+      "May use Matlab for data preparation and Apache/Tomcat/Ant for build/deployment"
+    ],
+    "terminology": [
+      "Grid 3D",
+      "Identifier",
+      "Investigator",
+      "Demonstrator",
+      "Point marker",
+      "Axis label",
+      "Data file"
+    ]
+  },
+  "metadata": {
+    "file_path": "data/pure/2005 - grid 3D.pdf",
+    "file_type": ".pdf",
+    "char_count": 17970,
+    "profile": {
+      "char_count": 17970,
+      "heading_density": 38,
+      "shall_count": 4,
+      "must_count": 7,
+      "will_count": 6,
+      "use_case_count": 4,
+      "stakeholder_count": 1,
+      "requirement_keyword_count": 41,
+      "structure_strength": "strong"
+    },
+    "section_count": 37,
+    "dense_sections": 11,
+    "gold_count": 7,
+    "section_candidates": 48,
+    "raw_candidates": 45,
+    "llm_usage": {
+      "total_calls": 312,
+      "total_input_tokens": 758707,
+      "total_output_tokens": 728289
+    }
+  }
+}

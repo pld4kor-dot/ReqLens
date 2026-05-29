@@ -1,0 +1,775 @@
+{
+  "coverage_rate": 0.9891,
+  "missing_req_ids": [
+    "PROMISE_8_R046"
+  ],
+  "unsupported_count": 2,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PROMISE_8_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "admin activation target < 5 sec"
+      ],
+      "reason": "Admin-only activation targeted to under five seconds."
+    },
+    {
+      "req_id": "PROMISE_8_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "PIN status check under ~5 sec"
+      ],
+      "reason": "Customer PIN lookup specified to return status in ~5s."
+    },
+    {
+      "req_id": "PROMISE_8_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "pay-as-you-go under 5 min"
+      ],
+      "reason": "Pay-as-you-go registration time target is under five minutes."
+    },
+    {
+      "req_id": "PROMISE_8_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "unlimited sub under 10 min"
+      ],
+      "reason": "Unlimited subscription signup capped at ten minutes."
+    },
+    {
+      "req_id": "PROMISE_8_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "Login target: < 5 sec"
+      ],
+      "reason": "Login/authenticate target defined as under five seconds."
+    },
+    {
+      "req_id": "PROMISE_8_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "Cancellation under 2 minutes; marked inactive"
+      ],
+      "reason": "Cancellation flow under two minutes and marks account inactive."
+    },
+    {
+      "req_id": "PROMISE_8_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "deactivate users in under a minute"
+      ],
+      "reason": "Admins to deactivate accounts within one minute."
+    },
+    {
+      "req_id": "PROMISE_8_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "Add/remove movie < 5 min; DB visible"
+      ],
+      "reason": "Movie add/remove goal under five minutes; DB visibility immediate."
+    },
+    {
+      "req_id": "PROMISE_8_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "Add/remove categories: want < 5 min"
+      ],
+      "reason": "Category add/remove targeted to under five minutes."
+    },
+    {
+      "req_id": "PROMISE_8_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "sales/usage reports < 2 minutes"
+      ],
+      "reason": "Manager reporting access target is under two minutes."
+    },
+    {
+      "req_id": "PROMISE_8_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "Generate unique prepaid PINs, bulk",
+        "export to Excel"
+      ],
+      "reason": "Sources specify bulk PIN generation under ~2 minutes and Excel export."
+    },
+    {
+      "req_id": "PROMISE_8_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "feels vibrant and modern",
+        "bright color palette"
+      ],
+      "reason": "Stakeholders require a vibrant, bright, fun visual style."
+    },
+    {
+      "req_id": "PROMISE_8_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "very African but welcoming to non-Africans",
+        "Flash for the homepage animations"
+      ],
+      "reason": "Docs demand an African feel, inclusivity, and attention-grabbing animations."
+    },
+    {
+      "req_id": "PROMISE_8_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "modern-clean-concise layout"
+      ],
+      "reason": "Meeting notes explicitly call for modern, clean, concise design."
+    },
+    {
+      "req_id": "PROMISE_8_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "aim for ~90% of novice users"
+      ],
+      "reason": "Usability baseline targets ~90% novice user success are documented."
+    },
+    {
+      "req_id": "PROMISE_8_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "No more than 4 pages to create account",
+        "absolute maximum of four pages"
+      ],
+      "reason": "Several artifacts mandate a maximum four-page signup flow."
+    },
+    {
+      "req_id": "PROMISE_8_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "two clicks to get to their purchased streams",
+        "My Movies button right on the dashboard"
+      ],
+      "reason": "Spec states post-login access to purchased streams in two clicks."
+    },
+    {
+      "req_id": "PROMISE_8_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "2 weeks target >=70% comfortable purchasing"
+      ],
+      "reason": "Meeting notes define a 2-week anonymous survey 70% comfort target."
+    },
+    {
+      "req_id": "PROMISE_8_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "1 month target >=95% comfortable using prepaid cards"
+      ],
+      "reason": "Meeting notes specify a one-month 95% prepaid-card comfort target."
+    },
+    {
+      "req_id": "PROMISE_8_R020",
+      "supported": true,
+      "evidence_snippets": [
+        "we'll store their preferences"
+      ],
+      "reason": "Sources state storing user preferences for faster repeat purchases."
+    },
+    {
+      "req_id": "PROMISE_8_R021",
+      "supported": true,
+      "evidence_snippets": [
+        "Purchase-to-play: under 3 min"
+      ],
+      "reason": "Meeting notes specify under-3-minute purchase-to-play target."
+    },
+    {
+      "req_id": "PROMISE_8_R022",
+      "supported": true,
+      "evidence_snippets": [
+        "use familiar symbols—like a cart"
+      ],
+      "reason": "Interview requires familiar symbols (cart, magnifier, stars)."
+    },
+    {
+      "req_id": "PROMISE_8_R023",
+      "supported": true,
+      "evidence_snippets": [
+        "standard web conventions"
+      ],
+      "reason": "Sources repeatedly mandate standard web conventions for UI."
+    },
+    {
+      "req_id": "PROMISE_8_R024",
+      "supported": true,
+      "evidence_snippets": [
+        "General UI response target: < 5 sec"
+      ],
+      "reason": "Meeting notes set general UI response target under 5s."
+    },
+    {
+      "req_id": "PROMISE_8_R025",
+      "supported": true,
+      "evidence_snippets": [
+        "worst case ~15 sec"
+      ],
+      "reason": "Emails/notes state credit card auth upper-bound of 15s."
+    },
+    {
+      "req_id": "PROMISE_8_R026",
+      "supported": true,
+      "evidence_snippets": [
+        "streaming start buffer <=10 sec"
+      ],
+      "reason": "Transcript/notes specify aiming for ≤10s startup buffering."
+    },
+    {
+      "req_id": "PROMISE_8_R027",
+      "supported": true,
+      "evidence_snippets": [
+        "user connection latency is the cause"
+      ],
+      "reason": "Sources attribute extra buffering to user connection latency."
+    },
+    {
+      "req_id": "PROMISE_8_R028",
+      "supported": true,
+      "evidence_snippets": [
+        "do not store full PAN; stored encrypted"
+      ],
+      "reason": "Notes/emails require not storing full PAN and encryption."
+    },
+    {
+      "req_id": "PROMISE_8_R029",
+      "supported": true,
+      "evidence_snippets": [
+        "24/7 site ops"
+      ],
+      "reason": "Meeting notes require on-demand streaming and 24/7 operations."
+    },
+    {
+      "req_id": "PROMISE_8_R030",
+      "supported": true,
+      "evidence_snippets": [
+        "Uptime target 99.5%"
+      ],
+      "reason": "Documents explicitly state a 99.5% uptime target."
+    },
+    {
+      "req_id": "PROMISE_8_R031",
+      "supported": true,
+      "evidence_snippets": [
+        "Streaming available on-demand any time."
+      ],
+      "reason": "Explicit 24/7 on-demand streaming statement."
+    },
+    {
+      "req_id": "PROMISE_8_R032",
+      "supported": true,
+      "evidence_snippets": [
+        "If streaming server down: site doesn’t die",
+        "hide/disable “Play” and show a message."
+      ],
+      "reason": "Source requires site remain operational without streaming."
+    },
+    {
+      "req_id": "PROMISE_8_R033",
+      "supported": true,
+      "evidence_snippets": [
+        "If CyberSource is down: site still works",
+        "disable purchases until service returns"
+      ],
+      "reason": "Documents require browsing when payment gateway unavailable."
+    },
+    {
+      "req_id": "PROMISE_8_R034",
+      "supported": true,
+      "evidence_snippets": [
+        "Streaming server ~50 simultaneous connections"
+      ],
+      "reason": "Explicit per-server concurrent stream capacity stated."
+    },
+    {
+      "req_id": "PROMISE_8_R035",
+      "supported": true,
+      "evidence_snippets": [
+        "per streaming server catalog capacity ~700 titles",
+        "add more servers as we grow"
+      ],
+      "reason": "700-title limit per server and adding servers noted."
+    },
+    {
+      "req_id": "PROMISE_8_R036",
+      "supported": true,
+      "evidence_snippets": [
+        "Web server ~1,000 simultaneous users"
+      ],
+      "reason": "Web-tier capacity explicitly specified as 1,000 users."
+    },
+    {
+      "req_id": "PROMISE_8_R037",
+      "supported": true,
+      "evidence_snippets": [
+        "Database ~100,000 customers supported."
+      ],
+      "reason": "DB capacity of 100k customers explicitly stated."
+    },
+    {
+      "req_id": "PROMISE_8_R038",
+      "supported": true,
+      "evidence_snippets": [
+        "Maintain within budget for at least 2 yrs"
+      ],
+      "reason": "Source requires operation within budget for two years."
+    },
+    {
+      "req_id": "PROMISE_8_R039",
+      "supported": true,
+      "evidence_snippets": [
+        "Web-only access. No native apps."
+      ],
+      "reason": "Documents confirm all functionality is web browser based."
+    },
+    {
+      "req_id": "PROMISE_8_R040",
+      "supported": true,
+      "evidence_snippets": [
+        "Keep within current hardware.",
+        "Existing hardware only (reminder)."
+      ],
+      "reason": "Source mandates using current/existing hardware."
+    },
+    {
+      "req_id": "PROMISE_8_R041",
+      "supported": true,
+      "evidence_snippets": [
+        "IE 5 and 6, Netscape 6 to 8, Firefox 1.0"
+      ],
+      "reason": "Browsers list explicitly specified in transcripts/notes."
+    },
+    {
+      "req_id": "PROMISE_8_R042",
+      "supported": true,
+      "evidence_snippets": [
+        "Must use CyberSource API for credit card processing"
+      ],
+      "reason": "CyberSource is the sole payment gateway in multiple artifacts."
+    },
+    {
+      "req_id": "PROMISE_8_R043",
+      "supported": true,
+      "evidence_snippets": [
+        "People still use MSN TV2 in some regions."
+      ],
+      "reason": "MSN TV2 compatibility repeatedly required for basic pages/forms."
+    },
+    {
+      "req_id": "PROMISE_8_R044",
+      "supported": true,
+      "evidence_snippets": [
+        "Streaming: WMP 9.0"
+      ],
+      "reason": "Windows Media Player 9.0 specified for streaming."
+    },
+    {
+      "req_id": "PROMISE_8_R045",
+      "supported": true,
+      "evidence_snippets": [
+        "encode two bitrates 56k, 256k"
+      ],
+      "reason": "56k and 256k encodings explicitly required."
+    },
+    {
+      "req_id": "PROMISE_8_R046",
+      "supported": false,
+      "evidence_snippets": [
+        "Weekly home page refresh: auto every Friday"
+      ],
+      "reason": "Sources mandate weekly updates, not a one-day promotional SLA."
+    },
+    {
+      "req_id": "PROMISE_8_R047",
+      "supported": true,
+      "evidence_snippets": [
+        "quick relabeling of categories in < 2 min"
+      ],
+      "reason": "Admin category relabeling target is under two minutes."
+    },
+    {
+      "req_id": "PROMISE_8_R048",
+      "supported": true,
+      "evidence_snippets": [
+        "Add new “product” (e.g., prepaid batch): < 2 min"
+      ],
+      "reason": "Adding new product (prepaid) target explicitly <2 minutes."
+    },
+    {
+      "req_id": "PROMISE_8_R049",
+      "supported": true,
+      "evidence_snippets": [
+        "24/7 toll-free 800 number on every page footer"
+      ],
+      "reason": "A 24/7 toll-free 800 support number is required."
+    },
+    {
+      "req_id": "PROMISE_8_R050",
+      "supported": true,
+      "evidence_snippets": [
+        "Help/FAQ with common issues"
+      ],
+      "reason": "Help/FAQ section with common problems called out."
+    },
+    {
+      "req_id": "PROMISE_8_R051",
+      "supported": true,
+      "evidence_snippets": [
+        "Velkat tech phone support to Izogn admins 7am–7pm M–F"
+      ],
+      "reason": "Meeting notes explicitly specify Velkat phone support 7am–7pm M–F."
+    },
+    {
+      "req_id": "PROMISE_8_R052",
+      "supported": true,
+      "evidence_snippets": [
+        "We’ll deploy within one working day (scripted)."
+      ],
+      "reason": "Email states deployment targeted within one working day."
+    },
+    {
+      "req_id": "PROMISE_8_R053",
+      "supported": true,
+      "evidence_snippets": [
+        "Only registered customers can purchase streaming content."
+      ],
+      "reason": "Notes and email explicitly require registration to purchase."
+    },
+    {
+      "req_id": "PROMISE_8_R054",
+      "supported": true,
+      "evidence_snippets": [
+        "Viewing window: 2 days post-purchase."
+      ],
+      "reason": "Meeting notes state streaming allowed only within two days post-purchase."
+    },
+    {
+      "req_id": "PROMISE_8_R055",
+      "supported": true,
+      "evidence_snippets": [
+        "restricted access (authorized personnel only)"
+      ],
+      "reason": "Notes assert customer records in secure DB accessible only to authorized staff."
+    },
+    {
+      "req_id": "PROMISE_8_R056",
+      "supported": true,
+      "evidence_snippets": [
+        "Admin-only prepaid activation: Button in Admin > Prepaid."
+      ],
+      "reason": "Transcript/notes/emails require admin-only prepaid activation."
+    },
+    {
+      "req_id": "PROMISE_8_R057",
+      "supported": true,
+      "evidence_snippets": [
+        "Sales info also restricted."
+      ],
+      "reason": "Notes and emails state sales data access is restricted to authorized admins."
+    },
+    {
+      "req_id": "PROMISE_8_R058",
+      "supported": true,
+      "evidence_snippets": [
+        "Prevent data corruption: strict validation, typed fields, server-side checks."
+      ],
+      "reason": "Security notes call for validation and server-side checks to prevent corruption."
+    },
+    {
+      "req_id": "PROMISE_8_R059",
+      "supported": true,
+      "evidence_snippets": [
+        "notify admins on suspicious activity (all occurrences?)."
+      ],
+      "reason": "Notes require abuse protections and admin notifications on suspicious activity."
+    },
+    {
+      "req_id": "PROMISE_8_R060",
+      "supported": true,
+      "evidence_snippets": [
+        "Weekly data integrity scripts: check referential integrity, orphaned records."
+      ],
+      "reason": "Meeting notes specify weekly DB integrity scripts and checks."
+    },
+    {
+      "req_id": "PROMISE_8_R061",
+      "supported": true,
+      "evidence_snippets": [
+        "Privacy Policy link must be visible on all pages"
+      ],
+      "reason": "Meeting notes require policy link on every page."
+    },
+    {
+      "req_id": "PROMISE_8_R062",
+      "supported": true,
+      "evidence_snippets": [
+        "Notify customers of changes to info policy"
+      ],
+      "reason": "Notes mandate notifying users of policy changes (banner+email)."
+    },
+    {
+      "req_id": "PROMISE_8_R063",
+      "supported": true,
+      "evidence_snippets": [
+        "Only disclose per policy"
+      ],
+      "reason": "Sources state disclosures occur only according to policy."
+    },
+    {
+      "req_id": "PROMISE_8_R064",
+      "supported": true,
+      "evidence_snippets": [
+        "Customer records stored in secure DB"
+      ],
+      "reason": "Notes specify secure DB and restricted authorized access."
+    },
+    {
+      "req_id": "PROMISE_8_R065",
+      "supported": true,
+      "evidence_snippets": [
+        "do not store full PAN",
+        "anything stored is encrypted"
+      ],
+      "reason": "Emails/notes require not storing PAN and encrypting stored card data."
+    },
+    {
+      "req_id": "PROMISE_8_R066",
+      "supported": true,
+      "evidence_snippets": [
+        "Anti-virus on streaming servers"
+      ],
+      "reason": "Meeting notes require AV on streaming servers and off-peak scans."
+    },
+    {
+      "req_id": "PROMISE_8_R067",
+      "supported": true,
+      "evidence_snippets": [
+        "We should not offend any religions or tribes",
+        "Not just Nigeria. Pan-African"
+      ],
+      "reason": "Requirements call for inclusivity toward tribes and Nigeria users."
+    },
+    {
+      "req_id": "PROMISE_8_R068",
+      "supported": true,
+      "evidence_snippets": [
+        "We should not offend any religions or tribes"
+      ],
+      "reason": "Stakeholders explicitly require avoiding offense to religions/tribes."
+    },
+    {
+      "req_id": "PROMISE_8_R069",
+      "supported": true,
+      "evidence_snippets": [
+        "Not just Nigeria. Pan-African"
+      ],
+      "reason": "Sources direct a Pan-African appeal, not limited to Nigeria."
+    },
+    {
+      "req_id": "PROMISE_8_R070",
+      "supported": true,
+      "evidence_snippets": [
+        "Home page animation stays in Flash"
+      ],
+      "reason": "Interview and notes explicitly state Flash for homepage animation."
+    },
+    {
+      "req_id": "PROMISE_8_R071",
+      "supported": true,
+      "evidence_snippets": [
+        "compliance (licensing/privacy)."
+      ],
+      "reason": "Meeting notes explicitly require licensing compliance."
+    },
+    {
+      "req_id": "PROMISE_8_R072",
+      "supported": true,
+      "evidence_snippets": [
+        "Code will follow W3C and PEAR standards."
+      ],
+      "reason": "Source explicitly states W3C compliance requirement."
+    },
+    {
+      "req_id": "PROMISE_8_R073",
+      "supported": true,
+      "evidence_snippets": [
+        "Code will follow W3C and PEAR standards."
+      ],
+      "reason": "Source explicitly requires PEAR compliance for PHP code."
+    },
+    {
+      "req_id": "PROMISE_8_R074",
+      "supported": true,
+      "evidence_snippets": [
+        "Search: by title, actor, director"
+      ],
+      "reason": "Search fields by title, actor, director are specified."
+    },
+    {
+      "req_id": "PROMISE_8_R075",
+      "supported": true,
+      "evidence_snippets": [
+        "show the description, and the cast, director info"
+      ],
+      "reason": "Movie page must display description, cast, director from admin."
+    },
+    {
+      "req_id": "PROMISE_8_R076",
+      "supported": true,
+      "evidence_snippets": [
+        "Auth must occur before streaming is allowed."
+      ],
+      "reason": "Notes require credit card authorization prior to streaming."
+    },
+    {
+      "req_id": "PROMISE_8_R077",
+      "supported": true,
+      "evidence_snippets": [
+        "WMP 9.0",
+        "Viewing window: 2 days post-purchase"
+      ],
+      "reason": "Streaming via WMP 9.0 and two-day viewing window are specified."
+    },
+    {
+      "req_id": "PROMISE_8_R078",
+      "supported": true,
+      "evidence_snippets": [
+        "Categories: browsing by admin-created categories."
+      ],
+      "reason": "Browsing by admin-entered categories is described in notes."
+    },
+    {
+      "req_id": "PROMISE_8_R079",
+      "supported": true,
+      "evidence_snippets": [
+        "others can read reviews once approved."
+      ],
+      "reason": "Reviews are visible to others after admin approval."
+    },
+    {
+      "req_id": "PROMISE_8_R080",
+      "supported": true,
+      "evidence_snippets": [
+        "Reviews: Customers can post reviews"
+      ],
+      "reason": "Customers are allowed to add movie reviews per source."
+    },
+    {
+      "req_id": "PROMISE_8_R081",
+      "supported": true,
+      "evidence_snippets": [
+        "nothing goes live until we approve."
+      ],
+      "reason": "Admin must approve reviews before publication."
+    },
+    {
+      "req_id": "PROMISE_8_R082",
+      "supported": true,
+      "evidence_snippets": [
+        "redeem those via a PIN to pay for a stream."
+      ],
+      "reason": "Prepaid PINs redeemable to pay for streams."
+    },
+    {
+      "req_id": "PROMISE_8_R083",
+      "supported": true,
+      "evidence_snippets": [
+        "$5, $10, $20",
+        "buyable by card or mail-in."
+      ],
+      "reason": "Denominations and purchase methods specified."
+    },
+    {
+      "req_id": "PROMISE_8_R084",
+      "supported": true,
+      "evidence_snippets": [
+        "auto every Friday, show newest 4 movies"
+      ],
+      "reason": "Homepage auto-refresh Fridays to show latest four."
+    },
+    {
+      "req_id": "PROMISE_8_R085",
+      "supported": true,
+      "evidence_snippets": [
+        "My Account page for updating billing/contact info"
+      ],
+      "reason": "My Account allows billing and contact updates."
+    },
+    {
+      "req_id": "PROMISE_8_R086",
+      "supported": true,
+      "evidence_snippets": [
+        "email OR printable paper card"
+      ],
+      "reason": "Prepaid PINs distributed by email or printable card."
+    },
+    {
+      "req_id": "PROMISE_8_R087",
+      "supported": true,
+      "evidence_snippets": [
+        "Viewing window: 2 days post-purchase"
+      ],
+      "reason": "Streaming allowed only within two-day post-purchase window."
+    },
+    {
+      "req_id": "PROMISE_8_R088",
+      "supported": true,
+      "evidence_snippets": [
+        "Free trial: manager-configurable parameters"
+      ],
+      "reason": "Free trials configurable by manager (parameters settable)."
+    },
+    {
+      "req_id": "PROMISE_8_R089",
+      "supported": true,
+      "evidence_snippets": [
+        "We’ll log all sales events."
+      ],
+      "reason": "Streaming sales are logged and visible to admins."
+    },
+    {
+      "req_id": "PROMISE_8_R090",
+      "supported": true,
+      "evidence_snippets": [
+        "keep customer records in the DB",
+        "after cancel—no deletion"
+      ],
+      "reason": "Customer records retained in DB after account cancellation."
+    },
+    {
+      "req_id": "PROMISE_8_R091",
+      "supported": true,
+      "evidence_snippets": [
+        "daily usage stats automatically logged"
+      ],
+      "reason": "Notes require daily usage stats logged and available to admins."
+    },
+    {
+      "req_id": "PROMISE_8_R092",
+      "supported": true,
+      "evidence_snippets": [
+        "Owner acct can stream all titles without payment"
+      ],
+      "reason": "Meeting notes state owner account bypasses payment but usage still logged."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "System shall provide an explicit manual-processing workflow in the admin console to flag mail-in prepaid orders as verified so administrators can generate and issue prepaid PINs for mail-in payments.",
+      "source_snippet": "\"you’ll need a way to flag those orders manual-processed to generate PINs.\"",
+      "source_type": "interview_transcript",
+      "reason": "The gold set requires mail-in prepaid purchase and PIN generation/export, but does not explicitly require a system capability to flag or mark mail-in orders as manually verified in the admin UI to trigger PIN generation. The source clearly requests a manual verification/flagging workflow for mail-in payments, which is a distinct operational capability not spelled out in the gold requirements."
+    },
+    {
+      "text": "System shall parse and distinguish specific CyberSource gateway error codes (e.g., network vs issuer vs system) to present appropriate user-facing messages, and it shall not auto-queue/process charges server-side during gateway outages without explicit user re-confirmation.",
+      "source_snippet": "\"we emit specific codes (e.g., network vs issuer vs system). ... do not queue a charge server-side without a new confirmation.\"",
+      "source_type": "email_thread",
+      "reason": "The gold requirements state the site should continue browsing and disable purchases when the gateway is down, but do not require interpreting distinct gateway error codes or explicitly forbid server-side queuing of charges. The source explicitly requests handling specific error codes for tailored messaging and explicitly prohibits server-side queuing of charges without a new confirmation, which is a significant payment-handling behavior not present in the gold set."
+    }
+  ],
+  "passed": true
+}

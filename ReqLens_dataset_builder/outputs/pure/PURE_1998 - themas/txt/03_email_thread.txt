@@ -1,0 +1,212 @@
+TYPE  : email_thread
+TITLE : Email Thread — Reporting, Interfaces, and SRS Binding Language (revised)
+UNIT  : PURE_1998 - themas
+============================================================
+
+From: Barry Scott <barry.scott@themas.example>
+To: Leo Patel <leo.patel@themas.example>, Priya Nair <priya.nair@themas.example>
+CC: Carla Jones <carla.jones@themas.example>, Nina Velasquez <nina.velasquez@facilities.example>, Jen Liu <jen.liu@itops.example>
+Date: Mon, 2025-03-03 08:12:14 -0500
+Subject: Reporting scope in SRS (and references)
+
+Team,
+Quick nudge before we lock the outline: we need to be crystal on what the reports do. The SRS shouldn’t be a design doc, but it must say:
+- ops history: 12 months, pull from event DB, sorted chronologically
+- stats report (monthly): user picks month from a list; include per-day % on-time per unit, and the grant vs deny ratios per thermostat for that month (grant = ON honored; deny = ON request not honored due to hitting the concurrent-unit cap)
+- both plain ASCII, operator chooses where to save and filename
+
+Also, include the references as part of the SRS (not a separate pack). For any conflicts, SRS wins except SoW (THEMAS_SOW_001) wins over SRS. If folks need copies of closed docs, send them through me. Standards (IEEE) are assumed to be available via libraries.
+
+We’ll keep details light on external system specifics. Let’s ID the interfaces (thermostat in, unit command out, supervisor console) but not tie to vendors.
+
+—B
+
+---
+
+From: Leo Patel <leo.patel@themas.example>
+To: Barry Scott <barry.scott@themas.example>
+CC: Priya Nair <priya.nair@themas.example>, Carla Jones <carla.jones@themas.example>, Nina Velasquez <nina.velasquez@facilities.example>, Jen Liu <jen.liu@itops.example>
+Date: Mon, 2025-03-03 09:01:49 -0500
+Subject: RE: Reporting scope in SRS (and references)
+
+Thanks, Barry. Capturing as requirements (using SHALL wording). Also reiterating that the SRS is software-only and serves as the basis for software design — we’ll state explicitly that hardware specifics stay in the system spec.
+
+For the report pieces:
+- Operational history: select all events, sort by date/time, generate ASCII.
+- Monthly stats: present a list of months, user picks, then generate ASCII including percent on-time per unit per day AND grant/deny request ratios per thermostat (grant as honored; deny due to cap).
+- Path + filename selection by operator.
+
+On interfaces, we’ll identify externally visible interfaces but avoid enumerating exact external systems. Names like “H/C ON/OFF Request” for output and “current temp + setpoint” for thermostat input.
+
+We’ll put a note up front that only ‘shall’ clauses are binding. Also adding the IEEE 830 conformance statement and the section structure text (Section 2 & Section 3 expectations), plus the qualification requirement for the simulated thermostat.
+
+Leo
+
+---
+
+From: Jen Liu <jen.liu@itops.example>
+To: Barry Scott <barry.scott@themas.example>, Leo Patel <leo.patel@themas.example>
+CC: Priya Nair <priya.nair@themas.example>, Carla Jones <carla.jones@themas.example>, Nina Velasquez <nina.velasquez@facilities.example>
+Date: Mon, 2025-03-03 10:17:07 -0500
+Subject: RE: Reporting scope in SRS (and references) — platform note
+
+Small platform reminder (sorry to pile on): please keep the platform constraints tight. The runtime is Microsoft Windows NT, internal process comms on NT as well, and the device interfaces (thermostats + heating/cooling units) run on NT. We’ve had doc drift before where folks imply cross-platform.
+
+Also, re “no vendor tie-in”: strongly agree — identify the interface categories and the signals, but not the exact make/model or protocol rev. Our system-level spec will carry the hardware specifics.
+
+Jen
+
+Sent from my mobile (typos mine)
+
+---
+
+From: Nina Velasquez <nina.velasquez@facilities.example>
+To: Barry Scott <barry.scott@themas.example>, Leo Patel <leo.patel@themas.example>
+CC: Priya Nair <priya.nair@themas.example>, Carla Jones <carla.jones@themas.example>, Jen Liu <jen.liu@itops.example>
+Date: Mon, 2025-03-03 10:45:55 -0500
+Subject: RE: Reporting scope in SRS (and references)
+
+Jumping in — can you make sure the console behavior is spelled out:
+- I can see all thermostats and their current temp settings (and ideally current temp as well).
+- I can click one thermostat and change the setpoint from a list of valid temps only — no free text.
+- I can send manual ON/OFF commands for a unit from the same console.
+
+On the reports: I don’t want to guess where the files go. Let me pick the folder and filename. And make sure they’re just text files I can email around (plain ASCII is fine).
+
+N
+
+---
+
+From: Carla Jones <carla.jones@themas.example>
+To: Leo Patel <leo.patel@themas.example>, Barry Scott <barry.scott@themas.example>
+CC: Priya Nair <priya.nair@themas.example>, Nina Velasquez <nina.velasquez@facilities.example>, Jen Liu <jen.liu@itops.example>
+Date: Mon, 2025-03-03 11:33:12 -0500
+Subject: RE: Reporting scope + V&V angles
+
+Two QA points:
+1) Please make the “only SHALL is binding” statement explicit early. We’ve had audits where ambiguous language causes grief.
+2) Temperature inputs (both the live temp and the setpoint value) must be validated against the allowed range. If invalid, mark as such and do not use for control decisions. This affects both runtime logic AND the logs that feed the history report.
+
+Also, control outputs: THEMAS generates H/C ON/OFF requests. We do not and cannot determine whether the unit actually did it. The software keeps the intended ON/OFF status per unit to drive utilization, but no execution confirmation is expected. This needs to be spelled out so no one tries to write negative tests expecting acknowledgments.
+
+On utilization: ensure the SRS calls out the cap on concurrent units and the LIFO queue for excess requests, and what happens when a unit goes OFF — we pull from the queue, re-check the thermostat need, and only then send an ON. If we can’t honor an ON because we’re at the cap, log a “Unit Unavailable” event.
+
+Reports specifics look good:
+- 12 mo history pulls all events sorted by date/time.
+- monthly stats includes per-day % ON time per unit and, per thermostat, grant vs deny ratios.
+- operator selects month from an available list.
+- operator picks path/name; files are ASCII.
+
+Final admin: SRS includes refs. Conflicts: SOW > SRS > refs. Tech standards are generally available (libraries). Non-public copies via Barry. IEEE 830 compliance + Section 2/3 content to be stated. SRS is the basis for design. Scope: software requirements only, hardware lives elsewhere.
+
+Carla
+
+---
+
+From: Priya Nair <priya.nair@themas.example>
+To: Carla Jones <carla.jones@themas.example>, Barry Scott <barry.scott@themas.example>, Leo Patel <leo.patel@themas.example>
+CC: Nina Velasquez <nina.velasquez@facilities.example>, Jen Liu <jen.liu@itops.example>
+Date: Mon, 2025-03-03 12:22:01 -0500
+Subject: RE: Reporting scope + V&V angles — some clarifications
+
+All, adding a couple of clarifications (sorry long email):
+
+- External Interfaces: We’ll identify (1) thermostat input interface (two data items: current temp and desired setpoint), (2) unit command output interface (emit H/C ON/OFF requests), and (3) supervisor console UI. We will not define exact external system vendors in the SRS. Communication with devices happens only via those interfaces.
+
+- Platform: per Jen, Windows NT across the board — runtime, IPC, and device interfaces. I’ll tighten the language to avoid implying portability.
+
+- Simulator: We will include a requirement to produce a thermostat simulator prototype for V&V of control logic reliability. That way QA can test decisions without field hardware.
+
+- Console functions (per Nina): list thermostats with current settings; allow selecting one and choosing a valid setpoint (from a constrained list); manual ON/OFF controls.
+
+- Temperature validation: both the thermometer reading and the setpoint are checked against the valid range. Valid values are applied; invalid are flagged and excluded from control decisions.
+
+- Control decisions: we’ll point to the rules sections (3.1.4.1/3.1.4.2). We can mention the trigger/limit concepts, but the details live in those rule sections to avoid duplication.
+
+- Utilization & Queue: we keep a software ON/OFF state, cap concurrent units, use LIFO for waiting requests, and on OFF we try to service the latest queued item after re-checking the thermostat’s need. If we are at capacity when a new ON is requested, we emit a Unit Unavailable event.
+
+- Reports:
+   • Operational history report: include all events from the event DB, sort by date/time (oldest-to-newest), produce ASCII file.
+   • Statistical monthly report: present available months for selection; upon selection, produce ASCII file including per-day % ON time per unit and, by thermostat, grant/deny ratios (grant = request honored; deny = request not honored due to cap). Operator chooses path and filename when saving both reports.
+
+- Language & Structure: Only clauses using “shall” are binding requirements. Document conforms to ANSI/IEEE 830 with the expected sections: Section 2 (product perspective, functions, user characteristics, constraints, assumptions/dependencies) and Section 3 (functional/performance requirements, design constraints, attributes, external interface requirements) needed by the Design Requirements team and architecture.
+
+- Scope & Precedence: SRS is limited to software requirements. It will be used as the basis for the software design. Hardware requirements remain in the system-level spec. Include references as part of the spec; where conflicts exist, SRS text takes precedence over references, except the SoW (THEMAS_SOW_001) supersedes the SRS. Standards are assumed accessible via libraries; other referenced materials available via Barry.
+
+Priya
+
+---
+
+From: Barry Scott <barry.scott@themas.example>
+To: Priya Nair <priya.nair@themas.example>, Leo Patel <leo.patel@themas.example>
+CC: Carla Jones <carla.jones@themas.example>, Nina Velasquez <nina.velasquez@facilities.example>, Jen Liu <jen.liu@itops.example>
+Date: Mon, 2025-03-03 13:10:37 -0500
+Subject: RE: Reporting scope + V&V angles — a couple of pushbacks
+
+Good summary, Priya. A few pushes so they get baked in:
+
+1) Please don’t over-specify the hardware side anywhere. We can mention the association of hardware CIs with Monitor Temp, Determine Utilization, and Initialize, and that Reports has no hardware CI, but the detailed hardware requirements are not in SRS. Keep that line.
+
+2) There’s been confusion on status reporting from units. For SRS v1, stick to the assumption that we cannot determine if a unit executed a command and we can’t rely on a device-reported on/off. We will maintain our own software ON/OFF state only. If the system spec later introduces status updates, we can amend the assumptions. For now, no execution confirmation.
+
+Also, minor: make sure we explicitly say we talk to devices only through defined interfaces. No “direct toggling” language. And put the “SRS shall specify qualification requirements” wording in the preface (Carla will love that), so the simulator isn’t just a footnote.
+
+—B
+
+---
+
+From: Leo Patel <leo.patel@themas.example>
+To: Barry Scott <barry.scott@themas.example>
+CC: Priya Nair <priya.nair@themas.example>, Carla Jones <carla.jones@themas.example>, Nina Velasquez <nina.velasquez@facilities.example>, Jen Liu <jen.liu@itops.example>
+Date: Mon, 2025-03-03 14:02:21 -0500
+Subject: RE: Reporting scope + V&V angles — edits queued
+
+All,
+I’ve queued edits:
+- Qualification requirements called out explicitly, including simulator prototype for V&V.
+- Interfaces identified at a high level (thermostat inputs: current temp + setpoint; outputs: H/C ON/OFF Request; supervisor console). No detailed external system definitions. Device comms only through those interfaces.
+- Platform statement tightened (Windows NT for runtime, IPC, interfaces).
+- Hardware CI associations noted (first three modules only); Reports software-only CI; hardware requirements deferred to system spec.
+- Binding language note (only “shall”).
+- Scope as software-only; SRS to be used as basis for design; audience explicitly includes Design Requirements team, Principal Architect, QA.
+- Temperature input validation requirement added; manual supervisor controls (setpoint from valid list + ON/OFF) spelled out; system maintains ON/OFF status internally; cannot determine command execution; emit Unit Unavailable when cap prevents ON.
+- Reporting requirements: history (12-month, all events sorted), statistical monthly (select month from list; per-day % on-time per unit; grant/deny ratio per thermostat), ASCII files with operator-selected path/filename.
+- Precedence and references: SOW supersedes SRS; SRS supersedes refs; refs included in SRS; public standards assumed available via libraries; other copies via Barry.
+
+Remaining open item: earlier assumption text claiming units send on/off status updates without real-time delay — I’ll keep it in Assumptions only, tagged [TBD], with base requirements assuming no device feedback.
+
+Leo
+
+---
+
+From: Nina Velasquez <nina.velasquez@facilities.example>
+To: All
+Date: Mon, 2025-03-03 15:02:18 -0500
+Subject: RE: Reporting scope + V&V angles — last user notes
+
+Good with all that. One last user thing: if a unit can’t be turned on because of the cap, I’d like that condition to be evident during operations. I know it’ll be in the event log; just don’t make me hunt hard for it later.
+
+Also make sure the month selection on the stats report is a clear list I can pick from — no typing “2025-02”. And if the history pulls everything, that’s okay; just sort by when it happened (date/time).
+
+And reiterating: keep the UI simple. The thermostat list with current settings is the main thing I look at daily. Manual ON/OFF and setpoint changes from there.
+
+Thanks,
+Nina
+
+---
+
+From: Barry Scott <barry.scott@themas.example>
+To: All
+Date: Mon, 2025-03-03 15:40:11 -0500
+Subject: RE: Reporting scope + V&V angles — wrap-up
+
+Appreciate the tightening. Action items before we freeze the SRS draft:
+- Leo to integrate the reporting requirements verbatim (history, monthly stats, ASCII, path/name selection, month list, contents inc. % on-time and grant/deny ratios with the simple definitions).
+- Priya to double-check interface identification language (thermostat inputs, H/C ON/OFF Requests, supervisor console) and reiterate “only via defined interfaces,” “cannot determine command execution,” and “software-maintained ON/OFF state.”
+- Carla to append qualification requirements and simulator reference (V&V) near the front matter.
+- Jen to confirm exact Windows NT wording (runtime, IPC, interfaces).
+- Barry (me) to make sure references are listed in the doc (and to provide copies on request); include precedence rules (SoW > SRS > refs).
+
+Open: keep the conflicting assumption about unit status updates parked in Assumptions with [TBD]; base text assumes no status feedback from devices.
+
+—B

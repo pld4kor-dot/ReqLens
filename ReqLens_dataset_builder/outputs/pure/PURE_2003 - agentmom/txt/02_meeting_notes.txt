@@ -1,0 +1,64 @@
+TYPE  : meeting_notes
+TITLE : Working session notes — SRS structure, access, and group comms detail (cleaned summary)
+UNIT  : PURE_2003 - agentmom
+============================================================
+
+Date: 2025-03-18
+Room/Call: Eng Bldg 3, Rm 214 / Zoom link: https://zoom.example.edu/agentmom-srs
+Attendees: Maya (Project Lead), Dr. Chen (Advisor), Sam (QA), Priya (Partner Dev), Luis (NetOps), Erin (Doc writer)
+
+Agenda highlights:
+- SRS outline (IEEE-flavored), audience/scope
+- Access controls — keep doc restricted
+- Multicast configuration knobs
+- Group membership lifecycle: join/leave, notifications, opt-out pause
+- Backward compatibility and mixed deployments
+
+Decisions/notes:
+- SRS structure: Follow IEEE-style with a clear product perspective (users, functionality, constraints/assumptions) and a section for use cases + detailed requirements. Erin to map to Sec 2 / Sec 3.
+- Audience/scope: Document is for the advisor and committee only. Keep in a private folder; avoid broad sharing links. The SRS describes framework behavior; it is not a tutorial.
+- Constraints/assumptions to state explicitly in Sec 2:
+  - Underlying network provides multicast and UDP broadcast; unicast leverages TCP/IP.
+  - Multicast and broadcast are best-effort transport (no ordering guarantee at that layer); unicast delivery is ordered and directed to a specific address.
+  - LAN broadcast scope is local subnet only (not routed). QA to verify isolation across subnets.
+- Unicast behaviors to capture:
+  - Ordered, point-to-point delivery (A then B arrives as A then B).
+  - Correct addressing (deliver only to the target address).
+  - Optional message protection on a per-send basis; receiver handles protected messages automatically when configured. Avoid deep crypto spec; describe capability.
+- Multicast group behaviors to capture:
+  - Explicit join request required before receiving any group traffic (enforced at least at the application layer).
+  - Explicit leave request; after leave, stop delivering group traffic to that agent.
+  - Opt-out/mute: reversible pause of deliveries while otherwise remaining a member; delivery halts immediately on opt-out and resumes on opt-in.
+  - Notifications: publish join and leave events so members can update rosters. Keep event payload minimal (agent id, timestamp). [naming TBD]
+  - Optional group message protection when configured; members handle protected messages automatically when configured.
+  - Multiple group subscriptions allowed concurrently.
+- Multicast configuration (Sec 2 + Sec 3):
+  - Expose TTL (IP hop scope), group address, and port via config and APIs. Provide safe defaults. Erin to note TTL semantics clearly.
+  - Luis to supply recommended address ranges/examples and caution against reserved ranges.
+- Broadcast (LAN):
+  - Support sending and receiving on the local network. Use primarily for discovery/announcements.
+  - Scope: all hosts on same subnet; not routed. QA to confirm with two-subnet test.
+  - For confidentiality needs, prefer unicast or groups configured for protection (don’t rely on broadcast for sensitive content).
+- Conversation control modes:
+  - Support agent-driven and component-driven conversation orchestration; make it configurable. Include at least one use case for each.
+- Agent substitution (organization/reorganization):
+  - Allow a replacement agent to join and act within a group so coordination continues. Ensure join/leave notifications make the transition visible to other members. [credentials continuity considerations documented at a high level]
+- Backward compatibility:
+  - Interoperate with agentMom 1.2 via a compatibility layer. Mixed deployments expected. Baseline messaging works across versions; features that require shared understanding are used where both sides support them. QA to run mixed-version tests (unicast both ways; group join/leave enforcement).
+- Access restrictions:
+  - SRS visibility limited to advisor + committee. Code/config examples can live in the team repo; keep the SRS in a restricted area.
+
+Use cases (sketches for Sec 3):
+- UC1: Agent A sends command to Agent B (unicast). A chooses protection on/off per message. B handles protected and unprotected receipts automatically. Verify order under load.
+- UC2: Group lifecycle: Agent joins commands group; before join, receives 0; after join, receives; join notice observed. Agent opts out (pause) and receives nothing while paused; then opts back in and resumes; finally leaves and receives nothing after leave; leave notice observed.
+- UC3: Multi-group: Single agent subscribes to two groups simultaneously (alerts, telemetry). Configure different TTL values and addresses/ports; verify reception on both.
+- UC4: Broadcast discovery: agent broadcasts “who’s there?” on LAN; others respond via unicast. Verify all local hosts receive; verify no cross-subnet delivery.
+
+Reminders:
+- Phase II demo will show the driving capabilities (don’t over-star). Candidates: unicast ordered delivery; optional per-message protection with automatic handling; group join/leave enforcement with notifications; LAN broadcast send/receive; and, if time permits, conversation-control toggle and an agent substitution event.
+- Erin to place constraints/assumptions up front and keep requirement statements testable.
+
+Open items [TBD]:
+- Event naming for join/leave notifications (standardize terms).
+- Key management depth: likely out of scope; include brief pointer only.
+- Exact formatting of Sec 3 requirements vs appendix cross-reference.

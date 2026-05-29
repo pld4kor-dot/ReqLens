@@ -1,0 +1,302 @@
+{
+  "coverage_rate": 0.9706,
+  "missing_req_ids": [
+    "PURE_2001 - space fractions_R004"
+  ],
+  "unsupported_count": 1,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PURE_2001 - space fractions_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "SRS will cover the Space Fractions product end-to-end"
+      ],
+      "reason": "Meeting notes call the document the SRS for product."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "Andrea Brooks from Pecan Springs Elementary"
+      ],
+      "reason": "Requester named explicitly in transcript and notes."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "SRS structure: Use the component template"
+      ],
+      "reason": "Notes enumerate purpose, interfaces, components, requirements."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R004",
+      "supported": false,
+      "evidence_snippets": [
+        "SRS structure: Use the component template",
+        "Inputs: user clicks, browser environment"
+      ],
+      "reason": "Template required but legal domains and parameter ranges absent."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "Audience: sixth-graders and teachers"
+      ],
+      "reason": "Notes and transcript specify sixth graders and teacher."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "Runs in a browser; no installs on lab PCs"
+      ],
+      "reason": "Notes state web delivery and no permanent client files."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "Implementation: Macromedia Flash (v5) + HTML"
+      ],
+      "reason": "Meeting notes and emails specify Flash+HTML and linked movies."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "needs JavaScript and the Flash plug-in"
+      ],
+      "reason": "Notes require browser support for JavaScript and Flash 5."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "Runs on any Internet-capable computer; no new hardware"
+      ],
+      "reason": "Sources state no new hardware and no mic/camera access."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "standalone in the browser. It’s not embedded"
+      ],
+      "reason": "Notes require umbrella interface of independent Flash movies."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "program logic must behave the same"
+      ],
+      "reason": "Notes/emails require consistent behavior across browsers."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "core is fraction problems"
+      ],
+      "reason": "Artifacts repeatedly state a fractions-focused educational game."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "multiple-choice items with cartoon panels"
+      ],
+      "reason": "Transcript/notes describe plot-based cartoon MC fraction questions."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "multiple choice with clickable options—no keyboard"
+      ],
+      "reason": "Sources mandate clickable multiple-choice and mouse-only input."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "show clear \"correct\" indicator then advance"
+      ],
+      "reason": "Notes and transcript specify correct feedback then auto-advance."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "First attempt wrong does not count as full correct"
+      ],
+      "reason": "Documents require retry and scoring that counts first-try only."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "Robot sidekick: provides context-sensitive hints"
+      ],
+      "reason": "Interview and notes specify a robot giving contextual hints."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "branch ending based on flagged critical questions"
+      ],
+      "reason": "Materials describe branching at critical questions to pick endings."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "After N questions (N configurable), route to ending"
+      ],
+      "reason": "Notes state configurable question count then route to ending."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R020",
+      "supported": true,
+      "evidence_snippets": [
+        "ignore inputs other than mouse clicks"
+      ],
+      "reason": "Intro is skippable by click; non-mouse inputs ignored per notes."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R021",
+      "supported": true,
+      "evidence_snippets": [
+        "Main title screen provides: Begin Game, Help, team blurb",
+        "Wait state: do nothing until user chooses"
+      ],
+      "reason": "Source describes menu, team link, Denominators and wait state."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R022",
+      "supported": true,
+      "evidence_snippets": [
+        "Begin Game takes the user directly",
+        "Begin Game takes the user directly into the game sequence."
+      ],
+      "reason": "Docs state Begin launches the game sequence."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R023",
+      "supported": true,
+      "evidence_snippets": [
+        "Link out to Denominators.",
+        "New window for those external ones."
+      ],
+      "reason": "Denominators link present and opens in a new window."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R024",
+      "supported": true,
+      "evidence_snippets": [
+        "Help: basic instructions",
+        "Help screen—we’ll keep it simple"
+      ],
+      "reason": "Help screen from main menu with basic gameplay instructions."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R025",
+      "supported": true,
+      "evidence_snippets": [
+        "End screen shows exact score + plot-based conclusion",
+        "Try Again/Main Menu/Exit"
+      ],
+      "reason": "End screen shows exact score, story ending, and those options."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R026",
+      "supported": true,
+      "evidence_snippets": [
+        "score maintained only in session",
+        "Scoring maintained only within the session. Replay resets score."
+      ],
+      "reason": "Notes explicitly state session-local score and end-of-game presentation."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R027",
+      "supported": true,
+      "evidence_snippets": [
+        "Outputs: visual screens, sound cues",
+        "Implementation: Macromedia Flash (v5) + HTML"
+      ],
+      "reason": "Flash movies and sound/animation outputs are specified."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R028",
+      "supported": true,
+      "evidence_snippets": [
+        "Related Projects (fractions, decimals, percents)",
+        "open in a new window"
+      ],
+      "reason": "Related project links are listed and open in separate windows."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R029",
+      "supported": true,
+      "evidence_snippets": [
+        "forms (pulldowns + text fields)",
+        "generate a text file on the game server"
+      ],
+      "reason": "Updater web form, validation, and server text-file generation described."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R030",
+      "supported": true,
+      "evidence_snippets": [
+        "customize per-choice hints/feedback",
+        "context-sensitive hints tied to choices"
+      ],
+      "reason": "Admins can edit per-choice hints and customize feedback."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R031",
+      "supported": true,
+      "evidence_snippets": [
+        "Hosted on the S2S website"
+      ],
+      "reason": "Hosted on S2S site; internet-accessible for multiple students."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R032",
+      "supported": true,
+      "evidence_snippets": [
+        "Flash game modularized into scenes/sub-scenes"
+      ],
+      "reason": "Flash game modularized into scenes/sub-scenes for maintainability."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R033",
+      "supported": true,
+      "evidence_snippets": [
+        "Security model matches standard browser/hosting context"
+      ],
+      "reason": "Security model tied to standard browser/hosting context."
+    },
+    {
+      "req_id": "PURE_2001 - space fractions_R034",
+      "supported": true,
+      "evidence_snippets": [
+        "thorough testing by team members; mentors"
+      ],
+      "reason": "Notes require thorough testing by team members and mentor review."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "The updater (web-accessible question editor) shall be access-controlled (password-protected) so that only designated editors/admins can modify game content.",
+      "source_snippet": "Access to the updater page will be protected with a password so only designated editors can change content (Jenna to coordinate setup).",
+      "source_type": "meeting_notes",
+      "reason": "The source explicitly requires password protection for the updater tool, a concrete authentication/access-control requirement for administrative actions. The gold set includes a general note that security is provided by the browser environment but does not specify updater access control or require password protection for admin/editor functions, so this is a significant capability not covered by the gold requirements."
+    }
+  ],
+  "passed": true
+}

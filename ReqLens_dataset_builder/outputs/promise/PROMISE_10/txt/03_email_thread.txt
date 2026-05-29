@@ -1,0 +1,132 @@
+TYPE  : email_thread
+TITLE : Thread: Lobby availability, turn pacing, and 24x7 ops constraints
+UNIT  : PROMISE_10
+============================================================
+
+From: Mia PO <mia@example.com>
+To: Raj Eng Lead <raj@example.com>, Tasha SRE <tasha@example.com>
+CC: Luis Privacy <luis@example.com>, Camille Loc <camille@example.com>, Owen Audio UX <owen@example.com>
+Subject: Fast follow from today - lobby behavior and turn flow
+
+Hey all,
+
+Quick recap based on a couple of questions I got after the call.
+
+- Lobby list: we keep a live roster of anonymous players who have opted in to be available. Clicking an available person is a one-click start. As soon as the match is created, both sides should be removed from the pickable list globally so no one else can grab them mid-handshake.
+- Self removal: players must be able to toggle off at any time, with immediate effect. No waiting for a cycle.
+- Inactivity: if someone is idle, do not show them as selectable. If they ghost for a day, go ahead and drop them from the list entirely.
+- Turn status: after both finish placing their five ships, system decides who fires first and lets both know clearly who is shooter and who is on the receiving end. At the start of each turn, repeat that status.
+- Turn loop: shooter taps a coordinate; system checks the defender board, returns miss or hit, marks both boards accordingly. On a hit, the shooter goes again. On a miss, swap roles.
+- Game end: either when the last ship is sunk or if a player ends the match manually. When that happens, tell both players the match is over and why. Then give them a choice to re-enter the lobby as available, or leave.
+
+Let me know if I missed something from your angles.
+
+— M
+
+---
+From: Raj Eng Lead <raj@example.com>
+To: Mia PO <mia@example.com>
+CC: Tasha SRE <tasha@example.com>, Luis Privacy <luis@example.com>, Camille Loc <camille@example.com>, Owen Audio UX <owen@example.com>
+Subject: RE: Fast follow from today - lobby behavior and turn flow
+
+Thanks Mia,
+
+Two confirmations and one question:
+
+1) We will maintain the lobby roster in memory with a backing store. Availability flag changes immediate. When pairing starts, we will flip both players to unavailable so they disappear. There is a small race if two clients choose the same target at the same millisecond; SRE, I will coordinate with you on an atomic compare-and-set on an availability token.
+
+2) After both place five ships, I will randomize first shooter and send a start-of-turn status message to both. At each subsequent turn start, each client gets a clear status prompt.
+
+3) Question on orientations: horizontal and vertical are obvious. We agreed diagonals are allowed if straight line, correct? That is different from Battleship classic, so I want to make sure we do not walk it back later.
+
+Also, minor: when we mark a sunk event, we will decorate the defender’s grid with the full ship outline and the ship class label. I can put a sunk glyph on the attacker’s firing grid as well so they know that class is done.
+
+— Raj
+
+---
+From: Owen Audio UX <owen@example.com>
+To: Raj Eng Lead <raj@example.com>, Mia PO <mia@example.com>
+CC: Camille Loc <camille@example.com>, Tasha SRE <tasha@example.com>, Luis Privacy <luis@example.com>
+Subject: RE: Fast follow from today - lobby behavior and turn flow (sounds + periscope)
+
+Jumping in on two fronts.
+
+Periscope: Yes on masking both grids inside a circular viewport. I will add a subtle metal rim and glass glare. We need to make sure labels do not bleed outside the circle. On very small phones, we may need to scale the grids within the mask.
+
+Audio mapping: during the shooter’s turn, I will bring up an ambient sea layer lightly so it feels like you are peering through the scope. On miss, splash. On hit, a sharper impact sound. On sink, a distinct longer cue with a creak and water. I am not going to add anything when just idle or placing ships, to keep the action audio meaningful.
+
+Turn pacing: I will keep cues short so they do not drag. If the server response is late, we can show a small spinner but still hit our latency targets ideally.
+
+— Owen
+
+---
+From: Tasha SRE <tasha@example.com>
+To: Raj Eng Lead <raj@example.com>, Mia PO <mia@example.com>
+CC: Luis Privacy <luis@example.com>, Camille Loc <camille@example.com>, Owen Audio UX <owen@example.com>
+Subject: RE: Lobby, turns, SLOs and concurrency
+
+On pairing: I will implement a short-lived lock with a CAS on the availability token. That ensures once one request flips a player to in-match, others get rejected cleanly.
+
+SLOs: For the action loop, we should set expectations. I propose we instrument so that 95 percent of turn actions round-trip under 2 seconds. And we keep the worst cases under 4 seconds end-to-end. If we are constantly above that, the duel will feel laggy.
+
+Availability: The game has to be running 24x7. I will set up rolling deploys and redundancy so we can operate globally. No planned downtime if we can help it.
+
+Scale: Assume lots of simultaneous matches. I am sizing for many concurrent games from the start and we will pressure test. We will design for horizontal scale.
+
+Lobby idle handling: I will hide idle users from selection and drop users who have been inactive for 24 hours automatically. Define idle precisely in a separate doc.
+
+— Tasha
+
+---
+From: Luis Privacy <luis@example.com>
+To: All
+Subject: RE: Privacy angle on this thread
+
+A few constraints from compliance:
+
+- Anonymity is paramount. No user-entered names or profiles. The lobby is anonymous presence only. Do not show any info that could be tied back to a person. Avoid even cute identifiers that could cross-expose identities.
+- In the match, never reveal opponent grids. The only data the shooter sees is their own firing history. The defender sees impacts on their own grid. Do not leak any hints or patterns. No spectate mode either.
+- End-of-match notices must not include identifying info. Just the reason, e.g., all ships down or opponent ended.
+
+If you stick to these, we should be good for strong identity protection. I will review strings for any accidental leaks.
+
+— Luis
+
+---
+From: Camille Loc <camille@example.com>
+To: Mia PO <mia@example.com>, Raj Eng Lead <raj@example.com>
+CC: Owen Audio UX <owen@example.com>, Luis Privacy <luis@example.com>, Tasha SRE <tasha@example.com>
+Subject: RE: Language entry point and strings scope
+
+On language: selection must be at entry. Do not bury it. We are supporting English, Spanish, and French from day one. Once chosen, every system prompt and button must reflect that. I will need the following strings from you as keys:
+
+- Lobby: available, unavailable, list me, remove me
+- Placement: place your five ships, ready, cannot overlap, out of bounds
+- Turn: your turn to fire, you are being targeted, hit, miss, sunk
+- End: match over, you won by sinking all ships, you ended the match, opponent ended the match, relist me, leave lobby
+- Misc: idle timeout hidden, removed after 24 hours
+
+Note: ship class names need careful translation. Also, French tends to be longer. In the circular mask, we may prefer icons with tooltips. But we must show ship type on the defender’s board when a ship is sunk, as product requested.
+
+— Camille
+
+---
+From: Mia PO <mia@example.com>
+To: All
+Subject: RE: Consolidating decisions + one small tweak
+
+Thanks everyone. Consolidating and confirming a couple items, and one pushback.
+
+- Diagonal placement is allowed and must be straight, not wiggly. Five ships per player, no overlaps, and out-of-bounds blocked. Players can move ships until they hit Ready. Once both hit Ready, we randomize first shot and notify both of their roles.
+- Turn start: both players get a clear status message at the start of each turn. Shooter chooses a cell on their firing grid; server checks defender grid; result comes back as hit or miss. We mark both boards. If a ship goes down due to that hit, the system declares it sunk and we say which class on the defender’s side. Mark sunk on both boards.
+- Streaks: a hit grants another shot for the shooter. A miss flips roles: attacker to defender, defender to attacker. Keep that loop until the end condition.
+- Ending a match: we will end when the last enemy ship is sunk, or if someone ends the game early. The end notice includes the reason. After that, present two choices: list me again in the lobby or leave the lobby. Once either option is chosen, unlock them from the previous match.
+- Lobby behavior: anonymous list of people who opted to be available. Select an available person to start; both vanish from the list for others until the match finishes. Players can delist themselves any time. Hide idlers and auto-remove after 24 hours.
+- UX and audio: periscope circular mask for the boards. Visual ships that look like their classes. Ambient ocean during the shooter’s turn, distinct sounds for miss, hit, and sink.
+- Ops: Tasha will run this 24 by 7 and aim for most actions under two seconds, with the tail not exceeding four. Also plan for lots of concurrent games.
+
+Pushback: I do not want to add any user identity even in a clever way. So no fun nicknames or randomized adjectives. Keep it strictly anonymous.
+
+If anyone disagrees with any of the above, reply here. Otherwise assume this as a working baseline.
+
+— M

@@ -1,0 +1,163 @@
+TYPE  : email_thread
+TITLE : Email Thread: Refresh Interval, Branding, Security, and Integration Details (revised)
+UNIT  : PROMISE_1
+============================================================
+
+Email 1
+From: Karen Smith <karen.smith@agency.gov>
+To: Priya Shah <priya.shah@agency.gov>; Luis Ortega <luis.ortega@agency.gov>; Devon Pike <devon.pike@agency.gov>
+CC: Mia Chen <mia.chen@agency.gov>
+Subject: PROMISE Wallboard - confirm refresh behavior and projection test
+
+Hi all,
+
+Quick follow-up. I want to lock in that the wallboard updates itself roughly every minute without anyone clicking refresh, and that we can pause it during a briefing and then resume. It should be obvious when it’s paused. Also, since we plan to project this on the big screen, can we schedule a legibility test next week? I want to validate that most of the room can read the event/activity fields at about 30 feet, and at least understand what is happening now even from the back rows.
+
+Thanks,
+Karen
+
+—
+
+Email 2
+From: Priya Shah <priya.shah@agency.gov>
+To: Karen Smith <karen.smith@agency.gov>
+CC: Luis Ortega <luis.ortega@agency.gov>; Devon Pike <devon.pike@agency.gov>; Mia Chen <mia.chen@agency.gov>
+Subject: RE: PROMISE Wallboard - confirm refresh behavior and projection test
+
+Hi Karen,
+
+Yes on the cadence: we’re aiming for a 60-second auto-refresh. We’ll add a Pause/Resume control with a clear indicator so people know it’s intentionally paused. We’ll also make sure the repaint is smooth.
+
+On branding: we must stay within the DHS color palette. Some mockups used traffic-light colors; we can reflect the same logic, but only with approved tones and fonts. I’ll send the palette PDF today.
+
+I can book the room for the projector test next Wednesday at 1400. We’ll validate font sizes, contrast, and the visibility of the now indicator from the back of the room.
+
+Lastly, reiterating access control: the wallboard will be behind our standard sign-in and must not show any data to people who aren’t authorized internally.
+
+Regards,
+Priya
+
+—
+
+Email 3
+From: Luis Ortega <luis.ortega@agency.gov>
+To: Priya Shah <priya.shah@agency.gov>; Karen Smith <karen.smith@agency.gov>
+CC: Devon Pike <devon.pike@agency.gov>; Mia Chen <mia.chen@agency.gov>; Sam Patel <sam@vendor.io>
+Subject: RE: PROMISE Wallboard - confirm refresh behavior and projection test (plus integration + views)
+
+Thanks Priya. Adding a couple items we didn’t explicitly capture:
+
+1) Data source: no new data entry in the wallboard. It should pull Events/Activities from Sync Matrix 1.0 and the EMT (current production versions). Display the MSEL Summary fields (title, planned start/duration, venue, key event flag, etc.).
+
+2) Navigation: For any row or timeline item, we need to jump to the originating record in Sync Matrix 1.0 or EMT 1.0 to make edits there. Deep links are fine; the source apps will handle their own sign-in.
+
+3) Views/filters: We need an All Events view, venue-based filtering, and a toggle for key events only. Also, a simple display tweak (e.g., hide a column) helps when the screen is crowded.
+
+4) Clocks: Show local time and exercise time simultaneously. The variance indicator (ahead/behind) should reference exercise time, not the machine clock.
+
+5) Timeline/table: Left is the timeline. Right is a vertical table sorted by time; its top quarter holds sequence-driven items; the lower section focuses on items near now.
+
+Sam, can you confirm the deep-link patterns for both apps so we can open the exact item by ID?
+
+-Luis
+
+—
+
+Email 4
+From: Sam Patel <sam@vendor.io>
+To: Luis Ortega <luis.ortega@agency.gov>
+CC: Karen Smith <karen.smith@agency.gov>; Priya Shah <priya.shah@agency.gov>; Devon Pike <devon.pike@agency.gov>; Mia Chen <mia.chen@agency.gov>
+Subject: RE: PROMISE Wallboard - confirm refresh behavior and projection test (plus integration + views)
+
+Hi all,
+
+On deep links: for Sync Matrix 1.0, we can open items by numeric ID at a route like sm/item/{id}. For EMT 1.0, the detail view opens with a GUID. We’ll map the MSEL Summary rows to their source IDs so the wallboard can construct the correct link. The wallboard itself will not allow edits; clicking hands off to the respective app (which will prompt for sign-in if the user isn’t already authenticated).
+
+On refresh: 60-second polling is straightforward. We’ll add Pause/Resume. When paused, we’ll show a clear paused state and suspend polling. Resuming will fetch the latest and re-sync the time-based views with exercise time.
+
+On analytics: we’ll include a basic chart view for actual vs planned times of Activities/Events. For change history, we’ll surface history from the source apps where available; otherwise we can present a history based on the changes the wallboard observes in the data it consumes. No export in the first release.
+
+Branding: we’ll apply your DHS palette for variance colors and overall UI. We’ll also ensure the two clocks are labeled and visible.
+
+Regards,
+Sam
+
+—
+
+Email 5
+From: Mia Chen <mia.chen@agency.gov>
+To: Sam Patel <sam@vendor.io>; Luis Ortega <luis.ortega@agency.gov>
+CC: Karen Smith <karen.smith@agency.gov>; Priya Shah <priya.shah@agency.gov>; Devon Pike <devon.pike@agency.gov>
+Subject: RE: PROMISE Wallboard - observer/controller perspective
+
+Hi team,
+
+From the O/C side:
+
+- Right-side list should be vertical and time sorted; the top quarter is the sequence list (step 1, step 2), and the lower portion focuses on items nearest to now. If the proximity window is adjustable later, great; not critical for v1.
+
+- Make the variance color or symbol clear enough that late items stand out at a glance. Use the approved colors.
+
+- Filters: venue, a key events toggle, and an all-events view are must-haves so I can switch contexts quickly.
+
+- Pause during briefings is important; with a visible pause banner and resume control, that should stop questions about the board changing mid-sentence.
+
+- I’ll be recording actual times as we go; seeing those reflected on the board within about a minute is the goal. The actual vs planned chart afterward will help with hotwash.
+
+Thanks,
+Mia
+
+—
+
+Email 6
+From: Priya Shah <priya.shah@agency.gov>
+To: All
+Subject: RE: PROMISE Wallboard - availability, security, and scope
+
+Adding a few constraints and one piece of pushback:
+
+- Availability: during normal training/business hours, we need the wallboard available with minimal downtime. Initial target is near 99 percent availability. Maintenance will be scheduled off-hours.
+
+- Security: the product must ensure that only authorized personnel can access it. No anonymous access.
+
+- Training: we don’t have bandwidth for long courses. Expectation is that most new users can get the board up and displaying Events/Activities in well under two hours. A concise quick start helps.
+
+- Scope pushback: let’s not add extra notifications or new integrations beyond Sync Matrix 1.0 and EMT 1.0 for the first release.
+
+Priya
+
+—
+
+Email 7
+From: Devon Pike <devon.pike@agency.gov>
+To: Priya Shah <priya.shah@agency.gov>; Sam Patel <sam@vendor.io>
+CC: Karen Smith <karen.smith@agency.gov>; Luis Ortega <luis.ortega@agency.gov>; Mia Chen <mia.chen@agency.gov>
+Subject: RE: PROMISE Wallboard - field mapping and change history details
+
+All,
+
+Summary of field mapping and a few design decisions:
+
+- MSEL Summary fields to display: Title, Venue, Planned Start (exercise time), Planned Duration, Key Event flag, Source App (Sync Matrix 1.0 or EMT 1.0), Source ID, Actual Start (if recorded), Variance (computed as actual vs planned using exercise time). Each item includes a link target for deep linking.
+
+- Variance colors will use the DHS palette. We can add a small text label (Ahead / On Time / Behind) in the legend to reinforce meaning.
+
+- Two clocks on the top bar (local time and exercise time). The timeline’s now indicator aligns to the exercise clock.
+
+- Display adjustments: allow hide/show of specific columns in the right table and let users define time segment boundaries (e.g., Morning = 0800–1200). Timeline granularity options: 5, 15, 30 minutes. We’re not saving presets in v1.
+
+- Auto-refresh at 60 seconds by default. Pause/Resume implemented as a toggle; when paused, polling stops and a Paused ribbon shows. On resume, we fetch current data and align views to the exercise time.
+
+- Availability: plan updates for off-hours. We’ll include a short note about maintenance windows and target availability.
+
+- Change history: if the source apps expose change logs for fields we display, we’ll surface those in a History view. If not, we’ll present a history based on differences detected over time in the data the wallboard ingests (including timestamps and, where provided by sources, the user who made the change). In-app view only—no export in v1.
+
+- Security: the wallboard will prompt for sign-in if the session expires. Deep links won’t bypass source app security.
+
+Open items:
+
+- Exact font sizes/contrast for projector readability—test Wednesday.
+- Whether the proximity window for the lower list is fixed +/- 30 min or user-adjustable in v1 (leaning fixed for now).
+
+Regards,
+Devon

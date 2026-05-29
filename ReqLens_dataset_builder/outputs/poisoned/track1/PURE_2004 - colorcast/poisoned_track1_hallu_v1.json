@@ -1,0 +1,809 @@
+{
+  "artifact_id": "T1A_B1B542E2",
+  "unit_id": "PURE_2004 - colorcast",
+  "origin": "PURE",
+  "track_id": "track1",
+  "variant_id": "hallu_v1",
+  "created_at": "2026-05-26T19:14:53.852601+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "ColorCast Migration — Stakeholder Discovery Interview (Revised Transcript)",
+      "text": "Linda [Marketing]: Thanks for making time. I want to make sure we aren't... well, that we don't confuse customers during the paint number changeover. Our big thing is continuity, you know? If someone walks in with the old card or sees a name in a magazine, they shouldn't hit a dead end on the site.\n\nRaj [Product Manager]: Totally. The center of gravity is that translation from the legacy numbering into the new scheme. And not just numbers — we also have to handle those collections and series labels. Like, 'Coastal 2001' becomes part of 'Modern Naturals' or whatever the new thing is.\n\nOwen [ColorKast Vendor]: Right, the translator module we proposed maps the old codes to the new SKUs and collection descriptors. It's not one-to-one in every case, so we need to specify rules. And the UI should present it—\n\nJade [UX Designer]: Sorry to jump in — we said UI patterns are going into that separate whitepaper, remember? The spec here should call the capability, but not wireframes. I have a draft of the UI doc.\n\nMaria [IT Ops]: Please keep those separate. Our ops team reads the product specs differently than design. If it says 'how it looks' here, people think we've coded the look into the server. We need the spec to say what it does, interfaces, constraints, and such.\n\nBen [Distributor]: Can I just ask, is this for us distributors too? We need some docs we can print for our counters so staff can answer customers. Like quick guides.\n\nLinda [Marketing]: Yes, absolutely. And customers, too. We want help pages on the site, simple explanations — what happens when they type an old paint number, where the new one shows up.\n\nRaj [Product Manager]: On features: there are a few buckets. Search by name or number, and by technical color value. And a visual picker. Plus, that thing where you load a swatch image and it guesses the paint — the sample matcher.\n\nOwen [ColorKast Vendor]: Color search will use our backend indexes. The nearest match calculations use RGB distance. We validated that is fine for production. It’s not CIE-Lab fancy, but it's acceptable similarity per your earlier notes.\n\nJade [UX Designer]: Wait, is 'RGB distance' the one that's like Euclidean in 3D? Because I was thinking of HSV. Sorry if I'm off.\n\nOwen [ColorKast Vendor]: Yeah, it's Euclidean in the red-green-blue space. Works well enough and it’s fast. We can note the assumption explicitly so nobody expects perfect perceptual matching.\n\nMaria [IT Ops]: Just to confirm, all the heavy lifting is server-side, yes? Nothing on the client other than the browser doing basic display and form submissions? We have to be strict that search logic and persistent storage sit on the servers we run.\n\nRaj [Product Manager]: Yes, the app is server-based. Clients are regular browsers — no plugins. We stick to, um, the old browser list we inherited. I know it's dated, but Marketing insisted.\n\nLinda [Marketing]: We cannot alienate people on IE 4.x and Netscape 6. It's in our site compatibility promise. Sorry, Jade. I know.\n\nJade [UX Designer]: It's okay. We'll gracefully degrade. Just please, minimum requirements need to be explicit. Also, I want it to work on Macs and PCs — different OSes — because our audience and stores use mixed environments.\n\nBen [Distributor]: My POS runs Windows 2000. The in-shop kiosks have Mozilla 1.0. Some reps have Netscape 6. Please don't make me update all of them this quarter.\n\nMaria [IT Ops]: Okay, so supported browsers are those versions and beyond. Client machines must meet whatever the browser vendor says. We're not spec'ing RAM on the client; we point to browser requirements. Any performance metrics we write should default to client-side expectations unless we say otherwise for the server.\n\nRaj [Product Manager]: Right, and for servers, we have capacity guidance. Per 50 users, we need roughly a 1 GHz processor and half a gig of RAM. It's a crude yardstick but it's what we budgeted back in Q1.\n\nOwen [ColorKast Vendor]: On modules: we keep each main feature as its own page. Like, a Search page, a Visual Picker page, a Sample Match page, a Translate page, and the Admin console is completely separate. Helps with theming as well.\n\nJade [UX Designer]: Yes, and for the ABC designers — that's me and team — we need hooks: CSS classes, maybe a skin file. The tool cannot look like a foreign widget. It should inherit the ABC site chrome. Please expose a theme toggle or include a style package we can replace.\n\nLinda [Marketing]: It should look like part of our site. When people jump to ColorCast, it shouldn't feel like they left. Use our header and footer; nav links should live where they expect. Also don't put your own brand logo as a top banner — sorry, Owen.\n\nOwen [ColorKast Vendor]: We can white-label. Branding placement is a legal/marketing topic — for the spec, just say it integrates with the ABC site theme.\n\nBen [Distributor]: If I go to the translator and put in 'A12-4 Coastal Blue' from the old book, I should get the new number and what family it belongs to now. And if it was discontinued, maybe it points me to the closest alternatives, yeah?\n\nRaj [Product Manager]: Exactly — during migration, colors or entire series may get dropped or renamed. The translator needs to handle add/remove gracefully, and if something is retired, the nearest substitutes should be shown.\n\nMaria [IT Ops]: Speaking of graceful — error handling. If something breaks, I want it to recover without blanking out the page. At least reuse the last criteria and try again. And users should be able to report the issue without getting kicked out. Let's put in the spec that the application always attempts a full recovery from any error condition.\n\nOwen [ColorKast Vendor]: We'll put a 'Report a Problem' link and also auto-send crash logs to us, ColorKast, when a server exception occurs. And yes, we can make it a constraint that the system attempts full recovery on any error — retry, preserve inputs, reload the last state — without blocking the task.\n\nJade [UX Designer]: Not a modal that traps focus, please. Accessibility-wise, we must be operable by keyboard alone. No hidden hover controls.\n\nLinda [Marketing]: Yes, we have to check the accessibility box. Keyboard-only operation is important — and we’ll handle the rest of the UX details in the UI doc.\n\nRaj [Product Manager]: On the Default user: we don't want accounts for the everyday user. They should be able to use the whole tool minus admin stuff. And their palette — we talked about a personal palette that persists while they browse.\n\nJade [UX Designer]: I'd do a temporary palette that lives for the session only. No login, so it dies when they close the browser. We can keep it in memory server-side or track it with a session cookie ID.\n\nMaria [IT Ops]: I'm okay with session-only storage for non-admins. No password, no PII. Make sure we don't accidentally write those palettes to database beyond the session. We can purge them when the session expires.\n\nBen [Distributor]: So I can, as a store clerk, open the site, pick some colors for a customer, add them to a palette, print it if needed, but after I close the browser, it's gone. Fine.\n\nRaj [Product Manager]: Admins are a different story. We'll have three levels. Level one is the entry point — can add things. Level two can also update. Level three can do the full gamut, including deletes, and manage admin users of any type.\n\nMaria [IT Ops]: Let's be precise. L1 can create L1s. L2 can create up to L2. L3 can create any admin role. Permissions are add only at L1, add/update at L2, and add/update/delete at L3.\n\nOwen [ColorKast Vendor]: That mapping is clear. Also, the admin console is where you manage paints, collections, and user accounts, right?\n\nRaj [Product Manager]: Yes. Paint data and admin user management. We'll have to make sure it reflects migration realities: paints get added, colors retired, collections renamed. We need a way to mark statuses.\n\nLinda [Marketing]: Wait, before we dive deeper, timeline. We have to have version 1.0 live by Q2 — sorry, it's a hard date because the rebrand goes public then. There was no previous version on our site, so it's not an upgrade, it's a new drop.\n\nBen [Distributor]: Are we talking April? May?\n\nRaj [Product Manager]: Window is by end of Q2. Earlier is better for distributors to train staff.\n\nMaria [IT Ops]: High availability is still a must. Our web servers have maintenance windows, but this tool is going to be used by dealers in different time zones. We should aim for minimal downtime and have a rollback plan.\n\nOwen [ColorKast Vendor]: We can architect clustering on your side, but note we're submitting a product spec, not the detailed deployment plan. We'll document the constraints and the dependencies — like the third-party paint database we connect to — and your ops team can decide HA topology.\n\nJade [UX Designer]: Sorry, I zoned out for a second. You said 'product spec'. Can we make sure the doc has a clean structure? Table of contents, revision history up front so we can track changes. An intro that tells readers where to look. I hate fishing for definitions.\n\nRaj [Product Manager]: We'll do that. Introduce purpose, conventions, then point to sections explaining interfaces and performance constraints. We should remind readers to read the intro before diving into the rest.\n\nMaria [IT Ops]: And a clear separation: what's overall description, what's interfaces, what's non-functional. Project managers will use the interface and performance sections to make decisions about hardware.\n\nLinda [Marketing]: Back on customer experience — the search. If someone types 'Sunrise' or 'A12-4' it should find something. If they paste hex or RGB values from a design tool — can we handle that?\n\nOwen [ColorKast Vendor]: Yes, we accept name, number, and standard color values like RGB tuples. And we can convert from a hex string too. We'll translate into our internal representation and fetch nearest paints.\n\nBen [Distributor]: Nearest paints is that 'closest colors' bit you mentioned? Helpful when a color is out of stock or no longer in the new line.\n\nJade [UX Designer]: In the visual picker, I'd like a hue-saturation square with a lightness slider. Yes, I know, UI doc. But the idea is they can pick a color you see. Also the image upload — they should point to a JPG of a room and we sample it.\n\nMaria [IT Ops]: Wait, image upload — is that server-side processing? No hefty client scripting. We can accept an image, do server processing, return a short list of candidate colors.\n\nOwen [ColorKast Vendor]: Correct, the algorithm runs on the server. We'll need to watch file sizes. But yes, all search and processing happen server-side.\n\nLinda [Marketing]: And the tool fits inside our site. Theming, I mean. The modules shouldn't break our navigation. Make it feel native.\n\nJade [UX Designer]: We can implement a theme layer. But please call out in the spec that ABC designers can drop in our CSS and a header include. No hard-coded inline styles.\n\nBen [Distributor]: I have a weird question. If my kiosk loses network for a second and the request fails, will the page crash? Can the tool recover, like, try again or show a message without making me re-type everything?\n\nOwen [ColorKast Vendor]: We can preserve the last input server-side and attempt to reload gracefully. Error capture runs in the background; if it's fatal, we auto-submit a report to us and keep a non-blocking notice. The intent is to always attempt a full recovery so you can continue without re-typing.\n\nJade [UX Designer]: Please, no big red 'An error occurred' banners. Just a non-blocking toast or a subtle message with a 'Send feedback' link. And keyboard focus shouldn't jump around.\n\nMaria [IT Ops]: Keyboard again — can someone navigate the entire app without a mouse? Tab order, skip links, all that. We can't ship something that forces mousing.\n\nRaj [Product Manager]: Yes, that's in scope. We list it as an accessibility constraint. Keep the language 'must be usable with the keyboard alone'.\n\nLinda [Marketing]: Also, can we add a user palette so customers can collect a few options while they browse different modules? Like they find a color via search, then go to the translator, still see their saved colors.\n\nJade [UX Designer]: That should be session-wide. We store an array of color IDs on the server keyed by session. It appears as a panel on all modules. No signup required. If they close the browser, poof, it's gone.\n\nBen [Distributor]: Yeah, don't store it long term. If a customer wants to keep it, they can print or copy it.\n\nOwen [ColorKast Vendor]: That’s aligned with no password protection for default users. We won’t write their palette to a persistent user profile, because there is none.\n\nMaria [IT Ops]: Just to reiterate, admin accounts are separate. Secure, with levels. We'll manage those. The general public are default users.\n\nRaj [Product Manager]: Quick tangent — the SRS will be a product spec. No implementation code or UI designs. For example, we say 'Provide a method to search by RGB', but not 'Add a text field on the left of the header'. Detailed UI sits in the other document Jade owns.\n\nJade [UX Designer]: I’ll link that whitepaper from the SRS. Also, I want an overview at the beginning of the SRS that says, 'If you are a project manager, read sections on interfaces and non-functional requirements.' People keep asking me, 'Where do I find the browser list?' Make it easy.\n\nLinda [Marketing]: I also want a revision log. We keep changing names. 'New Classics' became 'Classic New' for a day — a mess. If we can track doc changes date-by-date, we avoid misunderstandings.\n\nBen [Distributor]: About the search page, can I type into a single box and it figures out if it's a number, name, or RGB? Or do we need tabs?\n\nJade [UX Designer]: I'd prefer a smart field, but we can decide in the UI doc. The SRS should just say the system accepts those inputs. Feature modularization still stands — search as one module page regardless of input.\n\nOwen [ColorKast Vendor]: On a technical note — we depend on third-party repositories for paint details and search indexing. We'll spell out that dependency; you own the subscription, we integrate.\n\nMaria [IT Ops]: And let's add the design constraints we already agreed: server-side only processing for search and storage, supported browsers list, theming must not break your header, etc. Those need to be documented as constraints, not assumptions. Include the error recovery rule we just discussed.\n\nRaj [Product Manager]: We'll compile a section on assumptions and dependencies too: e.g., that the environment meets the minimum specs and browsers are available. Also, the use case is primarily for the rollout period. Not a forever tool, though marketing may keep it a bit longer.\n\nLinda [Marketing]: We keep saying 'rollout'. Are we planning to decommission later? I thought it's around the installation and transition window, after which normal site pages take over.\n\nBen [Distributor]: As long as we have a translator during the messy months. After, it can be archived.\n\nJade [UX Designer]: Sorry — off-topic: my calendar says we have a brand shoot on the 15th. Can we not deploy that day? I can't be on call.\n\nMaria [IT Ops]: We don't release on Fridays anyway. We'll coordinate downtime.\n\nOwen [ColorKast Vendor]: We’ll get you a spec draft with modules separated, error reporting flow, admin roles, and the backend assumptions about RGB and data sources.\n\nRaj [Product Manager]: Perfect. Meeting adjourned — unless someone has a last-second blocker?\n\nMaria [IT Ops]: I'm good. Just please don't sneak any Flash in there.\n\nJade [UX Designer]: Ha, no Flash. Promise.\n\nLinda [Marketing]: Done. Thanks everyone."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "ColorCast Migration — Requirements Workshop Notes (Edited)",
+      "text": "Date: 2025-01-22\nLocation: Teams call (link: https://meet.abcpaint.example.com/colorcast-reqs)\nAttendees: Raj (PM), Linda (Mktg), Maria (IT Ops), Owen (ColorKast), Jade (UX), Tasha (Tech Writer), Ahmed (QA)\n\n— notes start —\n\nAgenda: doc structure; interfaces; non-func; constraints; docs deliverables; feature modules; assumptions/deps.\n\nDoc plan / SRS framing\n- Product spec vs design: keep this doc as PRODUCT SPEC only. No wireframes, no code-level arch diagrams (Jade reminder). Implementation details go elsewhere [TBD]\n- Include TOC (!!) — Tasha will auto-generate from headings. Add page numbers maybe [check with print team]\n- Include a change log / revision history section near front. Linda wants date + short description + owner. Keep granular (week-by-week during rollout).\n- Intro section: must explain purpose, define terms (paint number scheme old/new, collection, RGB color space, 'closest colors', 'user color palette', etc.), and point to where details live.\n- Explicit note: read intro first if you are new to the project — avoid confusion around 'collection' usage. Maybe call out 'Document Conventions' (bold/italics) and 'How to read this' [TBD wording]\n- Section layout: 2 and 4 are 'overall product description' and 'overall constraints'? Raj says yes. 3 is 'external interfaces' (U/HW/SW/communications), 5 is non-functional/perf. Verify alignment w/ corporate template [check with PMO].\n- PMs will make decisions off Sections 3 (interfaces) + 5 (performance/reliability). Call that out in intro so they know.\n- Tasha to insert standard 'Assumptions & Dependencies' section. Keep it updated whenever we decide we rely on 3rd party DB or browser lists.\n\nExternal interfaces (section 3)\n- User interface (high-level only, details in separate UI whitepaper per Jade) -> include behaviors but not layouts. Include: search by name/number/RGB, translator, visual picker, sample matcher, palette, admin login + console nav (high-level).\n- Hardware interface: client hardware is 'whatever meets browser requirements'; server hardware: note capacity per 50 users (1 GHz CPU + 512 MB). [Legacy guidance]\n- Software interface: supported browsers versions: IE 4.01, Netscape 6.0, Mozilla 1.0+, and compatible w/ most OSes (Windows, Mac; Ahmed asked about Linux — 'should be fine' but put 'most').\n- Communications interface: HTTP/HTTPS over company network + Internet. No extra plugins. All search + storage flow to server.\n\nNon-functional / perf (section 5)\n- Accessibility: keyboard-only operation must be fully usable. Include tab order expectations and focus management [details in UI doc, but requirement here].\n- Availability: 'highly accessible to clients and distributors via web' — aim for HA. Maria wants wording not too prescriptive (ops doc covers clusters etc.).\n- Error reporting UX: non-intrusive. No blocking popups; use minimal overlay or inline message.\n- Error recovery: the system shall attempt to fully recover from errors in all instances (e.g., retry, preserve inputs, restore last state). Avoid wording that guarantees success, but the attempt must be made every time. [QA to define scenarios]\n- Responsiveness: defaults apply to the client unless explicitly marked 'server'. Add explicit note: when spec references 'response time', assume client perception unless 'server throughput' specified.\n\nConstraints / architecture (section 2.5)\n- Deliver as standalone server-based web application (client/server). Fully web client.\n- All search processing + application data storage happen on the server (no client persistence except session cookies).\n- Capacity guideline: 1 GHz CPU + 512 MB RAM per 50 user cohort. Put in constraints, not perf target.\n- Browser support: IE 4.01, Netscape 6.0, Mozilla 1.0+. Client machines must meet/exceed the browser vendor's system requirements (we do not override).\n- Cross-OS compatibility: 'compatible with most operating systems' (not exhaustive list). Jade: add note that theme CSS must not rely on OS-specific fonts.\n- Theme/styling must integrate with ABC site look and navigation. Provide hooks for ABC web designers to blend seamlessly (CSS classes, replaceable skin). Branding placement specifics are handled outside the SRS.\n- Feature modules: each main feature on its own page — independence helps with integration and QA. Provide cross-links rather than combining modules.\n- Design/implementation constraint to record here: 'Error recovery — system shall attempt full recovery on any error condition.'\n- Document design & implementation constraints in SRS — capture all constraints we agree (browsers, server-side only, theme hooks, modular pages, error recovery rule). [Tasha to own]\n\nFeatures (summary only; details elsewhere)\n- Color search engine: find paints by name/number/standard color value (RGB). Use 3rd party DB for paint data + search index [dependency].\n- Visual color chooser ('graphical picker'). UI patterns in whitepaper, but spec needs to state capability.\n- Image-based match ('color sample matcher' using uploaded image). Server processes image; returns candidates. [Ops note: size limits TBD].\n- Translator: map old paint numbers + collections to new numbers + collections. Migration complexities included (adds, retirements). If a color is retired, show nearest alternatives.\n- Closest-colors finder: determine colors nearest to a given color; algorithm assumption = RGB distance acceptable (document assumption).\n- User color palette: session-based. Default users (non-admin) can use all functionality except admin; their data is session-only, no password-protected storage, expires with session end.\n- Admin console: manage paints, collections, and admin users. Admin roles L1/L2/L3 with permissions: L1 = add + create L1; L2 = add/update + create up to L2; L3 = add/update/delete + create any level.\n- Error utility: users can report errors. Automatic log sending to vendor (ColorKast) on errors; preserve UX (non-intrusive).\n\nDocs deliverables\n- End-user help: website accessible help pages; distributor-friendly printable guide.\n- IT setup/operations guide: full install + management docs for ABC Paint IT so they can manage app internally. Include scaling, backups, monitoring basics.\n- UI whitepaper: separate doc with detailed UI designs, flows, keyboard interactions. Cross-reference from SRS intro.\n- Assumptions/Dependencies doc section: browsers, capacity guidance, 3rd party DB reliance, RGB assumption, environment meeting stated requirements.\n\nDefinitions / terminology (include in intro)\n- Paint number scheme: old vs new.\n- Collection = paint line/series.\n- RGB = red-green-blue color space; 'closest colors' uses distance in RGB.\n- User color palette = session-based grouping of user-selected colors.\n- Administrative levels = L1/L2/L3 (L3 highest).\n\nAssumptions & dependencies [some flagged to track]\n- Assume client computers + servers will match/exceed client/server requirements (per section 2.4 in template) and ops environment complies.\n- Assume nearest-color in RGB is good-enough for search/matching (acceptable similarity).\n- Depend on 3rd-party databases for paint information + search/indexing (external service must be up).\n- Assume tool is primarily for the wide-installation/rollout period of the new numbering scheme. Post-rollout deprecation TBD.\n\nOpen disagreements / confusion\n- Jade asked if 'RGB' implies HSV; Owen corrected. Resolve: spec says RGB distance, not HSV.\n- Linda wanted unified search + translator; Raj insists modules remain separate pages. Compromise: separate modules with cross-links.\n- IE 4.01 support — Ahmed grumbled it's ancient. Decision: keep for v1 because of policy; revisit later.\n- Accessibility scope: include keyboard-only now; other accessibility specifics live in UI doc.\n\nOpen Issues / Parking Lot\n- [TBD] Exact file size limit for image upload in sample matcher.\n- [TBD] Specific HA targets (nines?); for SRS just say 'highly accessible via web' and defer to ops guide.\n- [TBD] Soft-delete vs hard delete for paints in admin (permissions unaffected).\n- [TBD] Printer-friendly stylesheet for palette and translator results.\n- [TBD] Search field(s) layout — single smart box vs tabs (UI whitepaper).\n- [TBD] Do we need a 'status page' for distributors? Maria says out-of-scope for SRS.\n\nContradictions noted (to resolve)\n- 'Combine search + translate on single page' vs 'each module on separate page' — strike-through combine option. Keep separate modules per original constraint; provide links.\n- 'Blocker error dialog' vs 'non-intrusive error reporting' — choose non-intrusive.\n- 'Document server performance' vs 'Default perf applies to client' — Both: specify default applies to client unless explicitly flagged for server.\n\nAction items (mixed in)\n- Tasha: add TOC, Revision History, Intro guidance, Document Conventions. Draft by Fri.\n- Raj: fill Sections 2 (overall description) and 4 (overall constraints).\n- Jade: finalize UI whitepaper; include keyboard interactions. Link from SRS intro.\n- Owen: draft External Interfaces (section 3): user, hardware, software, communications. Include browsers + server-side processing note.\n- Maria: provide capacity guidance language and environment assumptions to plug into constraints; also compatibility statement 'compatible w/ most OS'.\n- Ahmed: create test plan references for keyboard-only usage and error recovery scenarios.\n- Linda: list of docs needed for distributors/end-users.\n\nTimeline/Versioning\n- Version 1.0 target by end of Q2 2004 (legacy date remains in business plan). No prior live revisions of this app. Ensure this is stated clearly in SRS.\n- Documentation: include revision history for SRS itself, not just software releases.\n\nRandom notes\n- Some numbers jotted (capacity): 1 GHz + 512 MB per 50 users (units? CPU GHz/MB RAM — verify).\n- Communications interfaces mention: HTTP; maybe HTTPS if site is global — [check with security].\n- Default user: has access to everything except admin functions. No login. Data ephemeral, session-scoped.\n- Admin roles must be able to create admin users: L1 -> L1 only; L2 -> up to L2; L3 -> all.\n- Theme hooks: CSS class names to be documented; ABC designers can override.\n\n— notes end —"
+    },
+    {
+      "type": "email_thread",
+      "title": "Email thread: ColorCast v1.0 scope, timeline, and deployment assumptions (Revised)",
+      "text": "Email 1\nFrom: Raj <raj.pm@abcpaint.com>\nTo: Maria <maria.ops@abcpaint.com>, Owen <owen@colorkast.com>\nCC: Linda <linda.mktg@abcpaint.com>, Jade <jade.ux@abcpaint.com>, Ben <ben@northcoastdistrib.com>, Tasha <tasha.docs@abcpaint.com>\nSubject: ColorCast v1.0 rollout constraints + a couple of clarifications\n\nHi all,\n\nCatching up from the last call. I want to codify a few items, and get pushback if I’m misrepresenting anything:\n\n- We’re treating this as version 1.0, no prior live revs at ABC, and we still have the business constraint to go live by end of Q2 2004 (yes, the plan references that legacy date; it matters to finance’s ROI model).\n- The environment assumptions: client computers and servers we use will meet or exceed the requirements we specify (browsers, server capacity). If we write performance numbers without tagging them, those are assumed to be client-perceived metrics. If we mean server throughput, we’ll explicitly say so.\n- The feature modules remain single-page units (Search, Visual Picker, Sample Match, Translator, Admin). We link between them but do not mash them together in one mega page.\n- High availability: keep the wording to ‘highly accessible to clients and distributors via the web’ and let Ops define clustering/DR in their docs.\n- We’re okay that nearest colors are computed in RGB space and that’s ‘good enough’ for v1.\n- We depend on the vendor’s/third-party paint data repositories for both the paint info and search engine backend (i.e., not rolling our own DB in-house for this module).\n- We need to handle adds & retirements of paints/collections during the migration; if something is discontinued, translator should offer the new mapping or suggest closest alternatives.\n- We must expose theme/styling hooks so ABC web designers can skin it to match the main site.\n- Error handling: include both a user-facing way to report issues and automatic error reports to ColorKast; keep the experience unobtrusive. Also, please include in the constraints section that the system attempts a full recovery on any error.\n\nThanks,\nR.\n\n---\n\nEmail 2\nFrom: Maria <maria.ops@abcpaint.com>\nTo: Raj <raj.pm@abcpaint.com>\nCC: Owen <owen@colorkast.com>, Linda <linda.mktg@abcpaint.com>, Jade <jade.ux@abcpaint.com>, Ben <ben@northcoastdistrib.com>, Tasha <tasha.docs@abcpaint.com>\nSubject: RE: ColorCast v1.0 rollout constraints + a couple of clarifications\n\nRaj,\n\nOn the ops side:\n\n- Yes on browser list (IE 4.01, Netscape 6.0, Mozilla 1.0 or later). Client computers must meet or beat the system requirements for the chosen browser. We are not inventing new client hardware specs.\n- We’ll word OS compat as ‘compatible with most operating systems’. QA will test Win/Mac and a couple Linux distros.\n- The app is server-based, fully web client, and we keep all search processing and all storage on the server. No client databases, no offline sync.\n- Capacity guidance stays as previously stated: allocate around a 1 GHz CPU and 512 MB RAM per 50 users. We’ll put that in the deployment guide and SRS constraints.\n- Error utility: make sure auto-sent crash logs go straight to ColorKast (not our helpdesk). Keep both auto and manual reporting unobtrusive.\n- We will include an assumption in docs that the operational environment will comply with the spec (server + client).\n- And yes, let’s put the error-recovery expectation in constraints: always attempt a full recovery from any error condition.\n\nOne pushback: there’s a line floating around about ‘only used during the wide-installation period’. Ops prefers to keep that as an assumption for planning, but we won’t hardcode a kill switch. We can state it’s intended primarily for rollout.\n\n/M.\n\n---\n\nEmail 3\nFrom: Owen <owen@colorkast.com>\nTo: Raj <raj.pm@abcpaint.com>, Maria <maria.ops@abcpaint.com>\nCC: Jade <jade.ux@abcpaint.com>, Linda <linda.mktg@abcpaint.com>, Ben <ben@northcoastdistrib.com>, Tasha <tasha.docs@abcpaint.com>\nSubject: RE: ColorCast v1.0 constraints (and a few vendor-side notes)\n\nThanks both.\n\nA few vendor-side notes:\n\n- On third-party dependencies: We are integrated with two paint info databases. We will document that the system relies on these for both storage of paint metadata and the search index. If either is unavailable, we’ll degrade with a friendly message and attempt a full recovery on the next request (e.g., retries).\n- For nearest-color calculations, yes, we assume RGB-space distance is acceptable. We’ve seen good-enough results. If Marketing later wants Lab conversions, that’s a separate release.\n- The module-per-page approach is aligned with our templating. It also helps ABC’s theming team (we’ll provide CSS hooks for Jade).\n- Regarding interface definitions: we will fill the External Interfaces section (user/software/hardware/communications). Tasha, we’ll coordinate to ensure the spec talks about the interfaces and leaves UI pixel/detail for the whitepaper.\n- High availability phrasing is fine by us; we won’t document clustering in the SRS — that belongs in your ops doc. We will capture design/implementation constraints that affect ops (server-side processing only, browser support, theming hooks, modular pages, and the error-recovery rule).\n\nOn error reporting behavior: we can default to auto-submit crash logs and include a small, non-blocking ‘Report a problem’ link. No blocking dialogs.\n\n/ Owen\n\n---\n\nEmail 4\nFrom: Ben <ben@northcoastdistrib.com>\nTo: Raj <raj.pm@abcpaint.com>, Linda <linda.mktg@abcpaint.com>\nCC: Maria <maria.ops@abcpaint.com>, Owen <owen@colorkast.com>, Jade <jade.ux@abcpaint.com>\nSubject: RE: v1.0 constraints and some distributor worries (long)\n\nHey team,\n\nJumping in from the trenches (and sorry this is long/rambling, sent from mobile between customers):\n\n- My shop folks do NOT have patience for popups. If the system needs to report errors, great, but don’t interrupt. A small link or a message that we can ignore is fine. If it auto-sends the tech stuff in the background, even better.\n- We get a lot of customers walking in with little paint chips or magazine clippings. The sample-matcher workflow needs to be obvious, and once they pick the match, it’d be slick if we also show ‘similar colors’ so I can upsell when their exact color is gone. I know this crosses modules (matching -> closest-colors), but please don’t make me jump hoops.\n- On the migration realities: We literally pulled all the old decks. If the translator sees an old number that isn’t in the new deck, it should tell me what it became (if it did) or propose near matches. Same for collections — the old lines are being sunset. I assume you’re handling adds and removals throughout the rollout.\n- Theming: if I click from the main site into this tool, it should not feel like a different vendor site. Keep the ABC header/nav chrome. Customers get spooked if it looks off-brand.\n- Cross-OS: we have one kiosk on an old Mac in the design nook. Please don’t break it. You said ‘most OSes’ so I’m counting on that.\n- Timeline: our spring promo hits in May. If this slips past Q2, we’re in trouble — we’ll be on the hook trying to translate numbers by hand at the counter. :-/\n\nAs for docs: could you include a one-pager I can tape near the kiosk explaining ‘Type old number here to get the new one’ and maybe a note that you can navigate the tool with the keyboard? Little things like that.\n\nThanks,\nBen\n\n---\n\nEmail 5\nFrom: Tasha <tasha.docs@abcpaint.com>\nTo: Raj <raj.pm@abcpaint.com>, Maria <maria.ops@abcpaint.com>, Owen <owen@colorkast.com>\nCC: Linda <linda.mktg@abcpaint.com>, Jade <jade.ux@abcpaint.com>, Ben <ben@northcoastdistrib.com>\nSubject: RE: SRS structure + assumptions, plus UI whitepaper link\n\nTeam,\n\nI’m drafting the SRS now. A few documentation points:\n\n- Front matter will include Table of Contents and Revision History (with dates + owners).\n- Introduction will outline purpose, conventions (how we format terms, etc.), and a roadmap to the rest of the document. I’ll include a ‘Read this first’ note for new readers so they don’t skip definitions.\n- Section 3 will be ‘External Interface Requirements’ and will cover: User interface (overview only), Hardware interface (server capacity guidance; client hardware meets browser vendor requirements), Software interface (browsers supported), Communications interface (HTTP/HTTPS).\n- Section 5 will be ‘Non-functional/Performance Requirements’ (accessibility including keyboard-only operation, availability, responsiveness, error behavior). I’ll make sure PMs are pointed to Sections 3 and 5 for decision-making.\n- Assumptions/Dependencies will list: environment meeting/exceeding server/client requirements; reliance on third-party databases for paint data + search; that nearest-color in RGB is acceptable; intended usage during the wide-installation period of the new numbering scheme.\n- I’ll cross-reference Jade’s UI whitepaper for detailed UI behaviors. Link to draft here: [internal share link].\n- Per our discussion, I’ll add in Section 2.5 (Design & Implementation Constraints) a line stating: ‘Error recovery — the system shall attempt to fully recover from errors in all instances (e.g., retry, preserve inputs).’\n\nPlease also confirm: Do we want a sentence stating the app will be delivered as version 1.0 with no prior revisions in production? It’s implied, but I can make it explicit.\n\n— Tasha\n\n---\n\nEmail 6\nFrom: Linda <linda.mktg@abcpaint.com>\nTo: Tasha <tasha.docs@abcpaint.com>\nCC: Raj <raj.pm@abcpaint.com>, Maria <maria.ops@abcpaint.com>, Owen <owen@colorkast.com>, Jade <jade.ux@abcpaint.com>, Ben <ben@northcoastdistrib.com>\nSubject: RE: SRS structure + assumptions, plus UI whitepaper link (and a couple of additions)\n\nTasha,\n\nYes please, call out the 1.0 factoid and the Q2 go-live constraint. Finance and Sales both quote those, so better to have it on paper. Also, in the help docs portion, can you say we’ll have both on-site help (for customers) and a distributor PDF? Ben’s team really needs that.\n\nOne more: our web team wants explicit mention that the app will expose a theming mechanism (hooks, CSS) so we can blend it into the current site. Put that under features or constraints — wherever it makes sense.\n\nThanks!\nL.\n\n---\n\nEmail 7\nFrom: Raj <raj.pm@abcpaint.com>\nTo: All\nSubject: RE: Wrapping up: module pages, HA phrasing, error behavior\n\nQuick wrap-up from this thread:\n\n- Module pages: we’re keeping the features on separate pages, with cross-links. Jade will ensure the nav makes it feel cohesive.\n- HA phrasing: ‘highly accessible via the web’ stays. Ops will own actual deployment patterns.\n- Error agent: we’ll configure auto-send to ColorKast with a small, non-blocking ‘report a problem’ link. No blocking dialogs. Also, per constraints, the system shall attempt to fully recover from errors in all instances (retry/preserve inputs/restore state).\n- Browsers/OS: as Maria said — IE 4.01, Netscape 6, Mozilla 1.0+, client computers must meet their browsers’ system requirements, and we aim for compatibility across most OSes.\n- Assumptions: environment will comply with our spec; primary use case is the rollout period for the new numbering scheme; RGB nearest-color assumption documented; third-party databases are a dependency.\n- Performance references: unless the spec calls out server metrics, interpret performance requirements as client-side perception.\n- Timeline/version: v1.0 by end of Q2 2004.\n\nOpen items:\n- Owen to confirm if any design/implementation constraints need to be explicitly documented beyond what we’ve listed (send by Thu).\n- Tasha to incorporate Linda’s theming hooks language.\n- Maria to add hardware/OS compatibility note referencing the SRS.\n\nThanks everyone!\n—Raj"
+    }
+  ],
+  "candidate_pool": [
+    {
+      "id": "PURE_2004 - colorcast_R039",
+      "text": "The system shall be developed subject to documented design and implementation constraints.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R028",
+      "text": "The web-based client shall require Internet Explorer 4.01, Netscape 6.0, or Mozilla 1.0 or later.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R001",
+      "text": "The SRS document shall include a Table of Contents.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_FAKE_001",
+      "text": "The system shall generate deep-linkable, shareable URLs for each module that restore the full state of a specific search, translation, or selection when visited.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_09117F0F"
+    },
+    {
+      "id": "PURE_2004 - colorcast_R032",
+      "text": "The system shall provide a utility that allows users to report errors and shall automatically send error reports to ColorKast.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R029",
+      "text": "The client computer shall meet or exceed the system requirements specified for the web browser intended for use with the client application.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R019",
+      "text": "The project shall document assumptions and dependencies relevant to the system.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R047",
+      "text": "The system shall be compatible with the hardware and operating systems specified in this document.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R006",
+      "text": "Readers shall complete the Introduction section before proceeding to the other sections.",
+      "requirement_kind": "business_rule",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R021",
+      "text": "The system shall provide a theme and styling mechanism that allows ABC Paint web designers to integrate the application into the current ABC Paint web site.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R020",
+      "text": "The system shall handle additions and discontinuations of paints and collections during the migration process.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R025",
+      "text": "The application shall be delivered as a standalone, server-based web application with a client/server architecture and a fully web-based client.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R016",
+      "text": "User interface details for the system are provided in a separate user interface specification whitepaper.",
+      "requirement_kind": "domain_assumption",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_FAKE_004",
+      "text": "The system shall record an audit log of all administrative create, update, and delete operations including timestamp, acting admin identity, affected entity type and ID, and operation outcome, and shall make this log queryable by Level 3 administrators.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_8AB64D96"
+    },
+    {
+      "id": "PURE_2004 - colorcast_FAKE_007",
+      "text": "The system shall allow users to export translator results, including the mapped new paint identifiers and any suggested nearest alternatives, to a CSV file downloadable from the results page.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_25AC892B"
+    },
+    {
+      "id": "PURE_2004 - colorcast_R004",
+      "text": "The SRS document shall be a product specification and not a design document.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R008",
+      "text": "The system shall provide a Graphical Color Chooser feature.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R048",
+      "text": "The product shall be delivered as version 1.0 and no previous revisions of this application are in use.",
+      "requirement_kind": "domain_assumption",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R014",
+      "text": "The system shall provide an Administrative interface for managing application data and users.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R022",
+      "text": "The system shall modularize each main feature of the application and present each module on a single webpage.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R012",
+      "text": "The system shall provide a Color Sample Matcher feature.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R045",
+      "text": "The system depends on third-party databases for storage of paint information and for implementing the color search engine.",
+      "requirement_kind": "domain_assumption",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R046",
+      "text": "The system shall be highly accessible to ABC Paint clients and distributors via the web.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R040",
+      "text": "The system shall be deployed and available for use by ABC Paint by the second quarter of 2004.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R018",
+      "text": "The system shall include full setup and management documentation for the ABC Paint IT department so they can manage the application themselves.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R044",
+      "text": "The system assumes that finding the nearest colors in the red-green-blue (RGB) color space will produce acceptably similar colors for color search.",
+      "requirement_kind": "domain_assumption",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R023",
+      "text": "The system shall enable a smooth transition to the new paint numbers and numbering scheme.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R027",
+      "text": "The server shall provide at least a 1 GHz processor and 512 MB of system memory for each group of 50 employee or consumer users.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R013",
+      "text": "The system shall provide a User Color Palette feature for managing user palettes.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R036",
+      "text": "Data created by Default users shall be stored without password protection and persisted only for the duration of the user session.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R043",
+      "text": "The system assumes it will be used only during the wide-installation period required to install the server component and support use of the client application.",
+      "requirement_kind": "domain_assumption",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R031",
+      "text": "The system shall retain full usability when operated using only a keyboard input device.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R017",
+      "text": "The system shall include documentation accessible to website users and paint distributors.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_FAKE_008",
+      "text": "The system shall generate color harmony recommendations (complementary, analogous, and triadic) for any selected color and display at least three suggested palettes per harmony type.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_2A7D40C3"
+    },
+    {
+      "id": "PURE_2004 - colorcast_R024",
+      "text": "The system shall ensure continuity and consistency of ABC Paint's business and customers' paint-selecting experience during the transition to the new product line.",
+      "requirement_kind": "business_rule",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R037",
+      "text": "The system shall implement Administrative user roles composed of Level 1, Level 2, and Level 3, with Level 3 being the highest administrative level.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R009",
+      "text": "The system shall provide a Color Translator that maps old paint numbers and collections to new paint numbers and collections.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_FAKE_006",
+      "text": "The system shall provide undo and redo functionality for up to the last ten palette modifications within the current session for Default users.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_35C141E6"
+    },
+    {
+      "id": "PURE_2004 - colorcast_R041",
+      "text": "The system shall apply any performance or specification references to the application client unless a specification explicitly states it applies to the application server.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_FAKE_002",
+      "text": "The system shall tolerate minor misspellings in color name queries by suggesting intended matches when the input differs by a Levenshtein distance of up to two characters.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_4B5EC723"
+    },
+    {
+      "id": "PURE_2004 - colorcast_R005",
+      "text": "The SRS document shall include sections two and four to provide overall descriptions and sections three and five to present product interface and non-functional/performance requirements.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R034",
+      "text": "Automatic and manual error reporting shall not encroach on the user experience.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R026",
+      "text": "All search processing and all storage of application information shall be performed on the server.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R010",
+      "text": "The system shall provide a feature to determine the colors closest to a given color (Closest Colors).",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R035",
+      "text": "The system shall provide a Default user role that has access to all application functionality except administrative functions.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R033",
+      "text": "The system shall attempt to fully recover from errors in all instances.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "reliability",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_FAKE_005",
+      "text": "The system shall support user interface localization for at least English and Spanish, allowing users to switch languages and rendering all labels, messages, and help content accordingly.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_6E6B0621"
+    },
+    {
+      "id": "PURE_2004 - colorcast_R011",
+      "text": "The system shall provide a Color Search Engine for finding paints by color.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_FAKE_003",
+      "text": "The system shall allow Level 2 and Level 3 administrative users to perform bulk import of paints and collections via a CSV upload with schema validation and a preview-confirmation step before commit.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "seeded_fake",
+      "seed_item_id": "T1S_F2040160"
+    },
+    {
+      "id": "PURE_2004 - colorcast_R015",
+      "text": "The system shall provide user, hardware, software, and communications interfaces as defined in the external interface requirements.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R038",
+      "text": "Level 3 administrative users shall have update, add, delete permissions and the ability to create administrative users at any level; Level 2 shall have update and add permissions and the ability to create administrative users up to Level 2; Level 1 shall have add permissions and the ability to create Level 1 administrative users only.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R002",
+      "text": "The SRS document shall include a Revision History section.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R007",
+      "text": "Project managers shall consult sections three and five to guide decisions and performance choices throughout product development.",
+      "requirement_kind": "business_rule",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R042",
+      "text": "The project assumes client computers and servers used to run the application will match or exceed the client and server requirements specified in section 2.4 and that the operational environment will comply with this specification.",
+      "requirement_kind": "domain_assumption",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R003",
+      "text": "The SRS document shall include an Introduction section that contains Purpose and Document Conventions and provides a broad project overview guiding readers to other sections.",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "not_applicable",
+      "origin": "gold",
+      "seed_item_id": null
+    },
+    {
+      "id": "PURE_2004 - colorcast_R030",
+      "text": "The web-based client shall be compatible with most operating systems.",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "portability",
+      "origin": "gold",
+      "seed_item_id": null
+    }
+  ],
+  "gold_requirement_ids": [
+    "PURE_2004 - colorcast_R001",
+    "PURE_2004 - colorcast_R002",
+    "PURE_2004 - colorcast_R003",
+    "PURE_2004 - colorcast_R004",
+    "PURE_2004 - colorcast_R005",
+    "PURE_2004 - colorcast_R006",
+    "PURE_2004 - colorcast_R007",
+    "PURE_2004 - colorcast_R008",
+    "PURE_2004 - colorcast_R009",
+    "PURE_2004 - colorcast_R010",
+    "PURE_2004 - colorcast_R011",
+    "PURE_2004 - colorcast_R012",
+    "PURE_2004 - colorcast_R013",
+    "PURE_2004 - colorcast_R014",
+    "PURE_2004 - colorcast_R015",
+    "PURE_2004 - colorcast_R016",
+    "PURE_2004 - colorcast_R017",
+    "PURE_2004 - colorcast_R018",
+    "PURE_2004 - colorcast_R019",
+    "PURE_2004 - colorcast_R020",
+    "PURE_2004 - colorcast_R021",
+    "PURE_2004 - colorcast_R022",
+    "PURE_2004 - colorcast_R023",
+    "PURE_2004 - colorcast_R024",
+    "PURE_2004 - colorcast_R025",
+    "PURE_2004 - colorcast_R026",
+    "PURE_2004 - colorcast_R027",
+    "PURE_2004 - colorcast_R028",
+    "PURE_2004 - colorcast_R029",
+    "PURE_2004 - colorcast_R030",
+    "PURE_2004 - colorcast_R031",
+    "PURE_2004 - colorcast_R032",
+    "PURE_2004 - colorcast_R033",
+    "PURE_2004 - colorcast_R034",
+    "PURE_2004 - colorcast_R035",
+    "PURE_2004 - colorcast_R036",
+    "PURE_2004 - colorcast_R037",
+    "PURE_2004 - colorcast_R038",
+    "PURE_2004 - colorcast_R039",
+    "PURE_2004 - colorcast_R040",
+    "PURE_2004 - colorcast_R041",
+    "PURE_2004 - colorcast_R042",
+    "PURE_2004 - colorcast_R043",
+    "PURE_2004 - colorcast_R044",
+    "PURE_2004 - colorcast_R045",
+    "PURE_2004 - colorcast_R046",
+    "PURE_2004 - colorcast_R047",
+    "PURE_2004 - colorcast_R048"
+  ],
+  "seeded_fake_requirement_ids": [
+    "PURE_2004 - colorcast_FAKE_001",
+    "PURE_2004 - colorcast_FAKE_002",
+    "PURE_2004 - colorcast_FAKE_003",
+    "PURE_2004 - colorcast_FAKE_004",
+    "PURE_2004 - colorcast_FAKE_005",
+    "PURE_2004 - colorcast_FAKE_006",
+    "PURE_2004 - colorcast_FAKE_007",
+    "PURE_2004 - colorcast_FAKE_008"
+  ],
+  "seed_registry": [
+    {
+      "seed_item_id": "T1S_09117F0F",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2004 - colorcast_FAKE_001",
+      "requirement_text": "The system shall generate deep-linkable, shareable URLs for each module that restore the full state of a specific search, translation, or selection when visited.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "No source text mentions deep-linking or shareable URLs that restore module state.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_4B5EC723",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2004 - colorcast_FAKE_002",
+      "requirement_text": "The system shall tolerate minor misspellings in color name queries by suggesting intended matches when the input differs by a Levenshtein distance of up to two characters.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "The sources describe search by name/number/value but do not mention typo tolerance or fuzzy matching.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_F2040160",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2004 - colorcast_FAKE_003",
+      "requirement_text": "The system shall allow Level 2 and Level 3 administrative users to perform bulk import of paints and collections via a CSV upload with schema validation and a preview-confirmation step before commit.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "Admin capabilities are discussed only in terms of create/update/delete; bulk CSV import with validation and preview is not mentioned.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_8AB64D96",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2004 - colorcast_FAKE_004",
+      "requirement_text": "The system shall record an audit log of all administrative create, update, and delete operations including timestamp, acting admin identity, affected entity type and ID, and operation outcome, and shall make this log queryable by Level 3 administrators.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "The sources do not reference audit logging or administrative activity tracking and reporting.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_6E6B0621",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2004 - colorcast_FAKE_005",
+      "requirement_text": "The system shall support user interface localization for at least English and Spanish, allowing users to switch languages and rendering all labels, messages, and help content accordingly.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "No internationalization or multi-language support is mentioned anywhere in the source texts.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_35C141E6",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2004 - colorcast_FAKE_006",
+      "requirement_text": "The system shall provide undo and redo functionality for up to the last ten palette modifications within the current session for Default users.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "Palette behavior is limited to session scope in the sources; undo/redo capabilities are not mentioned.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_25AC892B",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2004 - colorcast_FAKE_007",
+      "requirement_text": "The system shall allow users to export translator results, including the mapped new paint identifiers and any suggested nearest alternatives, to a CSV file downloadable from the results page.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "The source texts do not mention any data export capability for translator results.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    },
+    {
+      "seed_item_id": "T1S_2A7D40C3",
+      "track_id": "track1",
+      "seed_type": "hallucinated_requirement",
+      "requirement_id": "PURE_2004 - colorcast_FAKE_008",
+      "requirement_text": "The system shall generate color harmony recommendations (complementary, analogous, and triadic) for any selected color and display at least three suggested palettes per harmony type.",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "unsupported_reason": "No sources mention or imply any feature that computes color harmonies; only nearest-color matching and basic search/picker capabilities are described.",
+      "target_metrics": [
+        "UAR",
+        "HRR"
+      ],
+      "judge_task_type": "hallucination_fate",
+      "expected_behavior": "reject_or_mark_insufficient_evidence",
+      "acceptable_statuses": [
+        "rejected",
+        "insufficient_evidence",
+        "dropped",
+        "absent"
+      ],
+      "should_be_supported": false
+    }
+  ],
+  "brief": {
+    "project_name": "ColorCast Migration",
+    "domain": "Retail paint catalog and color-matching web application",
+    "users": [
+      "Default user (consumers and store employees)",
+      "Admin Level 1",
+      "Admin Level 2",
+      "Admin Level 3",
+      "ABC web designer"
+    ],
+    "stakeholders": [
+      "ABC Paint Marketing and Product Management",
+      "ABC Paint IT Operations",
+      "ColorKast implementation/vendor team",
+      "ABC Website/UX team",
+      "Paint distributors and channel partners"
+    ],
+    "business_goals": [
+      "Move customers from the old to the new paint-numbering scheme without disrupting their experience",
+      "Provide a single web tool for searching, matching, and translating paint colors",
+      "Allow ABC staff to manage paint data and admin access internally",
+      "Blend the tool into the existing ABC website look and navigation",
+      "Handle additions and retirements of paints and collections during the migration",
+      "Ship version 1.0 in time for the rollout timeline"
+    ],
+    "core_features": [
+      "Color search engine (by name, number, or standard color value) with nearest-color finder",
+      "Visual color selection (graphical picker and image-based matcher)",
+      "Old-to-new paint number translator",
+      "Session-based user color palette",
+      "Administrative console for paints and user management",
+      "Theming and styling hooks for seamless ABC site integration",
+      "Built-in error reporting that can auto-send issues to the vendor"
+    ],
+    "quality_concerns": [
+      "Cross-browser, cross-OS compatibility for a fully web-based client",
+      "High availability for customers and distributors accessing via the web",
+      "Keyboard-only operation and accessibility considerations",
+      "Graceful error recovery with non-intrusive automatic/manual reporting",
+      "Clear documentation for end users and distributors, plus setup/operations guides for IT",
+      "Acceptable responsiveness with server-side processing and storage",
+      "Default-user data is session-scoped and not password-protected"
+    ],
+    "constraints": [
+      "Server-based application with a purely web client; all search and data storage run on the server (assume client-side specs apply unless otherwise stated)",
+      "Supported browsers: Internet Explorer 4.01, Netscape 6.0, or Mozilla 1.0+; client machines must meet the chosen browser’s system requirements",
+      "Capacity guidance: at least a 1 GHz CPU and 512 MB RAM on the server per 50 users",
+      "Go-live by Q2 2004 for version 1.0, focused on the rollout period",
+      "Relies on third-party databases for paint data and search; nearest-color matching assumes RGB distance is acceptable",
+      "Feature modules are independent and presented on separate pages; must theme to match the ABC site",
+      "Project documentation will be product-spec oriented (with TOC, revision history, and structured sections); detailed UI is covered in a separate whitepaper and assumptions/dependencies are recorded"
+    ],
+    "terminology": [
+      "Paint number scheme (old vs. new)",
+      "Collection (paint line/series)",
+      "RGB color space",
+      "Closest colors",
+      "User color palette (session-based)",
+      "Color translator",
+      "Administrative levels (L1/L2/L3)"
+    ]
+  },
+  "metadata": {
+    "file_path": "data/pure/2004 - colorcast.pdf",
+    "file_type": ".pdf",
+    "char_count": 31099,
+    "profile": {
+      "char_count": 31099,
+      "heading_density": 42,
+      "shall_count": 0,
+      "must_count": 8,
+      "will_count": 61,
+      "use_case_count": 0,
+      "stakeholder_count": 0,
+      "requirement_keyword_count": 51,
+      "structure_strength": "strong"
+    },
+    "section_count": 56,
+    "dense_sections": 42,
+    "gold_count": 48,
+    "section_candidates": 161,
+    "raw_candidates": 11,
+    "llm_usage": {
+      "total_calls": 267,
+      "total_input_tokens": 624500,
+      "total_output_tokens": 599392
+    }
+  }
+}

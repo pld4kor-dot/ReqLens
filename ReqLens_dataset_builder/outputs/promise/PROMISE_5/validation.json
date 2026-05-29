@@ -1,0 +1,615 @@
+{
+  "coverage_rate": 0.9863,
+  "missing_req_ids": [
+    "PROMISE_5_R029"
+  ],
+  "unsupported_count": 2,
+  "repair_rounds_used": 1,
+  "coverage_entries": [
+    {
+      "req_id": "PROMISE_5_R001",
+      "supported": true,
+      "evidence_snippets": [
+        "Internet Explorer 5.5 and above"
+      ],
+      "reason": "Transcript/notes and email explicitly specify IE 5.5+ support"
+    },
+    {
+      "req_id": "PROMISE_5_R002",
+      "supported": true,
+      "evidence_snippets": [
+        "Mozilla Firefox 1.0 and above"
+      ],
+      "reason": "Meeting notes and email explicitly specify Firefox 1.0+ support"
+    },
+    {
+      "req_id": "PROMISE_5_R003",
+      "supported": true,
+      "evidence_snippets": [
+        "Interface with ChoiceParts"
+      ],
+      "reason": "Multiple artifacts require ChoiceParts as recycled parts feed"
+    },
+    {
+      "req_id": "PROMISE_5_R004",
+      "supported": true,
+      "evidence_snippets": [
+        "Must operate on existing corporate desktops"
+      ],
+      "reason": "Meeting notes and email state no hardware upgrades permitted"
+    },
+    {
+      "req_id": "PROMISE_5_R005",
+      "supported": true,
+      "evidence_snippets": [
+        "Conform to enterprise architecture guidelines"
+      ],
+      "reason": "Source mandates adherence to enterprise architecture guidelines"
+    },
+    {
+      "req_id": "PROMISE_5_R006",
+      "supported": true,
+      "evidence_snippets": [
+        "UI must adhere to our corporate UI guidelines"
+      ],
+      "reason": "Email and notes require compliance with corporate UI guidelines"
+    },
+    {
+      "req_id": "PROMISE_5_R007",
+      "supported": true,
+      "evidence_snippets": [
+        "corporate color scheme"
+      ],
+      "reason": "Multiple artifacts require using the corporate color scheme"
+    },
+    {
+      "req_id": "PROMISE_5_R008",
+      "supported": true,
+      "evidence_snippets": [
+        "professional, brand-aligned appearance"
+      ],
+      "reason": "Documents require a clean, professional, on-brand appearance"
+    },
+    {
+      "req_id": "PROMISE_5_R009",
+      "supported": true,
+      "evidence_snippets": [
+        "Ease-of-use target: at least 95%"
+      ],
+      "reason": "Meeting notes/email set a 95% ease-of-use target explicitly"
+    },
+    {
+      "req_id": "PROMISE_5_R010",
+      "supported": true,
+      "evidence_snippets": [
+        "80% of estimators report productivity increase"
+      ],
+      "reason": "Notes/email state 80% estimator productivity increase within one month"
+    },
+    {
+      "req_id": "PROMISE_5_R011",
+      "supported": true,
+      "evidence_snippets": [
+        "Satisfaction target: at least 85% of users"
+      ],
+      "reason": "Meeting notes set an 85% satisfaction target."
+    },
+    {
+      "req_id": "PROMISE_5_R012",
+      "supported": true,
+      "evidence_snippets": [
+        "two days of onsite training"
+      ],
+      "reason": "Sources state two days onsite training suffices."
+    },
+    {
+      "req_id": "PROMISE_5_R013",
+      "supported": true,
+      "evidence_snippets": [
+        "discoverable on roughly 90% of screens"
+      ],
+      "reason": "In-product help target is ~90% screen coverage."
+    },
+    {
+      "req_id": "PROMISE_5_R014",
+      "supported": true,
+      "evidence_snippets": [
+        "Recycled parts search: results returned within 15 seconds"
+      ],
+      "reason": "Performance target explicitly sets 15s for parts search."
+    },
+    {
+      "req_id": "PROMISE_5_R015",
+      "supported": true,
+      "evidence_snippets": [
+        "Preferred repair facility search: result returned within 8 seconds"
+      ],
+      "reason": "Sources specify 8 seconds as facility lookup ceiling."
+    },
+    {
+      "req_id": "PROMISE_5_R016",
+      "supported": true,
+      "evidence_snippets": [
+        "Recycled parts audit generation: returned within 10 seconds"
+      ],
+      "reason": "Audit generation target is explicitly 10 seconds."
+    },
+    {
+      "req_id": "PROMISE_5_R017",
+      "supported": true,
+      "evidence_snippets": [
+        "Saving facility ratings: committed within 5 seconds"
+      ],
+      "reason": "Sources define 5s upper bound for saving ratings."
+    },
+    {
+      "req_id": "PROMISE_5_R018",
+      "supported": true,
+      "evidence_snippets": [
+        "downtime limited to scheduled maintenance windows"
+      ],
+      "reason": "Documents require adherence to corporate availability schedule."
+    },
+    {
+      "req_id": "PROMISE_5_R019",
+      "supported": true,
+      "evidence_snippets": [
+        "Uptime goal: 98% during available online time"
+      ],
+      "reason": "Meeting notes set a 98% uptime goal."
+    },
+    {
+      "req_id": "PROMISE_5_R020",
+      "supported": true,
+      "evidence_snippets": [
+        "handle up to 1,500 simultaneous users"
+      ],
+      "reason": "Initial concurrency capacity stated as 1,500 users."
+    },
+    {
+      "req_id": "PROMISE_5_R021",
+      "supported": true,
+      "evidence_snippets": [
+        "average daily parts records: ~50,000"
+      ],
+      "reason": "Meeting notes and email state ~50,000 daily records."
+    },
+    {
+      "req_id": "PROMISE_5_R022",
+      "supported": true,
+      "evidence_snippets": [
+        "scale to 10,000 concurrent users within two years"
+      ],
+      "reason": "Documents require scaling to 10,000 concurrent users in two years."
+    },
+    {
+      "req_id": "PROMISE_5_R023",
+      "supported": true,
+      "evidence_snippets": [
+        "usable in noisy, dirty repair shop environments"
+      ],
+      "reason": "Sources explicitly require operability in noisy, dirty shop conditions."
+    },
+    {
+      "req_id": "PROMISE_5_R024",
+      "supported": true,
+      "evidence_snippets": [
+        "nightly synchronization around 1:00 AM"
+      ],
+      "reason": "ChoiceParts integration described as a nightly ~1:00 AM feed."
+    },
+    {
+      "req_id": "PROMISE_5_R025",
+      "supported": true,
+      "evidence_snippets": [
+        "within established corporate maintenance windows"
+      ],
+      "reason": "Deployment and maintenance must follow corporate maintenance windows."
+    },
+    {
+      "req_id": "PROMISE_5_R026",
+      "supported": true,
+      "evidence_snippets": [
+        "Corporate Support Center will be first-line"
+      ],
+      "reason": "Support Center identified as first-line for user support."
+    },
+    {
+      "req_id": "PROMISE_5_R027",
+      "supported": true,
+      "evidence_snippets": [
+        "Installations and upgrades executed by middleware"
+      ],
+      "reason": "Middleware team is assigned installs/upgrades during approved windows."
+    },
+    {
+      "req_id": "PROMISE_5_R028",
+      "supported": true,
+      "evidence_snippets": [
+        "requests an audit (adjusters only)"
+      ],
+      "reason": "Notes and transcript state audits are requested by adjusters only."
+    },
+    {
+      "req_id": "PROMISE_5_R029",
+      "supported": false,
+      "evidence_snippets": [
+        "others can view but not edit"
+      ],
+      "reason": "Source allows non-supervisors to view ratings, contradicting prohibition."
+    },
+    {
+      "req_id": "PROMISE_5_R030",
+      "supported": true,
+      "evidence_snippets": [
+        "only collision estimators can search parts"
+      ],
+      "reason": "Role enforcement states only collision estimators perform parts searches."
+    },
+    {
+      "req_id": "PROMISE_5_R031",
+      "supported": true,
+      "evidence_snippets": [
+        "Enforce input validation across forms"
+      ],
+      "reason": "Source requires input validation to block junk data."
+    },
+    {
+      "req_id": "PROMISE_5_R032",
+      "supported": true,
+      "evidence_snippets": [
+        "no cross-carrier visibility"
+      ],
+      "reason": "Source mandates strict data isolation between carriers."
+    },
+    {
+      "req_id": "PROMISE_5_R033",
+      "supported": true,
+      "evidence_snippets": [
+        "free of computer viruses"
+      ],
+      "reason": "Artifacts explicitly require product be virus-free."
+    },
+    {
+      "req_id": "PROMISE_5_R034",
+      "supported": true,
+      "evidence_snippets": [
+        "prevent malicious attacks including DoS"
+      ],
+      "reason": "Source calls for defenses against malicious attacks and DoS."
+    },
+    {
+      "req_id": "PROMISE_5_R035",
+      "supported": true,
+      "evidence_snippets": [
+        "Align with Sarbanes–Oxley controls"
+      ],
+      "reason": "SOX compliance is explicitly required in multiple artifacts."
+    },
+    {
+      "req_id": "PROMISE_5_R036",
+      "supported": true,
+      "evidence_snippets": [
+        "estimatics requirements related to recycled parts"
+      ],
+      "reason": "Source requires compliance with estimatics rules on recycled parts."
+    },
+    {
+      "req_id": "PROMISE_5_R037",
+      "supported": true,
+      "evidence_snippets": [
+        "comply with insurance claims processing regulations"
+      ],
+      "reason": "Insurance claims regulatory compliance is explicitly required."
+    },
+    {
+      "req_id": "PROMISE_5_R038",
+      "supported": true,
+      "evidence_snippets": [
+        "vehicle year/make/model",
+        "user-set search radius between 1 and 30 miles"
+      ],
+      "reason": "Facility search inputs include vehicle data and a 1–30 mile radius."
+    },
+    {
+      "req_id": "PROMISE_5_R039",
+      "supported": true,
+      "evidence_snippets": [
+        "vehicle year/make/model"
+      ],
+      "reason": "Source explicitly lists year, make and model as inputs."
+    },
+    {
+      "req_id": "PROMISE_5_R040",
+      "supported": true,
+      "evidence_snippets": [
+        "street address, city, state, ZIP"
+      ],
+      "reason": "Source explicitly requires full street/city/state/ZIP location."
+    },
+    {
+      "req_id": "PROMISE_5_R041",
+      "supported": true,
+      "evidence_snippets": [
+        "system will derive it from the address"
+      ],
+      "reason": "Source explicitly requires deriving ZIP from address."
+    },
+    {
+      "req_id": "PROMISE_5_R042",
+      "supported": true,
+      "evidence_snippets": [
+        "user-set search radius between 1 and 30 miles"
+      ],
+      "reason": "Meeting notes and email limit radius to 1–30 miles."
+    },
+    {
+      "req_id": "PROMISE_5_R043",
+      "supported": true,
+      "evidence_snippets": [
+        "one preferred facility based on highest ratings"
+      ],
+      "reason": "Documents require selecting top-rated, proximity-weighted facility."
+    },
+    {
+      "req_id": "PROMISE_5_R044",
+      "supported": true,
+      "evidence_snippets": [
+        "put the selected facility onto the estimate assignment"
+      ],
+      "reason": "Adjuster must be able to add chosen facility to estimate."
+    },
+    {
+      "req_id": "PROMISE_5_R045",
+      "supported": true,
+      "evidence_snippets": [
+        "override the top pick"
+      ],
+      "reason": "Adjuster override of recommended facility is explicitly allowed."
+    },
+    {
+      "req_id": "PROMISE_5_R046",
+      "supported": true,
+      "evidence_snippets": [
+        "One shop recommendation, the best match"
+      ],
+      "reason": "System returns the preferred facility as a recommendation to user."
+    },
+    {
+      "req_id": "PROMISE_5_R047",
+      "supported": true,
+      "evidence_snippets": [
+        "return a list within the radius"
+      ],
+      "reason": "If no single choice, source requires returning a list of shops."
+    },
+    {
+      "req_id": "PROMISE_5_R048",
+      "supported": true,
+      "evidence_snippets": [
+        "Estimator searches based on damaged parts list"
+      ],
+      "reason": "Estimator search must use damaged parts as input."
+    },
+    {
+      "req_id": "PROMISE_5_R049",
+      "supported": true,
+      "evidence_snippets": [
+        "preferred supplier list"
+      ],
+      "reason": "Search should use shop's preferred suppliers first."
+    },
+    {
+      "req_id": "PROMISE_5_R050",
+      "supported": true,
+      "evidence_snippets": [
+        "Return available recycled parts with associated suppliers"
+      ],
+      "reason": "System must return available parts tied to suppliers for given inputs."
+    },
+    {
+      "req_id": "PROMISE_5_R051",
+      "supported": true,
+      "evidence_snippets": [
+        "fall back to search by ZIP within a 30-mile"
+      ],
+      "reason": "Transcript/notes specify 30-mi ZIP fallback."
+    },
+    {
+      "req_id": "PROMISE_5_R052",
+      "supported": true,
+      "evidence_snippets": [
+        "system retains these results for audit use"
+      ],
+      "reason": "Notes state results are retained tied to estimate."
+    },
+    {
+      "req_id": "PROMISE_5_R053",
+      "supported": true,
+      "evidence_snippets": [
+        "Return available recycled parts with associated suppliers"
+      ],
+      "reason": "Notes require returning parts with supplier info."
+    },
+    {
+      "req_id": "PROMISE_5_R054",
+      "supported": true,
+      "evidence_snippets": [
+        "Estimator applies only actually available recycled parts to the estimate"
+      ],
+      "reason": "Estimator role can apply available recycled parts to estimates."
+    },
+    {
+      "req_id": "PROMISE_5_R055",
+      "supported": true,
+      "evidence_snippets": [
+        "if none are available, no application is permitted"
+      ],
+      "reason": "Sources forbid applying parts when none are available."
+    },
+    {
+      "req_id": "PROMISE_5_R056",
+      "supported": true,
+      "evidence_snippets": [
+        "Adjuster reviews the estimate"
+      ],
+      "reason": "Notes/transcript explicitly state adjuster reviews estimates."
+    },
+    {
+      "req_id": "PROMISE_5_R057",
+      "supported": true,
+      "evidence_snippets": [
+        "Adjuster reviews the estimate and requests an audit"
+      ],
+      "reason": "Adjusters are specified as the role that requests audits."
+    },
+    {
+      "req_id": "PROMISE_5_R058",
+      "supported": true,
+      "evidence_snippets": [
+        "Keep those results tied to the estimate"
+      ],
+      "reason": "Sources require system to retain/retrieve search results."
+    },
+    {
+      "req_id": "PROMISE_5_R059",
+      "supported": true,
+      "evidence_snippets": [
+        "Audit includes: total recycled parts used, number available"
+      ],
+      "reason": "Audit is defined as generated from available parts and estimate."
+    },
+    {
+      "req_id": "PROMISE_5_R060",
+      "supported": true,
+      "evidence_snippets": [
+        "total recycled parts used"
+      ],
+      "reason": "Audit explicitly must include count of recycled parts used."
+    },
+    {
+      "req_id": "PROMISE_5_R061",
+      "supported": true,
+      "evidence_snippets": [
+        "how many were available"
+      ],
+      "reason": "Audit must report available parts count."
+    },
+    {
+      "req_id": "PROMISE_5_R062",
+      "supported": true,
+      "evidence_snippets": [
+        "percentage used"
+      ],
+      "reason": "Sources explicitly require percentage used in audit."
+    },
+    {
+      "req_id": "PROMISE_5_R063",
+      "supported": true,
+      "evidence_snippets": [
+        "overall score that sums the line items"
+      ],
+      "reason": "Audit must include an overall summed score."
+    },
+    {
+      "req_id": "PROMISE_5_R064",
+      "supported": true,
+      "evidence_snippets": [
+        "Display immediately"
+      ],
+      "reason": "Audit is required to be shown to the user promptly."
+    },
+    {
+      "req_id": "PROMISE_5_R065",
+      "supported": true,
+      "evidence_snippets": [
+        "accessible to other adjusters later"
+      ],
+      "reason": "Audit remains available for later adjuster access."
+    },
+    {
+      "req_id": "PROMISE_5_R066",
+      "supported": true,
+      "evidence_snippets": [
+        "Viewer shows current ratings"
+      ],
+      "reason": "Users can view facility ratings via the ratings viewer."
+    },
+    {
+      "req_id": "PROMISE_5_R067",
+      "supported": true,
+      "evidence_snippets": [
+        "show existing scores or blanks"
+      ],
+      "reason": "Current repair facility ratings are displayed to users."
+    },
+    {
+      "req_id": "PROMISE_5_R068",
+      "supported": true,
+      "evidence_snippets": [
+        "display a blank template"
+      ],
+      "reason": "System shows blank ratings when none exist."
+    },
+    {
+      "req_id": "PROMISE_5_R069",
+      "supported": true,
+      "evidence_snippets": [
+        "Supervisors score shops",
+        "audit needs to show totals"
+      ],
+      "reason": "Supervisors enter ratings informed by audit results."
+    },
+    {
+      "req_id": "PROMISE_5_R070",
+      "supported": true,
+      "evidence_snippets": [
+        "Ratings use a 1–10 scale"
+      ],
+      "reason": "Ratings are explicitly specified as 1–10."
+    },
+    {
+      "req_id": "PROMISE_5_R071",
+      "supported": true,
+      "evidence_snippets": [
+        "two categories: attempted use ... actual use",
+        "attempted use of recycled parts",
+        "actual use of recycled parts"
+      ],
+      "reason": "Documents explicitly specify those two rating categories."
+    },
+    {
+      "req_id": "PROMISE_5_R072",
+      "supported": true,
+      "evidence_snippets": [
+        "can be saved by supervisors",
+        "supervisors can enter and save"
+      ],
+      "reason": "Sources state supervisors enter and save facility ratings."
+    },
+    {
+      "req_id": "PROMISE_5_R073",
+      "supported": true,
+      "evidence_snippets": [
+        "can be saved by supervisors",
+        "enter and save"
+      ],
+      "reason": "Materials indicate ratings are persisted by the system when saved."
+    }
+  ],
+  "unsupported_implied": [
+    {
+      "text": "Nightly ChoiceParts data refresh must not require application downtime; the application must remain available during the nightly data refresh unless a scheduled outage is explicitly planned.",
+      "source_snippet": "During the nightly data refresh, we still expect the app to be up, unless the schedule says otherwise.",
+      "source_type": "interview_transcript",
+      "reason": "The sources explicitly state the expectation that the app remain up during the nightly feed refresh. The gold set specifies the daily feed timing and general availability/maintenance windows but does not state that the nightly synchronization must not cause downtime; this is a distinct operational requirement."
+    },
+    {
+      "text": "Recycled-parts search results must be snapshotted and immutably tied to the specific estimate so that later audits reference exactly what the estimator saw even if the parts feed or inventory changes afterward.",
+      "source_snippet": "Keep those results tied to the estimate so later, when the adjuster runs the audit, it references exactly what I saw.",
+      "source_type": "interview_transcript",
+      "reason": "While the gold set requires the system to retain search results for audit, the source explicitly requires those results to be tied to the estimate as an immutable snapshot (i.e., audit must reference exactly the original result set despite later feed changes). This immutability/snapshot semantics is not stated in the gold requirements."
+    }
+  ],
+  "passed": true
+}

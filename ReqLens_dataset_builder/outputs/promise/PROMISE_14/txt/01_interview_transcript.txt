@@ -1,0 +1,256 @@
+TYPE  : interview_transcript
+TITLE : Stakeholder Discovery Interview: Gridiron League Hub Core Experience and Ops
+UNIT  : PROMISE_14
+============================================================
+
+Maya [Product Manager]: Thanks for making time, everyone. I want to walk through the core league experience and some of the operational guardrails. This is early discovery, so messy is fine. I’m going to ask naïve questions too.
+
+Tom [League Commissioner]: No worries. I’ve been running our home league for like twelve years, so I have opinions.
+
+Riley [Team Owner]: Same. I just want it to be easy to do my roster moves and see stats. The other site we used made everything like five clicks away.
+
+Jorge [DevOps]: And I’m here to make sure what we commit to is doable with the infrastructure we’ve sketched. We’re aiming for very little downtime, right?
+
+Priya [Database Admin]: I’ll chime in on data layout. We’ve got two distinct datasets in mind, active vs. historical, but we can get into that.
+
+Maya [Product Manager]: Great. Let’s start with access. For team owners, the owner page is their hub. Do we require sign-in every time, or is it…
+
+Riley [Team Owner]: I’m fine with logging in; just don’t make it a chore every single time. Username and password should get me back to my roster page. That owner dashboard is where I live.
+
+Maya [Product Manager]: Yes, the baseline is standard username plus password before you can reach the owner dashboard. No bypasses. We can discuss session length later.
+
+Tom [League Commissioner]: And the commissioner console needs to be locked down. In our league, only I can tweak scoring rules, roster limits, draft settings. No co-commissioner accidents. If a team owner could change settings, we’d get chaos.
+
+Maya [Product Manager]: Understood. Per league, only the designated commissioner toggles those configurations. We’ll make sure the permissions model enforces that strictly.
+
+Jorge [DevOps]: Just flagging that as RBAC in the app layer. Commissioner role only for settings endpoints. Everyone else read-only for those.
+
+Riley [Team Owner]: Right, and visually, please make that stuff live somewhere different. Like, don’t put add player next to edit scoring. I don’t want to click the wrong thing.
+
+Maya [Product Manager]: Separation of action areas versus navigation, got it. We’ll keep a consistent layout so the action buttons are always, say, on the right panel, and global nav on the left or top. And breadcrumbs at the top so you know where you are.
+
+Tom [League Commissioner]: Breadcrumbs?
+
+Priya [Database Admin]: That’s the little trail, like Home > League > Team > Player.
+
+Tom [League Commissioner]: Oh! Yeah, that. The current site I use has that and it helps, especially when you get lost in the waiver list.
+
+Maya [Product Manager]: Perfect. Every page gets that location trail. Now, speed. Riley, when you first land, can you find your league and your team quickly?
+
+Riley [Team Owner]: If I’m new, I don’t want to dig around. I should be able to go from the homepage to my league page and then to my team page really fast. Like, half a minute tops. If I can’t figure it out in 20, 30 seconds, I’m bouncing.
+
+Maya [Product Manager]: So onboarding should be intuitive enough that within about 30 seconds a first-time user gets to league and team pages from the starting page. That’s our target.
+
+Jorge [DevOps]: That implies the links are prominent and the network calls are fast. We’re aiming for sub-quarter-second response per user action over the network. 250 milliseconds budget for server-side processing from request to response, excluding the browser rendering.
+
+Riley [Team Owner]: 250 milliseconds… that’s like instant to me. As long as it feels snappy.
+
+Tom [League Commissioner]: And reliability. Our season is sixteen, no, eighteen weeks now. If the site goes down Sunday morning, everybody loses their minds. We had that last year—like an hour outage—and it crushed us.
+
+Jorge [DevOps]: We’re proposing a very strict availability target. Minutes of downtime per year, not hours. Think like ten minutes total in a calendar year, outside planned maintenance. It’s ambitious but we should plan for it.
+
+Maya [Product Manager]: Okay, maintenance windows. We need to carve out a regular time when we can deploy in-season updates without upsetting live games.
+
+Tom [League Commissioner]: Do it midweek, super early. We all set our lineups Tuesday night or Wednesday afternoon.
+
+Riley [Team Owner]: Early Wednesday morning, like 3 to 6 AM Central, works. Nobody is on then, except insomniacs.
+
+Jorge [DevOps]: We can schedule patches and minor updates in that window during the season and keep perceived downtime near zero.
+
+Maya [Product Manager]: And the major version refresh—ideally we launch those right at the start of each NFL season. New season, new release.
+
+Priya [Database Admin]: Data. We’ll have the active stuff—rosters, waiver claims, current week stats—in a primary database optimized for quick access. It doubles as a cache layer for hot users so we can serve requests under that 250 ms target.
+
+Jorge [DevOps]: And the long-term store for historic stats, weekly lines from prior seasons, career totals—put that in a secondary database tuned for history and analytics. We don’t want heavy history reads slowing down live game traffic.
+
+Riley [Team Owner]: As long as when I click a player I can see a lot. Not just like yards and touchdowns; I want receptions, targets, snap counts, red zone looks… points too. Everywhere I go, show me the stat lines so I don’t have to open new tabs.
+
+Maya [Product Manager]: How many are we talking? We’ve been tossing around the idea of showing at least twenty-five data points for each player, plus their fantasy points, on any page where players appear.
+
+Tom [League Commissioner]: That’s a lot, but the hardcore folks want it. Don’t bury it. I hate when you have to click into a player to see anything.
+
+Riley [Team Owner]: Exactly. And make the add, drop, and trade actions one click from the owner dashboard. If I’m on my team page, there should be a button right there to start a trade or add from free agents. No hunting.
+
+Maya [Product Manager]: One click to jump into those flows from the dashboard. Once you’re in, we will still show a confirmation step for destructive actions like dropping someone or finalizing a trade. We don’t want accidental roster changes.
+
+Tom [League Commissioner]: Please. I once tapped drop by mistake on my phone and… well, that was a disaster.
+
+Jorge [DevOps]: Confirmation modals are fine. Just make sure the APIs don’t perform the mutation until the confirm comes through, so we avoid partial updates.
+
+Priya [Database Admin]: On the backend, we’ll stage the change and commit after that confirm. That keeps the primary store consistent. We can also archive the outcome for history later.
+
+Riley [Team Owner]: Wait, when you say secondary, do I have to wait to see history?
+
+Priya [Database Admin]: No. For immediate stuff, we’ll mirror enough recent data in the primary so frequent lookups are fast. The secondary is for the deep historical queries. Think previous seasons’ weekly breakdowns.
+
+Maya [Product Manager]: Back to navigation. The layout needs to be consistent. Action items in one place, navigation elsewhere, and breadcrumbs on every page. That consistency reduces misclicks.
+
+Tom [League Commissioner]: The last platform moved the trade button around depending on the page. Drove me nuts.
+
+Riley [Team Owner]: And make the league message wall simple. Just a little stream with the latest posts. I don’t need a whole forum. Show like the five most recent messages, with a snippet so I can tell what it’s about.
+
+Maya [Product Manager]: How long a snippet?
+
+Riley [Team Owner]: A couple lines. Maybe 150 characters? Enough to see the joke or the trash talk.
+
+Tom [League Commissioner]: Yeah, no infinite scroll on that wall. Keep it lightweight. If we need archives, whatever, but the league page should show the last five and a teaser.
+
+Jorge [DevOps]: That also keeps the payload small and avoids chatty calls. Less to render means we can stick to the quarter-second response budget.
+
+Priya [Database Admin]: The message wall posts can sit in the primary too for the current season, then roll to the secondary at season end. Historical smack talk is… historical data.
+
+Maya [Product Manager]: Ha. Okay, so content-wise, the wall is five recent posts with up to roughly 150 characters preview, click to open the full post if needed. We won’t overbuild it.
+
+Riley [Team Owner]: On that note, don’t make the wall the focus. The roster page and add/drop should be front and center.
+
+Tom [League Commissioner]: Agree. Owners spend most time setting lineups and eyeing trades. Speaking of which, can we make add/drop literally one click from the team dashboard? Like, a link that jumps to free agents already filtered by my needs.
+
+Maya [Product Manager]: The “one click” bit is about starting the flow, not completing the transaction instantly. It’s still add then confirm, drop then confirm.
+
+Riley [Team Owner]: Right, I get that. Just don’t bury the link.
+
+Jorge [DevOps]: Quick tangent—are we committing to a pure web app? Or is there any native component? It matters for our hosting plan.
+
+Maya [Product Manager]: This is a web application. Runs on a web app server. We can worry about mobile responsiveness, but the platform itself is a web app.
+
+Jorge [DevOps]: Good. That keeps our deployment straightforward. We’ll time changes during that midweek window to minimize any disruption. But the overall objective still reads like ten minutes max downtime annually. That’s tight. We need to be precise about how we count it.
+
+Tom [League Commissioner]: If you tell me it’ll be up, just keep it up. Ten minutes sounds like nothing. I’m okay with planned maintenance if it’s like 3 AM Wednesday midseason.
+
+Priya [Database Admin]: That’s when we can run migrations too. Schema changes only in that window during the season, please.
+
+Maya [Product Manager]: Yes, in-season updates are limited to that Wednesday early morning slot. Bigger annual changes roll out right before Week 1.
+
+Riley [Team Owner]: Can you give me a little trail at the top so I know where I came from? Like Home > My League > Team? Sometimes I go into player pages and forget how to get back.
+
+Maya [Product Manager]: That’s the breadcrumb we mentioned. We’ll include it on all pages, not just deep ones.
+
+Tom [League Commissioner]: Sorry, what did you call it? Breadcrumb? Like cookie crumbs. Funny.
+
+Riley [Team Owner]: Haha, yeah.
+
+Jorge [DevOps]: On the performance estimate, not to be a downer, but if we’re pulling 25-plus stats per player on every page, we need to cache the stat lines aggressively. Otherwise 250 milliseconds is tough under load.
+
+Priya [Database Admin]: We can materialize a stat line document in the primary for active players, then hydrate it nightly from the secondary. During games, we’ll have to stream updates from the provider into the primary. The secondary is just the long-term sink.
+
+Maya [Product Manager]: That covers the technical path. From a user perspective, they’ll see at least 25 stats plus points wherever player data is shown—team roster, free agent list, matchup view.
+
+Riley [Team Owner]: Do not hide points. Some sites make you hover. Show the points directly.
+
+Tom [League Commissioner]: And only I can flip the scoring rules. Nobody else should be able to mess with that.
+
+Maya [Product Manager]: Repeating that in case the notes miss it: Commissioner-only authorization on league configuration.
+
+Jorge [DevOps]: Copy. We’ll enforce that at the route level and in the UI—no visible controls for non-commissioners.
+
+Riley [Team Owner]: Another thing: when I drop someone, there has to be a yes/no check. I’m always terrified of my thumb hitting the wrong place.
+
+Maya [Product Manager]: Confirmations for drop and trade actions before the server commits. It’s a guardrail.
+
+Priya [Database Admin]: We can implement soft transactions. The user initiates, we stage, then the confirm triggers the write. If they back out, we discard the staged change.
+
+Tom [League Commissioner]: And trades too. Let me review and accept before it goes live. No accidental trades.
+
+Jorge [DevOps]: That’s two-step on the UX side. Backend will treat it as an atomic change after final consent. No half trades.
+
+Maya [Product Manager]: Good. Now, clarity on page layout. I want consistency. The navigation—a menu and that breadcrumb—sit in one place. The action items like add/drop/trade are in a distinct area. We keep that pattern everywhere.
+
+Riley [Team Owner]: Please. Don’t move the cheese.
+
+Tom [League Commissioner]: Can we see the latest league chatter when we land on the league page? Just the last few. Don’t make it busy.
+
+Maya [Product Manager]: Yes. We said five most recent with short previews—about 150 characters. You can click in for more.
+
+Jorge [DevOps]: If we stick to five, we can render that in the initial payload without dragging. It helps meet the 250 ms budget.
+
+Priya [Database Admin]: And we’ll index the latest posts by league ID in the primary for quick retrieval. Old posts will be archived in the secondary.
+
+Riley [Team Owner]: Okay, speaking of speed—new users. You said 30 seconds to find my team. Are we putting big buttons? Like Get to your league, Create or Join…
+
+Maya [Product Manager]: Exactly. The landing page will funnel first-time users to Join League or Find My Team immediately, and once they authenticate with username and password, they can reach their owner page quickly.
+
+Tom [League Commissioner]: Wait—so they have to log in before they can see their team? That makes sense. You don’t want randoms peeping rosters.
+
+Maya [Product Manager]: Correct. Team owner pages are behind authentication.
+
+Jorge [DevOps]: Also worth noting, to hit our uptime target, we’ll do planned upgrades during that Wednesday 3 to 6 AM Central window during the season. For the big release at season start, we’ll schedule a maintenance message and aim for minimal disruption. But if we need a few minutes, that’s the time.
+
+Tom [League Commissioner]: As long as it’s not Sunday.
+
+Riley [Team Owner]: Never Sunday.
+
+Priya [Database Admin]: Data ingestion from the stats provider, we’ll need to reconcile the 25-plus stats per player. That’s at least the standard box score metrics plus derived points. We’ll store both raw stats and computed points so we can show points everywhere.
+
+Maya [Product Manager]: Yes, points should be visible on every page that shows players. Owners make decisions at a glance.
+
+Riley [Team Owner]: Side note—can we get notifications when a trade is proposed? Actually, wait—ignore that. You’re trying to keep this simple. Just make sure when I propose a trade, it asks me to confirm.
+
+Maya [Product Manager]: Right now we’re not scoping notifications. But yes, the confirm step is in scope.
+
+Jorge [DevOps]: Contention point: twenty-five stats per page. On mobile view, that’s a lot. But I suppose we can make it horizontally scrollable or collapsible without changing the fact that the data is present.
+
+Maya [Product Manager]: We’ll deal with presentation later, but the requirement is that the data is available on each page. Maybe a condensed mode. The key is not making people click into separate pages to see them.
+
+Tom [League Commissioner]: Another thing: there should be a clear, single link to start a trade from my own team page. I don’t want to navigate to some separate trades area; one click should take me right to propose.
+
+Maya [Product Manager]: Yes, from the owner dashboard a single click will take you into the trade flow, same for add and drop. That’s the shortcut we want.
+
+Riley [Team Owner]: And then it confirms before it does anything. Good.
+
+Jorge [DevOps]: Performance again: The application server stack needs to be tuned. We’re planning a web application server deployment. The primary DB will handle hot data as a kind of cached store for active users’ stuff. Secondary holds the historical stats and records.
+
+Priya [Database Admin]: For clarity, the primary is essentially operational storage for the current season: active rosters, pending transactions, current week player stats, and the like. The secondary accumulates historical stats across seasons, long-term records, transaction history—anything older gets moved there.
+
+Maya [Product Manager]: Good. I think we’ve hit the major beats. Any objections to the 3 to 6 AM Wednesday window for in-season updates?
+
+Tom [League Commissioner]: No, that’s fine. Just tell us if you ever have to break that rule.
+
+Riley [Team Owner]: The season-start release—can you push it like the week before kickoff so we have time to acclimate? Or literally the beginning of the season?
+
+Maya [Product Manager]: The plan is to align the new major version with the start of the NFL season. We can open a staging preview earlier for commissioners, but the official release is at season start.
+
+Jorge [DevOps]: We should also document that transactions—add, drop, trade—complete quickly on the network. Users shouldn’t wait more than a quarter second after they click confirm. It’s basically instantaneous to them.
+
+Riley [Team Owner]: If I click add and it spins, I get nervous. So, yeah, fast.
+
+Priya [Database Admin]: We’ll keep the write path lean—use the primary with precomputed indexes. Follow-up views should reflect the change quickly.
+
+Tom [League Commissioner]: And if something goes wrong, I don’t want the whole site down. You said we’re aiming for ten minutes downtime per year? That’s… very little.
+
+Jorge [DevOps]: It is. We’ll need careful change control. But the goal is minutes, not hours. Ten is a good upper bound to plan against.
+
+Maya [Product Manager]: Okay, summarizing what we agreed so far: owners authenticate with username and password to reach their owner dashboard; the commissioner is the only one who can adjust league settings; consistent layout with separate action and navigation areas and breadcrumb location on every page; message wall on the league page shows the five most recent posts with roughly 150-character previews; first-time users can get to league and team pages within thirty seconds from the start; from the owner dashboard it’s one click to add, drop, and trade flows; before dropping or trading, ask for confirmation; on every page we show at least twenty-five stats per player plus points; user transactions complete in around 250 milliseconds over the network; the app runs on a web application server with a primary database for hot, cached active data and a secondary for historical stats and records; updates happen Wednesdays 3 to 6 AM Central during the season; and major releases go live at the beginning of each NFL season.
+
+Riley [Team Owner]: That’s the dream. Just make it not suck.
+
+Tom [League Commissioner]: And don’t move the trade button around.
+
+Jorge [DevOps]: And don’t ask me for two-hour maintenance windows Sunday mornings.
+
+Priya [Database Admin]: And don’t forget indexing the stat lines.
+
+Maya [Product Manager]: All noted. Any last concerns?
+
+Riley [Team Owner]: One tiny thing—on the breadcrumbs, can it show my team name instead of just Team? Like Home > League > Riley’s Runners. Just nice to see.
+
+Maya [Product Manager]: We can do that without changing the requirement. It’s still the same structural trail. Good suggestion.
+
+Tom [League Commissioner]: If someone isn’t signed in, do they see anything? Like a generic home?
+
+Maya [Product Manager]: Yes, but not owner pages. The owner dashboard is behind authentication. Public pages would be marketing and general info.
+
+Jorge [DevOps]: That actually helps performance because anonymous traffic won’t hit the same hot paths.
+
+Priya [Database Admin]: It also avoids loading active user cache for anonymous sessions.
+
+Riley [Team Owner]: Cool. I’m good.
+
+Maya [Product Manager]: Thanks all. I’ll circulate scrappy notes, and we’ll validate with a prototype.
+
+Tom [League Commissioner]: Looking forward to clicking add and not getting lost.
+
+Jorge [DevOps]: Looking forward to not getting paged on Sundays.
+
+Priya [Database Admin]: Looking forward to nice, clean schemas.
+
+Maya [Product Manager]: Meeting adjourned.

@@ -1,0 +1,163 @@
+TYPE  : email_thread
+TITLE : Email thread: ColorCast v1.0 scope, timeline, and deployment assumptions (Revised)
+UNIT  : PURE_2004 - colorcast
+============================================================
+
+Email 1
+From: Raj <raj.pm@abcpaint.com>
+To: Maria <maria.ops@abcpaint.com>, Owen <owen@colorkast.com>
+CC: Linda <linda.mktg@abcpaint.com>, Jade <jade.ux@abcpaint.com>, Ben <ben@northcoastdistrib.com>, Tasha <tasha.docs@abcpaint.com>
+Subject: ColorCast v1.0 rollout constraints + a couple of clarifications
+
+Hi all,
+
+Catching up from the last call. I want to codify a few items, and get pushback if I’m misrepresenting anything:
+
+- We’re treating this as version 1.0, no prior live revs at ABC, and we still have the business constraint to go live by end of Q2 2004 (yes, the plan references that legacy date; it matters to finance’s ROI model).
+- The environment assumptions: client computers and servers we use will meet or exceed the requirements we specify (browsers, server capacity). If we write performance numbers without tagging them, those are assumed to be client-perceived metrics. If we mean server throughput, we’ll explicitly say so.
+- The feature modules remain single-page units (Search, Visual Picker, Sample Match, Translator, Admin). We link between them but do not mash them together in one mega page.
+- High availability: keep the wording to ‘highly accessible to clients and distributors via the web’ and let Ops define clustering/DR in their docs.
+- We’re okay that nearest colors are computed in RGB space and that’s ‘good enough’ for v1.
+- We depend on the vendor’s/third-party paint data repositories for both the paint info and search engine backend (i.e., not rolling our own DB in-house for this module).
+- We need to handle adds & retirements of paints/collections during the migration; if something is discontinued, translator should offer the new mapping or suggest closest alternatives.
+- We must expose theme/styling hooks so ABC web designers can skin it to match the main site.
+- Error handling: include both a user-facing way to report issues and automatic error reports to ColorKast; keep the experience unobtrusive. Also, please include in the constraints section that the system attempts a full recovery on any error.
+
+Thanks,
+R.
+
+---
+
+Email 2
+From: Maria <maria.ops@abcpaint.com>
+To: Raj <raj.pm@abcpaint.com>
+CC: Owen <owen@colorkast.com>, Linda <linda.mktg@abcpaint.com>, Jade <jade.ux@abcpaint.com>, Ben <ben@northcoastdistrib.com>, Tasha <tasha.docs@abcpaint.com>
+Subject: RE: ColorCast v1.0 rollout constraints + a couple of clarifications
+
+Raj,
+
+On the ops side:
+
+- Yes on browser list (IE 4.01, Netscape 6.0, Mozilla 1.0 or later). Client computers must meet or beat the system requirements for the chosen browser. We are not inventing new client hardware specs.
+- We’ll word OS compat as ‘compatible with most operating systems’. QA will test Win/Mac and a couple Linux distros.
+- The app is server-based, fully web client, and we keep all search processing and all storage on the server. No client databases, no offline sync.
+- Capacity guidance stays as previously stated: allocate around a 1 GHz CPU and 512 MB RAM per 50 users. We’ll put that in the deployment guide and SRS constraints.
+- Error utility: make sure auto-sent crash logs go straight to ColorKast (not our helpdesk). Keep both auto and manual reporting unobtrusive.
+- We will include an assumption in docs that the operational environment will comply with the spec (server + client).
+- And yes, let’s put the error-recovery expectation in constraints: always attempt a full recovery from any error condition.
+
+One pushback: there’s a line floating around about ‘only used during the wide-installation period’. Ops prefers to keep that as an assumption for planning, but we won’t hardcode a kill switch. We can state it’s intended primarily for rollout.
+
+/M.
+
+---
+
+Email 3
+From: Owen <owen@colorkast.com>
+To: Raj <raj.pm@abcpaint.com>, Maria <maria.ops@abcpaint.com>
+CC: Jade <jade.ux@abcpaint.com>, Linda <linda.mktg@abcpaint.com>, Ben <ben@northcoastdistrib.com>, Tasha <tasha.docs@abcpaint.com>
+Subject: RE: ColorCast v1.0 constraints (and a few vendor-side notes)
+
+Thanks both.
+
+A few vendor-side notes:
+
+- On third-party dependencies: We are integrated with two paint info databases. We will document that the system relies on these for both storage of paint metadata and the search index. If either is unavailable, we’ll degrade with a friendly message and attempt a full recovery on the next request (e.g., retries).
+- For nearest-color calculations, yes, we assume RGB-space distance is acceptable. We’ve seen good-enough results. If Marketing later wants Lab conversions, that’s a separate release.
+- The module-per-page approach is aligned with our templating. It also helps ABC’s theming team (we’ll provide CSS hooks for Jade).
+- Regarding interface definitions: we will fill the External Interfaces section (user/software/hardware/communications). Tasha, we’ll coordinate to ensure the spec talks about the interfaces and leaves UI pixel/detail for the whitepaper.
+- High availability phrasing is fine by us; we won’t document clustering in the SRS — that belongs in your ops doc. We will capture design/implementation constraints that affect ops (server-side processing only, browser support, theming hooks, modular pages, and the error-recovery rule).
+
+On error reporting behavior: we can default to auto-submit crash logs and include a small, non-blocking ‘Report a problem’ link. No blocking dialogs.
+
+/ Owen
+
+---
+
+Email 4
+From: Ben <ben@northcoastdistrib.com>
+To: Raj <raj.pm@abcpaint.com>, Linda <linda.mktg@abcpaint.com>
+CC: Maria <maria.ops@abcpaint.com>, Owen <owen@colorkast.com>, Jade <jade.ux@abcpaint.com>
+Subject: RE: v1.0 constraints and some distributor worries (long)
+
+Hey team,
+
+Jumping in from the trenches (and sorry this is long/rambling, sent from mobile between customers):
+
+- My shop folks do NOT have patience for popups. If the system needs to report errors, great, but don’t interrupt. A small link or a message that we can ignore is fine. If it auto-sends the tech stuff in the background, even better.
+- We get a lot of customers walking in with little paint chips or magazine clippings. The sample-matcher workflow needs to be obvious, and once they pick the match, it’d be slick if we also show ‘similar colors’ so I can upsell when their exact color is gone. I know this crosses modules (matching -> closest-colors), but please don’t make me jump hoops.
+- On the migration realities: We literally pulled all the old decks. If the translator sees an old number that isn’t in the new deck, it should tell me what it became (if it did) or propose near matches. Same for collections — the old lines are being sunset. I assume you’re handling adds and removals throughout the rollout.
+- Theming: if I click from the main site into this tool, it should not feel like a different vendor site. Keep the ABC header/nav chrome. Customers get spooked if it looks off-brand.
+- Cross-OS: we have one kiosk on an old Mac in the design nook. Please don’t break it. You said ‘most OSes’ so I’m counting on that.
+- Timeline: our spring promo hits in May. If this slips past Q2, we’re in trouble — we’ll be on the hook trying to translate numbers by hand at the counter. :-/
+
+As for docs: could you include a one-pager I can tape near the kiosk explaining ‘Type old number here to get the new one’ and maybe a note that you can navigate the tool with the keyboard? Little things like that.
+
+Thanks,
+Ben
+
+---
+
+Email 5
+From: Tasha <tasha.docs@abcpaint.com>
+To: Raj <raj.pm@abcpaint.com>, Maria <maria.ops@abcpaint.com>, Owen <owen@colorkast.com>
+CC: Linda <linda.mktg@abcpaint.com>, Jade <jade.ux@abcpaint.com>, Ben <ben@northcoastdistrib.com>
+Subject: RE: SRS structure + assumptions, plus UI whitepaper link
+
+Team,
+
+I’m drafting the SRS now. A few documentation points:
+
+- Front matter will include Table of Contents and Revision History (with dates + owners).
+- Introduction will outline purpose, conventions (how we format terms, etc.), and a roadmap to the rest of the document. I’ll include a ‘Read this first’ note for new readers so they don’t skip definitions.
+- Section 3 will be ‘External Interface Requirements’ and will cover: User interface (overview only), Hardware interface (server capacity guidance; client hardware meets browser vendor requirements), Software interface (browsers supported), Communications interface (HTTP/HTTPS).
+- Section 5 will be ‘Non-functional/Performance Requirements’ (accessibility including keyboard-only operation, availability, responsiveness, error behavior). I’ll make sure PMs are pointed to Sections 3 and 5 for decision-making.
+- Assumptions/Dependencies will list: environment meeting/exceeding server/client requirements; reliance on third-party databases for paint data + search; that nearest-color in RGB is acceptable; intended usage during the wide-installation period of the new numbering scheme.
+- I’ll cross-reference Jade’s UI whitepaper for detailed UI behaviors. Link to draft here: [internal share link].
+- Per our discussion, I’ll add in Section 2.5 (Design & Implementation Constraints) a line stating: ‘Error recovery — the system shall attempt to fully recover from errors in all instances (e.g., retry, preserve inputs).’
+
+Please also confirm: Do we want a sentence stating the app will be delivered as version 1.0 with no prior revisions in production? It’s implied, but I can make it explicit.
+
+— Tasha
+
+---
+
+Email 6
+From: Linda <linda.mktg@abcpaint.com>
+To: Tasha <tasha.docs@abcpaint.com>
+CC: Raj <raj.pm@abcpaint.com>, Maria <maria.ops@abcpaint.com>, Owen <owen@colorkast.com>, Jade <jade.ux@abcpaint.com>, Ben <ben@northcoastdistrib.com>
+Subject: RE: SRS structure + assumptions, plus UI whitepaper link (and a couple of additions)
+
+Tasha,
+
+Yes please, call out the 1.0 factoid and the Q2 go-live constraint. Finance and Sales both quote those, so better to have it on paper. Also, in the help docs portion, can you say we’ll have both on-site help (for customers) and a distributor PDF? Ben’s team really needs that.
+
+One more: our web team wants explicit mention that the app will expose a theming mechanism (hooks, CSS) so we can blend it into the current site. Put that under features or constraints — wherever it makes sense.
+
+Thanks!
+L.
+
+---
+
+Email 7
+From: Raj <raj.pm@abcpaint.com>
+To: All
+Subject: RE: Wrapping up: module pages, HA phrasing, error behavior
+
+Quick wrap-up from this thread:
+
+- Module pages: we’re keeping the features on separate pages, with cross-links. Jade will ensure the nav makes it feel cohesive.
+- HA phrasing: ‘highly accessible via the web’ stays. Ops will own actual deployment patterns.
+- Error agent: we’ll configure auto-send to ColorKast with a small, non-blocking ‘report a problem’ link. No blocking dialogs. Also, per constraints, the system shall attempt to fully recover from errors in all instances (retry/preserve inputs/restore state).
+- Browsers/OS: as Maria said — IE 4.01, Netscape 6, Mozilla 1.0+, client computers must meet their browsers’ system requirements, and we aim for compatibility across most OSes.
+- Assumptions: environment will comply with our spec; primary use case is the rollout period for the new numbering scheme; RGB nearest-color assumption documented; third-party databases are a dependency.
+- Performance references: unless the spec calls out server metrics, interpret performance requirements as client-side perception.
+- Timeline/version: v1.0 by end of Q2 2004.
+
+Open items:
+- Owen to confirm if any design/implementation constraints need to be explicitly documented beyond what we’ve listed (send by Thu).
+- Tasha to incorporate Linda’s theming hooks language.
+- Maria to add hardware/OS compatibility note referencing the SRS.
+
+Thanks everyone!
+—Raj

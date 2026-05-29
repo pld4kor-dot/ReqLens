@@ -1,0 +1,809 @@
+{
+  "id": "PROMISE_2",
+  "origin": "PROMISE",
+  "created_at": "2026-05-23T14:05:18.919185+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Field Ride-Along Discovery: PocketMLS Field Kit Stakeholder Interview",
+      "text": "Dana [Product Manager]: Thanks everyone for making time. I wanted to hear the gritty details of how you work in the field so we don’t build something that looks slick but gets in your way. Quick round of intros and then let’s dive in.\n\nBrooke [Broker/Owner]: I’m Brooke, I run Century Northside. I’m not touching code, but I care about what my agents see and how our brand comes across when they’re in client-facing moments.\n\nSam [Field Agent]: Sam, buyer’s agent. I live out of my car and, um, my Palm. If it doesn’t work in a driveway with one bar, it’s dead to me.\n\nPriya [IT/Operations]: Priya here, brokerage ops and IT. We own the office scheduling system and the address book for clients. We’ll be the ones wiring the back end and yelling when it falls over.\n\nMiguel [MLS Rep]: Miguel from the regional MLS board. I’m here to make sure you’re not violating our data access terms and that agents can do what they’re allowed to do, and not what they’re not.\n\nAlex [Mobile Engineer]: Alex, I’m the person you’ll blame when buttons are in the wrong place on a Windows CE device. Also the one reading Palm OS docs at 2 a.m.\n\nDana [Product Manager]: Perfect. I’ll just jump in: Sam, when you’re with a client, what’s the one thing you always need to do on your device?\n\nSam [Field Agent]: Search. Always search. Someone says, “What’s around here with a fenced yard under five hundred?” I punch in criteria. And—oh—pictures. If the photos are tiny or muddy, I look dumb. I need to tap through to a bigger, clear shot so the client isn’t squinting.\n\nAlex [Mobile Engineer]: On images, when you say “bigger,” we’ve got limited real estate. But we can do a clear thumbnail and then a full-size view within the device limits. We’ll work to have it not look like it’s been faxed.\n\nBrooke [Broker/Owner]: The photos can’t be grainy. Period. Our clients already question these older handhelds, so the app has to present crisp images that don’t embarrass us. And no off-brand colors. People notice. Please stick to our palette, our fonts, and honestly, don’t reinvent the way the device works. Use the Palm buttons and the WinCE soft keys like they’re meant to be.\n\nDana [Product Manager]: That’s helpful—native controls, consistent brand look. And Sam, what do you do after you find a set of results?\n\nSam [Field Agent]: Save them. I’ll save the set so I can go back in the car between houses. Sometimes I don’t have time to set up anything fancy. I just say “save search,” and later I can pull it up. Also, map view—show me the area, then tap the one we want and get directions. I shouldn’t have to retype the address into some other app.\n\nAlex [Mobile Engineer]: We can provide a map that shows nearby listings and a single tap to directions. On these legacy devices we tie into the built-in mapping if available or our own basic directions. We’ll make sure the flow is simple: area map, select property, route. No copy-paste.\n\nBrooke [Broker/Owner]: The navigation must be simple. Use the platform’s standard menus and buttons, please. I don’t want another “clever” hamburger icon that nobody recognizes on Windows CE.\n\nDana [Product Manager]: On that note, zero training is a goal. We want any licensed agent to recognize words like “comps,” “showing,” “CMA.” Don’t label things with weird tech terms.\n\nPriya [IT/Operations]: Also, can we make sure they don’t accidentally type in garbage? We’ve had agents put negative list prices. The office inbound API barfs.\n\nAlex [Mobile Engineer]: Right, we’ll validate input: no negative prices, dates in the right format, required fields for new listings, that kind of thing.\n\nSam [Field Agent]: Wait, new listings? Are we editing listings on this thing too?\n\nDana [Product Manager]: Eventually yes, both creating and updating listings from the field is part of the scope. But for today, let’s keep focused on how you’d search and show.\n\nSam [Field Agent]: If I could tweak a listing’s status or a typo from the driveway, that’s gold. But yeah, search and map first.\n\nBrooke [Broker/Owner]: And CMA. I need my listers to crank out a quick analysis on the spot. Doesn’t need to be a 20-page glossy presentation—but pick a few comps, get the summary, so the seller doesn’t lose patience.\n\nAlex [Mobile Engineer]: For performance: on these networks, we can aim for searches to finish fast—sub-… well, let’s say half a minute, tops, to get results after you press go. CMAs will do heavier lifting; a minute is reasonable. If it takes longer than that, people assume it’s frozen.\n\nSam [Field Agent]: If I’m sitting there waiting, that’s when the client starts telling me about their cousin’s agent. So yeah—thirty seconds is already long, but as long as it’s under, I’ll tolerate it.\n\nMiguel [MLS Rep]: And CMA data needs to be accurate to the board’s feed. Just remember, not everyone’s allowed to run every report, so check permissions.\n\nDana [Product Manager]: Speaking of, login flows… Priya, you said earlier we already sync our contact and appointment systems. How should we think about that cadence?\n\nPriya [IT/Operations]: The office system is what it is. We’ve got a batch job. It’s every hour on the hour. If agents expect real-time, they’ll be disappointed. But if the device pulls those every hour and gives a heads-up when something new lands, that’s fine. It needs to feel timely even if it’s not instant.\n\nSam [Field Agent]: Hourly is… ugh. Look, if a buyer pings back right after I call them, I want to know. Don’t make me wait the whole hour.\n\nAlex [Mobile Engineer]: The app can let you know when we get the new stuff from the office system. It’s bound to that hourly window. And if the client responds to a call, we can show a notification too; just to be clear, that works when the call is made from within the app so we can detect it.\n\nSam [Field Agent]: As long as it actually tells me—don’t bury it on some screen. If my 3 pm got moved, I need to see that.\n\nBrooke [Broker/Owner]: Good. And availability—we can’t have the app down on Sunday mornings because that’s when we’re in open houses. I’m talking literally all day, every day. Treat it like the MLS: always up.\n\nPriya [IT/Operations]: The nerd in me will say “nothing is always up,” but the standard is 99.9% uptime. That’s 999 out of 1000 checks succeeding. That’s where we need to land so we’re not taking calls from agents mid-showing.\n\nMiguel [MLS Rep]: Also: only licensed users get access. The board’s very strict. No assistants using their boss’s login. Authentication and authorization, not just one or the other.\n\nSam [Field Agent]: Wait—authent… I always mix those words up. Authentication is proving who I am, authorization is what I can do, right?\n\nPriya [IT/Operations]: Exactly. You log in, we verify you’re you, and then the system checks your role to see if you can edit a listing or just view it.\n\nDana [Product Manager]: Great. Alex, device constraints… we keep throwing around Palm and Windows CE because that’s what we’ve got in the field today. Confirming those are the targets, not iOS or Android.\n\nAlex [Mobile Engineer]: Correct. Windows CE and Palm OS. We’ll need to follow their UI conventions. So standard menus, platform buttons. We’ll avoid custom gesture stuff these devices can’t do. And we can keep the look professional; I’ll map your brand guide to the fonts these OSes have.\n\nBrooke [Broker/Owner]: Please keep the colors and typography steady. We get flak when our flyers use one blue and our site uses a different blue. The app should feel like part of us.\n\nSam [Field Agent]: Can we, uh, sorry, quick tangent—Dana, can we move the weekly check-in? My kid’s soccer practice got shifted.\n\nDana [Product Manager]: Ha, let’s handle calendars after this. But good segue: in the app, when a new appointment drops from the office system, it should let you know. Like, a brief note. And ideally a list of what changed since last sync.\n\nPriya [IT/Operations]: We can compare timestamps and surface an in-app note after the hourly pull. Just remember, it won’t pop mid-hour unless something else triggers it.\n\nSam [Field Agent]: As long as it shows up reliably at the top of the hour.\n\nAlex [Mobile Engineer]: We can add that into the sync flow.\n\nDana [Product Manager]: Back to flows. We want the app to be self-explanatory. If Brooke recruits a new agent, they should pick it up without a training class. Labels should say “New Showing,” “Comps,” “CMA,” “Directions,” not “compute comparative X.”\n\nBrooke [Broker/Owner]: Yes, and no printed instruction packet. Agents toss them. If the install wizard can be dead simple—tap install, sign in, done—that’s better. I need this to be something an untrained agent can set up on their own.\n\nAlex [Mobile Engineer]: We’ll do an installer that guides them. The goal is that most—like, nine out of ten—of your folks can get it on the device without needing a printed sheet.\n\nSam [Field Agent]: When I say save, I mean it. Last week, my device crashed and all my preferences went poof in another app. If this thing loses my favorites or my saved searches, I’m going to hate it.\n\nPriya [IT/Operations]: We can persist preferences to storage regularly, and on restart, restore everything. If the network is down, it should still bring back your saved stuff.\n\nDana [Product Manager]: That leads to offline. Sam, how often are you without service?\n\nSam [Field Agent]: Every day. Basements, rural roads, random dead zones. I need to be able to pull up the last searches, the CMA I generated ten minutes ago, and the appointments for today even if I’m offline.\n\nAlex [Mobile Engineer]: We’ll cache recent searches, generated CMAs, and your calendar so they’re viewable without a network. The system can work in offline mode and sync when it gets a signal again.\n\nMiguel [MLS Rep]: Just be mindful that data can change quickly. Keep alignment with the board’s feed when you’re back online.\n\nBrooke [Broker/Owner]: Look, if the app crashes—which everything does eventually—I don’t want Sam to lose settings. Please assure me we restore preferences 100% when it comes back.\n\nAlex [Mobile Engineer]: Yes, we can commit user settings and restore them on start so it’s exactly as you left it.\n\nSam [Field Agent]: What about calling the seller? If I tap the number in the app, can it dial and—like you said—if they respond, I get a note?\n\nDana [Product Manager]: That’s in scope. In-app calling to schedule showings, and when the client responds, the app should notify you.\n\nPriya [IT/Operations]: That’ll work when the call starts from the app.\n\nMiguel [MLS Rep]: On listings, when you create or update from the device, we have validation rules: required fields, board-specific picklists. The app should enforce those, not just send bad data and hope the MLS catches it.\n\nAlex [Mobile Engineer]: Absolutely. We’ll validate before sending so we prevent bad data entering the system.\n\nSam [Field Agent]: Speaking of sending, how fast is fast? Like, if I run a search in the driveway, are we talking seconds or coffee breaks?\n\nAlex [Mobile Engineer]: Our aim is that from when you submit criteria, you’re seeing results in under half a minute. Most of the time faster, but that’s the outer bound. CMAs under a minute after you pick comps.\n\nSam [Field Agent]: That’s fine. If it’s a minute for a CMA in the field, I can keep the conversation going.\n\nBrooke [Broker/Owner]: The app needs to feel polished. No half-baked screens. If the fonts jump around or the colors are mismatched between screens, it looks amateur. Use our color scheme throughout.\n\nDana [Product Manager]: We’ll have a style guide and Alex will map it to the device capabilities. It’ll be stable and consistent.\n\nPriya [IT/Operations]: On security, we’ll integrate with our licensed user directory. If you’re not a registered agent, you can’t even log in. No guest mode. And even within agents, not everyone can change a listing.\n\nSam [Field Agent]: Got it. One more, uh, gripe: some apps bury the “Back” button or call it “Return.” Just, please, stick with the device’s menu names and buttons. If I have to hunt, I’m out.\n\nAlex [Mobile Engineer]: Duly noted. We’ll keep navigation using the OS conventions—standard menus and hardware buttons. No weird labels.\n\nDana [Product Manager]: I want to circle back to mapping. You said area view then directions. Do you also filter by area visually, or just by criteria?\n\nSam [Field Agent]: Both. Sometimes the buyer says “We only want south of the river.” I want to see the dots there, not just a list. Then tap one, read the details with clear photos, and boom—route.\n\nBrooke [Broker/Owner]: And the captured buyer info—contacts, their phone, their name—should be in the app, not just back at the office. If schedules change, agents need that on their device.\n\nPriya [IT/Operations]: We’ll include client contacts and appointments in the hourly sync. We can’t do more frequent without breaking the office system, so please set that expectation.\n\nSam [Field Agent]: Hourly it is, then. As long as at the top of the hour, I get a “new appointment added” message, not just a silent update.\n\nDana [Product Manager]: That’s the plan: auto synchronization on the hour, then notify about any new client appointments.\n\nMiguel [MLS Rep]: A thing about supported devices—someone asked me if we’re doing iPhone. We’re not. This is strictly Windows CE and Palm OS. If that changes, we revisit everything.\n\nAlex [Mobile Engineer]: Yes, target platforms are legacy. It affects everything from fonts to how we do notifications.\n\nBrooke [Broker/Owner]: And don’t make me train people. It should be so intuitive that a new hire can learn it in a morning. If they need a manual, we failed.\n\nSam [Field Agent]: Yeah, no training. I just want it to use words I use—comps, showings, offers, not “transactions” if you mean appointments.\n\nDana [Product Manager]: Great input. Okay, I think we covered search, photos, maps, directions, saving searches, CMAs, calling, notifications, contacts/appointments sync, offline. Did we miss anything, Priya?\n\nPriya [IT/Operations]: Maybe just—when it’s offline, it should make it clear you can keep using cached data. And when it comes back, it shouldn’t forget their preferences or saved items. We don’t want people reconfiguring after a crash.\n\nAlex [Mobile Engineer]: We’ll persist preferences and restore them exactly as before.\n\nSam [Field Agent]: Oh and please don’t schedule the demo during the inspection block on Thursday…\n\nDana [Product Manager]: Noted. We’ll sort the calendar over email. Thanks, everyone."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "PocketMLS Field Kit — Ops/Design/MLS Sync Working Session (Raw Notes)",
+      "text": "Date: 2025-03-18\nLocation: Conf Rm B / Teams link tbd (Priya to send)\nAttendees: Priya (IT/Ops), Dana (PM), Alex (Mobile Eng), Brooke (Broker/Owner), Leo (Team Lead Realtor), Miguel (MLS Board Rep), Kira (Designer), Owen (QA) — plus 2 agents joined late [names?]\n\nAgenda (loosely):\n- Device UX standards on Palm OS/Windows CE\n- Search/map/directions and photos\n- Sync cadence w/ office (contacts + appts)\n- CMA in field; perf targets\n- Availability, offline, prefs\n- Security/auth; user base scale\n- Listing create/update rules\n\nNotes (messy):\n- UI/UX:\n  - Use native controls only on both platforms → no custom nav widgets; standard menus & buttons. Agents expect Back, Menu, soft keys to work. “This should look like a normal Palm app, not a game” (Leo).\n  - Brand consistency: Brooke: keep our blue, gray, font sizes consistent across screens; professional look, no playful icons. Kira to align w/ brand guide. Fonts: map to CE/Palm stock fonts, keep consistent.\n  - Zero training philosophy: terms familiar to Realtors: “CMA,” “comps,” “showing,” “listing,” “buyer,” not “entity”/“record.” Self-explanatory flow. “If they need a training video we blew it” (Brooke).\n  - Ease of learning: New hire should pick up in minutes; minimal learning curve. Onboarding screens? [TBD — Brooke wants none; Kira suggests 2-screen tip]. NOT decided yet.\n  - Install: Self-installable installer; no printed instruction sheet. Owen asked about QR code quick-start; Brooke says ok but no paper booklet. Goal: 90%+ of untrained agents succeed on first try. [Track metric].\n\n- Search / Photos / Save:\n  - MLS query from device — must support typical criteria (price range, beds, neighborhood), no weird query syntax. Use realtor-friendly labels.\n  - Results need to feel fast. Priya wrote: “Search < 30 sec after submit” (metrics). Leo: “fast as humanly possible,” but ok with upper bound.\n  - Show clear property images in results + detail. Avoid over-compression. Ensure tap-through to larger image view given device constraints.\n  - Allow saving of search results; accessible later. Clarify: save criteria + result snapshot? [TBD]. Important for offline.\n  - Area map view: show pins in specified area. At minimum: retrieve map showing property locations for chosen area.\n  - Driving directions: tap a listing → route shown. Use built-in mapping or light directions.\n\n- CMA:\n  - Generate CMA in field. Quick comps selection → summary report. Timing: under ~60 (Dana said 60). “Acceptable time” for CMA = minute-ish, not coffee break. Owen: log the time from criteria entry to report.\n  - CMA correctness: Use board data; respect permissions.\n  - Cache generated CMAs for offline viewing later.\n\n- Sync (office system):\n  - Automatic sync cadence: every hour. “On the hour” job already exists on ops side. We will not change this. [Earlier idea of 10-min push — crossed-out].\n  - Sync covers client contacts + appointments. After sync completes, device should notify user of new or changed appointments. (Example: “2 new showings added since 11:00”).\n  - Perceived speed: sync should feel timely. Agents shouldn’t wonder “did it work?”. Show last synced time.\n  - Downloaded items accessible offline later.\n  - Confusion: Leo asked “can we pull immediately after someone hits save at office?” Priya said no → office system is hourly; the device can’t make it faster. [Open issue: whether a UI ‘Sync now’ button is acceptable — Brooke wary of UX clutter]. NOT decided yet.\n\n- Offline + Availability + Prefs:\n  - Offline mode: when connection drops, app still usable. View cached searches, previous CMA reports, and appointments.\n  - Availability target: treat as 24/7. Priya wrote “999/1000 availability expectation” — roughly 99.9%. Brooke: “We show on Sundays. Don’t go down.”\n  - Preferences: persist user settings frequently so crash/outage doesn’t wipe them. On restart, 100% of saved prefs restored exactly. QA to test crash scenarios.\n\n- Security:\n  - Access limited to registered, licensed agents only. No guest mode. Tie to brokerage directory + MLS where needed.\n  - Every user authenticated AND authorized. Don’t conflate — AuthN vs AuthZ. Role checks for listing edit vs view.\n  - Input validation everywhere to avoid bad data entering system (e.g., no negative prices, required fields for listings, date formats). Protect MLS and office systems from junk.\n\n- Listings (create/update):\n  - Agents want to update open house time, fix typos, change status. Create new listing from device also requested by Brooke (scope confirmed by Dana). Must respect MLS rules, picklists, required fields.\n  - Edge cases: network drops during update → retry later; do not create duplicates. Owen to define.\n\n- Scalability / Users:\n  - Multi-remote-user support baseline. QA load testing: 1000 simultaneous agents expected today. Plan for growth to 5x (~5000) within a year. Priya: “Don’t melt the server during spring rush.”\n  - Consider modest headroom for spikes. Logins at top of hour with sync — watch contended endpoints.\n\n- Device constraints:\n  - Target platforms: Windows CE and Palm OS only (for v1). Conform to native UI conventions. No custom gestures. Use platform-standard menus, buttons, dialog patterns.\n  - Notifications: use platform-appropriate alerts; don’t simulate iOS banners.\n  - Font/color: use consistent palette + font mapping. Designer to provide a mapping doc.\n\n- Calls & Notifications:\n  - In-app calling to buyers/sellers to coordinate showings.\n  - Notify agent when client responds (call back, confirms/cancels). Works when the call starts from the app so we can detect it. Coordinate details with ops.\n\n- Misc / Contradictions captured:\n  - Leo wants “real-time” sync. Priya says not possible due to office system. Decision: keep hourly; explore making top-of-hour sync more visible. [Action: Kira design a subtle banner].\n  - Brooke prefers zero onboarding steps; Kira suggests minimal tips. NOT decided yet.\n  - Brooke wants “no lag at all” on images; Alex warns device memory limits. Agreement: prioritize clarity; may limit number of simultaneous thumbnails.\n\nAction Items:\n- Kira: draft UI with standard device menus/buttons; include brand-consistent color/fonts; no custom components. Due 3/25.\n- Alex: prototype search → results → map → directions flow on CE; time search returns. Target under 30 from submit. Log metrics.\n- Priya: confirm hourly sync job details and payload (contacts + appts). Add “last synced” timestamp. Provide sample. Due 3/21.\n- Owen: define crash/power-cut test to verify 100% preference restoration. Include offline viewing of saved searches, CMAs, appointments. Due 3/28.\n- Miguel: send MLS validation rule set and picklists. Due EOW.\n- Dana: write success criteria for 90% self-install by untrained agents. Consider in-app tips vs none. Due 3/22.\n- Leo: compile top 10 search criteria agents actually use; ensure terms are realtor-friendly. Due 3/20.\n\nPerformance Targets (scribbles on whiteboard):\n- Search: “reasonable” → define as <= 30 seconds after submit. Faster better. [Agreed].\n- CMA: “quick” → define as <= 60 seconds after criteria confirmed. [Agreed].\n- Sync: “feels timely” → remains hourly, finish promptly; notify of new appts. [Agreed].\n- Uptime: 24/7 objective; ~99.9% avail (999/1000). [Target].\n\nOpen Issues / Parking Lot:\n- Can we show a small “Sync Now” control without implying real-time? [Brooke concerned about support calls]. [TBD].\n- Save search: criteria only vs criteria + snapshot; implications for storage and offline. [TBD].\n- Onboarding tips: 0 vs 2 screens. [Not decided].\n- Listing creation on Palm: form length vs screen size; need to chunk fields; validate early. [Design prototype].\n- Map area filter (draw shape?) likely not v1. Keep to specified area list and map display; no freehand. [Defer].\n\nRandom Notes (abbrev, messy):\n- “Make buttons look like buttons” (Leo). Use standard Palm soft key labels.\n- Protect from malformed inputs. Price, dates, MLS IDs. Error messages in plain language (no codes).\n- Agents expect native feel — no new gestures or custom nav. Use OS back behavior.\n- Multi-user concurrency: 1000 now, 5x later. Monitor memory. Test top-of-hour load.\n- When offline: read-only views of cached data. Don’t block.\n- Calling workflow: Place call from listing detail; on response (client calls back or confirms), notify agent with link to the relevant screen. Log behavior TBD.\n- Install: aim for tap-install, sign-in, done. No printed guide. Provide on-screen hints only if necessary.\n- Security posture: no sharing logins. Only licensed agents. Authenticated + authorized per role.\n- Device list: CE, Palm only. No iOS/Android in v1. Avoid references in UI to touch gestures not present.\n- Direction flow: map shows area, user taps property, route displays.\n- Photos: ensure clarity. Preload a few thumbnails; lazy-load rest. Avoid fuzzy first impression.\n- Consistency: color + font across screens; keep pro look. No playful icons.\n\nSummary (chaotic):\n- Yes to: native UI, pro/consistent visuals, realtor-friendly terms, MLS search on device, map + directions, saved searches, clear photos, CMA under 60, hourly sync of contacts/appts, notify after sync, in-app call + notify on response, offline cached access, 24/7-ish uptime, preferences persist/restore, secure (licensed only, authN/Z, input validation), listing create/update, 1000 users scale now + 5x growth, run on CE/Palm.\n- No to: 10-minute sync push (crossed-out), custom UI widgets.\n- Not decided: sync now button; onboarding tips; save search snapshot semantics."
+    },
+    {
+      "type": "email_thread",
+      "title": "RE: Field Kit install + sync expectations (and a few gotchas)",
+      "text": "From: Dana <dana@pocketmls.com>\nTo: Brooke <brooke@centurynorthside.com>, Priya <priyaa@centurynorthside.com>\nCC: Alex <alex@pocketmls.com>, Miguel <mfigueroa@mlsboard.org>, Owen <qa@pocketmls.com>, Kira <kira@pocketmls.com>, Leo <leo@centurynorthside.com>\nDate: 2025-04-02 08:12\nSubject: Field Kit install + sync expectations\n\nHey all,\n\nQuick follow-up from yesterday’s run-through in the bullpen. A few threads to close:\n\n1) Install/onboarding: Our goal remains that agents can self-install without needing a printed handout. I’d like to test whether 9/10 new users can do this unassisted. Brooke, ok to pull a few new hires for a dry run next week?\n\n2) Sync cadence: We’ve aligned on hourly pulls from the office system for contacts and appointments. We’ll show a last-synced time and surface a note for new appointments after each run.\n\n3) Performance commitments: For searches, our line in the sand is that results appear in under ~30 seconds from tapping “Search.” For CMAs, under a minute after selection.\n\n4) Devices: Confirming v1 is Windows CE and Palm OS only. No iOS/Android yet.\n\n5) Security: Licensed/registered agents only. We’re going to require login and enforce role permissions (e.g., who can update a listing).\n\n6) In-app calling: We’ll initiate calls from the app so we can notify the agent when the buyer/seller responds.\n\nPlease reply with any red flags or constraints we haven’t captured.\n\n—Dana\n\nSent from my mobile\n\n---\n\nFrom: Brooke <brooke@centurynorthside.com>\nTo: Dana <dana@pocketmls.com>\nCC: Priya <priyaa@centurynorthside.com>, Alex <alex@pocketmls.com>, Miguel <mfigueroa@mlsboard.org>, Owen <qa@pocketmls.com>, Kira <kira@pocketmls.com>, Leo <leo@centurynorthside.com>\nDate: 2025-04-02 08:37\nSubject: RE: Field Kit install + sync expectations\n\nMorning folks —\n\nAll sounds right. On install, yes, grab two of the new buyer’s agents who start Monday. I want to avoid any printed materials. If we can’t make it obvious enough to do without paper, we need to simplify the flow.\n\nTwo other asks:\n- Visual polish. Please keep the color/fonts consistent so it feels professional. I know these devices are dated, but our clients shouldn’t feel that.\n- Photos in search results must be clear. We literally lost a listing because a seller saw their home photo in a different app that looked like mud.\n\nRe: sync: hourly is ok as long as it’s reliable and the app lets them know when a new showing lands.\n\nB\n\n---\n\nFrom: Priya <priyaa@centurynorthside.com>\nTo: Dana <dana@pocketmls.com>\nCC: Brooke <brooke@centurynorthside.com>, Alex <alex@pocketmls.com>, Owen <qa@pocketmls.com>, Kira <kira@pocketmls.com>, Miguel <mfigueroa@mlsboard.org>, Leo <leo@centurynorthside.com>\nDate: 2025-04-02 09:04\nSubject: RE: Field Kit install + sync expectations (also uptime + load)\n\nHi,\n\n+1 to all. Two ops caveats:\n\n- Uptime: We’re targeting “always available” in practical terms. Please budget infra for ~99.9% availability. If we’re down, it better be a rare blip (think 999 successes out of 1000 checks). Agents will be using this 24/7, literally.\n\n- Load: Plan to handle 1000 concurrent users at launch (tops of hour will spike). Expect 5x growth within a year if recruitment goes as planned. QA should simulate this — Owen, can you plan a load test with bursts around the sync window?\n\n- Preferences: We’ve had too many support tickets where after a crash, an app forgets settings. Can we guarantee that user preferences are retained even if the device restarts, and restored completely when the app comes back up?\n\n- Security: Only licensed/registered agents get in. No assistants piggybacking on someone else’s login. Require authentication and then check authorization for sensitive actions (e.g., listing edits).\n\n- Data hygiene: Please validate inputs thoroughly. We’ve seen negative sale prices, dates in the wrong century, etc. Don’t let trash through to MLS or our office system.\n\nThx,\nPriya\n\n---\n\nFrom: Miguel <mfigueroa@mlsboard.org>\nTo: Dana <dana@pocketmls.com>\nCC: Brooke <brooke@centurynorthside.com>, Priya <priyaa@centurynorthside.com>, Alex <alex@pocketmls.com>, Owen <qa@pocketmls.com>, Kira <kira@pocketmls.com>, Leo <leo@centurynorthside.com>\nDate: 2025-04-02 10:11\nSubject: RE: Field Kit install + sync expectations (MLS notes)\n\nHi all,\n\nA few MLS-specific notes:\n\n- Listing update/create from device: Allowed with proper permissions. Use our picklists; certain fields are required, and we do not accept blank statuses. If the device enforces this before sending, we will all be happier.\n\n- Search terminology: Agree with “CMA,” “comps,” “showing,” etc. Label buttons with realtor-friendly terms, not internal jargon.\n\n- Maps/directions: When retrieving maps showing property locations for a specified area and offering directions, please keep implementation in line with board guidelines.\n\n- Access control: To reiterate the legal bit — only licensed users. We will be coordinating on the authentication side, but check authorization too.\n\nThanks,\nMiguel\n\n---\n\nFrom: Alex <alex@pocketmls.com>\nTo: Priya <priyaa@centurynorthside.com>, Dana <dana@pocketmls.com>\nCC: Brooke <brooke@centurynorthside.com>, Miguel <mfigueroa@mlsboard.org>, Owen <qa@pocketmls.com>, Kira <kira@pocketmls.com>, Leo <leo@centurynorthside.com>\nDate: 2025-04-02 11:02\nSubject: RE: Field Kit install + sync expectations — device + perf details\n\nQuick tech notes (typed on the bus, sorry for typos):\n\n- Platforms: Confirming v1 on Windows CE and Palm OS. We’re following native UI conventions: standard menus, hardware/soft buttons, no custom widgets. The look will be professional and we’ll stick to your color scheme + fonts within what the OS supports.\n\n- Performance: With current prototype against the staging MLS feed, search is returning results in ~12–18s in good network, ~24–28s in weak spots, so still under the 30s ceiling. CMA generation is hovering around 45–55s after comp selection, which meets the under 60s target. We’ll keep optimizing.\n\n- Offline: We cache saved searches (criteria + last results snapshot), generated CMAs, and appointment lists. So if the device goes offline, users can view those.\n\n- Notifications: After the hourly sync with the office system completes, we surface “New appointments” if found. Also, when calls are placed from the app to buyer/seller, we can recognize the callback/response and notify the agent.\n\n- Images: We’re tuning thumbnail size to preserve clarity in results while keeping memory usage reasonable. The detail view shows a clearer image.\n\n- Input validation: We’re blocking negative numbers, enforcing date formats, and required fields on listing updates/creation before any submission. This prevents bad data hitting MLS/office endpoints.\n\n- Install: Installer is a single tap package; after install, first run prompts for credentials. No printed guide expected. We’ll do a small in-app nudge. We’d like QA to measure what % of untrained folks complete it on their own (target is 90%+).\n\n- Concurrency/load: We’ll coordinate with QA for a 1000 simultaneous user test and will profile to ensure headroom for the 5x growth. Also watching top-of-hour spikes.\n\n- One caveat: Hourly is fixed because of the office system. A few folks asked for “instant” pulls; not possible in v1.\n\n-Alex\n\nSent from mobile\n\n---\n\nFrom: Leo <leo@centurynorthside.com>\nTo: Dana <dana@pocketmls.com>, Alex <alex@pocketmls.com>\nCC: Brooke <brooke@centurynorthside.com>, Priya <priyaa@centurynorthside.com>, Miguel <mfigueroa@mlsboard.org>, Owen <qa@pocketmls.com>, Kira <kira@pocketmls.com>\nDate: 2025-04-02 12:15\nSubject: RE: install + sync — two street-level items\n\nHey team,\n\nStreet-level stuff:\n\n- Directions: Please make sure from the map I can tap a property and get directions without retyping the address. Some of the CE devices have crummy keyboards.\n\n- Saved searches: Agents are big on this. If I’m with buyers Sunday and lose signal, I want to pull up the saved results from earlier. Sounds like you’re caching — good. Just don’t bury the Saved tab.\n\n- New appt alert: After the hourly sync, we need a clear notification. Busy days mean I won’t open the calendar unless it nudges me.\n\n- Easy to learn: I onboard new folks monthly. If this thing uses the OS’s normal back/menu and Realtor terms, they’ll be fine without training. Don’t make me run a class.\n\n- Minor but: keep it looking professional. I showed a seller an app once that had goofy icons and lime green text. Never again.\n\nThx,\nLeo\n\nSent from my CE brick ;)\n\n---\n\nFrom: Owen <qa@pocketmls.com>\nTo: Dana <dana@pocketmls.com>, Alex <alex@pocketmls.com>\nCC: Brooke <brooke@centurynorthside.com>, Priya <priyaa@centurynorthside.com>, Miguel <mfigueroa@mlsboard.org>, Kira <kira@pocketmls.com>, Leo <leo@centurynorthside.com>\nDate: 2025-04-02 13:02\nSubject: RE: install + sync — QA scenarios + some pushback\n\nAll,\n\nQA notes:\n\n- We’ll run pass/fail around the search <= 30s metric and CMA <= 60s metric across varying network conditions. We’ll log worst-case from criteria submit to first result/render.\n\n- Will simulate crash during preference change and verify 100% restoration on relaunch. Also simulate outage and confirm saved searches, CMAs, and appointments are viewable offline.\n\n- Load test plan: 1000 simultaneous users around top of hour; measure page times + errors. Will add a high-water test at 5x to see bottlenecks.\n\n- Security tests include: only licensed accounts can log in, role-based permissions (e.g., not everyone can create a listing), and input validation (negative prices, out-of-range bedrooms, empty required fields).\n\n- Install usability test: 10 untrained agents attempt self-install. Goal is at least 9 succeed without printed help. We’ll record stumbling points.\n\nPushback / constraints we found:\n\n- Hourly sync is non-negotiable (ops). Some agents asked for more frequent. We’ll document expectations in-app.\n\n- Windows CE certificate store is picky — we must ensure auth works cleanly there. Alex, I’ll coordinate.\n\n- Availability: we’ll flag any downtime. Ops target is 24/7, 99.9%. We’ll monitor.\n\n- Photos: clarity vs memory — we’ll tune. Kira, UI needs to avoid loading 20 thumbnails at once on old Palms.\n\n-Owen\n\n---\n\nFrom: Priya <priyaa@centurynorthside.com>\nTo: All\nCC: \nDate: 2025-04-02 14:28\nSubject: RE: install + sync — one last thing on auth/assistants\n\nQuick add — please make sure assistants can’t sneak in under their agent’s login. Our policy is licensed users only. That means strict authentication and proper authorization checks throughout. We’ve had mishaps where assistants “updated” a listing incorrectly. The app should prevent that.\n\n—P\n\nSent from mobile\n\n---\n\nFrom: Dana <dana@pocketmls.com>\nTo: All\nCC: \nDate: 2025-04-02 15:10\nSubject: RE: install + sync — wrapping up (mostly)\n\nThanks, everyone. Rolling up decisions and open items:\n\nDecisions:\n- Keep install self-service; no printed instructions. We’ll measure and aim for 90% success among untrained agents.\n- Follow native UI standards on CE/Palm; standard menus/buttons; professional, consistent color/fonts; Realtor-friendly wording.\n- Searches return within ~30s; CMAs within ~60s. Clear photos in search results and on detail.\n- Hourly sync with office for contacts + appointments. After each run, notify agents about new client appointments. Offline mode: saved searches, CMAs, appts viewable when network drops.\n- Only licensed users can access; enforce login and role permissions. Validate inputs to prevent bad data.\n- Devices: Windows CE + Palm OS only for v1.\n- Scale/availability: design for 24/7 use, ~99.9% availability. Support 1000 simultaneous users now; plan for 5x growth.\n\nOpen items:\n- QA to confirm 100% preference restoration after crash/restart.\n- Owen/Alex to validate CE certificate handling for auth.\n\nLet’s keep an eye on top-of-hour spikes. I’ll set up the install usability test for next week.\n\n—Dana"
+    }
+  ],
+  "gold_requirements": [
+    {
+      "id": "PROMISE_2_R001",
+      "text": "The look and feel of the system shall conform to the user interface standards of the smart device.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R002",
+      "text": "The user interface shall have standard menus buttons for navigation",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R003",
+      "text": "The system shall have a professional appearance",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R004",
+      "text": "The product shall have a consistent color scheme and fonts.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R005",
+      "text": "The system shall be used by realtors with no training.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R006",
+      "text": "The system shall be intuitive and self explanatory.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R007",
+      "text": "The product shall be easy for a realtor to learn.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R008",
+      "text": "The product shall use symbols and words that are naturally understandable by the realtor community.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R009",
+      "text": "The product shall produce search results in an acceptable time",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R010",
+      "text": "The search results shall be returned no later 30 seconds after the user has entered the search criteria",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R011",
+      "text": "The product shall generate a CMA report in an acceptable time.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R012",
+      "text": "The CMA report shall be returned no later 60 seconds after the user has entered the CMA report criteria.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R013",
+      "text": "The product shall synchronize contacts and appointments in an acceptable time.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R014",
+      "text": "The product shall synchronize with the office system every hour.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R015",
+      "text": "The product shall be available for use 24 hours per day 365 days per year",
+      "raw_label": "A",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R016",
+      "text": "Out of 1000 accesses to the system the system is available 999 times.",
+      "raw_label": "A",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R017",
+      "text": "The product shall operate in offline mode whenever internet connection is unavailable.",
+      "raw_label": "FT",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R018",
+      "text": "The product shall allow the user to view previously downloaded search results CMA reports and appointments.",
+      "raw_label": "FT",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R019",
+      "text": "The product shall retain user preferences in the event of a failure.",
+      "raw_label": "FT",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R020",
+      "text": "100% of saved user preferences shall be restored when system comes back online.",
+      "raw_label": "FT",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "reliability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R021",
+      "text": "The product shall be able to support multiple remote users",
+      "raw_label": "SC",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R022",
+      "text": "The product shall be able support 1000 simultaneous users.",
+      "raw_label": "SC",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R023",
+      "text": "The product shall be capable of handling the existing 1000 users. This number is expected to grow 5 times within the next year.",
+      "raw_label": "SC",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "scalability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R024",
+      "text": "The product shall be installed by an untrained realtor without recourse to separately-printed instructions.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R025",
+      "text": "90% of untrained realtors shall be able to install the product on their device without printed instructions",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R026",
+      "text": "The product is expected to run on Windows CE and Palm operating systems.",
+      "raw_label": "PO",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R027",
+      "text": "Only registered realtors shall be able to access the system.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R028",
+      "text": "Every user of the system shall be authenticated and authorized.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R029",
+      "text": "The product shall prevent its data from incorrect data being introduced.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R030",
+      "text": "The system shall allow a real estate agent to query MLS information",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R031",
+      "text": "The user shall be able to get driving directions to a selected property",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R032",
+      "text": "The user shall be able to download appointments and contact information for clients",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R033",
+      "text": "The system shall display clear property images in the search results",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R034",
+      "text": "The system shall update or create new property listings in the MLS",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R035",
+      "text": "Realtor shall be able to generate a CMA report based on property criteria",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R036",
+      "text": "The system shall be able to call the seller or buyer to schedule an appointment",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R037",
+      "text": "The realtor shall be notified of new client appointments after automatic synchronization with office system",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R038",
+      "text": "The realtor shall be able to retrieve a map showing property locations for a specified area",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R039",
+      "text": "The system shall notify the realtor when a seller or buyer responds to an appointment request",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_2_R040",
+      "text": "The product shall allow the user to save the property search results.",
+      "raw_label": "F",
+      "requirement_kind": "functional",
+      "nfr_subtype": "not_applicable",
+      "source_strategy": null,
+      "source_region": null
+    }
+  ],
+  "validation": {
+    "coverage_rate": 1.0,
+    "missing_req_ids": [],
+    "unsupported_count": 3,
+    "repair_rounds_used": 1,
+    "coverage_entries": [
+      {
+        "req_id": "PROMISE_2_R001",
+        "supported": true,
+        "evidence_snippets": [
+          "Use native controls only on both platforms"
+        ],
+        "reason": "Sources mandate native device UI conventions."
+      },
+      {
+        "req_id": "PROMISE_2_R002",
+        "supported": true,
+        "evidence_snippets": [
+          "standard menus & buttons"
+        ],
+        "reason": "Documents require standard menus and buttons for navigation."
+      },
+      {
+        "req_id": "PROMISE_2_R003",
+        "supported": true,
+        "evidence_snippets": [
+          "professional look"
+        ],
+        "reason": "Stakeholders repeatedly request a professional appearance."
+      },
+      {
+        "req_id": "PROMISE_2_R004",
+        "supported": true,
+        "evidence_snippets": [
+          "keep our blue, gray, font sizes consistent"
+        ],
+        "reason": "Sources call for consistent colors and font mapping."
+      },
+      {
+        "req_id": "PROMISE_2_R005",
+        "supported": true,
+        "evidence_snippets": [
+          "Zero training philosophy"
+        ],
+        "reason": "Team states goal that agents require no training."
+      },
+      {
+        "req_id": "PROMISE_2_R006",
+        "supported": true,
+        "evidence_snippets": [
+          "Self-explanatory flow"
+        ],
+        "reason": "Requirement for intuitive, self-explanatory flows is explicit."
+      },
+      {
+        "req_id": "PROMISE_2_R007",
+        "supported": true,
+        "evidence_snippets": [
+          "New hire should pick up in minutes"
+        ],
+        "reason": "Notes specify minimal learning curve and quick pickup."
+      },
+      {
+        "req_id": "PROMISE_2_R008",
+        "supported": true,
+        "evidence_snippets": [
+          "realtor-friendly terms"
+        ],
+        "reason": "Text requires realtor-understandable labels and terminology."
+      },
+      {
+        "req_id": "PROMISE_2_R009",
+        "supported": true,
+        "evidence_snippets": [
+          "Search < 30 sec after submit"
+        ],
+        "reason": "Performance target for acceptable search timing is stated."
+      },
+      {
+        "req_id": "PROMISE_2_R010",
+        "supported": true,
+        "evidence_snippets": [
+          "results appear in under ~30 seconds"
+        ],
+        "reason": "Explicit 30-second maximum search response commitment."
+      },
+      {
+        "req_id": "PROMISE_2_R011",
+        "supported": true,
+        "evidence_snippets": [
+          "Generate CMA in field."
+        ],
+        "reason": "Sources require in-field CMA generation capability."
+      },
+      {
+        "req_id": "PROMISE_2_R012",
+        "supported": true,
+        "evidence_snippets": [
+          "Timing: under ~60 (Dana said 60)."
+        ],
+        "reason": "Multiple notes specify CMA under ~60 seconds."
+      },
+      {
+        "req_id": "PROMISE_2_R013",
+        "supported": true,
+        "evidence_snippets": [
+          "Sync covers client contacts + appointments."
+        ],
+        "reason": "Documents mandate syncing contacts and appointments."
+      },
+      {
+        "req_id": "PROMISE_2_R014",
+        "supported": true,
+        "evidence_snippets": [
+          "Automatic sync cadence: every hour."
+        ],
+        "reason": "Hourly pulls from office system are explicitly required."
+      },
+      {
+        "req_id": "PROMISE_2_R015",
+        "supported": true,
+        "evidence_snippets": [
+          "Availability target: treat as 24/7."
+        ],
+        "reason": "Stakeholders demand 24/7 availability for agents."
+      },
+      {
+        "req_id": "PROMISE_2_R016",
+        "supported": true,
+        "evidence_snippets": [
+          "999/1000 availability expectation"
+        ],
+        "reason": "Specifies 99.9% (999/1000) availability target."
+      },
+      {
+        "req_id": "PROMISE_2_R017",
+        "supported": true,
+        "evidence_snippets": [
+          "Offline mode: when connection drops"
+        ],
+        "reason": "Sources require usable offline mode with caching."
+      },
+      {
+        "req_id": "PROMISE_2_R018",
+        "supported": true,
+        "evidence_snippets": [
+          "View cached searches, previous CMA reports"
+        ],
+        "reason": "Documents state cached searches, CMAs, appointments viewable."
+      },
+      {
+        "req_id": "PROMISE_2_R019",
+        "supported": true,
+        "evidence_snippets": [
+          "Persist user settings frequently"
+        ],
+        "reason": "Sources require retaining prefs across crashes/outages."
+      },
+      {
+        "req_id": "PROMISE_2_R020",
+        "supported": true,
+        "evidence_snippets": [
+          "On restart, 100% of saved prefs restored exactly."
+        ],
+        "reason": "Meeting notes explicitly demand full preference restoration."
+      },
+      {
+        "req_id": "PROMISE_2_R021",
+        "supported": true,
+        "evidence_snippets": [
+          "Multi-remote-user support baseline."
+        ],
+        "reason": "Notes explicitly require multi-remote-user support."
+      },
+      {
+        "req_id": "PROMISE_2_R022",
+        "supported": true,
+        "evidence_snippets": [
+          "1000 simultaneous agents expected today."
+        ],
+        "reason": "Meeting and email specify 1000 concurrent users target."
+      },
+      {
+        "req_id": "PROMISE_2_R023",
+        "supported": true,
+        "evidence_snippets": [
+          "Plan for growth to 5x (~5000) within a year."
+        ],
+        "reason": "Documents state 5x growth to ~5000 within a year."
+      },
+      {
+        "req_id": "PROMISE_2_R024",
+        "supported": true,
+        "evidence_snippets": [
+          "Self-installable; no printed instruction sheet."
+        ],
+        "reason": "Multiple artifacts require self-install without printed materials."
+      },
+      {
+        "req_id": "PROMISE_2_R025",
+        "supported": true,
+        "evidence_snippets": [
+          "Goal: 90%+ of untrained agents succeed"
+        ],
+        "reason": "Goal explicitly sets 90%+ untrained success for install."
+      },
+      {
+        "req_id": "PROMISE_2_R026",
+        "supported": true,
+        "evidence_snippets": [
+          "Target platforms: Windows CE and Palm OS only"
+        ],
+        "reason": "Sources confirm v1 targets Windows CE and Palm OS."
+      },
+      {
+        "req_id": "PROMISE_2_R027",
+        "supported": true,
+        "evidence_snippets": [
+          "Access limited to registered, licensed agents only."
+        ],
+        "reason": "Security notes and emails restrict access to licensed agents."
+      },
+      {
+        "req_id": "PROMISE_2_R028",
+        "supported": true,
+        "evidence_snippets": [
+          "Every user authenticated AND authorized."
+        ],
+        "reason": "Documents call for authentication and authorization for users."
+      },
+      {
+        "req_id": "PROMISE_2_R029",
+        "supported": true,
+        "evidence_snippets": [
+          "Input validation everywhere to avoid bad data"
+        ],
+        "reason": "Requirements demand input validation to prevent bad data."
+      },
+      {
+        "req_id": "PROMISE_2_R030",
+        "supported": true,
+        "evidence_snippets": [
+          "MLS query from device — must support typical criteria."
+        ],
+        "reason": "Notes require MLS queries from device with realtor-friendly criteria."
+      },
+      {
+        "req_id": "PROMISE_2_R031",
+        "supported": true,
+        "evidence_snippets": [
+          "tap a listing → route shown"
+        ],
+        "reason": "Map tap provides directions."
+      },
+      {
+        "req_id": "PROMISE_2_R032",
+        "supported": true,
+        "evidence_snippets": [
+          "sync covers client contacts + appointments."
+        ],
+        "reason": "Hourly sync pulls contacts and appointments."
+      },
+      {
+        "req_id": "PROMISE_2_R033",
+        "supported": true,
+        "evidence_snippets": [
+          "Show clear property images in results"
+        ],
+        "reason": "Agents insist on clear photos in results."
+      },
+      {
+        "req_id": "PROMISE_2_R034",
+        "supported": true,
+        "evidence_snippets": [
+          "Listing update/create from device: Allowed"
+        ],
+        "reason": "Device listing create/update expressly requested."
+      },
+      {
+        "req_id": "PROMISE_2_R035",
+        "supported": true,
+        "evidence_snippets": [
+          "Generate CMA in field. Quick comps"
+        ],
+        "reason": "CMA generation in field with comp selection."
+      },
+      {
+        "req_id": "PROMISE_2_R036",
+        "supported": true,
+        "evidence_snippets": [
+          "In-app calling to buyers/sellers"
+        ],
+        "reason": "App will initiate calls to schedule appointments."
+      },
+      {
+        "req_id": "PROMISE_2_R037",
+        "supported": true,
+        "evidence_snippets": [
+          "notify user of new or changed appointments"
+        ],
+        "reason": "Device notifies realtor after sync completes."
+      },
+      {
+        "req_id": "PROMISE_2_R038",
+        "supported": true,
+        "evidence_snippets": [
+          "retrieve map showing property locations"
+        ],
+        "reason": "Map view with property pins is required."
+      },
+      {
+        "req_id": "PROMISE_2_R039",
+        "supported": true,
+        "evidence_snippets": [
+          "Notify agent when client responds"
+        ],
+        "reason": "Notifications for client responses are specified."
+      },
+      {
+        "req_id": "PROMISE_2_R040",
+        "supported": true,
+        "evidence_snippets": [
+          "Allow saving of search results"
+        ],
+        "reason": "Users explicitly request saving searches for later."
+      }
+    ],
+    "unsupported_implied": [
+      {
+        "text": "The system shall detect network interruptions during listing create/update and implement retry and deduplication logic so that partially-submitted updates do not create duplicate listings when the network is restored.",
+        "source_snippet": "Edge cases: network drops during update → retry later; do not create duplicates. Owen to define.",
+        "source_type": "meeting_notes",
+        "reason": "The source explicitly requires behavior to handle interrupted listing submissions (retry and prevent duplicates). The gold set requires create/update listings and input validation but does not specify retry/deduplication semantics for network failures."
+      },
+      {
+        "text": "The system shall record and expose performance telemetry (e.g., time from search/CMA criteria submission to first result/render) and support monitoring of top-of-hour load/availability spikes.",
+        "source_snippet": "Owen: log the time from criteria entry to report. QA: We’ll run pass/fail around the search <= 30s metric and CMA <= 60s metric... Load test plan: 1000 simultaneous users around top of hour; measure page times + errors. Will add a high-water test at 5x to see bottlenecks.",
+        "source_type": "meeting_notes",
+        "reason": "Multiple artifacts call for logging and load/monitoring (timing logs, QA load tests, monitoring top-of-hour spikes). The gold requirements specify performance targets and concurrency numbers but do not require telemetry, logging, or monitoring capabilities."
+      },
+      {
+        "text": "The user interface shall display the last-synced timestamp and surface a concise summary of changes (for example, '2 new showings added since 11:00') after each hourly sync.",
+        "source_snippet": "We will show a last-synced time and surface a note for new appointments after each run. ... After sync completes, device should notify user of new or changed appointments. Show last synced time. Example: “2 new showings added since 11:00”.",
+        "source_type": "email_thread",
+        "reason": "The source explicitly requires showing last-synced time and a digest of changes post-sync. While the gold set requires notification of new appointments after synchronization, it does not require displaying the last-synced timestamp or a summarized list of what changed."
+      }
+    ],
+    "passed": false
+  },
+  "brief": {
+    "project_name": "PocketMLS Field Kit",
+    "domain": "Real estate mobile productivity",
+    "users": [
+      "Buyer’s agents in the field",
+      "Listing agents creating and updating properties",
+      "Team lead Realtors managing showings"
+    ],
+    "stakeholders": [
+      "Broker/owner",
+      "Brokerage IT/operations",
+      "MLS provider/board",
+      "Office coordinators/schedulers",
+      "Clients (buyers and sellers) responding to appointment requests"
+    ],
+    "business_goals": [
+      "Let agents handle MLS tasks, scheduling, and client communication entirely on the go",
+      "Speed up responses with fast searches and quick CMA creation to win listings",
+      "Reduce missed or double-booked showings through reliable calendar and contact sync",
+      "Present a polished, trustworthy experience to clients",
+      "Scale to a larger agent base without service degradation"
+    ],
+    "core_features": [
+      "Mobile MLS search with property details, clear photos, and the ability to save search results",
+      "Area maps of listings plus tap-through driving directions to a selected property",
+      "Automatic hourly sync with the office system to download appointments and client contacts",
+      "In-app calling to buyers or sellers to schedule showings, with notifications when they respond",
+      "Generate a CMA based on selected criteria while in the field",
+      "Create or update property listings in the MLS from the device"
+    ],
+    "quality_concerns": [
+      "Zero-training usability: intuitive flows, realtor-friendly terms, and standard mobile navigation",
+      "Professional, consistent look: stable color palette and fonts aligned with brand",
+      "Conform to native UI conventions of the target devices",
+      "Responsive performance: searches complete in under about 30 seconds; CMAs in roughly a minute; sync feels timely",
+      "Always available: 24x7 service with ~99.9% uptime, preserving user settings across crashes or outages",
+      "Works offline: continue using cached searches, CMAs, and appointments when the network drops",
+      "Secure and scalable: authenticated licensed users only, input validation to prevent bad data, and support for 1000 concurrent users now with headroom for 5x growth"
+    ],
+    "constraints": [
+      "Target platforms are legacy smart devices: Windows CE and Palm OS",
+      "Integrates with the existing brokerage office scheduling/contact system; hourly sync cadence",
+      "Access is limited to registered, licensed Realtors",
+      "Designed for intermittent connectivity in the field",
+      "Use platform-standard menus and buttons for navigation",
+      "Self-installable by agents without printed instructions"
+    ],
+    "terminology": [
+      "MLS (Multiple Listing Service)",
+      "CMA (Comparative Market Analysis)",
+      "Listing (property record)",
+      "Showing/appointment",
+      "Comps (comparable properties)",
+      "Geocoded map and driving directions"
+    ]
+  },
+  "metadata": {
+    "project_id": "2",
+    "req_count": 40,
+    "label_dist": {
+      "LF": 4,
+      "US": 6,
+      "PE": 6,
+      "A": 2,
+      "FT": 4,
+      "SC": 3,
+      "PO": 1,
+      "SE": 3,
+      "F": 11
+    },
+    "llm_usage": {
+      "total_calls": 24,
+      "total_input_tokens": 142395,
+      "total_output_tokens": 91970
+    }
+  }
+}

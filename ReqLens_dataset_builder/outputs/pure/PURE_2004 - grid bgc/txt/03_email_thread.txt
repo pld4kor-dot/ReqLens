@@ -1,0 +1,150 @@
+TYPE  : email_thread
+TITLE : Email thread: Gatekeeper login, Globus, Disturbance Events Semantics, and Downloads
+UNIT  : PURE_2004 - grid bgc
+============================================================
+
+Email 1
+From: Tom <tom@gridbgc.org>
+To: Priya <priya@ucar.edu>, Greg <greg@globus.team>, Maya <maya@lab.edu>
+CC: Leo <leo@project.org>, Elena <elena@lab.edu>
+Subject: Gatekeeper + single login? and quick Daymet/BGC checklist
+Body:
+Hi all,
+
+Quick sanity check:
+- We’re planning to prompt users once at the start for credentials (Gatekeeper), then NOT ask again when they run Daymet or Biome-BGC jobs or when downloading. Delegated credentials should cover app->compute->storage pathways.
+- Compute runs will be on the CU Hemisphere Linux nodes. Nothing heavy on the portal host.
+- All file storage goes to Mass Storage (MSS). We can stage to scratch for compute but final is in MSS.
+- For the science flow: Daymet takes the station observations, interpolates to a grid, we store that as outputs users can download, and then those outputs become inputs to Biome-BGC runs.
+- Reminder: minimal viz only (Surface Obs, DEM, Analysis Mask, Site Data previews). Low priority.
+- We’ll surface downloads on dataset-bearing objects (e.g., Grid Registration, Daymet outputs).
+
+Anything above conflict with policy or Globus practice? Also, Priya, could we get a note on account unlocks — we want an admin-only control to unlock users when they get stuck.
+
+—Tom
+
+---
+Email 2
+From: Priya <priya@ucar.edu>
+To: Tom <tom@gridbgc.org>
+CC: Greg <greg@globus.team>, Maya <maya@lab.edu>, Leo <leo@project.org>, Elena <elena@lab.edu>
+Subject: RE: Gatekeeper + single login? and quick Daymet/BGC checklist
+Body:
+Tom,
+
+Yes, one login at the start aligns with Gatekeeper usage. Please confirm you are not caching passwords locally; use delegated credentials. And every transfer to remote compute/storage must be over approved secure channels.
+
+Account unlock: allowed for admins only. Also, reiterating: only users on the approved list can access the portal at all. No “guest” mode.
+
+MSS: correct, ALL file-based storage needs to land in NCAR’s Mass Storage. Temporary scratch is fine but ephemeral.
+
+Make sure you document compliance with NCAR security policies.
+
+Regards,
+Priya
+
+---
+Email 3
+From: Greg <greg@globus.team>
+To: Tom <tom@gridbgc.org>
+CC: Priya <priya@ucar.edu>, Maya <maya@lab.edu>, Leo <leo@project.org>, Elena <elena@lab.edu>, Nate <nate@hemisphere.edu>
+Subject: RE: Gatekeeper + single login? and quick Daymet/BGC checklist
+Body:
+Tom + all,
+
+From the Globus side:
+- Yes, we’ll use the Globus toolkit for data transfers and to integrate remote job submission. This gives you GSI for security and mature mechanisms for robust operation.
+- Re Daymet outputs & downloads: recommend exposing download actions on objects that have datasets (e.g., Grid Registration, Daymet outputs; even Projections if they exist as files). Route those through Globus endpoints against MSS.
+- Compute: Hemisphere endpoints are being set up; Nate can share the names as they’re finalized. Portal should dispatch runs to compute nodes; no heavy lifting on the web tier.
+
+One nit: make sure the portal isn’t prompting for extra credentials when moving data or running jobs. The delegated token should be enough.
+
+-Greg
+
+---
+Email 4
+From: Maya <maya@lab.edu>
+To: Tom <tom@gridbgc.org>
+CC: Greg <greg@globus.team>, Priya <priya@ucar.edu>, Elena <elena@lab.edu>, Leo <leo@project.org>
+Subject: RE: Gatekeeper + single login? + Disturbances question (fires/deforest)
+Body:
+Tom,
+
+On the science side — for the Biome-BGC runs we need the disturbance piece done right. The events we care about (for v1) are fires and deforestation. These are not durations in our model input; they’re instantaneous. So, a date (and time if you like) and the type.
+
+Also, we sometimes have dozens or hundreds over long chronologies. Please do not cap the number of events in a disturbance “project.” If you cap it, someone will hit that limit and then we’re back to spreadsheets.
+
+If you can group events under a disturbance project and keep them linked to the Biome-BGC run (provenance), that would be perfect.
+
+Thanks,
+Maya
+
+---
+Email 5
+From: Elena <elena@lab.edu>
+To: Tom <tom@gridbgc.org>
+CC: Maya <maya@lab.edu>, Priya <priya@ucar.edu>, Greg <greg@globus.team>, Leo <leo@project.org>
+Subject: RE: Data objects — CRUD and templates (plus sharing)
+Body:
+Hi Tom,
+
+A couple of content/data points:
+- We need full CRUD for our domain objects: Projection; Grid Registration; Surface Observation; Site Data; Daymet Parameterization; DEM; Analysis Mask; Daymet Project and Daymet Output; Plant Functional Type; BiomeBGC Site Data; Output Specification. I think that’s the whole zoo.
+- Please remember we are organizing into objects and projects. Users (esp. scientists) need to share objects across projects and sometimes merge compatible ones. When merging, track the relationships.
+- For templates: access controls are important. Let us create, view, edit, submit (publish), and delete a template. Templates should be reusable so folks can standardize setups.
+
+Also +1 on keeping visualizations low priority. Basic previews for those four types are enough.
+
+-Elena
+
+---
+Email 6
+From: Leo <leo@project.org>
+To: Tom <tom@gridbgc.org>
+CC: Priya <priya@ucar.edu>, Greg <greg@globus.team>, Maya <maya@lab.edu>, Elena <elena@lab.edu>
+Subject: RE: RE: Gatekeeper + single login? and scope (user classes and policy)
+Body:
+Tom,
+
+Just to reiterate the business angle:
+- Scientists are the primary audience; give them the better UX and the ability to run Daymet projects and Biome-BGC simulations. Data Users are lowest priority — read-only access where feasible and downloads to public/shared data, but no compute rights.
+- Portal Admins should have the levers for account creation/approval, role assignment, and the “unlock user” control Priya mentioned. Please keep all this within NCAR policy. No shortcuts.
+- Make sure we’re not inventing new capabilities beyond what we discussed. The portal is web-based, grid-backed, and we’re standardizing on Globus. Let’s stick to that plan.
+
+One thing I want to avoid: multiple prompts for credentials. It’s a killer for adoption. If we can truly do it once per session and everything else rides that, we’re good.
+
+Partial open items:
+- Confirm we still only have three object categories (we said we would keep it that way).
+- Confirm mass storage only for files, not some random NFS mount someone sneaks in.
+
+Thanks,
+Leo
+
+---
+Email 7
+From: Tom <tom@gridbgc.org>
+To: All
+CC: Nate <nate@hemisphere.edu>
+Subject: RE: Scope wrap (Globus, MSS, disturbances, CRUD) — partial resolution + a couple open items
+Body:
+Thanks everyone for the quick replies.
+
+Acknowledged and incorporated:
+- Gatekeeper with single credential prompt at session start; no extra prompts later. We will use delegated credentials.
+- Use Globus toolkit for secure transfers and remote job integration. All communications to compute/storage over secure channels.
+- Compute on Hemisphere nodes only; portal host stays lightweight. Nate is helping with endpoints.
+- All file-based storage -> NCAR Mass Storage. Scratch is only for staging on the compute side.
+- Daymet: workflow to convert surface observations into gridded weather via projects. Outputs downloadable and feed Biome-BGC inputs.
+- Disturbance modeling: support disturbance projects and events; events (fires + deforestation) are single timestamps; unlimited events per project.
+- Domain objects CRUD: Projection, Grid Registration, Surface Observation, Site Data, Daymet Parameterization, DEM, Analysis Mask, Daymet Project/Output, PFT, BiomeBGC Site Data, Output Specification. We’ll keep clear relationships so runs show which inputs they used.
+- Sharing/merging objects with provenance; collaboration across projects.
+- Templates: create/view/edit/submit/delete; access control; intended for reuse.
+- Visualization: very basic previews for Surface Obs, DEM, Analysis Mask, Site Data — low priority.
+- Roles: Scientists (favored) can run models; Data Users read-only + downloads; Admins manage accounts/roles and can unlock when needed.
+
+Open items (still):
+- Minor: presentation of Daymet output previews vs full download.
+
+If I missed anything, shout. Otherwise, we’ll move this into the spec draft and coordinate with the NCAR DataPortal team on integration points.
+
+—Tom

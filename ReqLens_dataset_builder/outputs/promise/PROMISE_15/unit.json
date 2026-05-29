@@ -1,0 +1,339 @@
+{
+  "id": "PROMISE_15",
+  "origin": "PROMISE",
+  "created_at": "2026-05-23T15:34:43.443311+00:00",
+  "source_texts": [
+    {
+      "type": "interview_transcript",
+      "title": "Kickoff interview with Finance, Architecture, Ops, and a Regional Controller (revised)",
+      "text": "Maria [PCG Finance Lead]: Thanks for making time. BudgetPulse RFS has to get us through the next budgeting cycle with fewer headaches than last year. I want to start with availability because the phones light up when folks can’t get in.\n\nDev [ENET Architect]: Sure. On availability, we’re planning for intranet access around the clock, but we set the targets differently inside and outside the budgeting window.\n\nLila [Regional Controller]: Around the clock as in weekends too? I’m often in the office on Sundays finalizing the branch roll-ups.\n\nSam [IT Ops]: Yes, the intranet runs 24/7. There are rare change-control windows. During budgeting we tighten the target; off-peak we’re more relaxed.\n\nMaria [PCG Finance Lead]: I want the numbers spelled out.\n\nDev [ENET Architect]: Year-round baseline we use 90% for this class of internal tools, and during the budgeting period we push up to 98% availability. If it is down in that window, we aim to get it back within about an hour once it’s reported to helpdesk.\n\nLila [Regional Controller]: An hour seems fine if it’s unusual. Last October we had… well, you know.\n\nSam [IT Ops]: We’ll treat RFS as high priority during the budgeting window and have after-hours on-call.\n\nMaria [PCG Finance Lead]: Good. Next, performance. People keep saying it needs to be fast. We had complaints about waiting for pages to paint.\n\nDev [ENET Architect]: We can target round trips within two seconds for most interactions — roughly nine out of ten clicks. For heavier actions, up to ten seconds is tolerable occasionally, but that should be the exception.\n\nLila [Regional Controller]: Two seconds is fine for normal save. But the account roll-ups pulled slowly last time.\n\nDev [ENET Architect]: We’ll tune those. Also, visual standards — we stick to intranet guidelines, which include supporting lower resolutions. Minimum is still 800 by 600.\n\nSam [IT Ops]: Compliance says from 800x600 upward. We’ll test a spread of resolutions; if someone finds a weird case after go-live, we’ll turn around a fix quickly.\n\nMaria [PCG Finance Lead]: Architecture signoff — we got dinged last time for not following the look and feel. We need pre-release approval. I’m okay if a small portion gets corrected after go-live, but not months later.\n\nDev [ENET Architect]: The ENET Architecture group needs to approve the majority of UI before rollout. Historically about 95% is approved pre-release; the small tail we fix within a month.\n\nLila [Regional Controller]: Okay. What about the data? Branches, complexes, districts, regions — there were missing complexes last year. Finance folks were upset.\n\nMaria [PCG Finance Lead]: That was because the BDW snapshot and the app didn’t line up. This time, I want it fully aligned. Everything that exists as of the October month-end has to show up before we start budgets. I don’t want surprises mid-year.\n\nSam [IT Ops]: The plan is to load from BDW one business day before kickoff. They deliver seven files — I have the list — and we run a load job. We block out a three-hour window to ingest them all. That data is the October month-end snapshot.\n\nDev [ENET Architect]: For practice and testing through the year, we can ask BDW for test drops. Not unlimited — they cap the number per year.\n\nMaria [PCG Finance Lead]: Five, right? Up to five mock runs to test the workflow.\n\nSam [IT Ops]: That’s what I recall too. We’ll schedule those.\n\nLila [Regional Controller]: And that will include new branches and revenue/expense accounts? We had new revenue lines show up in January that weren’t budgetable.\n\nMaria [PCG Finance Lead]: For the budget period, we only need what exists at October month-end. Anything added after that is next year’s problem. But everything that exists as of that date — one hundred percent — must be in RFS when we open it.\n\nDev [ENET Architect]: That aligns with the snapshot principle. We will ensure the import pulls the full set of org units and accounts from those seven files.\n\nLila [Regional Controller]: Can you send an email if the load fails? Sorry, I’m jumping ahead.\n\nSam [IT Ops]: If something goes wrong during the run, Ops will handle communications through the helpdesk. Just to be clear, we’re not putting any new notification features inside RFS.\n\nMaria [PCG Finance Lead]: Fine. Authorization — we can’t have just anyone snooping. We need to use corporate sign-on. And roles — branch people see their stuff, regional see theirs, etc.\n\nDev [ENET Architect]: We’ll integrate with UAS for identities. That’s the source of truth. We won’t maintain local accounts. Access to functions will key off roles that match PCG hierarchy levels — branch, complex, district, region.\n\nLila [Regional Controller]: UAT handles that? Sorry, I always mix that up.\n\nSam [IT Ops]: UAS, not UAT. User Access System. It’s our identity and authorization service.\n\nLila [Regional Controller]: Right, UAS. So if someone is in the region role, they won’t accidentally get to post changes at the branch level they don’t own?\n\nDev [ENET Architect]: Exactly. Functionality will be limited by role. The UI will hide what you don’t have permission for.\n\nMaria [PCG Finance Lead]: Training — we can’t do a month-long boot camp. We’ll do a quick ramp one week before go-live, virtual sessions. We need a high completion rate on budgets — like nearly everyone getting done on time.\n\nSam [IT Ops]: We can handle scheduling the webinars and record them. Metrics-wise, what’s the success criterion?\n\nMaria [PCG Finance Lead]: We’ve used 98% completion within the deadline as our target. I want to stick to that. If we need to tweak the screens to make it easier, do that.\n\nDev [ENET Architect]: Usability within the intranet standards, approved by the architecture group. We can have a quick usability pass in our joint testing.\n\nLila [Regional Controller]: Speaking of testing, the formulas — revenue and expense — they change every year. When do we get them into RFS?\n\nMaria [PCG Finance Lead]: Finance sends final formula changes, and then we need them applied quickly. Within a week after we hand them over. Then we devote two weeks to testing the calculations together — dev team and Finance — before the budget opens.\n\nDev [ENET Architect]: That cadence works. We’ll need your acceptance criteria on the computed values. We’ll set up test datasets during those two weeks.\n\nSam [IT Ops]: Let’s line one of those cycles up with a BDW test load so it’s close to production data.\n\nLila [Regional Controller]: Sorry to derail, but my branch admins complain their machines are too old. Are there minimum specs we need to communicate?\n\nSam [IT Ops]: Yes. We do a workstation readiness push before rollout. We need free disk space — roughly 400 megabytes — and the standard software stack. And while I know people hate it, we’re still on the old browser.\n\nDev [ENET Architect]: The app uses IE and the classic ASP.NET stack. Specifically, IE-era compatibility and .NET Framework 1.1 with the IE Web Controls. I know it’s heritage, but that’s the supported baseline on ENET for this line of apps.\n\nLila [Regional Controller]: Wait, IE that old? My laptop runs something newer.\n\nSam [IT Ops]: The enterprise image includes compatibility modes and the IE Web Controls. The point is, the app must work in that environment. We’ll validate that the vast majority of machines — like 98% — have the right setup before we flip the switch.\n\nMaria [PCG Finance Lead]: Please send a checklist: disk space, browser, .NET version, that control library. Branches will do the cleanup.\n\nDev [ENET Architect]: UI guidelines — we’ll pre-submit to Architecture for look-and-feel approval. Historically, they approve most of it before release — call it 95%. The little bits we miss we fix within a month.\n\nLila [Regional Controller]: And the resolution thing — can we stop supporting 800x600? It’s tiny.\n\nDev [ENET Architect]: We don’t force it. We support it. Pages should render properly from 800x600 upwards. We test popular settings and try to have almost all corrected pre-go-live. If we miss a screen, we’ll fix it within a week once notified.\n\nSam [IT Ops]: On outages — to circle back — if we do hit downtime during budgeting, have the business call the helpdesk. We can usually have it back within an hour once it’s reported. Our SLA is structured like that.\n\nMaria [PCG Finance Lead]: Noted. Also, we need to load all organizational units and account codes. No partial hierarchies. Some folks tried to budget into accounts that were missing and that caused chaos.\n\nDev [ENET Architect]: Understood. 100% of what BDW has at the snapshot gets loaded.\n\nLila [Regional Controller]: Works for me. Just please don’t make me click five times to save. And don’t make the page jump around.\n\nDev [ENET Architect]: We’ll keep the UX calm. Within the ENET style guide.\n\nMaria [PCG Finance Lead]: And no slipping the scope. No new features, just make the core work and make it reliable. That’s it.\n\nSam [IT Ops]: Copy that.\n\nDev [ENET Architect]: Agreed.\n\nLila [Regional Controller]: Thanks, all. I’ll send feedback after I use the test build."
+    },
+    {
+      "type": "meeting_notes",
+      "title": "RFS BudgetPulse working session — data loads, access, and UX standards (revised)",
+      "text": "Date: 2025-06-12\nLocation: ENET Teams call — link internal (see invite)\nAttendees: Maria (PCG Finance lead), Dev (ENET Architecture), Sam (IT Ops), Priya (BDW team), Ken (InfoSec/UAS), Lila (Regional Controller), Jordan (Helpdesk), Aly (PCG Finance analyst)\n\nNotes — raw, not final\n\n- Availability targets — intranet access 24/7. Year-round baseline lower than budget period.\n- During budgeting: tighter uptime. Numbers: 98% during the critical window (Sam said), 90% off-peak across the year (Dev said). Maria OK with that IF: outage recovery within ~1 hour once reported to helpdesk.\n- Sam mentioned rare maintenance windows; helpdesk to escalate to on-call during budgeting.\n- Performance: “fast UI.” Dev proposed 2 sec response for 90% of interactions, up to 10 sec acceptable for the rest (10%). Lila: roll-ups must not feel sluggish.\n- Usability/training: plan for one week of training just prior to go-live. Target: 98% of users finish budgets within the deadline with that training. (Jordan: record sessions.)\n- UX Standards: Must conform to ENET intranet look & feel. Architecture pre-approval target: ~95% of screens before release. Remaining small items to be fixed within one month post-release. [Maria: do not slip longer than 1 mo.]\n- Display/resolutions: support from 800x600 and higher. Goal: most common resolutions verified correct pre-go-live. Any remaining display issues fixed within 1 week of being reported. (Note: business asked about dropping 800x600 — NOT decided; assume support remains.)\n- Access/authorization: Only authorized users allowed. Integrate with UAS — no standalone accounts. No local admin backdoors. ALL roles assigned through UAS.\n- Roles/permissions: Map to PCG hierarchy levels (branch, complex, district, region). Access to features should be limited to what the user’s role allows. Hide actions users cannot perform.\n- Data loads from BDW: 7 files delivered for the annual budgeting run. Load within ~3 hours. One business day before budgeting starts. Data snapshot is October month-end. Priya to send file list again (she has last year’s).\n- Test loads: allowed up to 5 times across the year for testing/training. Coordinate windows with BDW. [Action: Sam to submit change tickets for each test run — combine if possible?]\n- Entities: Ensure branches/complexes/districts/regions + revenue/expense accounts that exist in BDW at October month-end appear in RFS before budget start. Goal: everything from that snapshot is present when we open.\n- Revenue/expense formula changes: Applied annually prior to budget. Timeline: within 1 week of Finance delivering changes, then 2 weeks of joint testing of calculations (project dev + PCG Finance). Aly to provide sample scenarios for testing.\n- Workstation readiness: Aim for 98% of user workstations passing checks prior to go-live. Min hardware: ~400MB free disk space. Software: IE browser (legacy), .NET Framework 1.1, and IE Web Controls on machines. [Question: do we enforce via SCCM? Sam: will push checks.] Some branch desktops are low on disk — schedule cleanup.\n- Browser support beyond IE: not in scope; stick to corporate standard compatibility (no Chrome-specific code).\n- Helpdesk runbook: include outage triage, reminder of 1-hour recovery expectation during budgeting, and escalation contacts.\n- Scheduling: load window — request a 3-hour quiet period on ENET the business day before kick-off. No conflicting changes.\n- Architecture review: schedule design walkthrough 3 weeks before target release. Expect high pre-approval at that review. Remaining minor items handled within one month post-release.\n- Communications: If the seven-file load encounters issues, Ops/Helpdesk will use existing channels to inform the team. No new in-app notification features.\n- UI behavior: keep pages stable (no jumping). Keep round-trips low. Page caching allowed if consistent with security.\n- Security: Strict role enforcement. Do not display data a user is not entitled to. UAS group membership determines app role (branch vs region etc.). Questions around mixed-role users — check with Ken. [TBD]\n- Contradiction flagged: Lila asked if a regional user can edit branch line items directly. Dev: depends on permissions; for now limit by role. Maria: prefer review-only at region level, not edit. [Open]\n- Timeline: Formula receipt date [TBD], but commit to 1-week dev turnaround and 2 weeks testing afterwards. Training scheduled the week immediately prior to go-live.\n- Compliance: Pages render at 800x600 and up. Accessibility — not in current scope; follow ENET standard only. [Parking lot]\n\nAction Items\n- Sam — draft desktop readiness checklist (400MB free; IE; .NET 1.1; IE Web Controls), distribution to branches by 6/20.\n- Priya — resend BDW file list and confirm constraints (7 files; ~3 hours; one business day before; October month-end snapshot; up to 5 test loads). Due 6/14.\n- Dev — prepare architecture review deck; seek pre-approval from ENET Architecture. Include resolution tests plan. Due 7/01.\n- Aly — compile sample revenue/expense scenarios for calculation testing. Due ASAP after formula doc arrives.\n- Ken — confirm UAS role mappings for PCG hierarchy and guidance on mixed-role handling. Due 6/25.\n- Jordan — draft helpdesk runbook including 1-hour recovery process for the budgeting window.\n\nOpen Issues / Parking Lot\n- Mixed-role behavior (branch+region) — read-only vs edit — decision pending; need Finance guidance.\n- Stop supporting 800x600? Architecture says keep for now; business wants to revisit next quarter. For RFS, assume support remains.\n- Outage communications — confirm distro lists. [TBD]\n- Local admin exception for Helpdesk — removed, per InfoSec. Use UAS controls only.\n- Whether to allow minor cosmetic fixes to slip post-release beyond 1 month — Maria strongly against. Keep within one month. [Hold firm]\n- Potential conflict with change windows the day before kickoff — Ops to negotiate. Worst case shift kickoff by 1 day? [Finance prefers not to; resolve later]\n\nMisc Notes\n- Someone said “we can do 99% uptime all year” — later corrected: target is 90% baseline annually, 98% during budgeting. Keep doc consistent.\n- Reminder: no new feature creep (notifications, dashboards, etc.) — focus on core: budget entry/review, data loads, role-based access.\n- Response times — log performance stats in QA to ensure 90% under 2 sec, 10% under 10 sec. If outliers, backlog for tuning."
+    },
+    {
+      "type": "email_thread",
+      "title": "Thread: BDW load window, UAS access, and pre-release approvals (revised)",
+      "text": "Email 1\nFrom: Aly Patel <aly.pcg@corp>\nTo: Sam Ortega <sam.ops@corp>, Dev Ionescu <dev.arch@corp>\nCC: Maria Santos <maria.finance@corp>, Priya Rao <priya.bdw@corp>, Ken Li <ken.uas@corp>, Jordan Hale <helpdesk@corp>\nSubject: RFS budgeting kickoff — BDW files + access + training\n\nHi team,\n\nKicking off the prep list so we don’t miss anything this year:\n- BDW files: we’re expecting seven files again. We want to run the load one business day before kickoff and finish within about three hours. That load should be from the October month-end snapshot, right?\n- We’ll need a few test cycles: up to five across the year, if BDW can accommodate.\n- Access: absolutely no local logins in RFS. Please confirm all sign-on and roles are from UAS. We need roles for branch/complex/district/region and the app should limit functions by role.\n- Training: we plan 1 week of sessions just before go-live. Our internal target is that 98% of users complete their budgets on time with that training.\n- Availability/performance: during budgeting we need the intranet to be stable, minimal downtime, and the UI shouldn’t lag. Dev mentioned 2s for most actions with some allowance for heavier ones — that is fine with Finance.\n- UI/standards: ENET look-and-feel pre-approval — can we aim for almost all signoff before release and the stragglers fixed in the first month after?\n- Also, pages need to render fine at 800x600 and up. Last year a few popups misaligned at 1024. Let’s fix those earlier.\n\nAnything I’m missing?\n\nThanks,\nAly\n\n---\n\nEmail 2\nFrom: Sam Ortega <sam.ops@corp>\nTo: Aly Patel <aly.pcg@corp>\nCC: Dev Ionescu <dev.arch@corp>, Priya Rao <priya.bdw@corp>, Maria Santos <maria.finance@corp>, Ken Li <ken.uas@corp>, Jordan Hale <helpdesk@corp>\nSubject: RE: RFS budgeting kickoff — BDW files + access + training\n\nAly,\n\nThis mostly matches Ops’ plans. The 3-hour ingest window is tight but doable if no competing changes. We’ll request a quiet period the business day before budgeting starts. If change control conflicts, we might have to slide by a day — hoping not.\n\nOn availability — we’ll treat the budgeting window as high priority, aiming for the higher uptime. If there is an outage (should be rare), our process gets the system back up within about an hour once the helpdesk ticket hits us. Please make sure users actually call it in.\n\nWorkstations: please remind branches that machines need to pass readiness: around 400MB free disk and the standard stack (IE + .NET 1.1 + IE Web Controls). We’ll try to get 98% compliance before go-live. Jordan is prepping a mailer.\n\nThanks,\nSam\n\n---\n\nEmail 3\nFrom: Dev Ionescu <dev.arch@corp>\nTo: Aly Patel <aly.pcg@corp>, Sam Ortega <sam.ops@corp>\nCC: Maria Santos <maria.finance@corp>, ENET Architecture <arch.review@corp>\nSubject: RE: RFS budgeting kickoff — UI/Perf details\n\nAll,\n\nOn UI standards, we will submit to the Architecture group for pre-release approval. Expect approximately 95% approved at the design review. We’ll keep a small tail of items to fix in the first month post-release.\n\nDisplay: we are obligated to support intranet standard resolutions from 800x600 upwards. We’ll test common sizes and aim to have most of them correct before rollout. If a missed layout issue is reported, we will correct it within a week.\n\nPerformance: Our target is 2 seconds or less for about 90% of interactions. For the remaining 10%, upper bound of ~10 seconds. We will review performance stats in QA.\n\nAccess: We only integrate with UAS. No local accounts. Roles map to PCG hierarchy. The app will limit access by role (hide or disable actions out of scope).\n\nDev\n\n---\n\nEmail 4\nFrom: Ken Li <ken.uas@corp>\nTo: Dev Ionescu <dev.arch@corp>, Aly Patel <aly.pcg@corp>\nCC: Maria Santos <maria.finance@corp>, Sam Ortega <sam.ops@corp>\nSubject: RE: Access clarifications (was: RFS budgeting kickoff...)\n\nJumping in late — caught this on CC.\n\n- UAS will be the sole source for authentication and authorization. No exceptions. We can establish app roles (branch, complex, district, region) tied to UAS groups.\n- Mixed-role handling: let’s keep that open until Finance confirms what they want. We’ll stick to the standard mappings in the meantime.\n- Please do not add in-app notification features for access changes; not in scope.\n\nKen\n\n---\n\nEmail 5\nFrom: Maria Santos <maria.finance@corp>\nTo: Aly Patel <aly.pcg@corp>, Dev Ionescu <dev.arch@corp>, Sam Ortega <sam.ops@corp>\nCC: Priya Rao <priya.bdw@corp>, Ken Li <ken.uas@corp>\nSubject: RE: RFS budgeting kickoff — formulas and testing window\n\nAdding the formulas timing to this thread so it’s captured:\n\nFinance will provide the annual revenue and expense formula changes before budgeting. After we deliver the doc, we need RFS to implement within one week. Then we’ll do two weeks of joint testing (Finance + dev) of the calculations. We will provide example scenarios (Aly can gather) to validate branch, complex, and region roll-ups. We need this done before the budget opens.\n\nAlso echoing the training plan: one week of sessions immediately before go-live. Finance expects 98% of users to finish their budgets on time — the UI needs to be usable enough that this is realistic.\n\nThanks,\nMaria\n\n---\n\nEmail 6\nFrom: Priya Rao <priya.bdw@corp>\nTo: Sam Ortega <sam.ops@corp>, Aly Patel <aly.pcg@corp>\nCC: Dev Ionescu <dev.arch@corp>, Maria Santos <maria.finance@corp>\nSubject: RE: BDW specifics — files and snapshot\n\nConfirming BDW details:\n\n- We will deliver seven files for RFS (same schemas as last year). Target delivery is one business day before the budgeting kickoff. Please plan for a 3-hour processing window on your side; we’ll coordinate to avoid overlap with other jobs.\n- The data is as of the October month-end snapshot. That includes all organizational units (branch/complex/district/region) and all revenue/expense accounts that exist as of that date. Expectation is RFS ingests the full set so everything needed is present when you open budgeting.\n- Test loads: we can accommodate up to 5 test deliveries per calendar year. Please give us at least 3 business days’ notice.\n\nRegards,\nPriya\n\n---\n\nEmail 7\nFrom: Jordan Hale <helpdesk@corp>\nTo: All above\nSubject: RE: Thread round-up — readiness + pending actions\n\nQuick wrap (and a couple loose ends):\n\n- Desktop readiness: Helpdesk sending a comms to branches this week. Requirements: ~400MB free disk, IE environment with IE Web Controls, .NET Framework 1.1. Goal: 98% of machines verified before go-live. We’ll track exceptions.\n- Availability during budgeting: Users should call the helpdesk if they experience an outage. We escalate to Ops immediately. Target is to restore within an hour once recorded. Outside budgeting, lower baseline applies.\n- UI approvals: Dev to book ENET Architecture review. Aim for ~95% signoff pre-release; fix remaining items within 1 month post.\n- Display/res: Support 800x600 and higher. If we miss a specific screen, file a ticket; we’ll push to get it fixed within a week.\n- UAS only, no local creds. Roles match branch/complex/district/region; permissions limited accordingly.\n- BDW: 7 files, ~3-hour load window, one business day pre-kickoff, October snapshot. Up to 5 test runs. Please let us know when the load completes.\n- Performance target: 2 sec for most interactions; heavier ones may take longer (upper bound 10 sec). We’ll note any outliers observed in UAT.\n\nOpen action items: Dev/Sam — schedule the load day quiet period; Ken — confirm mixed-role approach after Finance weighs in; Aly — send test scenarios for formulas. Also need confirmation on change window approval for the load day.\n\n—J\n\n(sent from mobile, excuse typos)"
+    }
+  ],
+  "gold_requirements": [
+    {
+      "id": "PROMISE_15_R001",
+      "text": "The RFS system should be available 24/7 especially during the budgeting period. The RFS system shall be available 90% of the time all year and 98% during the budgeting period. 2% of the time the system will become available within 1 hour of the time that the situation is reported.",
+      "raw_label": "A",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "availability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_15_R002",
+      "text": "98% of the user workstations shall meet the minimum hardware requirements prior to implementation. Minimum Hard Disk Space: 400MB.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_15_R003",
+      "text": "98% of the user workstations shall meet the minimum software requirements prior to implementation: Microsoft Internet Explorer 5.0. Microsoft .NET Framework 1.1. Microsoft Internet Explorer Web Controls",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_15_R004",
+      "text": "The RFS system should be able to easily interface with the BDW environment in order to load the data. 7 data files shall be received from the BDW and loaded into the RFS system within 3 hours one day prior to the start of budgeting process every year. The data will be as of October month-end. Test files (7) shall be loaded up to 5 times throughout the year from the BDW.",
+      "raw_label": "O",
+      "requirement_kind": "constraint",
+      "nfr_subtype": "other",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_15_R005",
+      "text": "Changes to revenue and expense formulae must be applied to the RFS system every year prior to the budgeting process start. Revenue and expense formulae will be updated within one week of their receipt after which 2 weeks will be allotted to testing of the budget calculations to be conducted jointly by the project development team and PCG Finance.",
+      "raw_label": "MN",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_15_R006",
+      "text": "New branches/complexes/districts/regions and revenue/expense accounts added to the BDW must be reflected in the RFS system. 100% of the entities (mentioned above) available as of October month-end will be loaded into the RFS system prior to the budget start process.",
+      "raw_label": "MN",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "maintainability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_15_R007",
+      "text": "Only authorized user shall access the RFS system. ONLY users that exist in the UAS system with the RFS system assigned to their role(s) shall access the RFS system and use it.",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_15_R008",
+      "text": "User access should be limited to the permissions granted to their role(s) Each level in the PCG hierarchy will be assigned a role and users will be assigned to these roles. Access to functionality within RFS system is dependent on the privileges/permission assigned to the role..",
+      "raw_label": "SE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "security",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_15_R009",
+      "text": "The product must comply with the intranet page standards and requirements of ENET Securities. 95% of the product look & feel will be approved by the Architecture group prior to implementation. The remaining 5% will be corrected and approved within one month of product release.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_15_R010",
+      "text": "The intranet pages should display appropriately in all resolutions from 800x600 and higher. The display of all the pages will be correct in 95% of the resolutions prior to implementation. The remaining 5% will be corrected within a week of notification of the incorrect display.",
+      "raw_label": "LF",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_15_R011",
+      "text": "The users should be able to easily use the system to successfully complete their budgets within the stipulated time for completion. With a week of training prior to product implementation 98% of the users shall complete their budgets within the stipulated time.",
+      "raw_label": "US",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "usability",
+      "source_strategy": null,
+      "source_region": null
+    },
+    {
+      "id": "PROMISE_15_R012",
+      "text": "The product interface should be fast. The response time of the product interface should not exceed 2 seconds 90% of the time. For 10% of the time the response time should not be more than 10 seconds.not be more than 10 seconds.",
+      "raw_label": "PE",
+      "requirement_kind": "non_functional",
+      "nfr_subtype": "performance",
+      "source_strategy": null,
+      "source_region": null
+    }
+  ],
+  "validation": {
+    "coverage_rate": 1.0,
+    "missing_req_ids": [],
+    "unsupported_count": 2,
+    "repair_rounds_used": 1,
+    "coverage_entries": [
+      {
+        "req_id": "PROMISE_15_R001",
+        "supported": true,
+        "evidence_snippets": [
+          "98% during the critical window",
+          "get it back within about an hour"
+        ],
+        "reason": "Source states 90% baseline, 98% budgeting, ~1hr restore."
+      },
+      {
+        "req_id": "PROMISE_15_R002",
+        "supported": true,
+        "evidence_snippets": [
+          "Aim for 98% of user workstations",
+          "Min hardware: ~400MB free disk"
+        ],
+        "reason": "Notes require 98% compliance and 400MB free disk."
+      },
+      {
+        "req_id": "PROMISE_15_R003",
+        "supported": true,
+        "evidence_snippets": [
+          "Software: IE browser, .NET Framework 1.1, IE Web Controls",
+          "We’ll try to get 98% compliance before go-live"
+        ],
+        "reason": "Documents specify IE/.NET/WebControls and 98% target."
+      },
+      {
+        "req_id": "PROMISE_15_R004",
+        "supported": true,
+        "evidence_snippets": [
+          "We will deliver seven files",
+          "one business day before the budgeting kickoff",
+          "plan for a 3-hour processing window"
+        ],
+        "reason": "BDW will send 7 files, Oct snapshot, 1-day lead, 3-hour load."
+      },
+      {
+        "req_id": "PROMISE_15_R005",
+        "supported": true,
+        "evidence_snippets": [
+          "within 1 week of Finance delivering changes",
+          "then 2 weeks of joint testing"
+        ],
+        "reason": "Source mandates 1 week implementation then 2 weeks joint testing."
+      },
+      {
+        "req_id": "PROMISE_15_R006",
+        "supported": true,
+        "evidence_snippets": [
+          "one hundred percent — must be in RFS",
+          "includes all organizational units"
+        ],
+        "reason": "Stakeholders require 100% of October snapshot orgs/accounts in RFS."
+      },
+      {
+        "req_id": "PROMISE_15_R007",
+        "supported": true,
+        "evidence_snippets": [
+          "integrate with UAS for identities. We won’t maintain local accounts",
+          "UAS will be the sole source for authentication and authorization"
+        ],
+        "reason": "All access/authentication must come from UAS; no local accounts."
+      },
+      {
+        "req_id": "PROMISE_15_R008",
+        "supported": true,
+        "evidence_snippets": [
+          "Functionality will be limited by role. The UI will hide what you don’t have permission for",
+          "Map to PCG hierarchy levels (branch, complex, district, region)"
+        ],
+        "reason": "Access limited by role; roles map to PCG hierarchy levels."
+      },
+      {
+        "req_id": "PROMISE_15_R009",
+        "supported": true,
+        "evidence_snippets": [
+          "Historically about 95% is approved pre-release",
+          "small tail we fix within a month"
+        ],
+        "reason": "ENET architecture pre-approval target ~95%, remainder fixed within month."
+      },
+      {
+        "req_id": "PROMISE_15_R010",
+        "supported": true,
+        "evidence_snippets": [
+          "support from 800x600 and higher",
+          "aim to have most of them correct before rollout",
+          "we will correct it within a week"
+        ],
+        "reason": "Sources require 800x600+ support, most correct pre-rollout, fixes within week."
+      },
+      {
+        "req_id": "PROMISE_15_R011",
+        "supported": true,
+        "evidence_snippets": [
+          "one week of training",
+          "98% of users finish budgets"
+        ],
+        "reason": "One-week training and 98% completion target stated."
+      },
+      {
+        "req_id": "PROMISE_15_R012",
+        "supported": true,
+        "evidence_snippets": [
+          "2 sec response for 90% interactions",
+          "up to 10 sec acceptable for the rest"
+        ],
+        "reason": "90% ≤2s and 10% ≤10s performance targets stated."
+      }
+    ],
+    "unsupported_implied": [
+      {
+        "text": "The system and QA process shall collect and log performance metrics (performance statistics) to verify the stated response-time targets (e.g., record stats to show 90% of interactions <= 2s and 10% <= 10s).",
+        "source_snippet": "Response times — log performance stats in QA to ensure 90% under 2 sec, 10% under 10 sec.",
+        "source_type": "meeting_notes",
+        "reason": "The gold set specifies response-time targets but does not require the system/QA to collect or log performance metrics. Instrumentation and logging to demonstrate compliance is a distinct operational capability implied by the source."
+      },
+      {
+        "text": "The RFS shall not implement any new in‑app notification features for events such as BDW load failures or access changes; communications must use existing helpdesk/ops channels instead.",
+        "source_snippet": "we're not putting any new notification features inside RFS.",
+        "source_type": "interview_transcript",
+        "reason": "The source explicitly rules out adding in-app notification features and mandates relying on existing helpdesk/operations communication channels. The gold requirements do not state this prohibition or communication constraint, so this is an additional functional limitation on the product."
+      }
+    ],
+    "passed": true
+  },
+  "brief": {
+    "project_name": "BudgetPulse RFS",
+    "domain": "corporate finance budgeting",
+    "users": [
+      "Branch/complex budget owners",
+      "Regional and district controllers",
+      "PCG Finance analysts",
+      "System administrators supporting access"
+    ],
+    "stakeholders": [
+      "PCG Finance leadership",
+      "ENET Architecture group",
+      "Data Warehouse (BDW) team",
+      "Information Security / UAS administrators",
+      "IT Operations and Helpdesk"
+    ],
+    "business_goals": [
+      "Complete the annual budgeting cycle on time with minimal training overhead",
+      "Ensure budgets are calculated using the latest approved revenue/expense rules",
+      "Keep organizational structures and account lists current and in sync with the BDW snapshot",
+      "Provide reliable access across the enterprise intranet during critical budgeting windows",
+      "Conform to corporate UX/look-and-feel standards for internal web apps"
+    ],
+    "core_features": [
+      "Intranet-based budget entry and review workspace",
+      "Role-based access tied to UAS identities and PCG hierarchy levels",
+      "Automated import of branches/complexes/districts/regions and accounts from the BDW October month-end snapshot before budget kickoff",
+      "Annual update of revenue and expense calculation rules with a coordinated testing period with PCG Finance",
+      "Scheduled data-load workflow to ingest seven BDW files within a defined window ahead of budgeting"
+    ],
+    "quality_concerns": [
+      "High availability year-round, with stricter uptime targets during the budgeting period and rapid recovery for rare outages",
+      "Fast UI interactions; most actions should complete within a couple of seconds, with occasional slower responses still acceptable",
+      "Usability that enables almost all users to finish their budgets on schedule after a brief training",
+      "Compliance with ENET intranet visual standards, with pre-release design approval and timely post-release tweaks",
+      "Pages render correctly from 800x600 upward; any display issues corrected quickly after they’re reported",
+      "Strict authorization so users only see functions permitted by their assigned role"
+    ],
+    "constraints": [
+      "Desktops must meet minimum specs (e.g., around 400MB free disk) on nearly all workstations prior to rollout",
+      "Standard software stack required: legacy IE browser, .NET Framework 1.1, and IE Web Controls available on user machines",
+      "Integrate with the corporate UAS for sign-on and role assignment; no standalone accounts",
+      "BDW will deliver seven data files that must be loaded within roughly three hours one business day before budgeting starts",
+      "Test BDW loads (same seven files) may be run a limited number of times throughout the year",
+      "Deployed on the internal ENET intranet and subject to corporate governance and change windows"
+    ],
+    "terminology": [
+      "RFS (internal budgeting system)",
+      "BDW (Business Data Warehouse)",
+      "UAS (User Access System)",
+      "PCG hierarchy (branch, complex, district, region)",
+      "Budgeting period",
+      "October month-end snapshot",
+      "Revenue and expense formulae"
+    ]
+  },
+  "metadata": {
+    "project_id": "15",
+    "req_count": 12,
+    "label_dist": {
+      "A": 1,
+      "O": 3,
+      "MN": 2,
+      "SE": 2,
+      "LF": 2,
+      "US": 1,
+      "PE": 1
+    },
+    "llm_usage": {
+      "total_calls": 203,
+      "total_input_tokens": 1125999,
+      "total_output_tokens": 693894
+    }
+  }
+}

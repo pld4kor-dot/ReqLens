@@ -1,0 +1,100 @@
+TYPE  : interview_transcript
+TITLE : Advisor check-in on agentMom+ GroupComms messaging behaviors and controls (reconvened)
+UNIT  : PURE_2003 - agentmom
+============================================================
+
+Maya [Project Lead]: Thanks for jumping on again. Quick pass through point-to-point, group comms, and controls so we’re aligned with your expectations, Dr. Chen, and with Priya’s team needs.
+
+Dr. Chen [Advisor]: No slides, please. Just walk me through how one agent talks to another, and how it talks to many. And where folks can tune behavior.
+
+Luis [Network Admin]: Before we dive in, reminder: when you all test broadcast on the lab LAN, keep the traffic reasonable. We had a flood last week from a heartbeat mishap.
+
+Priya [Partner Dev]: That was on us. We’ll be more careful. We still want broadcast in the toolbox for discovery, though.
+
+Maya [Project Lead]: It’s in. For the LAN, broadcast send and receive are supported. You can push a discovery ping and every host on the same subnet can hear it. It won’t cross routers—classic local network scope.
+
+Luis [Network Admin]: Right. All hosts on the local subnet see it; it’s not routed. It’s fine for discovery or occasional announcements; don’t treat it as a primary channel.
+
+Dr. Chen [Advisor]: Unicast next. If I send A then B, does the other side always see A then B? And are you delivering only to the intended address?
+
+Maya [Project Lead]: Yes on both. For point-to-point, we commit to in-order delivery and correct addressing. We’re leaning on TCP semantics and tagging with sequence numbers so we can detect reordering if we ever change transports. Delivery goes only to the specified destination, not anyone else.
+
+Sam [QA]: I’ve got order assertions in the test rig, plus a negative case for misaddressed messages to ensure nothing leaks to a third party.
+
+Priya [Partner Dev]: Can the sender choose encryption per message? For commands we want encryption; for telemetry, probably not.
+
+Maya [Project Lead]: Yes. You can toggle encryption per send. If the flag is set and keys are configured, we encrypt before transmission. On receive, if the message indicates it’s protected and the recipient has the right material, it’s automatically presented as plaintext to the app. If the recipient lacks what’s needed, the payload won’t be usable by that recipient—we’ll document the handling, but you don’t have to write manual decrypt code either way.
+
+Luis [Network Admin]: Just so we’re clear, you’re talking about securing the message content, not switching the whole socket to HTTPS or something.
+
+Sam [QA]: Correct—message-level protection, not TLS. I’ll make sure the test plan spells that out to avoid confusion.
+
+Dr. Chen [Advisor]: Good. So unicast is ordered, targeted, with optional per-message protection and automatic handling on receipt. Now, group messaging. What happens before an agent formally joins a group?
+
+Maya [Project Lead]: Nothing reaches it for that group. We enforce that no group traffic is delivered to an agent until it has sent a join request and been accepted. Once joined, it receives group messages. The same component can send to the group address.
+
+Priya [Partner Dev]: Can an agent listen to more than one group at the same time? We have a commands group and an alerts group.
+
+Maya [Project Lead]: Yes. Multiple concurrent group subscriptions are supported. You can bind to multiple multicast addresses as configured and receive from each. We expose TTL and socket options for tuning.
+
+Luis [Network Admin]: Do you expose time-to-live? I want to avoid folks blasting packets across too many hops by default.
+
+Sam [QA]: Just to clarify: TTL here is IP hop scope, not a message expiry timer.
+
+Maya [Project Lead]: Exactly. TTL, group address, and port are configurable with sane defaults. We’ll label TTL semantics clearly as hop count.
+
+Dr. Chen [Advisor]: And if an agent leaves or decides to “mute” the group temporarily?
+
+Maya [Project Lead]: Leaving: the agent issues a leave request and from that point we stop delivering that group’s messages to it. For a temporary opt-out, it can pause receiving without dissolving its membership; we halt delivery immediately on that command, and resume when it opts back in.
+
+Priya [Partner Dev]: That pause is important for us. We park agents sometimes and don’t want them processing anything until resumed.
+
+Sam [QA]: I’ll add tests for join, mute/opt-out, unmute, and leave. Also negative tests: nothing delivered before join, and nothing after leave.
+
+Dr. Chen [Advisor]: Are there notifications when someone joins or leaves?
+
+Maya [Project Lead]: Yes. We emit group-level events. On join, we publish a join notice to a control channel; on leave, a corresponding leave notice. Members can update their rosters or UIs off those events.
+
+Luis [Network Admin]: And we’re aligned that multicast ordering isn’t guaranteed, right? Best effort only.
+
+Maya [Project Lead]: Correct. We’re not promising order for multicast or broadcast. If strict order is needed for multi-recipient workflows, we can do orchestrated unicast or define a higher-level protocol in agent logic. Base layer: best effort for multicast and broadcast.
+
+Dr. Chen [Advisor]: Fine. Conversation control—do agents themselves run the conversation, or can a component do it?
+
+Maya [Project Lead]: Both. We support agent-driven conversations, where your code drives the state machine, and a component-driven mode where a conversation manager orchestrates and your agent supplies callbacks. It’s a configurable choice.
+
+Sam [QA]: We’ll make it pluggable so teams can switch modes for experiments without rewriting logic.
+
+Priya [Partner Dev]: Related to groups: if an agent dies, can a replacement join and take over its role so the rest of the group treats it as the participant going forward?
+
+Maya [Project Lead]: Yes. That’s part of our organization/reorganization story. A substitute agent can join and act within the same group so coordination continues. We’ll handle the join and notifications so others see the change.
+
+Luis [Network Admin]: Just make sure you handle identity and keys properly. And keep that join event visible so others can react.
+
+Dr. Chen [Advisor]: Backward compatibility. We still have agentMom 1.2 deployments. I don’t want them stranded.
+
+Maya [Project Lead]: We’re shipping a compatibility layer so new agents interoperate with 1.2. A 1.2 agent can unicast to a new one and vice versa; basic group participation works as expected. For mixed environments, features that require shared understanding—like per-message protection—should be used where both sides support them. Baseline messaging works without special switches.
+
+Priya [Partner Dev]: We’ll be mixed until fall, so that’s important. Please don’t break the basics.
+
+Sam [QA]: I’ll set up mixed-version tests: unicast both ways and group membership enforcement (no traffic before join or after leave).
+
+Dr. Chen [Advisor]: One more on broadcast: can my agent both listen for LAN broadcast and send one?
+
+Maya [Project Lead]: Yes. It can send a local broadcast and it can receive broadcast traffic on the LAN. We’ll include cautions in the guide about using it sparingly and not for sensitive material—when confidentiality is needed, prefer unicast or group messages configured for protection.
+
+Dr. Chen [Advisor]: Good. Maya, please include a product perspective describing the users—developers, behavior designers, and network admins—and the constraints such as best-effort on multicast/broadcast. And ensure whatever we claim about ordering, addressing, and message protection is testable.
+
+Maya [Project Lead]: Will do. On configuration: we’ll expose TTL, group address, and port via config files and APIs. That covers binding to multiple groups at once.
+
+Sam [QA]: I’ll wire logs to show unicast sequence numbers and the join/leave events for groups so we can demonstrate behavior.
+
+Dr. Chen [Advisor]: Great. I want to see a demo where an agent joins, receives, mutes and stops receiving, unmutes, then leaves, with notifications visible. Also show unicast with and without message protection, verifying ordered delivery, and an agent listening to two groups concurrently. If possible, show the conversation-control toggle and a substitution scenario where a replacement agent joins the group and takes over.
+
+Maya [Project Lead]: We’ll line that up. We’ll send you the write-up so none of this gets lost.
+
+Luis [Network Admin]: Ping me before you start any high-traffic tests so I can keep an eye on the switches.
+
+Priya [Partner Dev]: I can bring a prototype agent for the substitution scenario—kill one and have the replacement pick up.
+
+Dr. Chen [Advisor]: Good. Let’s wrap here.

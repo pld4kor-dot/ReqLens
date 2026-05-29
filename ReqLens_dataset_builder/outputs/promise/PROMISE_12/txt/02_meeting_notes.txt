@@ -1,0 +1,115 @@
+TYPE  : meeting_notes
+TITLE : Architecture & Ops Working Session — Monitoring UI, scaling behavior, and governance
+UNIT  : PROMISE_12
+============================================================
+
+Date: 2025-03-18
+Location: Teams call (link: https://citychi.gov/meet/ops-arch-wcsl)
+Attendees:
+- Maya (DoIT PM)
+- Leo (SysAdmin)
+- Priya (DBA)
+- Nina (CSR Ops lead)
+- Arman (DoIT UX)
+- Janet (Security & Compliance)
+- Carlos (EAM vendor rep)
+- Wendy (AppDev standards)
+
+Agenda rough:
+- Monitoring UI requirements + city standards
+- Ops portal reports/KPIs (ad-hoc?)
+- Dynamic changes / transparent capacity add
+- Platform & tech neutrality
+- Release cadence / upgrade behavior
+- Robustness: standards adoption; fault avoidance
+
+Notes — raw (not full, some gaps):
+
+Monitoring UI / City standards
+- Must use City of Chicago Application Development Guide — Wendy says “no exceptions,” structure/navig consistent w/ framework components
+- Arman: use the standardized header, breadcrumbs, forms; no custom wild nav patterns
+- Leo: wants a single pane for message flow; status of CSR->EAM and EAM->CSR; backlog vis
+- Arman: Question: do we need dark mode? [TBD]
+- Wendy: UI code must fit within the AppDev Framework. No direct JS libs that violate security reviews. BUT can include approved charting. Strikethrough: ~custom design system~ (NOT decided yet)
+- Nina: Admins should be comfortable after a couple weeks usage; avoid complex nested menus; short tooltips; inline guidance
+- Priya: Error views must show failure cause, remediation steps; aim for “fix + replay” in tool (resolve most issues w/o devs) — 99% is the target mentioned earlier (check w/ ops)
+- Janet: Audit UI needs to expose message history (time, who touched it, statuses) for at least 1 yr — maybe in portal (note: see retention section)
+
+Ops portal reports/KPIs
+- Nina wants ad-hoc reports: filter by service type, ward, route; export to CSV
+- KPIs: queue latency, time-to-ack, error rate %, retry counts, top error codes, SR->WO conversion time
+- Leo: dashboards + alerts -> predictive if possible; threshold config by admin
+- Priya: rolling windows (15m, 1h, 24h) helpful; trend lines
+- Contrad: Arman says keep it minimal v1; Nina says must have ad-hoc from day 1. Compromise? [Parking Lot]
+- Who owns KPI definitions? CSR leadership? DoIT? [TBD — check with CSR analytics]
+
+Dynamic change / transparent resource addition
+- Leo: On spike days, add workers live. No service restart. “Transparent” to users.
+- Carlos: hub must advertise health of new workers so LB (load balancer) routes correctly. Health probes.
+- Maya: Dynamic change support is mandatory — scale out/in on demand.
+- Priya: Avoid service interruptions > 1 day — hmm, actually avoid interruptions period; but doc says keep under city thresholds. [clarify exact language]
+- Action: draft plan for hot-add capacity, define node discovery protocol.
+- Note: Also applies when turning off nodes — scale in gracefully; no dropped messages.
+
+Platform independence / tech neutrality
+- Wendy: Platform-agnostic design — no OS lock-in (Linux/Windows), container friendly but not required
+- Arman: Access from any dev environment — avoid proprietary tied UIs
+- Carlos: Connectors/adapters should be cross-platform to interop with EAM + future tech
+- Janet: ensure third-party libs have security reviews. No vendor-specific encryption-only features
+- Priya: DB backend TBD, but must not force a single RDBMS; support multiple via standard drivers [check with DBA guild]
+- Note: accommodate new tech later without architecture changes — plug-in adapters ok
+
+Release cadence / upgrade behavior
+- Maya: City cadence expectation: major features approx every 6 months; maintenance updates quarterly
+- Leo: Upgrades should not interrupt service. Keep processing while rolling out — blue/green or rolling deploy? [TBD]
+- Nina: No Friday eve deploys. (non-requirement but preference)
+- Contradiction: Carlos notes some updates might require restarts; Leo insists zero downtime for adding capacity at least.
+- Action: Document which changes must be non-disruptive (e.g., capacity add) vs which may have maintenance windows (rare)
+
+Performance / polling / throughput
+- Priya: Inbound queues polled around every second (max) — prefer efficient pull or subscription
+- Leo: End-to-end handling should be around 2 seconds typical; alerts if sustained above
+- Nina: ops cares about “feels instant” — tooltips to set expectations in CSR
+- Target volume: >= 1,000,000 tx/yr without degradation (write in perf section). Some spikes (storm days 3x baseline)
+- Carlos: multi-threading + LB to handle spikes (workers parallel)
+
+Robustness / standards-based
+- Janet: Adopt standards for message formats + security to avoid classes of faults (fault avoidance via standards)
+- Priya: Validation schemas prevent bad payloads entering processing; map errors to human-readable messages
+- Carlos: Retry policies, backoff; route around failing internal endpoints when possible
+- Leo: Compensating actions if half-updates detected
+
+Security / audit / governance (touched but not deep-dived)
+- Janet: Authentication + authorization required on portal + APIs
+- Integrity checks + encryption at message level preferred (WS-Sec style) [parking lot for details]
+- Governance: CSR and Datastream traffic must go through hub; no direct links (policy + technical controls)
+- Retention: message archive for at least 1 yr for audit/tracking — storage sizing TBD
+
+Open Issues / Parking Lot
+- Ad-hoc reporting v1 scope — minimal vs full SQL-like builder [TBD]
+- Exact language on availability: “four nines on business days?” vs broader 99% overall — align with city SLA doc
+- Event-driven vs 1-second polling — could we hybrid? [investigate]
+- Which subsystems can upgrade with zero downtime vs maintenance window acceptable [matrix to create]
+- Choice of queue tech [Kafka? MSMQ? AMQP?] — platform neutrality concern
+- Compensating transaction definitions per use case (asset create, work order close) [needs EAM doc]
+- Non-functional testing plan (load, chaos) [TBD]
+
+Action Items
+- Wendy to send App Dev guide links + component list (due Fri)
+- Arman to mock a dashboard adhering to city UI patterns (2 weeks)
+- Priya to draft perf targets doc (2s, 1s poll, 1M/yr) and share (next Tues)
+- Leo to propose hot-add procedure + health checks
+- Janet to outline security requirements (authN/Z, encryption, integrity) — schedule workshop
+- Carlos to provide EAM error code map + health check endpoints
+- Maya to compile release cadence + upgrade behavior section for review
+
+Misc notes / contradictions
+- Nina wants minimal clicks; Arman suggests feature-rich filter; both agree no training course; “learn by doing within ~2 weeks”
+- Strikethrough: ~custom charts lib from vendor~ (needs security review; likely no)
+- Numbers scribbled: 2 (sec), 1 (sec), 1,000,000 (annual), 99.99 (availability?) — verify units
+- Some want push notifications in portal; others say email is enough — revisit
+
+Wrap-up
+- Consensus on: follow city UI framework; provide monitoring dashboards + ad-hoc reporting; scale transparently; platform independent; regular releases; robust via standards
+- Still unclear on: exact SLA wording; v1 scope of reporting; queue tech; deployment method
+- Next mtg: 2025-03-25 same link

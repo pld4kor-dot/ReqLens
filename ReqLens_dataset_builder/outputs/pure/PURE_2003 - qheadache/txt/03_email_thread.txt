@@ -1,0 +1,233 @@
+TYPE  : email_thread
+TITLE : Subject drift: Qheadache menus, About text, Windows portability, and undo cap
+UNIT  : PURE_2003 - qheadache
+============================================================
+
+Email 1
+From: Victor <victor@studio.example>
+To: Maya <maya@studio.example>, Lars <lars@studio.example>
+CC: Renee <renee@studio.example>, Sasha <sasha@community.example>
+Date: 2025-04-02 09:12
+Subject: Qheadache basics + menu behavior
+
+Hey team,
+
+Quick check before I hit send on a brief for stakeholders. Three things I want to lock:
+
+1) The app is a desktop game (no server), official name “Qheadache.” Please keep the brand consistent in the app title and About. We’re not doing any multiplayer or profile juggling. It’s just one user per machine/session.
+
+2) Minimum screen: 800x600. We promised that. Also, menu-driven UI. People click “Statistics” for scores and “Help” for About. Stats should have two items, Display and Erase, in that order. When they click either, don’t leave the menu hanging open.
+
+3) About box: I need the exact text used. I’ll paste that in the mini-brief if you send it over again, Maya.
+
+Also remind me, the move counter and timer are always visible, right? I recall we wanted to show progress as they play.
+
+-Victor
+
+---
+
+Email 2
+From: Maya <maya@studio.example>
+To: Victor <victor@studio.example>
+CC: Lars <lars@studio.example>, Renee <renee@studio.example>, Sasha <sasha@community.example>
+Date: 2025-04-02 09:33
+Subject: RE: Qheadache basics + menu behavior
+
+Hi Victor,
+
+Confirming:
+- Desktop, standalone (no back-end). One local user only.
+- Yes, min 800x600.
+- UI is menus + graphics; sound optional and not required to play.
+- Stats menu items order is Display then Erase. On Display we show the scores window listing all recorded players; Erase clears the stored stats. After either, the Statistics menu should close automatically.
+- Help -> About: open About window; Help menu closes. The line to display (exact) is: Qheadache 1.0 by Jean-Philippe Brossat jp_brossat@yahoo.fr
+- Timer + action count both visible during play. We count actions as moves.
+
+Also, for the main window: a black rectangular board (5x tall, 4x wide) with yellow blocks separated by 0.1x spacing. x constrained between 50–100 px so we don’t get micro-blocks or giant blocks. That board plus the menu bar should cover the basic UI.
+
+We’re writing the spec aimed at analysts, programmers, and testers (internal), so I’ll phrase it accordingly in the doc.
+
+Maya
+
+---
+
+Email 3
+From: Lars <lars@studio.example>
+To: Victor <victor@studio.example>, Maya <maya@studio.example>
+CC: Renee <renee@studio.example>, Sasha <sasha@community.example>
+Date: 2025-04-02 10:05
+Subject: RE: Qheadache basics + menu behavior (Qt details + undo cap)
+
+All,
+
+On the technical side with Qt:
+- I’ll ensure portability across Qt-supported OS — but yes, Windows is explicitly supported. I’ll test a Windows build early.
+- The “x” unit will be clamped 50 <= x <= 100 px. At 800x600, the board (5x by 4x) will fit with status text.
+- Mouse interaction: left-button press on a block enters move mode; while held, the block tracks the cursor; on release we revert to selection. Keyboard input remains for menus; and obviously text input for name entry on victory.
+- Undo/redo history: I’m setting the cap to 1000 moves. Any pushback? It’s large enough but bounded. I’ll implement a circular buffer and ensure redo clears when a new move is made after undo.
+
+Two clarifications I need before I finalize the About dialog:
+1) We’re keeping the menu closing behavior consistent after About is opened, correct? I’ll set it so the Help menu closes immediately when About opens.
+2) The About text line is exactly: Qheadache 1.0 by Jean-Philippe Brossat jp_brossat@yahoo.fr (no punctuation at the end)? I’ll hard-code that exact string.
+
+-Lars
+
+---
+
+Email 4
+From: Renee <renee@studio.example>
+To: Lars <lars@studio.example>
+CC: Victor <victor@studio.example>, Maya <maya@studio.example>, Sasha <sasha@community.example>
+Date: 2025-04-02 10:22
+Subject: RE: Qheadache basics + menu behavior (Qt details + undo cap)
+
+Looks good. A couple QA notes:
+
+- Re Windows: please make a build ASAP; I’ll test at 800x600, and also check DPI scaling. Need to verify the time and action digits are legible and not overlapping the board.
+- For the block movement state: I’m going to test edge cases like pressing down on a block, dragging, then releasing outside the board area. We should still end up back in the non-moving selection state. Also verify no block overlaps thanks to constraints and the 0.1x spacing remains visually consistent.
+- I’ll check the menus for keyboard input as well as mouse clicks (arrow/enter usage).
+- Undo/redo: 1000 cap is fine. I’ll also do extended sequences to ensure no crashes when hitting the limit.
+- Single-user per machine: not a QA “feature” but I’ll validate we don’t expose any profile UX.
+
+Lars, yes: for the About text line, keep it exactly as Maya wrote (no extra punctuation). And yes, the Help menu should auto-close on opening About.
+
+-Renee
+
+(sent from mobile, sorry for typos)
+
+---
+
+Email 5
+From: Sasha <sasha@community.example>
+To: Victor <victor@studio.example>, Maya <maya@studio.example>
+CC: Lars <lars@studio.example>, Renee <renee@studio.example>
+Date: 2025-04-02 11:03
+Subject: RE: Qheadache basics (piece set + audience clarity)
+
+Hey all,
+
+Just jumping in because people in our forum asked the usual questions:
+- Are the pieces the classic set? Please confirm: four small squares (1x1), four tall rects (2x by 1x), one wide rect (1x by 2x), one big square (2x by 2x).
+- Colors: black board with yellow blocks, right? They hate when colors get inverted...
+- Also: We’re saying the game is for kids and adults. Can I write “kids 8+ and grown-ups” and “no special training needed, just basic computer familiarity (mouse/keyboard)” in the announcement? I don’t want to overpromise.
+
+Thanks!
+
+Sasha
+
+---
+
+Email 6
+From: Maya <maya@studio.example>
+To: Sasha <sasha@community.example>
+CC: Victor <victor@studio.example>, Lars <lars@studio.example>, Renee <renee@studio.example>
+Date: 2025-04-02 11:29
+Subject: RE: Qheadache basics (piece set + audience clarity)
+
+Yes to all your bullets, Sasha.
+
+- The piece set is exactly as you listed. We are not changing counts or sizes.
+- Visual scheme: board background black, blocks yellow, with a small margin (~0.1x) between them (players may notice the “gutter”).
+- Audience: you can say 8+ and adults, no special qualifications needed. We assume they know how to operate a computer (move cursor, click, type a name).
+
+Also, if anyone asks: the main window presents the board and a menu bar. That’s it — very simple. It’s a desktop game built with Qt and runs on Windows and other OSes supported by Qt. It’s not a web app; no server is involved.
+
+Maya
+
+---
+
+Email 7
+From: Victor <victor@studio.example>
+To: All
+Date: 2025-04-02 12:12
+Subject: RE: Qheadache basics + stats window + erase behavior
+
+Adding a bit more (sorry for the thread drift):
+
+- On victory: we prompt for the player’s name and then record the score composed of name, elapsed time, and action count. The “Statistics -> Display” option should open a scores window that lists all recorded players/scores. We’re not doing sorting this time.
+- “Statistics -> Erase” should clear all scores. Let’s keep it simple; no confirmation dialog in this release. And yes, the menu should close after either Display or Erase performs its action.
+- Help -> About: uses the exact credit line that’s been circulating. Confirmed again.
+- Undo and redo up to 1000 actions is still the plan. If anyone disagrees, shout now.
+
+Lastly, just sanity-check: the drag feels smooth on your current dev build, Lars? We told folks it’ll be responsive — the block should follow the cursor cleanly.
+
+Thanks,
+
+Victor
+
+---
+
+Email 8
+From: Lars <lars@studio.example>
+To: Victor <victor@studio.example>
+CC: Maya <maya@studio.example>, Renee <renee@studio.example>, Sasha <sasha@community.example>
+Date: 2025-04-02 12:47
+Subject: RE: Qheadache basics + stats window + erase behavior (Windows + layout unit)
+
+Drag smoothness is good on my Linux box; I’m pushing a Windows build tonight to confirm. With Qt we should be portable across supported platforms, and Windows is specifically in scope.
+
+On layout specifics:
+- I enshrined the 5x (height) by 4x (width) board rectangle, with x constrained to [50, 100] px. If the window is resized, I clamp x accordingly and center the board.
+- The block spacing is a fixed 0.1x gap visually. The board is black, blocks are yellow, matching what we promised.
+- For the main window, menus are in a top bar; time and action count appear on the right in a small status strip. At 800x600, the digits are readable, but I’ll wait for Renee to test for real.
+- Input: Left mouse press enters move; the selected block follows the pointer; left release switches us back to the non-move mode. Keyboard will work for menu selections; we also accept typing the player’s name on the win dialog.
+
+I’ll ping once the Windows build is ready for testing.
+
+-Lars
+
+---
+
+Email 9
+From: Renee <renee@studio.example>
+To: Lars <lars@studio.example>
+CC: Victor <victor@studio.example>, Maya <maya@studio.example>, Sasha <sasha@community.example>
+Date: 2025-04-02 14:05
+Subject: RE: Qheadache Windows build + test asks (menus closing & About text)
+
+Great, send the build when you can. I want to validate a few things explicitly:
+
+- That the Help menu does not remain open after About launches, and that the text reads exactly: Qheadache 1.0 by Jean-Philippe Brossat jp_brossat@yahoo.fr
+- That the Statistics menu has exactly two items (Display first, then Erase), and that after choosing either, the menu closes. Display opens the scores window listing everything; Erase clears it all. I’ll test with keyboard and mouse input.
+- I’ll also confirm the min 800x600 constraint works out; the app window should be at least that by default, and the board should still be the 5x by 4x rectangle with correct spacing.
+- Lastly, I’ll try a few long play sessions to hit the 1000-action undo/redo limit and ensure we don’t break.
+
+Thanks,
+
+Renee
+
+---
+
+Email 10
+From: Maya <maya@studio.example>
+To: All
+Date: 2025-04-02 16:22
+Subject: RE: wrapping up today — spec audience + assumptions
+
+Before we close out: I’m drafting the spec tonight. Reminder of who it’s for — our analysts, the Qt programmer(s), and testers — so I’ll keep it technical enough but not code. Also including user assumptions explicitly: we aren’t requiring any special qualifications; we’re assuming people know basic computer operation (move a cursor, click, type). Audience is broad: beginners from age ~8 to adult puzzlers.
+
+We’ll keep it menu-driven and simple. Screenshots will show the main window with menu bar, the black board (5x tall x 4x wide), yellow blocks with the 0.1x spacing, and the time/action counters in view. I’ll also drop in the About text exactly as specified.
+
+If anyone has pushback on undo cap, menu order (Display then Erase), or single-user stance, reply-all. Otherwise I’m calling these locked.
+
+—Maya
+
+---
+
+Email 11
+From: Victor <victor@studio.example>
+To: Maya <maya@studio.example>
+CC: Lars <lars@studio.example>, Renee <renee@studio.example>, Sasha <sasha@community.example>
+Date: 2025-04-02 17:08
+Subject: RE: wrapping up today — spec audience + assumptions (partial approval)
+
+Looks solid. I approve all the points: name is Qheadache, standalone desktop game in Qt, cross-platform including Windows, min 800x600, black board 5x by 4x, yellow blocks with 0.1x spacing, piece set as discussed, press to move & release to stop, menu-driven (Stats and Help), display of time and action count, prompt for name on win -> record name + time + actions, undo/redo up to 1000 actions, single user per machine.
+
+Open item I’ll keep an eye on: the exact behavior of menu closing post-action (Stats, Help). Just make sure it’s consistent everywhere. Renee will flag if anything is off.
+
+We can revisit UI polish later, but no scope creep now. Let’s ship the basics.
+
+—Victor
+
+
+End of thread.
