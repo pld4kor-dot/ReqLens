@@ -162,10 +162,10 @@ After the API is running, use the scripts to ingest a demo project and run the p
 
 ```bash
 # Ingest the demo project documents
-python scripts/ingest_demo_project.py --base-url http://localhost:8001
+python scripts/ingest_demo_project.py --base-url http://localhost:8081
 
 # Run the full pipeline on the ingested project
-python scripts/run_pipeline.py --project-id <PROJECT_ID> --base-url http://localhost:8001
+python scripts/run_pipeline.py --project-id <PROJECT_ID> --base-url http://localhost:8081
 ```
 
 ---
