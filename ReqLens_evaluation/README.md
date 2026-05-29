@@ -2,7 +2,7 @@
 
 **Evaluation pipeline for comparing Baseline, ReqInOne v1, and ReqLens v2 against poisoned benchmark datasets.**
 
-Runs each system against Track 1 (hallucination detection) and Track 2 (noise detection) benchmark units, scores their outputs, and produces a structured comparison report.
+Runs each system against Track 1 (hallucination detection) and Track 2 (noise detection) benchmark units, scores their outputs and produces a structured comparison report.
 
 ---
 
@@ -10,8 +10,8 @@ Runs each system against Track 1 (hallucination detection) and Track 2 (noise de
 
 | System ID | Description |
 |-----------|-------------|
-| `reqinone_v1` | ReqInOne-style-baseline v1 — LLM-based, no evidence gating |
-| `reqlens_v2` | ReqLens v2 — multi-agent, evidence-gated pipeline |
+| `reqinone_v1` | ReqInOne-style-baseline — LLM-based, no evidence gating |
+| `reqlens_v2` | ReqLens — multi-agent, evidence-gated pipeline |
 
 ---
 
@@ -96,7 +96,7 @@ reqlens-eval run --track 2       # noise detection only
 ### Scoped by unit
 
 ```bash
-reqlens-eval run --unit PROMISE_1
+reqlens-eval run --unit PROMISE_5
 ```
 
 ### Scoped by variant
@@ -108,7 +108,7 @@ reqlens-eval run --variant hallu_v1
 ### Combined filters
 
 ```bash
-reqlens-eval run --system reqlens_v2 --track 1 --unit PROMISE_1
+reqlens-eval run --system reqlens_v2 --track 1 --unit PROMISE_5
 ```
 
 ### Override benchmark directory at runtime
@@ -141,7 +141,7 @@ Results are saved to `outputs/runs/<run-id>/` as structured JSON and a markdown 
 
 ```bash
 # 1. Smoke test to confirm setup
-reqlens-eval run --system baseline --track 1 --unit PROMISE_1 --no-save
+reqlens-eval run --system baseline --track 1 --unit PROMISE_5 --no-save
 
 # 2. Full evaluation
 reqlens-eval run
